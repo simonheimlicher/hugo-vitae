@@ -1,0 +1,43 @@
+{{- $periodStr := "" -}}
+{{- $periodList := slice -}}
+
+{{- $dateFormat := "2006 Jan" }}
+{{- $dateContainerStr := "" }}
+
+{{- $period := . }}
+
+{{- if reflect.IsMap . }}
+  {{- $period = .Period }}
+  {{- with .DateFormat }}
+    {{- $dateFormat = . }}
+  {{- end }}
+  {{- with .DateContainer }}
+    {{- $dateContainerStr = . }}
+  {{- end }}
+  {{- with .DateClass }}
+    {{- $dateClassStr = . }}
+  {{- end }}
+{{- end }}
+
+{{- range $date := $period -}}
+  {{- with $date -}}
+    {{- with $dateContainerStr }}
+      {{- $dateClassStr := "date-period-begin" }}
+      {{- if (gt (len $periodList) 0) }}{{- $dateClassStr = "date-period-end" }}{{- end }}
+      {{ $periodList = append (printf "<%s class=\"%s\">%s</%s>"
+        $dateContainerStr $dateClassStr (time.Format $dateFormat $date) $dateContainerStr | safeHTML) $periodList }}
+    {{- else -}}
+      {{ $periodList = append (time.Format $dateFormat $date) $periodList }}
+    {{- end -}}
+  {{- else -}}
+    {{- with $dateContainerStr }}
+      {{- $dateClassStr := "date-period-end" }}
+      {{ $periodList = append (printf "<%s class=\"%s\">%s</%s>"
+        $dateContainerStr $dateClassStr (T "period-until-present" ) $dateContainerStr) $periodList }}
+    {{- else -}}
+      {{ $periodList = append (T "period-until-present" ) $periodList }}
+    {{- end -}}
+  {{- end -}}
+{{- end -}}
+{{ $periodStr = printf "%s–%s" (index $periodList 0) (index $periodList 1) }}
+{{- return $periodStr -}}

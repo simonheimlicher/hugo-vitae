@@ -1,0 +1,80 @@
+{{- $page := .Page }}
+{{- $p := .Page.Params }}
+{{- $s := .Site.Params }}
+{{- $fragment := .Fragment }}
+{{- $config := .Config }}
+{{- $template := "partials/vitae/fragments/contact" }}
+{{- $outputFormat := default "HTML" (partial "claris/_functions/output-format" $page).Name }}
+{{- $media := cond (eq $outputFormat "print") "print" "screen" }}
+{{/* {{- warnf "%s[%s]: outputFormat:%s" $page $template $outputFormat }} */}}
+{{- $obfuscatedLink := "partials/claris/_components/obfuscated-link.html" }}
+
+{{- $addressFields := default (slice
+  (dict "street" "SEP")
+  (dict "zip" " ")
+  (dict "city" ", ")
+  (dict "country" "")
+) .AddressFields }}
+
+{{- $contactIcons := true }}
+{{- $separatorStr := " • " }}
+
+{{- /* warnf "%s[%s]: .Fragment=%s .Config=%s .Data=%s" $page $template $fragment $config .Data.features.contact */ -}}
+{{- with (index .Data.features.contact $media) }}
+  {{- with $config.title }}
+    <h2 class="contact-title section-title">{{- . -}}</h2>
+  {{- end }}
+  {{- with .phone -}}
+    {{- $phoneURL := printf "tel:%s" (strings.TrimPrefix "tel:" . ) }}
+      <div class="contact-item_phone contact-item">
+        {{- if $contactIcons }}
+          {{ partial "fa-icon" "solid/phone" }}
+        {{ end -}}
+        <span class="contact-phone">
+          {{- if templates.Exists $obfuscatedLink }}
+            {{- /* warnf "%v: using partial '%s' to render email address" $page . */ -}}
+            {{- partial $obfuscatedLink (dict "Page" $page "Plain" $phoneURL "ContainerClass" "no-external-icon") | safeHTML }}
+          {{- else }}
+            <a href="{{- $phoneURL -}}" class="no-external-icon">
+              {{- . -}}
+            </a>
+          {{- end }}
+        </span>
+      </div>
+  {{- end -}}
+  {{- with .email -}}
+    {{- $emailURL := printf "mailto:%s" (strings.TrimPrefix "mailto:" . )  }}
+      <div class="contact-item_email contact-item">
+        {{- if $contactIcons }}
+          {{ partial "fa-icon" "envelope" }}
+        {{ end -}}
+        <span class="contact-email">
+          {{- if templates.Exists $obfuscatedLink }}
+            {{- /* warnf "%v: using partial '%s' to render email address" $page . */ -}}
+            {{- partial $obfuscatedLink (dict "Page" $page "Plain" $emailURL "ContainerClass" "no-external-icon") | safeHTML }}
+          {{- else }}
+            <a href="{{- $emailURL -}}" class="no-external-icon">
+              {{- . -}}
+            </a>
+          {{- end }}
+        </span>
+      </div>
+  {{- end -}}
+  {{- with $address := .address }}
+    <address class="contact-ite_address address contact-item">
+      {{- if $contactIcons }}
+      {{ partial "fa-icon" "map" }}
+      {{- end -}}
+      <div class="contact-item-text">
+        {{- range $fieldSpec := $addressFields }}
+          {{- range $field, $sep := $fieldSpec }}
+            {{- with (index $address $field) }}
+              {{- if (eq $sep "SEP") }}{{ $sep = $separatorStr}}{{- end }}
+                <span class="address-{{ $field }}">{{ print . $sep }}</span>
+              {{- end }}
+            {{- end }}
+          {{- end }}
+      </div>
+    </address>
+  {{- end -}}
+{{- end -}}

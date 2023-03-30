@@ -1,0 +1,70 @@
+{{- $pp := .}}
+{{- $page := . }}
+{{- $template := "partials/vitae/print-preview" }}
+{{- $printControl := false }}
+{{- $printPreviewToggleID := "printPreviewToggle" }}
+{{- $printPreviewToggleClass := "print-preview_toggle" }}
+{{- $containerClass := "print-preview" }}
+{{- $targetClass := "print-preview_target" }}
+{{- $navigationClass := "print-preview_navigation" }}
+{{- if reflect.IsMap . }}
+  {{- with .Page }}
+    {{- $page = . }}
+  {{- end }}
+  {{- with .ContainerClass }}
+    {{- $containerClass = printf "%s %s" $containerClass . }}
+  {{- end }}
+  {{- with .TargetClass }}
+    {{- $targetClass = printf "%s %s" $targetClass . }}
+  {{- end }}
+  {{- with .NavigationClass }}
+    {{- $navigationClass = printf "%s %s" $navigationClass . }}
+  {{- end }}
+  {{- with .PrintControl }}
+    {{- $printControl = . }}
+  {{- else }}
+    {{- $printControl = default false ($page.Param "printControl") }}
+  {{- end }}
+{{- end }}
+{{- $p := $page.Params }}
+
+{{- $layout := $pp.Layout }}
+{{- $media := $pp.Media }}
+{{- $printPreview := $pp.PrintPreview }}
+{{- $printView := $pp.PrintView }}
+
+{{- $printControl := site.Param "printControl" }}
+{{- $pdfDownloadURL := default false $p.pdfDownloadURL }}
+
+{{- /* warnf "%s[%s]: .Params=%v printPreview=%v printView=%v $page $template $p $printPreview $printView */ -}}
+{{- if (or $printPreview $printView) }}
+  {{- if $printPreview }}
+    {{- $targetClass = printf "%s preview-%s" $targetClass "prepare" }}
+  {{- else }}
+    {{- $targetClass = printf "%s preview-%s" $targetClass "render" }}
+  {{- end }}
+
+  {{/* {{- partial "html-comment" (printf "BEGIN partial '%s'" $template) }} */}}
+  {{- with .Class }}
+    {{- $targetClass = printf "%s preview-%s" $targetClass . }}
+  <nav id="printPreviewNav" class="{{- $navigationClass }}">
+    {{- if $printControl }}
+    <a id="{{ $printPreviewToggleID }}" {{- with $printPreviewToggleClass }}{{- printf " class=\"%s\"" . | safeHTMLAttr -}}{{- end }} title="Toggle print preview">
+      {{- partial "sprite" (dict "icon" "print") }}
+    </a>
+    <a id="printButton" class="print-preview_button-print"  title="Print">
+      {{ partial "sprite" (dict "icon" "file-pdf") }}
+    </a>
+    {{- else if ($p.pdfDownloadURL) }}
+    <a id="pdfDownloadButton" class="print-preview_button-pdf-download"  title="Download PDF">
+      {{ partial "sprite" (dict "icon" "file-pdf") }}
+    </a>
+    {{- end }}
+  </nav>
+  {{- end }}
+  <div id="printPreviewContainer" class="{{- $containerClass }}">
+    <div id="printPreviewTarget" class="{{- $targetClass -}}">
+    </div>
+  </div>
+  {{/* {{- partial "html-comment" (printf "END partial '%s'" $template) }} */}}
+{{- end }}

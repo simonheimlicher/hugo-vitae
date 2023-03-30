@@ -1,0 +1,161 @@
+{{- $page := .Page -}}
+{{- $sectionClass := default "section-stages" .SectionClass }}
+{{- $childClass := default "" .ChildClass }}
+{{/* FIXME: this is not thoroughly tested: partial output: generate individual <p> and <ul><li></li></ul> */}}
+{{- $partialOutput := default true .PartialOutput }}
+{{- $template := "vitae/stages" -}}
+{{- $layout := "screen" -}}
+{{- with $page.Layout -}}
+  {{- $layout = . -}}
+{{- end }}
+{{- $feature := .Feature }}
+{{- $filterField := default "type" $feature.filter_by -}}
+{{- $filterMatch := default "professional" $feature.filter_value -}}
+
+{{- $logoImageWidthHeight := 96 }}
+{{- $logoImageDisplayWidthHeight := 48 }}
+{{- $sizeSpec := printf "%dx%d center png" (int $logoImageWidthHeight) (int $logoImageWidthHeight) }}
+{{- $logoImageRoot := "images/organization-logos" }}
+{{- $dateFormat := default "Jan 2006" (default site.Params.periodDateFormat .Params.periodDateFormat )}}
+
+{{- $orgList := (index .Data $feature.collection) }}
+{{- range $orgIdx, $org := $orgList }}
+
+  {{- $roleList := where $org.roles $filterField $filterMatch }}
+  {{- $numRoles := (len $roleList) }}
+
+  {{- $timelineClass := "" }}
+  {{- $timelineOrgClass := "" }}
+
+  {{- if (gt $numRoles 0) }}
+
+    {{- if (gt $numRoles 1) }}
+      {{- $timelineClass = "timeline" }}
+      {{- if (eq $orgIdx 0) }}
+        {{- $timelineOrgClass = "timeline-org-first" }}
+      {{- else if (eq $orgIdx (sub (len $orgList) 1 ) ) }}
+        {{- $timelineOrgClass = "timeline-org-last" }}
+      {{- else }}
+        {{- $timelineOrgClass = "timeline-org-within" }}
+      {{- end }}
+    {{- end }}
+    {{- $topLevelClass := delimit (slice $timelineClass $timelineOrgClass $sectionClass $childClass) " " }}
+
+    <div class="organization-header {{ $topLevelClass }}">
+      <div class="organization-logo">
+        <!-- Use urlize to sanitize organization name -->
+        {{- $imgAssetID := printf "%s/%s*" $logoImageRoot (anchorize $org.organization) -}}
+        {{/* {{- $logoImageResource := resources.GetMatch $imgAssetID -}} */}}
+        {{- $logoImageResource := partial "claris/_functions/image-resource" (dict "Page" $page "Resource" $imgAssetID) -}}
+        {{- if $logoImageResource }}
+          {{- $logoImageResource = $logoImageResource.Fill $sizeSpec }}
+          {{- if $org.website }}
+          <a class="organization-logo-link organization-link" target="_self" href="{{ $org.website }}">
+          {{- end }}
+          <img class="organization-logo-image"
+               src="{{ absURL $logoImageResource.Permalink }}"
+               width="{{ $logoImageDisplayWidthHeight }}"
+               height="{{ $logoImageDisplayWidthHeight }}"
+               alt="{{ $org.organization }}">
+          {{- if $org.website }}
+          </a>
+          {{- end }}
+        {{- else }}
+          {{- errorf "Partial %s: organization=%s: logo '%s' not found" $template $org.organization $imgAssetID }}
+        {{- end }}
+      </div>
+      {{- if $org.website }}
+        <a class="organization-link" target="_self" href="{{ $org.website }}">
+      {{- end }}
+        <h3 class="organization-title">{{ $org.organization }}</h3>
+      {{- if $org.website }}
+        </a>
+      {{- end }}
+      {{- if $feature.organization_duration }}
+        <span class="organization-period stage-period">{{- partial
+          "vitae/_functions/date-period-duration" (dict
+          "PeriodList" $org.roles
+          "DurationFirst" true
+          "DateFormat" $dateFormat
+          "Container" "span"
+          "DateContainer" "span"
+          "Separator" "")
+          -}}</span>
+      {{- end }}
+    </div>
+
+    {{- range $roleIdx, $role := $roleList }}
+
+      {{- $timelineRoleClass := "" }}
+      {{- if (gt $numRoles 1) }}
+          {{- $timelineRoleClass = "timeline-role-within" }}
+        {{- if (eq $roleIdx 0) }}
+          {{- $timelineRoleClass = "timeline-role-first" }}
+        {{- else if (eq $roleIdx (sub (len $roleList) 1 ) ) }}
+          {{- $timelineRoleClass = "timeline-role-last" }}
+        {{- end }}
+      {{- end }}
+      {{- $topLevelClass = delimit (slice $timelineClass $timelineRoleClass $timelineOrgClass $sectionClass $childClass) " " }}
+
+      <div class="role-header{{ with $topLevelClass }} {{ . }}{{ end }}">
+        {{- if (gt $numRoles 1) }}
+          <span class="role-dot"></span>
+        {{- end }}
+        <h4 class="role-title">{{ partial "vitae/render-markdown" (dict "Page" $page "Data" $role.role) $page $role.role }}</h4>
+        {{- with $role.period }}
+          {{- if $feature.role_duration }}
+            <span class="role-period num-roles-{{ $numRoles }} stage-period">
+            {{- partial
+              "vitae/_functions/date-period-duration" (dict
+              "PeriodList" .
+              "DurationFirst" true
+              "DateFormat" $dateFormat
+              "Container" "span"
+              "DateContainer" "span"
+              "Separator" "")
+              -}}</span>
+          {{- end }}
+        {{- end }}
+      </div>
+      {{- if (ge $roleIdx (sub $numRoles 1) ) }}
+        {{- $topLevelClass = delimit (slice $timelineClass $sectionClass $childClass) " " }}
+      {{- end }}
+      {{- if default true $feature.skills }}
+        {{- with $role.skills }}
+          <div class="role-skills{{ with $topLevelClass }} {{ . }}{{ end }}">
+            {{- partial "vitae/section-experience-skills" (dict "Page" $page "Data" .) $page . }}
+          </div>
+        {{- end }}
+      {{- end }}
+      {{- if default true $feature.details }}
+        {{- with $role.details }}
+          <div class="role-details{{ with $topLevelClass }} {{ . }}{{ end }}">
+            {{- partial "vitae/render-markdown" (dict "Page" $page "Data" .) $page . }}
+          </div>
+        {{- end }}
+      {{- end }}
+      {{- with $role.results }}
+        {{- $nestedBulletsClass := "role-results" }}
+        {{ with $topLevelClass }} {{ $nestedBulletsClass = printf "%s %s" $nestedBulletsClass . }}{{ end }}
+        {{- if $partialOutput }}
+          {{- partial "vitae/nested-bullets" (dict "Page" $page "ChildClass" $nestedBulletsClass "PartialOutput" true "Data" .) $page . }}
+        {{- else }}
+          <div class="role-results{{ with $topLevelClass }} {{ . }}{{ end }}">
+            {{- partial "vitae/nested-bullets" (dict "Page" $page "Data" .) $page . }}
+          </div>
+        {{- end }}
+      {{- end }}
+      {{- with $role.achievements }}
+        {{- $roleAchievementsClass := "role-achievements" }}
+        {{ with $topLevelClass }} {{ $roleAchievementsClass = printf "%s %s" $roleAchievementsClass . }}{{ end }}
+        {{- if $partialOutput }}
+          {{- partial "vitae/role-achievements" (dict "Page" $page "ChildClass" $roleAchievementsClass "PartialOutput" true "Data" .) $page . }}
+        {{- else }}
+          <div class="role-results{{ with $topLevelClass }} {{ . }}{{ end }}">
+            {{- partial "vitae/role-achievements" (dict "Page" $page "Data" .) $page . }}
+          </div>
+        {{- end }}
+      {{- end }}
+    {{- end }}
+  {{- end }}
+{{- end }}

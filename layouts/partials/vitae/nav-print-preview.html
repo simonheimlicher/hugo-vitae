@@ -1,0 +1,28 @@
+{{- $page := . }}
+{{- $template := "vitae/nav-print-preview" }}
+{{- $layout := default "" $page.Layout }}
+{{- $printPreviewToggleID := "printPreviewToggle" }}
+{{- $printPreviewToggleClass := "print-preview_toggle" }}
+{{- $navigationClass := "print-preview_navigation" }}
+{{- if reflect.IsMap . }}
+  {{- with .Page }}
+    {{- $page = . }}
+  {{- end }}
+  {{- with .NavigationClass }}
+    {{- $navigationClass = . }}
+  {{- end }}
+{{- end }}
+{{- /* warnf "%v[%v] layout='%v': printPreview=%v" $page $template $layout $printPreview */ -}}
+{{/* {{- partial "html-comment" (printf "BEGIN partial '%s'" $template) }} */}}
+{{ $name := "Toggle print preview" }}
+<div class="nav_follow nav_print {{ $navigationClass }}">
+  <a id="{{ $printPreviewToggleID }}" {{- with $printPreviewToggleClass }}{{- printf " class=\"%s\"" . | safeHTMLAttr -}}{{- end }} title="{{ $name }}">
+    {{/* {{- partial "sprite" (dict "icon" "file-pdf") }} */}}
+    {{ partial "sprite" (dict "icon" "print") }}
+  </a>
+</div>
+{{/* <div class="nav_follow nav_print {{ $navigationClass }}">
+  <a id="printButton" class="print-preview_button-print"  title="Print">
+    {{ partial "sprite" (dict "icon" "print") }}
+  </a>
+</div> */}}

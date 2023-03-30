@@ -1,0 +1,126 @@
+{{- $page := . }}
+{{- $pp := dict }}
+{{- $template := "partials/vitae/main" }}
+{{- if reflect.IsMap . }}
+{{- $page = .Page }}
+{{- $pp = . }}
+{{- end }}
+{{- /* Restore context as if "." had been passed */ -}}
+{{- with $page }}
+{{- $page = . }}
+{{- $s := .Site.Params }}
+{{- $p := .Params }}
+
+{{/* {{ partial "html-comment" (printf "[%s]: PartialParams:%v" $template $pp) }} */}}
+
+{{- $type := default (default "vitae" .Type) ($page.Param "Type") }}
+{{- $layout := default (default "profile" .Layout) ($page.Param "Layout") }}
+{{- $media := default "screen" ($page.Param "Media") }}
+{{- $printPreview := default false ($page.Param "PrintPreview") }}
+{{- $printView := default false ($page.Param "PrintView") }}
+
+{{- $vitaeParamRoot := default "vitae" ($page.Param "VitaeRoot") }}
+{{- $vitaeKey := default $layout ($page.Param "VitaeKey") }}
+{{- with $vitaeKey }}
+  {{- $vitaeParamRoot = printf "%s.%s" $vitaeParamRoot $vitaeKey }}
+{{- end }}
+{{- $vitaeParams := $page.Param $vitaeParamRoot }}
+
+{{- $vitaeData := dict }}
+{{- $dataRoot := "data" }}
+{{- $vitaeDataRoot := default "vitae" $p.VitaeDataRoot }}
+{{- $bundleDataPath := (path.Join $dataRoot $vitaeDataRoot (printf "%s.*" .Site.Language.Lang) ) }}
+
+{{ partial "html-comment" (printf "[%s]: Looking for data in page bundle %s at %v"
+    $page $template $bundleDataPath) -}}
+{{- $vitaeDataResource := partial "claris/_functions/resources" (dict "Page" $page "Resource" $bundleDataPath) }}
+
+{{- with $vitaeDataResource }}
+  {{/* {{ warnf "%s[%s]: Found resource matching %s in page bundle or in parent page bundle"
+      $page $template $bundleDataPath }} */}}
+  {{ $vitaeData = . | transform.Unmarshal }}
+  {{/* {{ warnf "%s[%s]: vitaeData.features.about: %s"  $page $template ($vitaeData.features.about | jsonify (dict "indent" "  ")) }} */}}
+{{- else }}
+  {{/* {{ warnf "%s[%s]: No resource matching %s found in page bundle or in parent page bundle"  $page $template $bundleDataPath }} */}}
+  {{- $vitaeData = index .Site.Data $vitaeDataRoot }}
+  {{- if (isset $vitaeData .Site.Language.Lang) }}
+    {{- $vitaeData = index $vitaeData .Site.Language.Lang }}
+    {{ warnf "%s[%s]: Initializing data from .Site.Data.%s.%s"
+        $page $template $vitaeDataRoot .Site.Language.Lang }}
+    {{ partial "html-comment" (printf "[%s]: Initializing data from .Site.Data.%s.%s"
+        $template $vitaeDataRoot .Site.Language.Lang) -}}
+  {{- else }}
+    {{ warnf "%s[%s]: No data for language '%s'. Initializing data from .Site.Data.%s"
+        $page $template $vitaeDataRoot .Site.Language.Lang }}
+    {{ partial "html-comment" (printf "[%s]: No data for language '%s'. Initializing data from .Site.Data.%s"
+        $template .Site.Language.Lang $vitaeDataRoot) -}}
+    {{/* {{ partial "html-comment" (printf "[%s]: No data for language '%s'. Initializing data from .Site.Data.%s: %v"
+        $template .Site.Language.Lang $vitaeDataRoot ($vitaeData | jsonify (dict "indent" "  "))) -}} */}}
+{{- end }}
+{{- end }}
+
+{{- if $vitaeData }}
+
+{{/* {{ partial "html-comment" (printf "vitaeData: %v"  ($vitaeData | jsonify (dict "indent" "  "))) -}} */}}
+{{/* {{ partial "html-comment" (printf "vitaeData.features.about: %s"  ($vitaeData.features.about | jsonify (dict "indent" "  "))) }} */}}
+{{/* {{ warnf "%s[%s]: vitaeData.features.about: %s"  $page $template ($vitaeData.features.about | jsonify (dict "indent" "  ")) }} */}}
+
+{{- $printViewVisibleAttr := "" }}
+{{- if (or $printPreview $printView) }}
+  {{- $printViewVisibleAttr = "data-print-preview-visible=\"true\"" }}
+{{- end }}
+
+{{- $asideSecondary := false }}
+{{- range $vitaePageIndex, $vitaePage := $vitaeParams.pages }}
+  {{- with $vitaePage.secondary -}}
+    {{- $asideSecondary = true }}
+  {{- end }}
+{{- end }}
+{{- $layoutClass := "page-layout_aside-primary" }}
+{{- with $asideSecondary -}}{{- $layoutClass = "page-layout_aside-primary-secondary" -}}
+{{- end }}
+
+{{- $containerClass := "vitae" }}
+{{- $originalInnerClass := "vitae_inner"  }}
+{{- with $layout }}{{ $containerClass = printf "%s layout-%s" $containerClass $layout }}
+{{- end }}
+
+{{- $paginationContainerClass := "pagination-container" }}
+{{- $paginationOrderAttr := "data-pagination-order" }}
+{{- $paginationPolicyAttr := "data-pagination-policy" }}
+
+{{- $pp = merge (dict
+    "Page" .
+    "Media" $media
+    "Type" $type
+    "Layout" $layout
+    "PrintPreview" $printPreview
+    "PrintView" $printView
+    "VitaeParams" $vitaeParams
+    "VitaeData" $vitaeData
+    "PaginationContainerClass" $paginationContainerClass
+    "PaginationOrderAttr" $paginationOrderAttr
+    "PaginationPolicyAttr" $paginationPolicyAttr
+    "ContainerClass" $containerClass
+    "OriginalInnerClass" $originalInnerClass
+    ) $pp }}
+
+{{/* {{- warnf "[%s]: BEGIN [layout=%v media=%v printPreview=%v printView=%v"
+    $template $pp.Layout $pp.Media $pp.PrintPreview $pp.PrintView }} */}}
+{{ partial "html-comment" (printf "[%s]: BEGIN [layout=%v media=%v printPreview=%v printView=%v"
+    $template $pp.Layout $pp.Media $pp.PrintPreview $pp.PrintView) }}
+
+<div id="vitaeContainer" class="{{ $containerClass }}" {{ $printViewVisibleAttr | safeHTMLAttr }}>
+  {{- if (or $pp.PrintPreview $pp.PrintView) }}
+    {{- partial "vitae/print-preview" (merge $pp (dict "ContainerClass" "view-print")) }}
+  {{- end }}
+  <div id="originalContainer" class="view-screen">
+    <div id="contentContainer" class="{{- $originalInnerClass }} {{ $layoutClass -}}">
+      {{/* {{- warnf "%s[%s]: Calling partial %s with pp:\n%v" $page $template (path.Join $pp.Type $pp.Layout) ($pp | jsonify (dict "indent" "  ")) }} */}}
+      {{- partial (path.Join $pp.Type $pp.Layout) $pp }}
+    </div>
+  </div>
+</div>
+{{- end }}
+{{ partial "html-comment" (printf "END   '%s'" $template) }}
+{{- end }}

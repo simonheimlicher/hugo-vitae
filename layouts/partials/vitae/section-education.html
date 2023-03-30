@@ -1,0 +1,11 @@
+{{- $childClass := default "" .ChildClass }}
+{{- $dateFormat := default "Jan 2006" (default site.Params.periodDateFormat .Params.periodDateFormat )}}
+{{ range .Data.education }}
+<div class="education-item item{{ with $childClass }} {{ . }}{{ end }}">
+	<p class="education-item-title item-heading">{{ .name }}</p>
+	<span>{{ .university }}</span><br>
+	<span class="education-item-period">{{ partial "vitae/_functions/date-period" (dict "Period" .period "DateFormat" $dateFormat) }}</span>
+  {{ with .gpa }}<span class="education-item-gpa">{{ T "grade-point-average" }}: {{ . }}</span>{{ end }}
+	{{ with .details }}<span class="education-item-details">{{ partial "vitae/render-markdown" (dict "Page" $.Page "Data" .) }}</span>{{ end }}
+</div>
+{{ end }}

@@ -1,0 +1,17 @@
+{{- $page := .Page }}
+{{- $mediaType := .MediaType }}
+/* File='styles/vitae/main.sass': .Page='{{ .Page }}' .MediaType='{{ .MediaType }}' */
+/* Style sheet of Hugo theme 'vitae' for media type '{{ $mediaType }}' */
+
+@import "functions"
+@import "base"
+@import "layout"
+@import "components"
+@import "section"
+{{- $fontsSelfHosted := default false site.Params.fontsSelfHosted }}
+{{- $customFonts := default false site.Params.customFonts }}
+{{- if and $fontsSelfHosted (not $customFonts) -}}
+  {{- $themeFontPath := default "/fonts" ($page.Param "fontPath") }}
+$themeFontPath: '{{ $themeFontPath }}'
+@import 'fonts'
+{{- end }}

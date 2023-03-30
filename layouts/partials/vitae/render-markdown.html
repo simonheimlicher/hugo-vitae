@@ -1,0 +1,29 @@
+{{- $page := .Page }}
+{{- $data := .Data }}
+{{- $display := "inline" }}
+{{- $delimiter := default " • " .Delimit }}
+{{- $splitDelimiter := default " * " .Split }}
+
+{{- with .Display }}
+  {{- $display = . }}
+{{- end }}
+
+{{- $renderOpt := dict "display" $display }}
+{{- $dataList := slice }}
+{{- $markdown := $data }}
+
+{{- if (reflect.IsSlice $data) }}
+  {{- with $splitDelimiter }}
+    {{- range $data }}
+      {{- $dataList = append $dataList (split . $splitDelimiter) }}
+    {{- end }}
+  {{- end }}
+  {{- $markdown = (delimit $dataList $delimiter) }}
+{{- else }}
+  {{- with $splitDelimiter }}
+    {{- $dataList = split $data $splitDelimiter }}
+    {{- $markdown = (delimit $dataList $delimiter) }}
+  {{- end }}
+{{- end }}
+{{- /* warnf "%s: detail-markdown renderOpt: '%v' markdown='%v'" $page $renderOpt $markdown */ -}}
+{{- $page.RenderString $renderOpt $markdown -}}

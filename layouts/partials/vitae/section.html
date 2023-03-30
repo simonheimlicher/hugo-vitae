@@ -1,0 +1,78 @@
+{{- $sectionArgs := . -}}
+{{- $page := .Page -}}
+{{- $p := .Page.Params -}}
+{{- $data := .Data -}}
+{{- $pageIndex := .PageIndex -}}
+{{- $featureIndex := .FeatureIndex -}}
+{{- $feature := .Feature -}}
+{{- $config := .Config -}}
+{{- $headingLevel := default 2 (index $feature "level") }}
+{{- $layout := $page.Layout }}
+{{- $template := "vitae/section" }}
+{{- $containerElement := default "section" .Container }}
+{{- $media := default "screen" $p.media }}
+{{- $childClass := default "" .ChildClass }}
+{{/* {{- warnf "%s[%s] media=%s .Feature=%s .Config=%s" $page $template $media $feature $config }} */}}
+{{ partial "html-comment" (printf "BEGIN partial %s" $template) }}
+{{ $partialRoot := "partials/vitae/section"}}
+{{- if $containerElement }}
+  {{- printf "<%s class=\"section section-%s\">" $containerElement .Feature.feature | safeHTML }}
+{{- end }}
+{{- $featureTitle := .Feature.title | default (title .Feature.feature) -}}
+{{- with .Feature.title }}
+  {{- /*<h2 class="section-title page-{{ $pageIndex }} feature-{{ $featureIndex }} {{ $childClass }}">{{ $featureTitle }}</h2> */ -}}
+  {{- $featureTitle := cond (gt (len (T $featureTitle)) 0) (T $featureTitle) $featureTitle }}
+  <h{{ $headingLevel }} class="section-{{ $feature.feature }}-title section-title {{ $childClass }}">{{ $featureTitle }}</h{{ $headingLevel }}>
+  {{- $headingLevel = (add $headingLevel 1) }}
+{{- end }}
+{{- $sectionID := default .Feature.feature .Feature.widget }}
+{{- $partialExt := ".html" }}
+{{- $partial := false -}}
+{{- $collection := index .Data (default "features" .Feature.collection) -}}
+{{/* {{- if isset .Feature "collection" }}
+{{ partial "html-comment" (printf "partials/vitae/section: index .Data .Feature.collection: \n%s"
+    ((index .Data .Feature.collection) | jsonify (dict "indent" "  ") | safeHTML) ) -}}
+{{- else if isset .Feature "feature" }}
+{{ partial "html-comment" (printf "partials/vitae/section: index .Data \".Feature.feature\": \n%s"
+    ((index .Data .Feature.feature) | jsonify (dict "indent" "  ") | safeHTML) ) -}}
+{{- else if isset .Data "features" }}
+{{ partial "html-comment" (printf "partials/vitae/section: index .Data \"features\": \n%s"
+    ((index .Data "features") | jsonify (dict "indent" "  ") | safeHTML) ) -}}
+{{- end }} */}}
+{{- $partialForSectionLayout := (printf "%s-%s-%s%s" $partialRoot $sectionID $layout $partialExt) }}
+{{- $partialForSection := (printf "%s-%s%s" $partialRoot $sectionID $partialExt ) }}
+{{- $partialDefault := (printf "%s-%s%s" $partialRoot "details-list" $partialExt ) }}
+{{/* {{ partial "html-comment" (printf "[%s]: sectionID=%s: partialForSectionLayout='%s' partialForSection='%s' partialDefault='%s'"
+    $template $sectionID $partialForSectionLayout $partialForSection $partialDefault) }} */}}
+{{- /* warnf "%s: sectionID=%v: partialForSectionLayout='%v' partialForSection='%v' partialDefault='%v'" $template $sectionID $partialForSectionLayout $partialForSection $partialDefault */ -}}
+{{- if templates.Exists $partialForSectionLayout -}}
+  {{- $partial = $partialForSectionLayout }}
+{{- else if templates.Exists $partialForSection -}}
+  {{- $partial = $partialForSection }}
+{{- else -}}
+  {{- if (and (reflect.IsMap $collection) (isset $collection .Feature.feature) ) -}}
+    {{- $partial = $partialDefault }}
+    {{/* {{- $partial = false }} */}}
+  {{/* {{- else -}}
+    {{- partial "html-comment" (printf "[%s]: sectionID=%s: not rendering collection='%s' .Feature.feature='%s'"
+        $template $media $sectionID $collection .Feature.feature) -}}
+    {{- warnf "%s[%s/%s]: Not rendering collection=%s .Feature.feature=%v"
+        $page $template $media $collection .Feature.feature -}} */}}
+  {{- end -}}
+{{- end -}}
+{{- with $partial }}
+  {{ partial "html-comment" (printf "BEGIN %s: " $partial)}}
+  {{/* {{ partial "html-comment" ( printf "%s: partial=%s: headingLevel: %v childClass:%s\nfeature: %s\n"
+  $template $partial $headingLevel $childClass ($feature | jsonify ) ) }} */}}
+  {{- /* warnf "%s[%s/%s]: Render section '%s' using '%s' .Feature=%s" $page $template $media $sectionID $partial $feature */ -}}
+  {{ partial $partial (merge $sectionArgs (dict
+    "Feature" $feature
+    "HeadingLevel" $headingLevel
+    "ChildClass" $childClass)) }}
+  {{ partial "html-comment" (printf "END   %s" $partial) }}
+{{- end }}
+{{- with $containerElement }}
+  {{ printf "</%s>" . | safeHTML }}
+{{- end }}
+{{ partial "html-comment" (printf "END   %s" $template) }}
+{{- /* warnf "    END   section[%q]" $sectionArgs.Page -*/ -}}

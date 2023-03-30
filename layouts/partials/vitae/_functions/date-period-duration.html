@@ -1,0 +1,80 @@
+{{- $ret := "" -}}
+{{- $lastPeriodEndInitial := time "0000-01-01" }}
+{{- $firstPeriodBegin := time now }}
+{{- $lastPeriodEnd := $lastPeriodEndInitial }}
+{{- $periodList := . }}
+{{- $durationFirst := false }}
+{{- $dateFormat := "2006 Jan" }}
+{{- $containerStr := "" }}
+{{- $dateContainerStr := "" }}
+{{- $separatorStr := " • " }}
+
+{{- if reflect.IsMap $periodList }}
+  {{/* {{- warnf "        date-period-duration: $periodList='%q'" $periodList }} */}}
+  {{- with (index $periodList "PeriodList" )}}
+    {{- $periodList = . }}
+  {{- end }}
+  {{- with .DurationFirst }}
+    {{- $durationFirst = . }}
+  {{- end }}
+  {{- with .DateFormat }}
+    {{- $dateFormat = . }}
+  {{- end }}
+  {{- with .Container }}
+    {{- $containerStr = . }}
+  {{- end }}
+  {{- with .DateContainer }}
+    {{- $dateContainerStr = . }}
+  {{- end }}
+  {{- with .Separator }}
+    {{- $separatorStr = . }}
+  {{- else }}
+    {{- with .DateContainer }}
+      {{- $separatorStr = "" }}
+    {{- end }}
+  {{- end }}
+{{/* {{- else }}
+  {{- warnf "        date-period-duration: $periodList='%q'" $periodList }} */}}
+{{- end }}
+
+{{/* {{- if not (reflect.IsMap $periodList) }} */}}
+{{- if ne (printf "%T" (index $periodList 0)) "map[string]interface {}"  }}
+  {{- $periodList = (slice (dict "period" $periodList) ) }}
+{{- end }}
+
+{{- range $periodList }}
+  {{- with index .period 0 }}
+    {{- with time . }}
+      {{- if lt . $firstPeriodBegin }}
+        {{/* {{- (warnf "        date-period-duration: period begins on '%q'" .)}} */}}
+        {{- $firstPeriodBegin = . }}
+      {{- end }}
+    {{- end }}
+  {{- end }}
+  {{- with index .period 1}}
+    {{- with time . }}
+      {{- if gt . $lastPeriodEnd }}
+        {{/* {{- (warnf "        date-period-duration: period ends on '%q'" .)}} */}}
+        {{- $lastPeriodEnd = . }}
+      {{- end }}
+    {{- end }}
+  {{- end }}
+{{- end }}
+{{- if eq $lastPeriodEnd $lastPeriodEndInitial }}
+  {{- $lastPeriodEnd = "" }}
+{{- end }}
+{{- $entirePeriodStr := partial "vitae/_functions/date-period" (dict
+"Period" (slice $firstPeriodBegin $lastPeriodEnd)
+"DateFormat" $dateFormat
+"DateContainer" $dateContainerStr) }}
+{{- $durationStr := partial "vitae/_functions/date-duration" (dict "Period" (slice $firstPeriodBegin $lastPeriodEnd) "DateFormat" $dateFormat) }}
+{{- with $containerStr }}
+  {{- $entirePeriodStr = printf "<%s class=\"date-period\">%s</%s>" $containerStr $entirePeriodStr $containerStr }}
+  {{- $durationStr = printf "<%s class=\"date-duration\">%s</%s>" $containerStr $durationStr $containerStr }}
+{{- end }}
+{{- if $durationFirst }}
+  {{ $ret = printf "%s %s %s" $durationStr $separatorStr $entirePeriodStr }}
+{{- else }}
+  {{ $ret = printf "%s %s %s" $entirePeriodStr $separatorStr $durationStr }}
+{{- end }}
+{{- return safeHTML $ret -}}

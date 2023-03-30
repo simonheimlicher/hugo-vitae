@@ -1,0 +1,22 @@
+{{- $title := .Title | markdownify | plainify }}
+{{- $role := (.Page.Param "role") | markdownify | plainify }}
+
+{{- if and $title (ne (trim (lower .Site.Title) "") (trim (lower $title) "")) }}
+  {{- if eq .Kind "taxonomy" }}
+    {{- $title = default $title ( T (lower $title) ) }}
+  {{- else if $role }}
+    {{- if eq .Layout "letter" }}
+      {{- $title = printf "%s %s" (T "application-for-position") $role }}
+    {{- else if eq .Layout "resume" }}
+      {{- $title = printf "%s %s" (T "resume-for-position") $role }}
+    {{ end }}
+  {{ end }}
+{{ end }}
+{{- if $title }}
+  {{- with .Page.Param "titleSeparator" }}
+    {{ $title = printf "%s %s %s" $title (safeHTML .) .Site.Title }}
+  {{- end }}
+{{- else }}
+  {{- $title = .Site.Title }}
+{{- end }}
+{{- return $title }}

@@ -1,0 +1,59 @@
+{{- $debug := default site.Params.debug false }}
+{{- $durationStr := "" }}
+{{- $from := now }}
+{{- $to := now }}
+
+{{- $dateFormat := "2006 Jan" }}
+{{- $period := . }}
+
+{{- if reflect.IsMap . }}
+  {{- $period = .Period }}
+  {{- with .DateFormat }}
+    {{- $dateFormat = . }}
+  {{- end }}
+{{- end }}
+
+{{- with (index $period 0 ) }}
+  {{- $from = . }}
+{{- end }}
+{{- with (index $period 1 ) }}
+  {{- $to = . }}
+{{- end }}
+
+{{- $durationYears := (sub (int (dateFormat "2006" $to) ) (int (dateFormat "2006" $from) ) ) }}
+{{- $durationMonths := (sub (int (dateFormat "1" $to) ) (int (dateFormat "1" $from) ) ) }}
+{{- $durationDays := (sub (int (dateFormat "2" $to) ) (int (dateFormat "2" $from) ) ) }}
+
+{{- if (lt $durationDays 0) }}
+  {{- (and $debug (warnf "        date-duration: days = '%v'–'%v'" (dateFormat "2" $to) (dateFormat "2" $from))) }}
+  {{- $durationDays = (add $durationDays 30) }}
+  {{- $durationMonths = (sub $durationMonths 1) }}
+{{- else if (gt $durationDays 15) }}
+  {{- (and $debug (warnf "        date-duration: days = '%v'–'%v'" (dateFormat "2" $to) (dateFormat "2" $from))) }}
+  {{- $durationDays = (sub $durationDays 30) }}
+  {{- $durationMonths = (add $durationMonths 1) }}
+{{- end }}
+
+{{- if (lt $durationMonths 0) }}
+  {{- (and $debug (warnf "        date-duration: months = '%v'–'%v'" (dateFormat "1" $to) (dateFormat "1" $from))) }}
+  {{- $durationMonths = (add $durationMonths 12) }}
+  {{- $durationYears = (sub $durationYears 1) }}
+{{- else if (gt $durationMonths 11) }}
+  {{- (and $debug (warnf "        date-duration: months = '%v'–'%v'" (dateFormat "1" $to) (dateFormat "1" $from))) }}
+  {{- $durationMonths = (sub $durationMonths 12) }}
+  {{- $durationYears = (add $durationYears 1) }}
+{{- end }}
+
+{{- if (gt $durationYears 0) }}
+  {{ $durationStr = (T "period-duration-years" $durationYears) }}
+{{- end }}
+{{- if (gt $durationMonths 0) }}
+  {{ $durationStr = printf "%s %s" $durationStr (T "period-duration-months" $durationMonths) }}
+{{- end }}
+{{/*
+{{- if (gt $durationDays 0) }}
+  {{ $durationStr = printf "%s %s" $durationStr (T "period-duration-days" $durationDays) }}
+{{- end }}
+   */}}
+
+{{- return $durationStr -}}

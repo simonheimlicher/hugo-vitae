@@ -1,0 +1,11 @@
+{{- /* warnf "        detail-bullets: .Page='%q'" .Page */ -}}
+{{- $page := .Page }}
+{{- $bulletList := .Data }}
+{{ $optBlock := dict "display" "block" }}
+{{- /* warnf "        detail-bullets: (index .Data 0) is of type '%T'" (index .Data 0) */ -}}
+{{- if eq (printf "%T" .Data) "string"  }}
+  {{- $bulletList = (slice . ) }}
+{{- end }}
+{{- $markdown := printf "   * %s" (delimit $bulletList "\n   * ") }}
+{{- /* warnf "        detail-bullets: markdown:\n%q" $markdown */ -}}
+{{- $page.RenderString $optBlock $markdown }}

@@ -1,0 +1,107 @@
+{{- $page := . }}
+{{- $vp := . }}
+{{- if reflect.IsMap . }}
+{{- $page = .Page }}
+{{- end }}
+{{- /* Restore context as if "." had been passed */ -}}
+{{- with $page }}
+{{- $page = . }}
+{{- $s := .Site.Params }}
+{{- $p := .Params }}
+{{- $template := printf "partials/vitae/profile)" }}
+
+{{ partial "html-comment" (printf "BEGIN '%s'" $template) }}
+
+{{- $paginationContainerClass := $vp.PaginationContainerClass }}
+{{- $paginationOrderAttr := $vp.PaginationOrderAttr }}
+{{- $paginationPolicyAttr := $vp.PaginationPolicyAttr }}
+{{- $vitaeParams := $vp.VitaeParams }}
+{{- $vitaeData := $vp.VitaeData }}
+
+{{- $headerChildClass := "header-item" }}
+<header class="header header-about {{ $paginationContainerClass }}"
+{{ printf " %s=\"%d\"" $paginationOrderAttr 999 | safeHTMLAttr }}
+{{ printf " %s=\"%s\"" $paginationPolicyAttr "first" | safeHTMLAttr -}}
+>
+  {{- if $vp.LoremipsumOnly }}
+    {{- partial "loremipsum" (dict "Count" 1 "Class" $headerChildClass "Header" "<h2>main-column</h2>" "Prefix" "<strong>main-column</strong>") }}
+  {{- else }}
+    {{- range $vitaePageIndex, $vitaePage := $vitaeParams.header }}
+      {{/* {{- warnf "%s[%s]: Render header %d" $page $template $vitaePageIndex -}} */}}
+      {{- range $vitaeFeatureIndex, $vitaeFeature := $vitaePage.main }}
+        {{ partial "vitae/section" (dict
+        "Page" $page
+        "Feature" $vitaeFeature
+        "Config" $vitaeParams
+        "PageIndex" $vitaePageIndex
+        "FeatureIndex" $vitaeFeatureIndex
+        "Container" false
+        "ChildClass" $headerChildClass
+        "Data" $vitaeData) }}
+      {{- end }}
+    {{- end }}
+  {{- end }}
+</header>
+
+{{- with .Content }}
+  <article class="main-column vitae-main-container {{ $vp.PaginationContainerClass }}"
+  {{ printf "%s=\"%d\"" $vp.PaginationOrderAttr 9 | safeHTMLAttr }}
+  {{ printf "%s=\"%s\"" $vp.PaginationPolicyAttr "break" | safeHTMLAttr -}}
+  >
+    {{- . }}
+  </article>
+{{- end }}
+{{- /*
+{{- $mainColumnChildClass := "main-column-item" }}
+<article class="main-column vitae-main-container {{ $vp.PaginationContainerClass }}"
+{{ printf "%s=\"%d\"" $vp.PaginationOrderAttr 9 | safeHTMLAttr }}
+{{ printf "%s=\"%s\"" $vp.PaginationPolicyAttr "break" | safeHTMLAttr -}}
+>
+  {{- if $vp.LoremipsumOnly }}
+    {{- partial "loremipsum" (dict "Count" 25 "Class" $mainColumnChildClass "Header" "<h2>main-column</h2>" "Prefix" "<strong>main-column</strong>") }}
+  {{- else }}
+    {{- range $vitaePageIndex, $vitaePage := $vitaeParams.pages }}
+      {{- warnf "Render page %d %s" $vitaePageIndex $template -}}
+      {{- range $vitaeFeatureIndex, $vitaeFeature := $vitaePage.main }}
+        {{ partial "vitae/section" (dict
+        "Page" $page
+        "Feature" $vitaeFeature
+        "Config" $vitaeParams
+        "PageIndex" $vitaePageIndex
+        "FeatureIndex" $vitaeFeatureIndex
+        "Container" false
+        "ChildClass" $mainColumnChildClass
+        "Data" $vitaeData) }}
+      {{- end }}
+    {{- end }}
+  {{- end }}
+</article>
+*/ -}}
+
+{{- $asidePrimaryChildClass := "aside-primary-item" }}
+<aside class="aside-primary {{ $vp.PaginationContainerClass }}"
+{{ printf "%s=\"%d\"" $vp.PaginationOrderAttr 99 | safeHTMLAttr }}
+{{ printf "%s=\"%s\"" $vp.PaginationPolicyAttr "break" | safeHTMLAttr -}}
+>
+  {{- if $vp.LoremipsumOnly }}
+    {{- partial "loremipsum" (dict "Count" 5 "Class" $asidePrimaryChildClass "Header" "<h3>aside-primary</h3>" "Prefix" "<strong>aside-primary</strong>") }}
+  {{- else }}
+    {{- range $vitaePageIndex, $vitaePage := $vitaeParams.pages }}
+      {{- with $vitaePage.primary -}}
+        {{- range $vitaeFeatureIndex, $vitaeFeature := . }}
+          {{ partial "vitae/section" (dict
+          "Page" $page
+          "Feature" $vitaeFeature
+          "Config" $vitaeParams
+          "PageIndex" $vitaePageIndex
+          "FeatureIndex" $vitaeFeatureIndex
+          "Container" "div"
+          "ChildClass" $asidePrimaryChildClass
+          "Data" $vitaeData) }}
+        {{- end }}
+      {{- end }}
+    {{- end }}
+  {{- end }}
+</aside>
+{{ partial "html-comment" (printf "END   '%s'" $template) }}
+{{- end }}

@@ -1,0 +1,57 @@
+{{- $page := .Page -}}
+{{- $skillsUL := false }}
+{{- with .Data }}
+  <div class="role-skills">
+  {{- if reflect.IsSlice . }}
+    {{- if $skillsUL }}
+    <ul class="role-skills-ul">
+      <li class="role-skills-ul-heading">{{ T "skill" (len .) }}:</li>
+      {{- range . }}
+      <li class="role-skills-ul-item">
+        {{- if reflect.IsMap . }}
+          {{- with .name -}}
+          <span class="role-skills-name">
+            {{- . -}}
+          </span>
+          {{- end }}
+          {{- with .details -}}
+            {{ $page.RenderString . }}
+          {{- end }}
+        {{- else }}
+          <span class="role-skills-name">
+          {{ $page.RenderString . }}
+          </span>
+        {{ end }}
+      </li>
+      {{- end }}
+    </ul>
+    {{ else }}
+    <p class="role-skills-p">
+      <span class="role-skills-p-heading">{{ T "skill" (len .) }}:</span>
+      {{- range . }}
+      <span class="role-skills-p-item">
+        {{- if reflect.IsMap . }}
+          {{- with .name -}}
+        <span class="role-skills-name">
+            {{- . -}}
+        </span>
+          {{- end }}
+          {{- with .details -}}
+            {{ $page.RenderString . }}
+          {{- end }}
+        {{- else }}
+        <span class="role-skills-name">
+          {{ $page.RenderString . }}
+        </span>
+        {{ end }}
+      </span>
+      {{- end }}
+    </p>
+    {{ end }}
+  {{ else }}
+  <span class="role-skills-name">
+    {{ $page.RenderString . }}
+  </span>
+  {{- end }}
+  </div>
+{{ end }}

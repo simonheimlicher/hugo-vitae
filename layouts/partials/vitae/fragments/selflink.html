@@ -1,0 +1,29 @@
+{{- $page := .Page }}
+{{- $p := .Page.Params }}
+{{- $s := .Site.Params }}
+{{- $fragment := .Fragment }}
+{{- $config := .Config }}
+{{- $containerClass := .ContainerClass }}
+{{- $template := "partials/vitae/fragments/selflink" }}
+{{- $media := default "screen" $p.media }}
+{{- $linkIcons := true }}
+{{- $selfLink := default (slice "link" "qrcode") ($page.Param "selfLink") }}
+{{- if (gt (len $selfLink) 0) }}
+  <div class="selflink-item{{- if (in $selfLink "qrcode") }} selflink-item-with-qrcode{{- end }}{{ with $containerClass }} {{ . }}{{ end }}">
+  {{- if (in $selfLink "link") }}
+    {{- /* href="{{ $page.Permalink }}" title="{{ T $config.title }}" */ -}}
+    <div class="selflink-item-icon qrcode-link label">
+      {{- if (and $linkIcons (isset $config "icon") ) }}
+        {{ partial "fa-icon" $config.icon }}
+      {{- end -}}
+      <span class="fragment-selflink selflink-item-icon qrcode-link">{{- T $config.title -}}</span>
+    </div>
+  {{- end -}}
+  {{- if (in $selfLink "qrcode") }}
+    {{- /*( href="{{ $page.Permalink }}" title="QR code to {{ T $config.title }} "  */ -}}
+    <div class="selflink-item-qrcode qrcode-link">
+      {{ partial "qrcode-svg" (dict "Content" $page.Permalink ) }}
+    </div>
+  {{- end -}}
+  </div>
+{{- end }}

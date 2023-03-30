@@ -1,0 +1,407 @@
+$inline-list-item-separation: 2ch
+$inline-list-sep-width: $inline-list-item-separation / 3.0
+
+// .type-vitae,
+.vitae
+  --font-size-heading-organization: 1.35em
+  --font-weight-heading-organization: var(--font-weight-strong)
+  --font-size-heading-role: 1.2em
+  --font-weight-heading-role: var(--font-weight-strong)
+  --font-center-offset-heading-role: 0.5
+  --line-height: 1.5
+  // --line-height-heading: var(--line-height)
+  --line-height-heading: 1.2
+
+  --section-title-sep-vert: 0.5em
+  --spacing-one-x: 0.5em // 0.8rem
+
+  --inline-list-item-separation: 2ch
+  --inline-list-sep-width: var(--inline-list-item-separation) / 3.0
+
+  --organization-logo-width: 2rem
+  --organization-logo-column-padding-right: 0.75em
+  --organization-logo-column-width: var(--organization-logo-width) + var(--organization-logo-column-padding-right)
+
+  --tl-marker-pad-v: 0.25em
+  --tl-marker-width: 0.5em // 0.8rem
+  --tl-marker-height: var(--tl-marker-width)
+  --tl-item-pad-v: 0.25em
+  --tl-line-width: 2px
+  --tl-offset-left: (-1 * var(--organization-logo-width) / 2 - var(--organization-logo-column-padding-right))
+
+  --stage-org-sep-vert: 2.0rem
+  --stage-org-header-mar-v: 0.125rem
+  --stage-role-sep-vert: 0.5rem
+  --stage-timeline-width: var(--organization-logo-column-width)
+
+  h1, h2, h3, h4, h5, h6
+    margin-bottom: 0
+
+  .view-screen
+    .portrait
+      margin: 0 auto
+      max-width: 50%
+      .shape-round
+        border-radius: 50%
+      .shadow
+        @include drop-shadow(2em, 0.2, 0.2)
+
+      @media screen and (min-width: $screenViewBreakpointWidthNarrow)
+        margin: 0 var(--column-padding-h) var(--column-padding-v) 0
+        max-width: 100%
+
+
+      @media screen and (min-width: $screenViewBreakpointWidthTwoColumn)
+        margin: 0 // var(--column-padding-v) var(--column-padding-h)
+
+  .view-print
+    .portrait
+      padding: 0
+      @include full-bleed(top, left)
+      img
+        padding: 0
+        margin: 0
+        border-radius: 0
+
+  .section-title
+    position: relative
+    font-family: var(--font-section-title)
+    font-variant: small-caps
+    text-transform: uppercase
+    margin-bottom: var(--section-title-sep-vert)
+
+  .section-title ~ .section-title
+    margin-top: var(--section-title-sep-vert)
+    &::before
+      position: absolute
+      content: ""
+      // top: calc(var(--section-title-sep-vert) /-4)
+      top: 0
+      height: 0
+      left: calc( var(--column-padding-left) / -2)
+      right: calc( var(--column-padding-right) / -2)
+      border-top: 0.1rem solid var(--border-color-faint)
+      // z-index: 99
+
+  .organization
+    &-logo
+      display: flex
+      flex-direction: row
+      align-items: center
+      &-image
+        // Reset max-width and max-height to avoid side-effects from base.scss
+        max-width: unset
+        max-height: unset
+        width: calc(var(--organization-logo-width))
+    &-title
+      margin: 0
+      padding: 0
+      // FIXME: The margin-top does not seem to be required anymore
+      // margin-top: calc((var(--organization-logo-width) - var(--font-size-heading-organization)) / 2 + var(--font-size-heading-organization) * (1 - var(--line-height-heading)))
+      color: var(--theme-text)
+      font-size: var(--font-size-heading-organization)
+      font-weight: var(--font-weight-heading-organization)
+      margin-right: auto
+
+  .role
+    &-header
+      position: relative
+      display: flex
+      // FIXME: When there is only one item in .role-header, make sure it has
+      // appropriate margin to determine if it sticks to the flex-start or flex-end position
+      // E.g. role-title needs margin-right: auto
+      justify-content: space-between // horizontal: stick to both ends
+      align-items: center // vertical: center
+      break-after: avoid
+    &-title
+      margin: 0
+      padding: 0
+      font-size: var(--font-size-heading-role)
+      font-weight: var(--font-weight-heading-role)
+
+  .section-stages
+    position: relative
+
+    &.organization-header
+      width: 100%
+      display: flex
+      flex-direction: row
+      justify-content: space-between // horizontal: stick to both ends
+      align-items: center
+      gap: 0.5em
+      padding: 0 0 0 calc( var(--organization-logo-column-width) )
+      margin: var(--stage-org-header-mar-v) 0
+      min-height: var(--organization-logo-width)
+      break-after: avoid
+
+    & + .organization-header
+      margin-top: var(--stage-org-sep-vert)
+      &::before
+        border-top: 0.125em solid var(--border-color-faint)
+        top: calc(var(--stage-org-sep-vert) / -2)
+        content: ""
+        height: 0
+        position: absolute
+        left: calc( var(--column-padding-left) / -2)
+        right: calc( var(--column-padding-right) / -2)
+
+    .organization
+      &-logo
+        position: absolute
+        top: 0
+        left: 0
+        width: calc( var(--stage-timeline-width) )
+        height: 100%
+        user-select: none
+      &-period
+        user-select: none
+
+    .stage-period
+      font-size: var(--font-size-smaller)
+      display: flex
+      flex-direction: row
+      column-gap: 1ch
+      justify-content: flex-end;
+      flex-wrap: wrap;
+      align-items: baseline
+      text-align: right
+      &.num-roles-1
+        opacity: 0
+
+      .date-duration
+        color: var(--text-color-faint)
+        font-variant-caps: all-small-caps
+        user-select: none
+      .date-period
+        // color: var(--text-color-faint)
+        font-size: var(--font-size-smaller)
+
+  .section-stages
+    .role
+      &-title
+        margin-right: auto
+        // margin-top: calc(var(--stage-role-sep-vert))
+        font-size: var(--font-size-heading-role)
+        font-weight: var(--font-weight-heading-role)
+
+    &.role
+      &-header
+        position: relative
+        width: 100%
+        display: flex
+        // FIXME: When there is only one item in .role-header, make sure it has
+        // appropriate margin to determine if it sticks to the flex-start or flex-end position
+        // E.g. role-title needs margin-right: auto
+        justify-content: space-between // horizontal: stick to both ends
+        align-items: center // center to align with role-period even if either or both are multiple lines
+        padding: calc(calc(var(--stage-role-sep-vert)) + var(--tl-item-pad-v)) 0 calc(var(--tl-item-pad-v)) 0
+        break-after: avoid
+      &-skills
+        font-size: var(--font-size-smaller)
+        .role-skills
+          &-p
+            &-heading
+              font-weight: bold
+            // FIXME: The below does not work and is a known limitation of SASS
+            // &-item ~ &-item {
+            &-item ~ .role-skills-p-item
+              &::before
+                content: '•'
+                display: inline-block
+                margin-right: var(--inline-list-item-separation) / 3.0 - 0.5ch
+                width: var(--inline-list-sep-width)
+                text-align: center
+      &-details
+        // font-size: var(--font-size-smaller)
+        @include list-style(0rem, var(--list-style_indent))
+        font-style: italic
+      &-results
+        // font-size: var(--font-size-smaller)
+        @include list-style(0rem, var(--list-style_indent))
+        ul,
+        p
+          padding: 0.2rem 0 0 0
+        p + p
+          padding: 0.2rem 0 0 0
+        p + ul
+          padding: 0 0 0 0
+      &-achievements
+        // font-size: var(--font-size-smaller)
+        span.inner-1
+          font-weight: var(--font-weight-strong)
+        @include list-style(0rem, var(--list-style_indent))
+        li.no-marker
+          list-style: none
+          &::before
+            content: none
+        ul,
+        p
+          padding: 0.2rem 0 0 0
+        p + p
+          padding: 0.2rem 0 0 0
+        p + ul
+          padding: 0
+        &.feature-first
+          p:first-child, ul:first-child
+            padding: 0
+            margin-top: calc((1 - var(--line-height)) * 1em)
+
+  .aside-primary .section-stages
+    // --font-size-heading-organization: 1em
+    --font-size-heading-role: 1em
+    --font-weight-heading-role: var(--font-weight)
+    .role-title
+      color: var(--text)
+
+  .main-column
+    .section-stages
+      &.role-header
+        &.timeline
+          padding-left: calc( var(--organization-logo-column-width) )
+          // Line part above dot
+          &-role-within, &-role-last
+            &::before
+              position: absolute
+              display: block
+              content: ""
+              border-radius: 0
+              background-color: var(--border-color-faint)
+              // z-index: 100
+              width: var(--tl-line-width)
+              top: 0
+              height: calc(50% - var(--tl-marker-height) / 2 - var(--tl-marker-pad-v) + var(--stage-role-sep-vert) / 2)
+              left: calc((var(--organization-logo-width) / 2 - var(--tl-line-width) / 2) )
+          // Line part below dot
+          &-role-within, &-role-first
+            &::after
+              position: absolute
+              display: block
+              content: ""
+              border-radius: 0
+              background-color: var(--border-color-faint)
+              // z-index: 99
+              width: var(--tl-line-width)
+              height: calc(50% - var(--tl-marker-height) / 2 - var(--tl-marker-pad-v) - var(--stage-role-sep-vert) / 2)
+              bottom: 0
+              left: calc((var(--organization-logo-width) / 2 - var(--tl-line-width) / 2) )
+          .role-dot
+            position: absolute
+            display: block
+            border-radius: 50%
+            background-color: var(--border-color-faint)
+            height: var(--tl-marker-height)
+            width: var(--tl-marker-width)
+            top: calc(50% - var(--tl-marker-height) / 2 + var(--stage-role-sep-vert) / 2)
+            left: calc((var(--organization-logo-width) / 2 - var(--tl-marker-width) / 2) )
+
+      // No line above dot of first role
+      &.organization-header.timeline + .role-header
+        &::before
+          content: none
+
+      &.timeline
+        padding-left: calc( var(--stage-timeline-width) )
+        &-role-within, &-role-first
+          &::before
+            position: absolute
+            display: block
+            content: ""
+            border-radius: 0
+            background-color: var(--border-color-faint)
+            // z-index: 99
+            width: var(--tl-line-width)
+            top: var(--tl-marker-pad-v)
+            top: 0
+            bottom: 0
+            left: calc((var(--organization-logo-width) / 2 - var(--tl-line-width) / 2) )
+
+html[data-mode="dim"]
+  .organization-logo-image
+    border: 0.125rem solid var(--text)
+    background: var(--text)
+    border-radius: 0.125rem
+
+@media screen and (prefers-color-scheme: dark)
+  html:not([data-mode="lit"])
+    .organization-logo-image
+      border: 0.125rem solid var(--text)
+      background: var(--text)
+      border-radius: 0.125rem
+
+.vitae
+  .section-publications
+    --publication-sep-vert: 0.5em
+    --font-size-publications: var(--font-size-smaller)
+    font-size: var(--font-size-publications)
+    .publication
+      &_item
+        position: relative
+        & + .publication_item
+          margin-top: var(--publication-sep-vert)
+          &::before
+            border-top: 0.125em solid var(--border-color-faint)
+            top: calc(var(--publication-sep-vert) / -2)
+            content: ""
+            height: 0
+            position: absolute
+            left: calc( var(--column-padding-left) / -2)
+            right: calc( var(--column-padding-right) / -2)
+
+
+    .publication
+      &_authors
+        break-after: avoid
+      &_title
+        break-after: avoid
+        font-weight: var(--font-weight-strong)
+      &_date, &_timeline
+        color: var(--text-color-faint)
+      &_date
+        &_published
+          font-variant-caps: all-small-caps
+
+.vitae
+  .education-languages
+    &-item
+    &-item ~ .education-languages-item
+      &::before
+        content: '•'
+        display: inline-block
+        margin-right: var(--inline-list-item-separation) / 3.0 - 0.5ch
+        width: var(--inline-list-sep-width)
+        text-align: center
+    &-name
+      font-weight: var(--font-weight-strong)
+      // font-weight: var(--font-weight)
+      // &::after
+      //   content: ": "
+      //   margin-left: -0.5ch
+    &-level
+      // font-size: var(--font-size-smaller)
+      // font-variant-caps: all-small-caps
+      font-style: italic
+    &-certificates
+      font-size: var(--font-size-smaller)
+      // font-variant-caps: all-small-caps
+      &-item ~ .education-languages-certificates
+        &::before
+          content: '•'
+          display: inline-block
+          margin-right: var(--inline-list-item-separation) / 3.0 - 0.5ch
+          width: var(--inline-list-sep-width)
+          text-align: center
+
+.vitae
+  &.layout-letter
+    .application-header
+      display: flex
+      flex-direction: column
+      gap: 0.25em
+      &-title
+        @extend .section-title
+        font-size: var(--font-size-smaller)
+        // font-weight: var(--font-weight-strong)
+        // text-align: right
+        width: 100%
+        margin: 0
+        padding: 0

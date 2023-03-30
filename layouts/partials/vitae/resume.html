@@ -1,0 +1,97 @@
+{{- $page := . }}
+{{- $pp := . }}
+{{- if reflect.IsMap . }}
+{{- $page = .Page }}
+{{- end }}
+{{- /* Restore context as if "." had been passed */ -}}
+{{- with $page }}
+{{- $page = . }}
+{{- $s := .Site.Params }}
+{{- $p := .Params }}
+{{- $template := printf "partials/vitae/resume)" }}
+
+{{ partial "html-comment" (printf "BEGIN '%s'" $template) }}
+
+{{- $paginationContainerClass := $pp.PaginationContainerClass }}
+{{- $paginationOrderAttr := $pp.PaginationOrderAttr }}
+{{- $paginationPolicyAttr := $pp.PaginationPolicyAttr }}
+{{- $vitaeParams := $pp.VitaeParams }}
+{{- $vitaeData := $pp.VitaeData }}
+
+{{- $headerChildClass := "header-item" }}
+<header class="header header-about {{ $paginationContainerClass }}"
+{{ printf " %s=\"%d\"" $paginationOrderAttr 999 | safeHTMLAttr }}
+{{ printf " %s=\"%s\"" $paginationPolicyAttr "first" | safeHTMLAttr -}}
+>
+  {{- if $pp.LoremipsumOnly }}
+    {{- partial "loremipsum" (dict "Count" 1 "Class" $headerChildClass "Header" "<h2>main-column</h2>" "Prefix" "<strong>main-column</strong>") }}
+  {{- else }}
+    {{- range $vitaePageIndex, $vitaePage := $vitaeParams.header }}
+      {{- /* warnf "%s[%s]: Render header %d" $page $template $vitaePageIndex */ -}}
+      {{- range $vitaeFeatureIndex, $vitaeFeature := $vitaePage.main }}
+        {{ partial "vitae/section" (dict
+        "Page" $page
+        "Feature" $vitaeFeature
+        "Config" $vitaeParams
+        "PageIndex" $vitaePageIndex
+        "FeatureIndex" $vitaeFeatureIndex
+        "Container" false
+        "ChildClass" $headerChildClass
+        "Data" $vitaeData) }}
+      {{- end }}
+    {{- end }}
+  {{- end }}
+</header>
+
+{{- $mainColumnChildClass := "main-column-item" }}
+<article class="main-column vitae-main-container {{ $pp.PaginationContainerClass }}"
+{{ printf "%s=\"%d\"" $pp.PaginationOrderAttr 9 | safeHTMLAttr }}
+{{ printf "%s=\"%s\"" $pp.PaginationPolicyAttr "break" | safeHTMLAttr -}}
+>
+  {{- if $pp.LoremipsumOnly }}
+    {{- partial "loremipsum" (dict "Count" 25 "Class" $mainColumnChildClass "Header" "<h2>main-column</h2>" "Prefix" "<strong>main-column</strong>") }}
+  {{- else }}
+    {{- range $vitaePageIndex, $vitaePage := $vitaeParams.pages }}
+      {{- /* warnf "Render page %d %s" $vitaePageIndex $template */ -}}
+      {{- range $vitaeFeatureIndex, $vitaeFeature := $vitaePage.main }}
+        {{ partial "vitae/section" (dict
+        "Page" $page
+        "Feature" $vitaeFeature
+        "Config" $vitaeParams
+        "PageIndex" $vitaePageIndex
+        "FeatureIndex" $vitaeFeatureIndex
+        "Container" false
+        "ChildClass" $mainColumnChildClass
+        "Data" $vitaeData) }}
+      {{- end }}
+    {{- end }}
+  {{- end }}
+</article>
+
+{{- $asidePrimaryChildClass := "aside-primary-item" }}
+<aside class="aside-primary {{ $pp.PaginationContainerClass }}"
+{{ printf "%s=\"%d\"" $pp.PaginationOrderAttr 99 | safeHTMLAttr }}
+{{ printf "%s=\"%s\"" $pp.PaginationPolicyAttr "break" | safeHTMLAttr -}}
+>
+  {{- if $pp.LoremipsumOnly }}
+    {{- partial "loremipsum" (dict "Count" 5 "Class" $asidePrimaryChildClass "Header" "<h3>aside-primary</h3>" "Prefix" "<strong>aside-primary</strong>") }}
+  {{- else }}
+    {{- range $vitaePageIndex, $vitaePage := $vitaeParams.pages }}
+      {{- with $vitaePage.primary -}}
+        {{- range $vitaeFeatureIndex, $vitaeFeature := . }}
+          {{ partial "vitae/section" (dict
+          "Page" $page
+          "Feature" $vitaeFeature
+          "Config" $vitaeParams
+          "PageIndex" $vitaePageIndex
+          "FeatureIndex" $vitaeFeatureIndex
+          "Container" "div"
+          "ChildClass" $asidePrimaryChildClass
+          "Data" $vitaeData) }}
+        {{- end }}
+      {{- end }}
+    {{- end }}
+  {{- end }}
+</aside>
+{{ partial "html-comment" (printf "END   '%s'" $template) }}
+{{- end }}

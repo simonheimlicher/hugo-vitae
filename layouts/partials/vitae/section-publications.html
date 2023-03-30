@@ -1,0 +1,107 @@
+{{- $page := .Page -}}
+{{- $sectionClass := default "section-publications" .SectionClass }}
+{{- $childClass := default "" .ChildClass }}
+{{/* FIXME: this is not thoroughly tested: partial output: generate individual <p> and <ul><li></li></ul> */}}
+{{- $partialOutput := default true .PartialOutput }}
+{{- $template := "vitae/stages" -}}
+
+{{- $feature := .Feature }}
+{{- $filterField := default "type" $feature.filter_by -}}
+{{- $filterMatch := default "publication" $feature.filter_value -}}
+
+{{/* {{- partial "html-comment" (printf "[%s]: .Feature: \n%s" $template ($.Feature | jsonify (dict "indent" "  ") | safeHTML) ) }} */}}
+{{- $dateFormat := default "Jan 2006" (default site.Params.periodDateFormat .Params.periodDateFormat )}}
+
+{{- $pubList := (index .Data $feature.collection) }}
+{{- $pubsByKindList := where $pubList $filterField $filterMatch }}
+{{- $numPubs := (len $pubsByKindList) }}
+
+{{ range sort $pubsByKindList "published" "desc" }}
+{{- $topLevelClass := delimit (slice "publication_item" $sectionClass $childClass) " " }}
+<div class="{{ $topLevelClass }}">
+	{{- if eq $.Feature.style "IEEE" }}
+		<span>
+			{{- range .authors -}}
+				{{- substr .first_name 0 1 }}. {{ with .middle_name }}{{ substr . 0 1 }}. {{ end }}{{ .last_name }},
+			{{- end -}}
+		</span>
+    {{- if .url }}
+    <a href="{{ .url }}">
+    {{- end -}}
+      <span>"{{ .title }}",</span>
+    {{- if .url }}
+    </a>
+    {{- end -}}
+		{{- if .journal }}
+		<span>
+			{{- "" -}}
+			<i>{{ .journal }}</i>,
+			{{- with .vol }} vol. {{.}},{{ end -}}
+			{{- with .page }} pp. {{.}},{{ end -}}
+		</span>
+		{{- else if .thesis }}
+		<span>{{ .thesis }},</span>
+		{{- end }}
+		<span>{{ .published }}</span>.
+	{{- else if eq $.Feature.style "APA" }}
+		<span>
+			{{- $last_index := sub (.authors | len) 1 -}}
+			{{- range $i, $e := .authors -}}
+			{{- if and (gt $i 0) (eq $i $last_index) }}& {{ end -}}
+			{{- $e.last_name }}, {{ substr $e.first_name 0 1 }}.{{ with $e.middle_name }} {{ substr . 0 1 }}.{{ end -}}
+			{{- if ne $i $last_index }}, {{ end -}}
+			{{- end -}}
+		</span>
+		<span>({{ .published }}).</span>
+    {{- if .url }}
+    <a href="{{ .url }}">
+    {{- end -}}
+      <span>"{{ .title }}",</span>
+    {{- if .url }}
+    </a>
+    {{- end -}}
+		{{- if .journal }}
+		<span>
+			{{- "" -}}
+			<i>{{- .journal -}}</i>
+			{{- if .vol }}, <i>{{.vol}}</i>{{with .issue}}({{.}}){{end}}{{ end -}}
+			{{- with .page }}, pp.{{.}}{{ end -}}
+			.
+			{{- "" -}}
+		</span>
+		{{ end }}
+	{{- else }}
+    {{- if .url }}
+    <a href="{{ .url }}" class="publication_link" title="{{ T "publication_link_further-info" }} {{ .title }}">
+    {{- end -}}
+      <span class="publication_title">{{ .title }} &middot;</span>
+    {{- if .url }}
+    </a>
+    {{- end -}}
+		<span class="publication_authors">
+			{{- $last_index := sub (.authors | len) 1 -}}
+			{{- range $i, $e := .authors -}}
+			{{- if and (gt $i 0) (eq $i $last_index) }} and {{ end -}}
+			{{- $e.first_name }} {{ $e.last_name }}{{ with $e.middle_name }} {{ substr . 0 1 }}.{{ end -}}
+			{{- if (and (gt $last_index 1) (ne $i $last_index) ) }}, {{ end -}}
+			{{- end -}}
+		</span>
+    {{- if (eq .kind "publication") }}
+  		&middot;
+      {{ with .proceedings }}<span class="publication_publication_published_proceedings">{{ . }},</span>{{ end }}
+  		{{ with .published }}<span class="publication_publication_published_date">{{ (. | time).Format $dateFormat }}</span>{{ end }}
+    {{- else if (eq .kind "patent") }}
+  		{{- with .organization }}, <span class="publication_patent_organization">{{ . }}</span>{{ end }}
+  		{{- with .timeline }}
+        {{- $timeline := sort . "date" "desc" }}
+        {{- range $idx, $event := $timeline }}
+           &middot;
+          {{ with .event }}<span class="publication_patent_timeline_event">{{ . }} </span>{{ end }}
+          {{ with .organization }}<span class="publication_patent_timeline_organization"> by {{ . }}, </span>{{ end }}
+          {{ with .date }}<span class="publication_patent_timeline_date"> {{ ( . | time).Format $dateFormat }}</span>{{ end }}
+        {{- end }}
+      {{- end }}
+    {{- end -}}
+	{{- end -}}
+</div>
+{{ end }}

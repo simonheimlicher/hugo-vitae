@@ -1,0 +1,87 @@
+title = "Hugo theme Vitae"
+
+# set `baseurl` to your root domain
+# if you set it to "/" share icons won't work properly on production
+# baseurl = "/"  # Include trailing slash
+
+languageCode = "en-us"
+
+theme = "vitae"
+copyright = "Copyright © Simon Heimlicher"
+ignoreFiles = [
+  "\\.DS_Store$",
+  "\\.vscode$",
+  ".*\\.code-workspace$",
+  "frontmatter\\.json$",
+]
+
+# Enable the statement below if you only want a single page
+# disableKinds = [
+#   "taxonomy",
+#   "term",
+#   "page",
+#   "section",
+#   "RSS",
+#   "sitemap",
+#   "robotsTXT",
+#   "404"
+# ]
+
+###############################################################################
+# NOTICE: After introducing the first section in TOML (e.g. "[Author]"),
+# nothing is added to the root namespace
+# No more changes to Hugo root-level configuration below this line
+
+# https://discourse.gohugo.io/t/advice-on-how-to-implement-fontawesome-needed/26303/7
+# [[module.imports]]
+# path = "github.com/FortAwesome/Font-Awesome"
+# [[module.imports.mounts]]
+# source = "scss"
+# target = "assets/scss/fontawesome"
+
+# Exclude YAML files from being transferred to output  (/public)
+# [[module.mounts]]
+#   source = "content"
+#   target = "content"
+#   excludeFiles = [
+#     ".DS_Store",
+#     "**/*.yaml"
+#   ]
+
+[outputFormats]
+  [outputFormats.printFormat]
+    name = "print"
+    mediaType = "text/html"
+    baseName = "print"
+    isPlainText = false
+    rel = "alternate"
+    isHTML = true
+    noUgly = true
+    permalinkable = false
+
+[Author]
+  givenName = "Simon"
+  familyName = "Heimlicher"
+  displayName  = "Simon Heimlicher"
+  name = "Simon Heimlicher"
+
+# Merge security from theme for asset pipeline
+[Security]
+  _merge = "deep"
+
+  enableInlineShortcodes = false
+  [Security.exec]
+    allow = ['^dart-sass-embedded$', '^go$', '^npx$', '^postcss$', '^babel$']
+    osEnv = ['(?i)^(PATH|PATHEXT|APPDATA|TMP|TEMP|TERM)$']
+  [Security.funcs]
+    getenv = ['^HUGO_']
+  [Security.http]
+    methods = ['(?i)GET|POST']
+    urls = ['.*']
+
+[Imaging]
+  anchor = 'Smart'
+  resampleFilter = 'Lanczos'
+  hint = 'photo'
+  quality = 85
+

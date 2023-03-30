@@ -1,0 +1,15 @@
+{{- define "main" -}}
+  {{- $template := "vitae/list.print" }}
+  {{- $page := .Page }}
+
+  {{- $templateMeta := printf "VITAE.LIST.PRINT %s .Type=%v .Layout=%v .MediaType=%v" $page .Type .Layout .MediaType }}
+  {{/* {{- warnf $templateMeta -}} */}}
+  {{ partial "html-comment" $templateMeta }}
+
+  {{- $mainClass := "main vitae" }}
+  {{- $partial := "vitae/main" }}
+  {{- $pp := (dict "Page" . "PrintView" true) }}
+    {{ partial "html-comment" (printf "Calling partial '%s'[%v]" $partial $pp) }}
+    {{- partial $partial $pp}}
+  {{ partial "html-comment" (printf "END   define main '%s'" $template) }}
+{{- end }}

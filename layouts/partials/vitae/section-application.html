@@ -1,0 +1,76 @@
+{{- $sectionArgs := . -}}
+{{- $page := .Page -}}
+{{- $sectionClass := default "section-application" .SectionClass }}
+{{- $childClass := default "" .ChildClass }}
+{{- $headingLevel := default 3 .HeadingLevel }}
+{{/* FIXME: this is not thoroughly tested: partial output: generate individual <p> and <ul><li></li></ul> */}}
+{{- $partialOutput := default true .PartialOutput }}
+{{- $template := "vitae/section-application" -}}
+{{- $feature := .Feature }}
+
+{{- $role := default "Example Role" ($page.Param "Role") }}
+
+{{- $logoImageWidthHeight := 96 }}
+{{- $logoImageDisplayWidthHeight := 48 }}
+{{- $sizeSpec := printf "%dx%d center png" (int $logoImageWidthHeight) (int $logoImageWidthHeight) }}
+{{- $logoImageRoot := "images/organization-logos" }}
+{{- $dateFormat := default "Jan 2, 2006" ($page.Param "letterDateFormat") }}
+
+{{- $org := default (dict "organization" "Example Organization" "website" "https://www.example.com" ) ($page.Param "organization") }}
+
+{{- $topLevelClass := delimit (slice $sectionClass $childClass) " " }}
+
+<div class="organization-header {{ $topLevelClass }}">
+  <div class="organization-logo">
+    <!-- Use urlize to sanitize organization name -->
+    {{- $imgAssetID := printf "%s/%s*" $logoImageRoot (anchorize $org.organization) -}}
+    {{/* {{- $logoImageResource := resources.GetMatch $imgAssetID -}} */}}
+    {{- $logoImageResource := partial "claris/_functions/image-resource" (dict "Page" $page "Resource" $imgAssetID) -}}
+    {{- if $logoImageResource }}
+      {{- $logoImageResource = $logoImageResource.Fill $sizeSpec }}
+      {{- if $org.website }}
+      <a class="organization-logo-link organization-link" target="_self" href="{{ $org.website }}">
+      {{- end }}
+      <img class="organization-logo-image"
+            src="{{ absURL $logoImageResource.Permalink }}"
+            width="{{ $logoImageDisplayWidthHeight }}"
+            height="{{ $logoImageDisplayWidthHeight }}"
+            alt="{{ $org.organization }}">
+      {{- if $org.website }}
+      </a>
+      {{- end }}
+    {{- else }}
+      {{- errorf "Partial %s: organization=%s: logo '%s' not found" $template $org.organization $imgAssetID }}
+    {{- end }}
+  </div>
+  {{- if $org.website }}
+    <a class="organization-link" target="_self" href="{{ $org.website }}">
+  {{- end }}
+    <h{{ $headingLevel }} class="organization-title">{{ $org.organization }}</h{{ $headingLevel }}>
+  {{- if $org.website }}
+    </a>
+  {{- end }}
+</div>
+<div class="application-header{{ with $topLevelClass }} {{ . }}{{ end }}">
+  {{- with .Feature.subject }}
+    {{- $featureTitle := cond (gt (len (T .)) 0) (T .) . }}
+    <h{{ $headingLevel }} class="application-header-title">{{ $featureTitle }}</h{{ $headingLevel }}>
+  {{- end }}
+  <div class="role-header">
+    <h{{ (add $headingLevel 1) }} class="role-title">{{ partial "vitae/render-markdown" (dict "Page" $page "Data" $role) $page $role }}</h{{ (add $headingLevel 1) }}>
+  </div>
+</div>
+
+{{- if $feature.selflink }}
+  {{- $fragment := "selflink" }}
+  {{- $fragmentConfig := (index $feature $fragment) }}
+  {{- $partial := printf "vitae/fragments/%s" $fragment}}
+  {{- warnf "%s[%s]: .Feature=%v: Calling fragment=%s with .Config=%s"
+      $page $template $feature $fragment $fragmentConfig -}}
+  {{/* {{- partial "html-comment" ( printf "Calling $fragment='%s':\n$feature: %s\n$onfig: %s\nfragmentConfig: %s\n"
+  $fragment
+  ($feature | jsonify (dict "indent" "  " "prefix" "      ") )
+  ($fragmentConfig | jsonify (dict "indent" "  " "prefix" "      ") )
+    ) -}} */}}
+  {{- partial $partial (merge $sectionArgs (dict "Fragment" $fragment "Config" $fragmentConfig )) }}
+{{- end }}

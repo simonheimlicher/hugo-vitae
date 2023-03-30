@@ -1,0 +1,219 @@
+// .type-vitae,
+.vitae
+
+  .inline
+    display: inline
+    margin: 0
+
+  .hidden
+    display: none
+
+  .label
+    font-size: var(--font-size-label)
+    line-height: var(--line-height-label)
+    hyphens: manual
+
+  // .icon
+  //   display: inline-flex
+  //   justify-content: center
+  //   align-items: center
+  //   margin: 0 0.5rem
+  //   &, img, svg
+  //     width: 1.1rem
+  //     height: 1.1rem
+  //   &_2
+  //     width: 2.2rem
+  //     height: 2.2rem
+
+  // .link
+  //   opacity: 0
+  //   // FIXME: Not sure why Hugo Clarity has position: relative
+  //   position: relative
+  //   // position: absolute
+  //   &_yank
+  //     opacity: 1
+  //     &ed
+  //       position: absolute
+  //       right: -1rem
+  //       top: -2rem
+  //       background-color: var(--theme)
+  //       color: var(--theme-text)
+  //       font-family: var(--font)
+  //       width: 7rem
+  //       padding: 0.25rem 0.5rem
+  //       font-size: 0.9rem
+  //       border-radius: 1rem
+  //       text-align: center
+  //       &:after
+  //         position: absolute
+  //         top: 1rem
+  //         content: ""
+  //         border-color: var(--theme) transparent
+  //         border-style: solid
+  //         border-width: 1rem 1rem 0 1rem
+  //         height: 0
+  //         width: 0
+  //         transform-origin: 50% 50%
+  //         transform: rotate(145deg)
+  //         right: 0.45rem
+
+  h1, h2, h3, h4, h5, h6
+    .link.icon
+      display: none
+
+  .header-about
+    display: flex
+    flex-direction: column
+    row-gap: 1em
+    .about
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-start;
+      align-items: flex-start;
+      gap: 1em;
+    .name
+      // font-weight: 600
+      font-size: 240%
+    .tagline
+      font-weight: 600
+      font-size: 125%
+    .profile
+      @include list-style(0, 1em)
+
+  .layout-letter
+    .name
+      // font-weight: 600
+      font-size: 125%
+      margin-bottom: 0.5em
+
+  .contact
+    display: flex
+    flex-direction: column
+
+  .contact, .link, .selflink
+    &-item
+      position: relative
+      display: flex
+      display: flex
+      flex-direction: row
+      flex-wrap: nowrap
+      column-gap: 1em
+      align-items: center
+      &-icon
+        display: flex
+        flex-direction: row;
+        align-items: center;
+        flex-wrap: nowrap;
+        column-gap: 1em;
+        justify-content: flex-start;
+        align-content: flex-start;
+      &-with-qrcode
+        max-width: 16em
+        width: 100%
+        justify-content: space-between
+      // &-qrcode
+      //   .qrcode-svg
+      //     min-width: 48px
+      //     width: 80%
+      //     max-width: 100%
+      //     height: auto
+
+  .contact-link ~ .contact-link
+    margin-top: calc(2 * var(--section-title-sep-vert))
+    padding-top: calc(2 * var(--section-title-sep-vert))
+    &::before
+      position: absolute
+      content: ""
+      // top: calc(var(--section-title-sep-vert) /-4)
+      top: 0
+      height: 0
+      // left: calc( var(--column-padding-left) / -2)
+      // right: calc( var(--column-padding-right) / -2)
+      left: 0
+      right: 0
+      border-top: 0.1rem solid var(--border-color-faint)
+      // z-index: 99
+
+  .selflink-item
+    margin-left: auto
+    @media (pointer: coarse) and (hover: none)
+      // Do not show link to self on mobile device
+      display: none
+
+
+  #printPreviewNav
+    display: none
+    @media only screen
+      &.preview-auto, &.preview-manual
+        display: block
+        position: fixed
+        left: calc(max(2em, 2%) + 0.25em)
+        top: calc(max(2em, 2%) +  0.25em)
+        background: var(--bg)
+        border: 0.125em solid var(--xxhaze)
+        border-radius: 0.25rem
+        display: flex
+        flex-direction: row
+        justify-content: space-around
+        align-items: center
+        flex-wrap: nowrap
+        column-gap: 1em
+        padding: 0.5em 1em
+        z-index: 1
+        svg
+          position: relative
+          width: 1em
+          height: 1em
+          z-index: 999
+          &:hover
+            cursor: pointer
+          &::after
+            position: absolute
+            content: ""
+            top: 0
+            left: 0
+            left: calc(max(2em, 2%))
+            top: calc(max(2em, 2%))
+            width: 1.25em
+            height: 1.25em
+            background: var(--bg)
+            border: 0.125em solid var(--xxhaze)
+            border-radius: 50%
+
+svg.qrcode-svg
+  fill: var(--text)
+  stroke: var(--text)
+.qrcode-svg
+  svg
+    fill: transparent
+
+html[data-mode="dim"]
+  svg.qrcode-svg
+    fill: var(--text)
+    stroke: var(--text)
+  .qrcode-svg
+    svg
+      background: transparent !important
+      fill: transparent !important
+      path
+        stroke: var(--text) !important
+        fill: var(--text) !important
+      text
+        stroke: var(--text) !important
+        fill: var(--text) !important
+
+@media only screen and (prefers-color-scheme: dark)
+  html:not([data-mode="lit"])
+    svg.qrcode-svg
+      fill: var(--text)
+      stroke: var(--text)
+    .qrcode-svg
+      svg
+        background: transparent !important
+        fill: transparent !important
+        path
+          stroke: var(--text) !important
+          fill: var(--text) !important
+        text
+          stroke: var(--text) !important
+          fill: var(--text) !important

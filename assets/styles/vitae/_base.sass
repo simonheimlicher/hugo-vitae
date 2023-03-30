@@ -1,0 +1,240 @@
+// Columns for 2-column layout
+// Fit content to iPad in landscape orientation:
+// 1024px = 64rem, minus 2 x 1.5rem for margin
+$vitae-content_wide_max-width: 61rem
+// Fit content to iPad in portrait orientation:
+// 768px = 48rem, minus 2 x 1.5rem for margin
+$vitae-content_max-width: 41rem
+$vitae-screenViewWidthWideAsideMin: 18rem // 14rem;
+$vitae-screenViewWidthWideAsideMax: 24rem
+$vitae-screenViewWidthAsideMin: 16rem // 12rem;
+
+
+// Horizontal breakpoints
+// $screenViewBreakpointWidthWide: 84rem
+// $screenViewBreakpointWidthTwoColumn: 61rem
+// $screenViewBreakpointWidthOneColumn: 48rem
+// $screenViewBreakpointWidthNarrow: 28rem
+// $screenViewBreakpointWidthMobile: 20rem
+
+// Vertical breakpoints
+$screenViewBreakpointHeightTall: 48rem
+$screenViewBreakpointHeightShallow: 42rem
+
+$vitae-two-column-grid-column-gap: 1rem
+$vitae-wide-grid-column-gap: 2rem
+
+
+.vitae
+  // 100% * 16 px = 16px
+  --font-size: 100%
+  // 87.5% * 16px = 14px
+  --font-size-smaller: 0.875em
+  --font-size-h1: 1.5em
+  // FIXME: Interferes with print preview
+  // @media screen and (min-width: $screenViewBreakpointWidthOneColumn)
+  //   --font-size-h1: 1.75em
+  --font-size-factor-h2: 0.875
+  --font-size-factor-h3: 0.75
+  --font-size-factor-h4: 0.5
+  --line-height: 1.5
+  --line-height-heading: 1.1
+  --font-size-label: var(--font-size)
+  --line-height-label: var(--line-height-heading)
+
+  --font-header: var(--font)
+  --font-body: var(--font)
+  --font-section: var(--font)
+  --font-section-title: var(--font)
+  --text-color-faint: var(--text-faint)
+  --border-color: var(--xaccent)
+  --border-color-faint: var(--neutral-haze)
+  --experience-organization-logo-column-width: 4rem
+  --grid-column-gap: #{$vitae-two-column-grid-column-gap}
+
+  --font-weight: 400
+  --font-weight-strong: 600
+  --font-weight-em: var(--font-weight)
+  --font-weight-heading: var(--font-weight)
+
+  --font-style: regular
+
+  // FIXME: Disabled ligatures as applicatioin tracking systems (ATS) are not able to extract text from the PDF
+  // --font-variant-ligatures: discretionary-ligatures
+  // --font-variant-numeric: oldstyle-nums
+  --font-variant-ligatures: none
+  --font-variant-numeric: normal
+
+  --heading-padding-top: 0.5em
+  --heading-margin-top: 0.5em
+
+  --list-style_indent: 1em
+
+  // Don't limit width of content
+  // --content_max-width: auto
+
+  // FIXME: Override --choice-bg to change the background color of main.main
+  --choice-bg: var(--haze)
+
+*
+  box-sizing: border-box
+  -webkit-appearance: none
+  margin: 0
+  padding: 0
+
+// FIXME: Avoid changing body and html elements
+// body, html
+//   font-size: 100%
+//   font-kerning: normal
+//   -webkit-text-size-adjust: 100%
+//   -webkit-font-feature-settings: "kern" 1
+//   text-rendering: optimizeSpeed
+//   &::-webkit-scrollbar-corner
+//     background-color: transparent
+
+// body
+.vitae
+  font-family: var(--font)
+  font-style: var(--font-style)
+  font-weight: var(--font-weight)
+  font-variant-ligatures: var(--font-variant-ligatures)
+  font-variant-numeric: var(--font-variant-numeric)
+  font-size: var(--font-size)
+  // background: var(--choice-bg)
+  // FIXME: Allow transition of background
+  // background: transparent
+  color: var(--text)
+  line-height: var(--line-height)
+  // FIXME: Ensure body adapts to width of 'main', so that 'footer' spans the entire width
+  // min-width: min-content
+  // FIXME: No change from default to simplify rendered PDF
+  // font-kerning: normal // Force application of kerning for all font sizes
+  font-kerning: auto // At discretion of browser
+  // -webkit-font-smoothing: antialiased
+  // -moz-osx-font-smoothing: grayscale
+  // &.macos, &.windows, &.ios
+  //   text-rendering: optimizeLegibility
+  &.macos, &.windows, &.ios
+    text-rendering: auto
+  // FIXME:
+  // Disabled because it causes color_mode_label to become too high in Safari
+  // font-variant: common-ligatures
+
+  // https://web.dev/prefers-color-scheme/#activating-dark-mode-in-the-operating-system
+  // FIXME: Does not work properly and renders transition upon page load
+  // transition: color var(--darkmode-duration) var(--darkmode-timing), background-color var(--darkmode-duration) var(--darkmode-timing)
+  .color_mode_transition
+    transition: all var(--darkmode-duration) var(--darkmode-timing)
+
+
+  // Allow breaking long wordds including URLs
+  // https://css-tricks.com/snippets/css/prevent-long-urls-from-breaking-out-of-container/
+  // These are technically the same, but use both
+  // https://stackoverflow.com/a/67249632/617559
+  // Prioritizes keeping any and all words unbroken while avoiding overflow, so if a word
+  // is too long to fit on the rest of the line, it wraps first and tries to fit the rest
+  // of the text on the next line
+  overflow-wrap: break-word
+  word-wrap: break-word
+
+  // word-break: break-all; Prioritizes minimizing the space wasted while avoiding overflow,
+  // before keeping any words unbroken, so it never wraps anywhere but at the right margin
+  // word-break: break-word
+
+  // Adds a hyphen where the word breaks, if supported
+  hyphens: auto
+
+  // FIXME: Include proper list style within .vitae container
+  @include list-style(0rem, var(--list-style_indent))
+
+  // Avoid padding with different background color
+  padding-bottom: calc(0, env(safe-area-inset-bottom))
+
+.vitae
+  .layout-letter
+   .view-print
+      // --font-size: 110% // 11pt // FIXME: Does not work
+      --print-font-scale-factor: 1.1 // 11pt
+
+h1, h2, h3, h4, h5
+  color: var(--header-text)
+  font-family: inherit
+  font-weight: var(--font-weight-heading)
+  line-height: var(--line-height-heading)
+  // padding: var(--heading-padding-top) 0 calc(var(--heading-padding-top) * 0.25) 0
+  // margin: var(--heading-margin-top) 0 calc(var(--heading-margin-top) * 0.25) 0
+  padding: var(--heading-padding-top) 0 calc(var(--heading-padding-top) * 0.25) 0
+  margin: var(--heading-margin-top) 0 calc(var(--heading-margin-top) * 0.25) 0
+  break-after: avoid
+  // Avoid hyphenation in headings
+  hyphens: manual
+
+  &:hover .link
+    opacity: 1
+h1
+    font-size: var(--font-size-h1)
+h2
+    font-size: calc(var(--font-size-h1) * var(--font-size-factor-h2))
+h3
+    font-size: calc(var(--font-size-h1) * var(--font-size-factor-h3))
+h4
+    font-size: calc(var(--font-size-h1) * var(--font-size-factor-h4))
+h5, h6
+  font-size: 100%
+
+header,
+section,
+article,
+aside
+  clear: both
+img
+  margin: 0
+  padding: 0
+  height: auto // initiial
+  &:focus, &:focus-within
+    outline: none !important
+    border: none !important
+
+a
+  text-decoration: none
+  color: inherit
+  &:focus, &:focus-within
+    outline: none !important
+  &:hover
+    @media (any-hover: hover)
+      color: var(--text-hover)
+      // text-decoration: underline
+      // text-underline-position: under
+      // text-underline-offset: 0.1em
+  &:active
+    color: var(--xaccent)
+  &:focus
+    outline: var(--accent)
+
+  // Avoid adding a hyphen where the word breaks
+  hyphens: none
+  word-wrap: break-word
+  overflow-wrap: break-word
+
+img, svg
+  max-width: 100%
+  vertical-align: middle
+
+// FIXME
+// Commented out flex: 1 as it leads to main having height 0 in IE 11
+// main
+//   flex: 1
+
+ul
+  list-style: none
+  -webkit-padding-start: 0
+  -moz-padding-start: 0
+
+em
+  font-weight: var(--font-weight-em)
+
+b, strong
+  font-weight: var(--font-weight-strong)
+
+address
+  font-style: var(--font-style)

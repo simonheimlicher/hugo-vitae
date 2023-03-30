@@ -1,0 +1,154 @@
+{{- $page := .Page }}
+{{- $childClass := default "" .ChildClass }}
+{{- $partialOutput := default false (not .PartialOutput) }}
+{{- $rootData := .Data }}
+{{- $data := (default .Data .Subset) }}
+{{- $inLevel := default 0 .InputLevel }}
+{{- $outLevel := default 0 .OutputLevel }}
+
+{{- $levelIndentStr := "    " }}
+{{- $inIndentStr := (strings.Repeat $inLevel $levelIndentStr) }}
+{{- $outIndentStr := (strings.Repeat $outLevel $levelIndentStr) }}
+
+{{- $dataSubstr := (substr (printf "%v" $data) 0 20) }}
+{{- $dataType := "Value" }}
+{{- if reflect.IsMap $data }}{{ $dataType = "Map  " }}{{ else if reflect.IsSlice $data }}{{ $dataType = "Slice" }}{{ end -}}
+{{- /* warnf "%s/nested[%d:%d]:%s process %s: %v" $page $inLevel $outLevel $inIndentStr $dataType $dataSubstr*/ -}}
+{{- $scratchKey := (printf "nested-bullets_%s" (sha1 (printf "%s" (slice .Data) ) ) ) }}
+{{- if not ($page.Scratch.Get $scratchKey) }}
+  {{- $page.Scratch.Set $scratchKey (slice) }}
+{{- end }}
+{{- $optInline := dict "display" "inline" }}
+{{- $optBlock := dict "display" "block" }}
+{{- $markdown := "" }}
+{{- $renderOpt := $optBlock }}
+{{- if reflect.IsMap $data }}
+  {{- /* warnf "%s/nested[%d:%d]:%s Iterate over Map '%v' with %d elements" $page $inLevel $outLevel $inIndentStr $data (len $data)*/ -}}
+
+  {{- range $k, $v := $data }}
+    {{- /* $kSubstr := (substr (printf "%v" $k) 0 20) */ -}}
+    {{- /* $vSubstr := (substr (printf "%v" $v) 0 20) */ -}}
+    {{- /* $kType := "Value" */ -}}
+
+    {{- if $v }}
+      {{- /* $vType := "Value" }}{{- if reflect.IsMap $v }}{{ $vType = "Map  " }}{{ else if reflect.IsSlice $v }}{{ $vType = "Slice" }}{{ end */ -}}
+      {{- $subSet := $v }}
+
+      {{- if (and (reflect.IsSlice $subSet) (eq 1 (len $subSet)) ) }}
+          {{- $details := (index $subSet 0) }}
+          {{- if reflect.IsMap $details }}
+            {{- range $kk, $vv := $details }}
+              {{- $details = $kk }}
+              {{- $subSet = $vv }}
+            {{- end }}
+          {{- else }}
+            {{- $subSet = false }}
+          {{- end }}
+          {{- /* warnf "%s/nested[%d:%d]:%s %s: ADD PARAGRAPH FROM MAP <KEY:VALUE>: '%s': '%v'" $page $inLevel $outLevel $inIndentStr $dataType $subSet $vSubstr*/ -}}
+          {{- $markdown = printf "\n%s**%s**: %s\n\n" $outIndentStr $k $details }}
+      {{- else  }}
+        {{- /* warnf "%s/nested[%d:%d]:%s %s %s->%s: RECURSIVE CALL with '%s'\n\n" $page $inLevel $outLevel $inIndentStr $dataType $kType "Value" $k */ -}}
+        {{- partial "vitae/nested-bullets" (dict
+        "Page" $page
+        "ChildClass" $childClass
+        "PartialOutput" $partialOutput
+        "Data" $rootData
+        "Subset" $k
+        "InputLevel" (add $inLevel 1)
+        "OutputLevel" $outLevel)
+        $page $childClass $partialOutput $rootData $k (add $inLevel 1) $outLevel }}
+        {{- $outLevel = (add $outLevel 1) }}
+      {{- end -}}
+
+      {{- $page.Scratch.Add $scratchKey (slice $markdown) }}
+      {{- /* warnf "%s/nested[%d:%d]:%s %s:   ADDED '%s' as\n'%s'\nSCRATCH:\n%s" $page $inLevel $outLevel $inIndentStr $dataType $dataSubstr $markdown (delimit ($page.Scratch.Get $scratchKey) "") */ -}}
+
+      {{- if $partialOutput }}
+        {{- with ($page.Scratch.Get $scratchKey) }}
+          {{- $completeMarkdown := (delimit . "") }}
+          {{- /* warnf "%s/nested: INPUT LEVEL 0: RENDER MARKDOWN\n%s" $page $completeMarkdown */ -}}
+          <div {{- with $childClass -}}{{ printf " class=\"%s\"" $childClass | safeHTMLAttr }}{{- end }}>
+          {{- $page.RenderString $optBlock $completeMarkdown }}
+          </div>
+          {{- $page.Scratch.Delete $scratchKey }}
+        {{- end }}
+      {{- end }}
+
+      {{- if $subSet }}
+        {{- $subSetType := "Value" }}{{- if reflect.IsMap $subSet }}{{ $subSetType = "Map  " }}{{ else if reflect.IsSlice $subSet }}{{ $subSetType = "Slice" }}{{ end -}}
+        {{- /* warnf "%s/nested[%d:%d]:%s %s %s->%s: RECURSIVE CALL with '%s'\n\n" $page $inLevel $outLevel $inIndentStr $dataType $kType $subSetType $subSet*/ -}}
+        {{- partial "vitae/nested-bullets" (dict
+        "Page" $page
+        "ChildClass" $childClass
+        "PartialOutput" $partialOutput
+        "Data" $rootData
+        "Subset" $subSet
+        "InputLevel" (add $inLevel 1)
+        "OutputLevel" $outLevel)
+        $page $childClass $partialOutput $rootData $subSet (add $inLevel 1) $outLevel }}
+      {{- /* else */ -}}
+        {{- /* warnf "%s/nested[%d:%d]:%s %s NOTHING REMAINS AFTER ELEMENT[%T] %s: '%v'" $page $inLevel $outLevel $inIndentStr $dataType $v $vSubstr */ -}}
+      {{- end }}
+    {{- else }}
+      {{- errorf "%s/nested[%d:%d]:%s %s SKIP INVALID ELEMENT[%T] %s: '%v'" $page $inLevel $outLevel $inIndentStr $dataType $v $v -}}
+    {{- end }}
+  {{- end }}
+{{- else if reflect.IsSlice $data }}
+  {{- /* warnf "%s/nested[%d:%d]:%s Iterate over Slice '%v' with %d elements" $page $inLevel $outLevel $inIndentStr $data (len $data)*/ -}}
+  {{- range $v := $data }}
+    {{- /* $vSubstr := (substr (printf "%v" $v) 0 20) */ -}}
+    {{- if $v }}
+      {{- $subSet := $v }}
+      {{- $subSetType := "Value" }}{{- if reflect.IsMap $subSet }}{{ $subSetType = "Map  " }}{{ else if reflect.IsSlice $subSet }}{{ $subSetType = "Slice" }}{{ end -}}
+      {{- /* warnf "%s/nested[%d:%d]:%s %s ELEMENT[%T] %s: '%v'" $page $inLevel $outLevel $inIndentStr $dataType $subSet $subSetType $vSubstr */ -}}
+      {{- /* warnf "%s/nested[%d:%d]:%s Slice -> %s: RECURSIVE CALL with '%s'\n\n" $page $inLevel $outLevel $inIndentStr $subSetType $vSubstr */ -}}
+      {{- partial "vitae/nested-bullets" (dict
+      "Page" $page
+      "ChildClass" $childClass
+      "PartialOutput" $partialOutput
+      "Data" $rootData
+      "Subset" $subSet
+      "InputLevel" (add $inLevel 1)
+      "OutputLevel" $outLevel)
+      $page $childClass $partialOutput $rootData $subSet (add $inLevel 1) $outLevel }}
+      {{- /* Render whenever we complete a slice element at input level 0 */ -}}
+      {{- if (eq $inLevel 0) }}
+        {{- with ($page.Scratch.Get $scratchKey) }}
+          {{- $completeMarkdown := (delimit . "") }}
+          {{- /* warnf "%s/nested: LEVEL 0: RENDER MARKDOWN\n%s" $page $completeMarkdown */ -}}
+          <div {{- with $childClass -}}{{ printf " class=\"%s\"" $childClass | safeHTMLAttr }}{{- end }}>
+          {{- $page.RenderString $optBlock $completeMarkdown }}
+          </div>
+          {{- $page.Scratch.Delete $scratchKey }}
+        {{- end }}
+      {{- end }}
+    {{- /* else */ -}}
+      {{- /* warnf "%s/nested[%d:%d]:%s %s SKIP INVALID ELEMENT[%T] %s: '%v'" $page $inLevel $outLevel $inIndentStr $dataType $v $vSubstr */ -}}
+    {{- end }}
+  {{- end }}
+{{- else }}
+  {{- $markdown = printf "%s* %s\n" $outIndentStr $data }}
+  {{- /* warnf "%s/nested[%d:%d]:%s Value: ADD LIST ITEM FROM VALUE: '%s'" $page $inLevel $outLevel $inIndentStr $dataSubstr*/ -}}
+  {{- $page.Scratch.Add $scratchKey (slice $markdown) }}
+  {{- /* warnf "%s/nested[%d:%d]:%s Value: ADDED %s as\n'%s'\nSCRATCH:\n%s" $page $inLevel $outLevel $inIndentStr $dataSubstr $markdown (delimit ($page.Scratch.Get $scratchKey) "")*/ -}}
+  {{- if $partialOutput }}
+    {{ with ($page.Scratch.Get $scratchKey) }}
+      {{- $completeMarkdown := (delimit . "") }}
+      {{- /* warnf "%s/nested: INPUT LEVEL 0: RENDER MARKDOWN\n%s" $page $completeMarkdown */ -}}
+      <div {{- with $childClass -}}{{ printf " class=\"%s\"" $childClass | safeHTMLAttr }}{{- end }}>
+      {{- $page.RenderString $optBlock $completeMarkdown }}
+      </div>
+      {{- $page.Scratch.Delete $scratchKey }}
+    {{- end }}
+  {{- end }}
+{{- end }}
+{{- if (eq $inLevel 0) }}
+  {{- with ($page.Scratch.Get $scratchKey) }}
+    {{- /* warnf "%s/nested: Scratch '%s' contains '%v'" $scratchKey . */ -}}
+    {{- $completeMarkdown := (delimit . "") }}
+    {{- warnf "%s/nested: EOF: RENDER MARKDOWN\n%s" $page $completeMarkdown -}}
+    <div {{- with $childClass -}}{{ printf " class=\"%s\"" $childClass | safeHTMLAttr }}{{- end }}>
+    {{- $page.RenderString $optBlock $completeMarkdown }}
+    </div>
+  {{- end }}
+{{- end -}}
