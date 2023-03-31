@@ -1,99 +1,7 @@
 #
-# Theme: claris
+# Translations for theme vitae
 #
-[read_more]
-other = "Mehr lesen"
 
-[read_on]
-other = "Weiterlesen"
-
-[copyright]
-other = "Copyright"
-
-[all_rights]
-other = "Alle Rechte vorbehalten"
-
-[share_on]
-other = "Teilen"
-
-[article]
-other = "Artikel"
-
-[articles]
-other = "Artikel"
-
-[featured_articles]
-other = "Ausgewählte Artikel"
-
-[recent_articles]
-other = "Neue Artikel"
-
-[related_articles]
-other = "Verwandte Artikel"
-
-[articles_in_taxonomy]
-other = "Artikel in"
-
-[articles_with_taxonomy]
-other = "Artikel mit"
-
-[404_title]
-other = "Verirrt"
-
-[could_not_find]
-other = "Wir konnten die Seite nicht finden"
-
-[go_back]
-other = "Zurück"
-
-[translations]
-other = "Übersetzungen"
-
-[categories]
-other = "Kategorien"
-
-[tags]
-other = "Tags"
-
-[series]
-other = "Serien"
-
-[all_categories]
-other = "Alle Kategorien"
-
-[all_tags]
-other = "Alle Tags"
-
-[all_series]
-other = "Alle Serien"
-
-[overview]
-other = "Übersicht"
-
-[reading_time]
-other = "{{ .ReadingTime }} Min. zum Lesen"
-
-[table_of_contents]
-other = "Auf dieser Seite"
-
-[color_mode]
-other = "Nacht-Modus"
-
-[color_mode_lit]
-other = "Licht an"
-
-[color_mode_dim]
-other = "Licht aus"
-
-[read_more_about]
-other = "Mehr dazu lesen"
-
-[private-data-requires-javascript]
-other = "Bitte JavaScript aktivieren"
-
-#
-# Additional translations for theme claris-vitae
-#
 [skill]
 one = "Skill"
 other = "Skills"
@@ -116,12 +24,6 @@ other = "{{ .Count }} Tag"
 [grade-point-average]
 other = "Notenschnitt"
 
-[section-contact]
-other = "Kontakt"
-
-[section-connect]
-other = "Vernetzen"
-
 [section-experience]
 other = "Erfahrung"
 
@@ -130,6 +32,12 @@ other = "Ausbildung"
 
 [section-language-skills]
 other = "Sprachkenntnisse"
+
+[section-contact]
+other = "Kontakt"
+
+[section-connect]
+other = "Vernetzen"
 
 [screen-view]
 other = "Webseitenansicht"
@@ -160,3 +68,6 @@ other = "Publikationen"
 
 [publication_link_further-info]
 other = "Weitere Infos zu"
+
+[private-data-requires-javascript]
+other = "Persönlich: Zugriff erfordert JavaScript"
