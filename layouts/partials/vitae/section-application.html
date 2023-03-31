@@ -65,8 +65,8 @@
   {{- $fragment := "selflink" }}
   {{- $fragmentConfig := (index $feature $fragment) }}
   {{- $partial := printf "vitae/fragments/%s" $fragment}}
-  {{- warnf "%s[%s]: .Feature=%v: Calling fragment=%s with .Config=%s"
-      $page $template $feature $fragment $fragmentConfig -}}
+  {{/* {{- warnf "%s[%s]: .Feature=%v: Calling fragment=%s with .Config=%s"
+      $page $template $feature $fragment $fragmentConfig -}} */}}
   {{/* {{- partial "html-comment" ( printf "Calling $fragment='%s':\n$feature: %s\n$onfig: %s\nfragmentConfig: %s\n"
   $fragment
   ($feature | jsonify (dict "indent" "  " "prefix" "      ") )

@@ -1,4 +1,4 @@
-// console.log('BEGIN pagination_preview.js');
+// console.log('BEGIN vitae/theme/print-view.js');
 function isObj(obj) {
   return (obj && typeof obj === 'object' && obj !== null) ? true : false;
 }
@@ -399,4 +399,4 @@ const init = function (reset) {
 
 document.addEventListener("DOMContentLoaded", _e => init());
 
-// console.log('END   pagination_preview.js');
+// console.log('END   vitae/theme/print-view.js');
