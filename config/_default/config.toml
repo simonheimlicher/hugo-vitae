@@ -60,9 +60,6 @@ ignoreFiles = [
     permalinkable = false
 
 [Author]
-  givenName = "Simon"
-  familyName = "Heimlicher"
-  displayName  = "Simon Heimlicher"
   name = "Simon Heimlicher"
 
 # Merge security from theme for asset pipeline
