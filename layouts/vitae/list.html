@@ -12,3 +12,7 @@
     {{- partial $partial . }}
   {{ partial "html-comment" (printf "END   define main '%s'" $template) }}
 {{- end }}
+
+{{- define "footer" }}
+  {{ partialCached "vitae/footer/index" . .Kind .Type }}
+{{- end }}
