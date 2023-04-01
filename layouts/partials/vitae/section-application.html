@@ -12,7 +12,7 @@
 
 {{- $logoImageWidthHeight := 96 }}
 {{- $logoImageDisplayWidthHeight := 48 }}
-{{- $sizeSpec := printf "%dx%d center png" (int $logoImageWidthHeight) (int $logoImageWidthHeight) }}
+{{/* {{- $sizeSpec := printf "%dx%d center png" (int $logoImageWidthHeight) (int $logoImageWidthHeight) }} */}}
 {{- $logoImageRoot := "images/organization-logos" }}
 {{- $dateFormat := default "Jan 2, 2006" ($page.Param "letterDateFormat") }}
 
@@ -27,6 +27,7 @@
     {{/* {{- $logoImageResource := resources.GetMatch $imgAssetID -}} */}}
     {{- $logoImageResource := partial "claris/_functions/image-resource" (dict "Page" $page "Resource" $imgAssetID) -}}
     {{- if $logoImageResource }}
+      {{- $sizeSpec := printf "%dx%d center png"  $logoImageResource.Width  $logoImageResource.Height }}
       {{- $logoImageResource = $logoImageResource.Fill $sizeSpec }}
       {{- if $org.website }}
       <a class="organization-logo-link organization-link" target="_self" href="{{ $org.website }}">

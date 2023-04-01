@@ -60,7 +60,7 @@
     <span class="location">{{ $.Page.RenderString (printf "%s %s " . $separatorStr) }}</span>
     {{- end }}
     {{- with $p.PublishDate }}
-      <span class="date">{{ (.Format "January 2, 2006") }}</span>
+      <span class="date">{{ (. | time.Format ":date_long") }}</span>
     {{- end }}
     </div>
   {{- end }}

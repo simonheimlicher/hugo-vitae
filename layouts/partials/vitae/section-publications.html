@@ -1,4 +1,5 @@
 {{- $page := .Page -}}
+{{- $abbreviateFirstName := default true .AbbreviateFirstName }}
 {{- $sectionClass := default "section-publications" .SectionClass }}
 {{- $childClass := default "" .ChildClass }}
 {{/* FIXME: this is not thoroughly tested: partial output: generate individual <p> and <ul><li></li></ul> */}}
@@ -82,7 +83,8 @@
 			{{- $last_index := sub (.authors | len) 1 -}}
 			{{- range $i, $e := .authors -}}
 			{{- if and (gt $i 0) (eq $i $last_index) }} and {{ end -}}
-			{{- $e.first_name }} {{ $e.last_name }}{{ with $e.middle_name }} {{ substr . 0 1 }}.{{ end -}}
+      {{- $firstName := cond $abbreviateFirstName (printf "%s.&nbsp;" (substr .first_name 0 1) ) (printf "%s " $e.first_name) }}
+			{{- $firstName | safeHTML }}{{ $e.last_name }}{{ with $e.middle_name }} {{ substr . 0 1 }}.{{ end -}}
 			{{- if (and (gt $last_index 1) (ne $i $last_index) ) }}, {{ end -}}
 			{{- end -}}
 		</span>

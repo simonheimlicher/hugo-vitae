@@ -32,7 +32,7 @@
 {{- $bundleDataPath := (path.Join $dataRoot $vitaeDataRoot (printf "%s.*" .Site.Language.Lang) ) }}
 
 {{ partial "html-comment" (printf "[%s]: Looking for data in page bundle %s at %v"
-    $page $template $bundleDataPath) -}}
+    $template $bundleDataPath) -}}
 {{- $vitaeDataResource := partial "claris/_functions/resources" (dict "Page" $page "Resource" $bundleDataPath) }}
 
 {{- with $vitaeDataResource }}
