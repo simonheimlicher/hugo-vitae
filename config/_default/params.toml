@@ -128,11 +128,11 @@
   address = true
   screen = true
   print = true
-  [vitae.letter.pages.main.selflink]
-    title = "selflink-application"
-    screen = true
-    print = true
-    icon = "solid/arrow-up-from-bracket"
+  # [vitae.letter.pages.main.selflink]
+  #   title = "selflink-application"
+  #   screen = true
+  #   print = true
+  #   icon = "solid/arrow-up-from-bracket"
 
 
   [[vitae.letter.pages.primary]]
