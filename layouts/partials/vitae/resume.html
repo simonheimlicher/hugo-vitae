@@ -6,7 +6,7 @@
 {{- /* Restore context as if "." had been passed */ -}}
 {{- with $page }}
 {{- $page = . }}
-{{- $s := .Site.Params }}
+{{- $s := site.Params }}
 {{- $p := .Params }}
 {{- $template := printf "partials/vitae/resume)" }}
 

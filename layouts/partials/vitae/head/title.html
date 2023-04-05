@@ -3,7 +3,7 @@
 {{- $title := .Title | markdownify | plainify }}
 {{- $role := (.Page.Param "role") | markdownify | plainify }}
 
-{{- if and $title (ne (trim (lower .Site.Title) "") (trim (lower $title) "")) }}
+{{- if and $title (ne (trim (lower site.Title) "") (trim (lower $title) "")) }}
   {{- if eq .Kind "taxonomy" }}
     {{- $title = default $title ( T (lower $title) ) }}
   {{- else if $role }}
@@ -34,9 +34,9 @@
     {{- end }}
   {{- end }}
   {{- with .Page.Param "titleSeparator" }}
-    {{ $title = printf "%s %s %s" $title (safeHTML .) .Site.Title }}
+    {{ $title = printf "%s %s %s" $title (safeHTML .) site.Title }}
   {{- end }}
 {{- else }}
-  {{- $title = .Site.Title }}
+  {{- $title = site.Title }}
 {{- end }}
 {{- return $title }}

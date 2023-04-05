@@ -8,7 +8,7 @@
 {{- /* Restore context as if "." had been passed */ -}}
 {{- with $page }}
 {{- $page = . }}
-{{- $s := .Site.Params }}
+{{- $s := site.Params }}
 {{- $p := .Params }}
 
 {{/* {{ partial "html-comment" (printf "[%s]: PartialParams:%v" $template $pp) }} */}}
@@ -29,7 +29,7 @@
 {{- $vitaeData := dict }}
 {{- $dataRoot := "data" }}
 {{- $vitaeDataRoot := default "vitae" $p.VitaeDataRoot }}
-{{- $bundleDataPath := (path.Join $dataRoot $vitaeDataRoot (printf "%s.*" .Site.Language.Lang) ) }}
+{{- $bundleDataPath := (path.Join $dataRoot $vitaeDataRoot (printf "%s.*" site.Language.Lang) ) }}
 
 {{ partial "html-comment" (printf "[%s]: Looking for data in page bundle %s at %v"
     $template $bundleDataPath) -}}
@@ -42,20 +42,20 @@
   {{/* {{ warnf "%s[%s]: vitaeData.features.about: %s"  $page $template ($vitaeData.features.about | jsonify (dict "indent" "  ")) }} */}}
 {{- else }}
   {{/* {{ warnf "%s[%s]: No resource matching %s found in page bundle or in parent page bundle"  $page $template $bundleDataPath }} */}}
-  {{- $vitaeData = index .Site.Data $vitaeDataRoot }}
-  {{- if (isset $vitaeData .Site.Language.Lang) }}
-    {{- $vitaeData = index $vitaeData .Site.Language.Lang }}
-    {{ warnf "%s[%s]: Initializing data from .Site.Data.%s.%s"
-        $page $template $vitaeDataRoot .Site.Language.Lang }}
-    {{ partial "html-comment" (printf "[%s]: Initializing data from .Site.Data.%s.%s"
-        $template $vitaeDataRoot .Site.Language.Lang) -}}
+  {{- $vitaeData = index site.Data $vitaeDataRoot }}
+  {{- if (isset $vitaeData site.Language.Lang) }}
+    {{- $vitaeData = index $vitaeData site.Language.Lang }}
+    {{ warnf "%s[%s]: Initializing data from site.Data.%s.%s"
+        $page $template $vitaeDataRoot site.Language.Lang }}
+    {{ partial "html-comment" (printf "[%s]: Initializing data from site.Data.%s.%s"
+        $template $vitaeDataRoot site.Language.Lang) -}}
   {{- else }}
-    {{ warnf "%s[%s]: No data for language '%s'. Initializing data from .Site.Data.%s"
-        $page $template $vitaeDataRoot .Site.Language.Lang }}
-    {{ partial "html-comment" (printf "[%s]: No data for language '%s'. Initializing data from .Site.Data.%s"
-        $template .Site.Language.Lang $vitaeDataRoot) -}}
-    {{/* {{ partial "html-comment" (printf "[%s]: No data for language '%s'. Initializing data from .Site.Data.%s: %v"
-        $template .Site.Language.Lang $vitaeDataRoot ($vitaeData | jsonify (dict "indent" "  "))) -}} */}}
+    {{ warnf "%s[%s]: No data for language '%s'. Initializing data from site.Data.%s"
+        $page $template $vitaeDataRoot site.Language.Lang }}
+    {{ partial "html-comment" (printf "[%s]: No data for language '%s'. Initializing data from site.Data.%s"
+        $template site.Language.Lang $vitaeDataRoot) -}}
+    {{/* {{ partial "html-comment" (printf "[%s]: No data for language '%s'. Initializing data from site.Data.%s: %v"
+        $template site.Language.Lang $vitaeDataRoot ($vitaeData | jsonify (dict "indent" "  "))) -}} */}}
 {{- end }}
 {{- end }}
 
