@@ -1,3 +1,5 @@
+{{- $page := .Page }}
+{{- $template := "vitae/head/title" }}
 {{- $title := .Title | markdownify | plainify }}
 {{- $role := (.Page.Param "role") | markdownify | plainify }}
 
@@ -13,6 +15,24 @@
   {{ end }}
 {{ end }}
 {{- if $title }}
+  {{- with (findRE `\{[^\}" ]+\}` $title) }}
+    {{- range . }}
+      {{- $datePlaceholder := lower (trim . "{}") }}
+      {{/* {{- warnf "%s[%s]: $datePlaceholder=%v"
+          $page $template $datePlaceholder }} */}}
+      {{- $date := $page.Date }}
+      {{- if (eq $datePlaceholder "publishdate" ) }}
+        {{- $date = $page.PublishDate }}
+      {{- else if (eq $datePlaceholder "expirydate" ) }}
+        {{- $date = $page.ExpiryDate }}
+      {{- else if (eq $datePlaceholder "lastmod" ) }}
+        {{- $date = $page.Lastmod }}
+      {{- end }}
+      {{- $title = replaceRE . ($date | time.Format "2006-01-02") $title }}
+      {{/* {{- warnf "%s[%s]: .Date=%v .PublishDate=%v .ExpiryDate .Lastmod=%v $date=%v title=%v"
+          $page $template $page.Date $page.PublishDate $page.ExpiryDate $page.Lastmod $date $title }} */}}
+    {{- end }}
+  {{- end }}
   {{- with .Page.Param "titleSeparator" }}
     {{ $title = printf "%s %s %s" $title (safeHTML .) .Site.Title }}
   {{- end }}
