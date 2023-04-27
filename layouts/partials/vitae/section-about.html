@@ -18,7 +18,7 @@
   {{- if $feature.portrait }}
     {{- $portraitImageArgs := (dict "Page" $page "FigureClass" "portrait" "Alt" ($title | plainify) "LazyLoad" false) }}
     {{- with .portrait.src }}
-      {{- $portraitImageArgs = (merge $portraitImageArgs (dict "Resource" .) ) }}
+      {{- $portraitImageArgs = (merge $portraitImageArgs (dict "resource" .) ) }}
     {{- end }}
     {{- with .portrait.img_process }}
       {{- $portraitImageArgs = (merge $portraitImageArgs (dict "Process" . ) ) }}

@@ -8,10 +8,3 @@
 @import 'vitae/layout'
 @import 'vitae/components'
 @import 'vitae/section'
-{{- $fontsSelfHosted := default false site.Params.fontsSelfHosted }}
-{{- $customFonts := default false site.Params.customFonts }}
-{{- if and $fontsSelfHosted (not $customFonts) -}}
-  {{- $themeFontPath := default "/fonts" ($page.Param "fontPath") }}
-$themeFontPath: '{{ $themeFontPath }}'
-@import 'vitae/fonts'
-{{- end }}

@@ -46,7 +46,7 @@
         <!-- Use urlize to sanitize organization name -->
         {{- $imgAssetID := printf "%s/%s*" $logoImageRoot (anchorize $org.organization) -}}
         {{/* {{- $logoImageResource := resources.GetMatch $imgAssetID -}} */}}
-        {{- $logoImageResource := partial "claris/_functions/image-resource" (dict "Page" $page "Resource" $imgAssetID) -}}
+        {{- $logoImageResource := partial "claris/_functions/resources/images/image-resource" (dict "Page" $page "resource" $imgAssetID) -}}
         {{- if $logoImageResource }}
           {{- $logoImageResource = $logoImageResource.Fill $sizeSpec }}
           {{- if $org.website }}

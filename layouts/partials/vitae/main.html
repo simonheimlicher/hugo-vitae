@@ -32,8 +32,8 @@
 {{- $bundleDataPath := (path.Join $dataRoot $vitaeDataRoot (printf "%s.*" site.Language.Lang) ) }}
 
 {{ partial "html-comment" (printf "[%s]: Looking for data in page bundle %s at %v"
-    $template $bundleDataPath) -}}
-{{- $vitaeDataResource := partial "claris/_functions/resources" (dict "Page" $page "Resource" $bundleDataPath) }}
+    $template $page $bundleDataPath) -}}
+{{- $vitaeDataResource := partial "claris/_functions/resources" (dict "Page" $page "resource" $bundleDataPath) }}
 
 {{- with $vitaeDataResource }}
   {{/* {{ warnf "%s[%s]: Found resource matching %s in page bundle or in parent page bundle"

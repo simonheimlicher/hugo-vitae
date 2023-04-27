@@ -278,19 +278,20 @@ $screen-pad-v: 1rem
   .view-print
     font-size: var(--font-size)
     .header, .main-header, .main-column, .aside-header, .aside-primary, .aside-secondary
-      h1, h2, h3, h4, h5, h6
-        &.feature-first
-          padding-top: 0
-          margin-top: calc((1 - var(--line-height-heading)) * 1em)
-      p
-        &.feature-first
-          padding-top: 0
-          margin-top: calc((1 - var(--line-height)) * 1em)
+      // h1, h2, h3, h4, h5, h6
+      //   &.feature-first
+      //     padding-top: 0
+      //     margin-top: calc((1 - var(--line-height-heading)) * 1em)
+      // p
+      //   &.feature-first
+      //     padding-top: 0
+      //     margin-top: calc((1 - var(--line-height)) * 1em)
       .feature-first
         padding-top: 0
         h1, h2, h3, h4, h5, h6
-          padding-top: 0
-          margin-top: calc((1 - var(--line-height-heading)) * 1em)
+          &:first-of-type
+            padding-top: 0
+            margin-top: calc((1 - var(--line-height-heading)) * 1em)
         & > p:first-of-type, & > li:first-of-type
           padding-top: 0
           margin-top: calc((1 - var(--line-height)) * 1em)
@@ -377,7 +378,7 @@ $screen-pad-v: 1rem
         --font-size-h1: 2.4em
         // --font-weight-heading: var(--font-weight-strong)
         // .vitae_inner
-          // template-rows: auto
+          // grid-template-rows: auto
         .main-header
           grid-column: 2
           grid-row: 1
@@ -595,7 +596,7 @@ $screen-pad-v: 1rem
       .view-screen
         --font-size-h1: 2em
         .vitae_inner
-          template-rows: auto
+          grid-template-rows: auto
           .main-header, .main-column, .aside-header, .aside-primary
             grid-column: 1 / span 16
           .main-header
@@ -756,7 +757,7 @@ $screen-pad-v: 1rem
         .vitae_inner
           .main-header
             grid-column: 9 / span 8
-            grid-row: 1 / span 3
+            grid-row: 1 / span 2
             display: flex
             flex-direction: row
             row-gap: calc(var(--column-padding-v) / 4)
