@@ -24,7 +24,7 @@
       {{- $portraitImageArgs = (merge $portraitImageArgs (dict "Process" . ) ) }}
     {{- end }}
     {{- with .portrait.img_position }}
-      {{- $portraitImageArgs = (merge $portraitImageArgs (dict "ImgPosition" . ) ) }}
+      {{- $portraitImageArgs = (merge $portraitImageArgs (dict "position" . ) ) }}
     {{- end }}
     {{- with .portrait.img_class }}
       {{- $portraitImageArgs = (merge $portraitImageArgs (dict "ImgClass" . ) ) }}
