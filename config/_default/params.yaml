@@ -1,161 +1,107 @@
-[vitae]
+vitae:
 
 # ------ Layout RESUME --------- #
-
-[vitae.resume.contact]
-  title = false
-  screen = true
-  print = true
-
-[vitae.resume.links]
-  screen = true
-  print = true
-
-[[vitae.resume.header]]
-
-  [[vitae.resume.header.main]]
-  feature = "about"
-  title = false
-  portrait = true
-  tagline = true
-  profile = true
-  contact = true
-  # share = true
-
-  # [[vitae.resume.header.main]]
-  # feature = "contact"
-  # screen = true
-  # print = true
-
-[[vitae.resume.pages]]
-
-  [[vitae.resume.pages.main]]
-  feature = "stages"
-  collection = "stages"
-  filter_by = "type"
-  filter_value = "professional"
-  title = "section-experience"
-  organization_duration = true
-  role_duration = true
-  skills = false
-  details = false
-
-  # [[vitae.resume.pages.primary]]
-  # feature = "about"
-  # title = false
-  # portrait = true
-  # tagline = true
-
-  # [[vitae.resume.pages.primary]]
-  # feature = "contact"
-  # screen = true
-  # print = true
-
-  [[vitae.resume.pages.primary]]
-  feature = "stages"
-  collection = "stages"
-  filter_by = "type"
-  filter_value = "education"
-  title = "section-education"
-  organization_duration = false
-  role_duration = false
-  # details = true
-
-  [[vitae.resume.pages.primary]]
-  feature = "languages"
-  title = "section-language-skills"
-
-  [[vitae.resume.pages.primary]]
-  feature = "publications"
-  collection = "publications"
-  filter_by = "kind"
-  filter_value = "patent"
-  title = "section-patents"
-  screen = true
-  print = true
-
-  [[vitae.resume.pages.primary]]
-  feature = "publications"
-  collection = "publications"
-  filter_by = "kind"
-  filter_value = "publication"
-  title = "section-publications"
-  remark = "selected-publications"
-  screen = true
-  print = true
-
-  [[vitae.resume.pages.primary]]
-  feature = "links"
-  title = "section-connect"
-  screen = true
-  print = true
+  resume:
+    contact:
+      title: false
+      screen: true
+      print: true
+    links:
+      screen: true
+      print: true
+    header:
+      - main:
+          - feature: about
+            title: false
+            portrait: true
+            tagline: true
+            profile: true
+            contact: true
+    pages:
+      - main:
+          - feature: stages
+            collection: stages
+            filter_by: type
+            filter_value: professional
+            title: section-experience
+            organization_duration: true
+            role_duration: true
+            skills: false
+            details: false
+        primary:
+          - feature: stages
+            collection: stages
+            filter_by: type
+            filter_value: education
+            title: section-education
+            organization_duration: false
+            role_duration: false
+          - feature: languages
+            title: section-language-skills
+          - feature: publications
+            collection: publications
+            filter_by: kind
+            filter_value: patent
+            title: section-patents
+            screen: true
+            print: true
+          - feature: publications
+            collection: publications
+            filter_by: kind
+            filter_value: publication
+            title: section-publications
+            remark: selected-publications
+            screen: true
+            print: true
+          - feature: links
+            title: section-connect
+            screen: true
+            print: true
 
 # ------ Layout LETTER --------- #
-
-[vitae.letter.about]
-  portrait = false
-  tagline = true
-  contact = true
-
-
-[vitae.letter.contact]
-  title = false
-  screen = true
-  print = true
-
-[vitae.letter.links]
-  title = false
-  screen = true
-  print = true
-
-[[vitae.letter.header]]
-
-  [[vitae.letter.header.main]]
-  feature = "about"
-  title = false
-  # portrait = true
-  # tagline = true
-  # profile = true
-  contact = true
-
-
-[[vitae.letter.pages]]
-
-  [[vitae.letter.pages.main]]
-  feature = "application"
-  subject = "application-for-position"
-  level = 1
-  address = true
-  screen = true
-  print = true
-  # [vitae.letter.pages.main.selflink]
-  #   title = "selflink-application"
-  #   screen = true
-  #   print = true
-  #   icon = "solid/arrow-up-from-bracket"
-
-
-  [[vitae.letter.pages.primary]]
-  feature = "links"
-  title = false
-  screen = true
-  print = true
+  letter:
+    about:
+      portrait: false
+      tagline: true
+      contact: true
+    contact:
+      title: false
+      screen: true
+      print: true
+    links:
+      title: false
+      screen: true
+      print: true
+    header:
+      - main:
+          - feature: about
+            title: false
+            contact: true
+    pages:
+      - main:
+          - feature: application
+            subject: application-for-position
+            level: 1
+            address: true
+            screen: true
+            print: true
+        primary:
+          - feature: links
+            title: false
+            screen: true
+            print: true
 
 # ------ Layout PROFILE --------- #
-
-[[vitae.profile.header]]
-
-
-  [[vitae.profile.header.main]]
-  feature = "about"
-  title = false
-  portrait = true
-  tagline = true
-  profile = true
-  contact = true
-
-  [[vitae.profile.header.main]]
-  feature = "links"
-  title = false
-  screen = true
-  print = true
+  profile:
+    header:
+      - main:
+          - feature: about
+            title: false
+            portrait: true
+            tagline: true
+            profile: true
+            contact: true
+          - feature: links
+            title: false
+            screen: true
+            print: true
