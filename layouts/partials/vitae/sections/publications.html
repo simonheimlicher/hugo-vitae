@@ -75,10 +75,11 @@
     {{- if .url }}
     <a href="{{ .url }}" class="publication_link" title="{{ T "publication_link_further-info" }} {{ .title }}">
     {{- end -}}
-      <span class="publication_title">{{ .title }} &middot;</span>
+      <span class="publication_title">{{ .title }}</span>
     {{- if .url }}
     </a>
     {{- end -}}
+     &middot;
 		<span class="publication_authors">
 			{{- $last_index := sub (.authors | len) 1 -}}
 			{{- range $i, $e := .authors -}}

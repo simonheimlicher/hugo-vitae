@@ -8,13 +8,13 @@
 {{- $config := .Config -}}
 {{- $headingLevel := default 2 (index $feature "level") }}
 {{- $layout := $page.Layout }}
-{{- $template := "vitae/section" }}
+{{- $template := "vitae/sections/index" }}
 {{- $containerElement := default "section" .Container }}
 {{- $media := default "screen" $p.media }}
 {{- $childClass := default "" .ChildClass }}
 {{/* {{- warnf "%s[%s] media=%s .Feature=%s .Config=%s" $page $template $media $feature $config }} */}}
 {{ partial "html-comment" (printf "BEGIN partial %s" $template) }}
-{{ $partialRoot := "partials/vitae/section"}}
+{{ $partialRoot := "partials/vitae/sections"}}
 {{- if $containerElement }}
   {{- printf "<%s class=\"section section-%s\">" $containerElement .Feature.feature | safeHTML }}
 {{- end }}
@@ -39,9 +39,9 @@
 {{ partial "html-comment" (printf "partials/vitae/section: index .Data \"features\": \n%s"
     ((index .Data "features") | jsonify (dict "indent" "  ") | safeHTML) ) -}}
 {{- end }} */}}
-{{- $partialForSectionLayout := (printf "%s-%s-%s%s" $partialRoot $sectionID $layout $partialExt) }}
-{{- $partialForSection := (printf "%s-%s%s" $partialRoot $sectionID $partialExt ) }}
-{{- $partialDefault := (printf "%s-%s%s" $partialRoot "details-list" $partialExt ) }}
+{{- $partialForSectionLayout := (printf "%s/%s-%s%s" $partialRoot $sectionID $layout $partialExt) }}
+{{- $partialForSection := (printf "%s/%s%s" $partialRoot $sectionID $partialExt ) }}
+{{- $partialDefault := (printf "%s/%s%s" $partialRoot "details-list" $partialExt ) }}
 {{/* {{ partial "html-comment" (printf "[%s]: sectionID=%s: partialForSectionLayout='%s' partialForSection='%s' partialDefault='%s'"
     $template $sectionID $partialForSectionLayout $partialForSection $partialDefault) }} */}}
 {{- /* warnf "%s: sectionID=%v: partialForSectionLayout='%v' partialForSection='%v' partialDefault='%v'" $template $sectionID $partialForSectionLayout $partialForSection $partialDefault */ -}}

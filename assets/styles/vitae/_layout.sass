@@ -196,17 +196,25 @@ $screen-pad-v: 1rem
   main #printPreviewContainer
     display: none
 
-@mixin full-bleed($vertical, $horizontal)
+@mixin full-bleed($vertical: none, $horizontal: none)
+  $margin_top: 0
+  $margin_right: 0
+  $margin_bottom: 0
+  $margin_left: 0
+
   @if $vertical == 'top'
-    @if $horizontal == 'left'
-      margin: calc(-1 * var(--page-margin-top)) calc(-1 * var(--column-padding-right)) 0 calc(-1 * var(--page-margin-left))
-    @else
-      margin: calc(-1 * var(--page-margin-top)) calc(-1 * var(--page-margin-right)) 0 calc(-1 * var(--column-padding-left))
-  @else
-    @if $horizontal == 'left'
-      margin: 0 calc(-1 * var(--column-padding-right)) calc(-1 * var(--page-margin-bottom)) calc(-1 * var(--page-margin-left))
-    @else
-      margin: 0 calc(-1 * var(--page-margin-right)) calc(-1 * var(--page-margin-bottom)) calc(-1 * var(--column-padding-left))
+    $margin_top: calc(-1 * var(--page-margin-top))
+  @else if $vertical == 'bottom'
+    $margin_bottom: calc(-1 * var(--page-margin-bottom))
+
+  @if $horizontal == 'right'
+    $margin_right: calc(-1 * var(--page-margin-right))
+    $margin_left: calc(-1 * var(--column-padding-left))
+  @else if $horizontal == 'left'
+    $margin_right: calc(-1 * var(--column-padding-right))
+    $margin_left: calc(-1 * var(--page-margin-left))
+
+  margin: $margin_top $margin_right $margin_bottom $margin_left
 
 .vitae
 
@@ -278,10 +286,10 @@ $screen-pad-v: 1rem
   .view-print
     font-size: var(--font-size)
     .header, .main-header, .main-column, .aside-header, .aside-primary, .aside-secondary
-      // h1, h2, h3, h4, h5, h6
-      //   &.feature-first
-      //     padding-top: 0
-      //     margin-top: calc((1 - var(--line-height-heading)) * 1em)
+      h1, h2, h3, h4, h5, h6
+        &.feature-first
+          padding-top: 0
+          margin-top: calc((1 - var(--line-height-heading)) * 1em)
       // p
       //   &.feature-first
       //     padding-top: 0
@@ -315,10 +323,19 @@ $screen-pad-v: 1rem
           flex-direction: column
           flex-wrap: nowrap
           justify-content: space-between
-          & > *
-            flex: 0 1 auto
-          & > .timeline
-            flex: 0.5 1 auto
+          // & > *
+          //   flex: 0 1 auto
+          // & > .timeline
+          //   flex: 0.5 1 auto
+          .organization-header
+            flex: 2 0 auto
+          .role-header
+            flex: 1 0 auto
+          .role-section-heading
+            flex: 0.5 0 auto
+          .role-header + .role-section-heading,
+          .role-header:has(+ .role-section-heading)
+            flex: 0 0 auto
 
       .page-first:not(.page-last)
         grid-template-rows: auto
@@ -342,6 +359,7 @@ $screen-pad-v: 1rem
             grid-row: 1
           .main-column
             grid-row: 1
+            height: 100%
           .aside-primary, .aside-secondary
             height: 100%
             // & > *

@@ -3,7 +3,7 @@ vitae:
 # ------ Layout RESUME --------- #
   resume:
     contact:
-      title: false
+      title: section-contact
       screen: true
       print: true
     links:
@@ -13,6 +13,7 @@ vitae:
       - main:
           - feature: about
             title: false
+            level: 1
             portrait: true
             tagline: true
             profile: true
@@ -27,7 +28,9 @@ vitae:
             organization_duration: true
             role_duration: true
             skills: false
+            responsibilities: true
             details: false
+            headings: true
         primary:
           - feature: stages
             collection: stages
@@ -36,8 +39,15 @@ vitae:
             title: section-education
             organization_duration: false
             role_duration: false
-          - feature: languages
+          - feature: skills
+            collection: skills
+            filter_by: type
+            filter_value: language
             title: section-language-skills
+          - feature: awards
+            title: section-awards
+            screen: true
+            print: true
           - feature: publications
             collection: publications
             filter_by: kind
@@ -45,14 +55,14 @@ vitae:
             title: section-patents
             screen: true
             print: true
-          - feature: publications
-            collection: publications
-            filter_by: kind
-            filter_value: publication
-            title: section-publications
-            remark: selected-publications
-            screen: true
-            print: true
+          # - feature: publications
+          #   collection: publications
+          #   filter_by: kind
+          #   filter_value: publication
+          #   title: section-publications
+          #   remark: selected-publications
+          #   screen: true
+          #   print: true
           - feature: links
             title: section-connect
             screen: true

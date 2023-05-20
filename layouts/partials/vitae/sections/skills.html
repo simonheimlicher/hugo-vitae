@@ -1,0 +1,60 @@
+{{- $page := .Page -}}
+{{- $template := "vitae/sections/skills" -}}
+{{- $headingLevel := default 3 .HeadingLevel }}
+{{- $sectionClass := default "section-skills" .SectionClass }}
+{{- $childClass := default "" .ChildClass }}
+
+{{- $feature := .Feature }}
+
+{{- $layout := "screen" -}}
+{{- with $page.Layout -}}
+  {{- $layout = . -}}
+{{- end }}
+
+{{- $topLevelClass := delimit (slice $sectionClass $childClass) " " }}
+
+{{- $filterField := default "type" $feature.filter_by -}}
+{{- $filterMatch := default "language" $feature.filter_value -}}
+
+{{- $optInline := dict "display" "inline" }}
+
+
+{{- $skillCollection := (index .Data $feature.collection) }}
+{{- with $skillCollection }}
+  {{- $skillList := where $skillCollection $filterField $filterMatch }}
+
+  {{- $classPrefix := printf "%s skill" $filterMatch }}
+  <div class="{{ $classPrefix }}_container {{ $topLevelClass }}">
+  {{- range $skillIdx, $skill := $skillList }}
+    <div class="{{- $classPrefix }}_name">
+      {{- .name }}
+    </div>
+    {{- with .level }}
+    <div class="{{- $classPrefix }}_level">
+      <span class="{{- $classPrefix }}_level_description">{{- .description }}</span>
+      <div class="{{- $classPrefix }}_level_bar">
+        <span class="{{- $classPrefix }}_level_bar_tab" style="width: {{ .value }}%">&nbsp;</span>
+      </div>
+    </div>
+    {{- end }}
+    {{- $detailFields := slice "certificates" "details" }}
+    <div class="{{- $classPrefix }}_details">
+      {{- range $k := $detailFields }}
+      <span class="{{ $classPrefix }}_{{ $k }}">
+        {{- $v := (index $skill $k) }}
+        {{- if reflect.IsSlice $v }}
+          {{- range $vv := $v }}
+            {{- $page.RenderString $optInline $vv -}}
+          {{- end }}
+        {{- else }}
+          {{- $page.RenderString $optInline $v -}}
+        {{- end }}
+      </span>
+      {{- end }}
+    </div>
+  {{- end }}
+  </div>
+{{- /* {{- else }}
+  {{- warnf "%s[%s]: Failed to obtain skillCollection via (index .Data $feature.collection) with $feature.collection=%v"
+      $page $template $feature.collection }} */ -}}
+{{- end }}

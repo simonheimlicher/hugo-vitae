@@ -1,42 +1,67 @@
-{{- $page := .Page }}
+{{- $titleVariant := dict }}
+{{- $page := page }}
 {{- $template := "vitae/head/title" }}
-{{- $title := .Title | markdownify | plainify }}
-{{- $role := (.Page.Param "role") | markdownify | plainify }}
+{{- $debug := false }}
+{{- /* {{- $debug = page.Scratch.Get "clarisdebug" }} */ -}}
+{{- $debug = or $debug (not (not (findRE `profile` $page.RelPermalink) ) ) }}
 
-{{- if and $title (ne (trim (lower site.Title) "") (trim (lower $title) "")) }}
-  {{- if eq .Kind "taxonomy" }}
-    {{- $title = default $title ( T (lower $title) ) }}
-  {{- else if $role }}
-    {{- if eq .Layout "letter" }}
-      {{- $title = printf "%s %s" (T "application-for-position") $role }}
-    {{- else if eq .Layout "resume" }}
-      {{- $title = printf "%s %s" (T "resume-for-position") $role }}
-    {{ end }}
-  {{ end }}
-{{ end }}
-{{- if $title }}
-  {{- with (findRE `\{[^\}" ]+\}` $title) }}
-    {{- range . }}
-      {{- $datePlaceholder := lower (trim . "{}") }}
-      {{/* {{- warnf "%s[%s]: $datePlaceholder=%v"
-          $page $template $datePlaceholder }} */}}
-      {{- $date := $page.Date }}
-      {{- if (eq $datePlaceholder "publishdate" ) }}
-        {{- $date = $page.PublishDate }}
-      {{- else if (eq $datePlaceholder "expirydate" ) }}
-        {{- $date = $page.ExpiryDate }}
-      {{- else if (eq $datePlaceholder "lastmod" ) }}
-        {{- $date = $page.Lastmod }}
+{{- with $page }}
+  {{- $title := .Title | .RenderString | plainify }}
+  {{- $subtitle := "" }}
+  {{- $supertitle := "" }}
+  {{- $fulltitle := "" }}
+  {{- $role := (.Page.Param "role") | markdownify | plainify }}
+
+  {{- if $title }}
+    {{- with (findRE `\{[^\}" ]+\}` $title) }}
+      {{- range . }}
+        {{- $datePlaceholder := lower (trim . "{}") }}
+        {{/* {{- warnf "%s[%s]: $datePlaceholder=%v"
+            $page $template $datePlaceholder }} */}}
+        {{- $date := $page.Date }}
+        {{- if (eq $datePlaceholder "publishdate" ) }}
+          {{- $date = $page.PublishDate }}
+        {{- else if (eq $datePlaceholder "expirydate" ) }}
+          {{- $date = $page.ExpiryDate }}
+        {{- else if (eq $datePlaceholder "lastmod" ) }}
+          {{- $date = $page.Lastmod }}
+        {{- end }}
+        {{- $title = replaceRE . ($date | time.Format "2006-01-02") $title }}
+        {{- if $debug }}
+          {{- warnf "%s[%s]: \ntitle=%v\n$date=%v from\n.Title=%v\n.Date=%v\n.PublishDate=%v\n.ExpiryDate=%v\n.Lastmod=%v"
+              $page $template $title $date $page.Title
+              $page.Date $page.PublishDate $page.ExpiryDate $page.Lastmod }}
+        {{- end }}
       {{- end }}
-      {{- $title = replaceRE . ($date | time.Format "2006-01-02") $title }}
-      {{/* {{- warnf "%s[%s]: .Date=%v .PublishDate=%v .ExpiryDate .Lastmod=%v $date=%v title=%v"
-          $page $template $page.Date $page.PublishDate $page.ExpiryDate $page.Lastmod $date $title }} */}}
     {{- end }}
+    {{- $fulltitle = $title }}
+    {{- if and $title (ne (trim (lower site.Title) "") (trim (lower $title) "")) }}
+      {{- if $role }}
+        {{- if eq .Layout "letter" }}
+          {{- $fulltitle = printf "%s %s" (T "application-for-position") $role }}
+        {{- else if eq .Layout "resume" }}
+          {{- $title = printf "%s %s" (T "resume-for-position") $role }}
+        {{- end }}
+      {{- end }}
+    {{- end }}
+    {{- with .Page.Param "titleSeparator" }}
+      {{ $fulltitle = printf "%s %s %s" $fulltitle (safeHTML .) site.Title }}
+    {{- end }}
+  {{- else }}
+    {{- $title = site.Title }}
+    {{- $fulltitle = $title }}
   {{- end }}
-  {{- with .Page.Param "titleSeparator" }}
-    {{ $title = printf "%s %s %s" $title (safeHTML .) site.Title }}
+
+  {{- $titleVariant = (dict
+    "title" $title
+    "subtitle" $subtitle
+    "supertitle" $supertitle
+    "fulltitle" $fulltitle
+    ) }}
+  {{- if $debug }}
+    {{- warnf "%s[%s]: .Kind=%s title=%s supertitle=%v fulltitle=%s from .Singular=%v .Plural=%v .Section=%v .Title=%v"
+        $page $template .Kind $titleVariant.title $titleVariant.supertitle $titleVariant.fulltitle
+        .Data.Singular .Data.Plural .Section .Title }}
   {{- end }}
-{{- else }}
-  {{- $title = site.Title }}
 {{- end }}
-{{- return $title }}
+{{- return $titleVariant }}

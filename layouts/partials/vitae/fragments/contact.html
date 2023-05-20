@@ -17,12 +17,13 @@
 ) .AddressFields }}
 
 {{- $contactIcons := true }}
-{{- $separatorStr := " • " }}
+{{/* {{- $separatorStr := " • " }} */}}
+{{- $separatorStr := "<br/>" }}
 
 {{- /* warnf "%s[%s]: .Fragment=%s .Config=%s .Data=%s" $page $template $fragment $config .Data.features.contact */ -}}
 {{- with (index .Data.features.contact $media) }}
   {{- with $config.title }}
-    <h2 class="contact-title section-title">{{- . -}}</h2>
+    <h2 class="contact-title section-title">{{- default . (T .) -}}</h2>
   {{- end }}
   {{- with .phone -}}
     {{- $phoneURL := printf "tel:%s" (strings.TrimPrefix "tel:" . ) }}
@@ -61,7 +62,7 @@
       </div>
   {{- end -}}
   {{- with $address := .address }}
-    <address class="contact-ite_address address contact-item">
+    <address class="contact-item_address address contact-item">
       {{- if $contactIcons }}
       {{ partial "fa-icon" "map" }}
       {{- end -}}
@@ -70,7 +71,7 @@
           {{- range $field, $sep := $fieldSpec }}
             {{- with (index $address $field) }}
               {{- if (eq $sep "SEP") }}{{ $sep = $separatorStr}}{{- end }}
-                <span class="address-{{ $field }}">{{ print . $sep }}</span>
+                <span class="address-{{ $field }}">{{ print . $sep | safeHTML }}</span>
               {{- end }}
             {{- end }}
           {{- end }}

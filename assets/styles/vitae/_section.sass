@@ -57,11 +57,13 @@ $inline-list-sep-width: $inline-list-item-separation / 3.0
   .view-print
     .portrait
       padding: 0
-      @include full-bleed(top, left)
+      // @include full-bleed(top, left)
+      @include full-bleed(top, auto)
       img
         padding: 0
         margin: 0
         border-radius: 0
+      border-bottom: 0.125rem solid var(--theme-text)
 
   .section-title
     position: relative
@@ -80,7 +82,7 @@ $inline-list-sep-width: $inline-list-item-separation / 3.0
       height: 0
       left: calc( var(--column-padding-left) / -2)
       right: calc( var(--column-padding-right) / -2)
-      border-top: 0.1rem solid var(--border-color-faint)
+      border-top: 0.125rem solid var(--border-color-faint)
       // z-index: 99
 
   .organization
@@ -183,8 +185,18 @@ $inline-list-sep-width: $inline-list-item-separation / 3.0
         // margin-top: calc(var(--stage-role-sep-vert))
         font-size: var(--font-size-heading-role)
         font-weight: var(--font-weight-heading-role)
+        &.partition
+          display: flex
+          align-items: center
+          column-gap: 1em
+      &-supertitle
+        font-weight: var(--font-weight-heading)
+        padding-bottom: 0.5em
+      &-subtitle
+        font-style: italic
 
     &.role
+      // @include list-style(0rem, var(--list-style_indent))
       &-header
         position: relative
         width: 100%
@@ -212,12 +224,22 @@ $inline-list-sep-width: $inline-list-item-separation / 3.0
                 width: var(--inline-list-sep-width)
                 text-align: center
       &-details
-        // font-size: var(--font-size-smaller)
-        @include list-style(0rem, var(--list-style_indent))
-        font-style: italic
+        font-size: var(--font-size-smaller)
+      &-responsibilities
+        padding-top: 0.5em
+        &.twocolumn
+          display: flex
+          column-gap: 1em
+        .skill
+          font-weight: var(--font-weight-heading)
+          width: min-content
+          min-width: 25%
+          hyphens: none
+        // .responsibility
+
       &-results
         // font-size: var(--font-size-smaller)
-        @include list-style(0rem, var(--list-style_indent))
+        // @include list-style(0rem, var(--list-style_indent))
         ul,
         p
           padding: 0.2rem 0 0 0
@@ -229,7 +251,7 @@ $inline-list-sep-width: $inline-list-item-separation / 3.0
         // font-size: var(--font-size-smaller)
         span.inner-1
           font-weight: var(--font-weight-strong)
-        @include list-style(0rem, var(--list-style_indent))
+        // @include list-style(0rem, var(--list-style_indent))
         li.no-marker
           list-style: none
           &::before
@@ -245,6 +267,21 @@ $inline-list-sep-width: $inline-list-item-separation / 3.0
           p:first-child, ul:first-child
             padding: 0
             margin-top: calc((1 - var(--line-height)) * 1em)
+  .role-section-heading
+    display: flex
+    align-items: center
+    margin: 0
+    padding: 0.75em 0 0.25em 0
+    font-weight: var(--font-weight-heading)
+    // font-size: 110%
+    font-family: var(--font-section-title)
+    font-variant: small-caps
+    text-transform: uppercase
+    .separator-line
+      flex: 1 1 auto
+      border-bottom: 1px solid var(--border-color-faint)
+      // height: 50%
+      margin-left: 1em
 
   .aside-primary .section-stages
     // --font-size-heading-organization: 1em
@@ -362,7 +399,6 @@ html[data-mode="dim"]
 
 .vitae
   .education-languages
-    &-item
     &-item ~ .education-languages-item
       &::before
         content: '•'
@@ -390,6 +426,64 @@ html[data-mode="dim"]
           margin-right: var(--inline-list-item-separation) / 3.0 - 0.5ch
           width: var(--inline-list-sep-width)
           text-align: center
+
+.vitae
+  .skill
+    &_container
+      display: grid
+      gap: 0.25em 0.5em
+      font-size: var(--font-size-smaller)
+    &_name
+      grid-column: 1
+      grid-row: auto / span 2
+      font-weight: var(--font-weight-strong)
+    &_level
+      grid-column: 2
+      &_bar
+        position: relative
+        display: flex
+        width: 100%
+        // font-variant-caps: all-small-caps
+        // font-style: italic
+        background: var(--bg)
+        border-radius: 2em
+        &_tab
+          border-radius: 2em
+          height: 0.5em
+          background: var(--xxhaze)
+        // &_description
+        //   position: absolute
+        //   top: 0
+        //   left: 0
+    &_details
+      grid-column: 2
+    &_certificates
+      font-size: var(--font-size-smaller)
+      &_item ~ .skill_certificates
+        &::before
+          content: '•'
+          display: inline-block
+          margin-right: var(--inline-list-item-separation) / 3.0 - 0.5ch
+          width: var(--inline-list-sep-width)
+          text-align: center
+
+.vitae
+  .award
+    &_container
+      font-size: var(--font-size-smaller)
+    &_title
+      font-weight: var(--font-weight-strong)
+    &.logo
+      img
+        float: right
+        width: 2rem
+        margin: 0.5em 1em
+    &_organization
+      &_name
+        font-style: italic
+      // &_description
+      //   font-size: var(--font-size-smaller)
+    &_details
 
 .vitae
   &.layout-letter

@@ -31,8 +31,8 @@
 {{- $renderOpt := $optInline }}
 
 {{- if reflect.IsMap $data }}
-  {{/* {{ partial "html-comment" (printf "[in=%d out=%d shift=%d]:%s Iterate over Map '%v' with %d elements"
-  $inLevel $outLevel $inLevelShift $inIndentStr (substr (printf "%v" $data) 0 $comSubStrLen) (len $data)) -}} */}}
+  {{- /* {{ partial "html-comment" (printf "[in=%d out=%d shift=%d]:%s Iterate over Map '%v' with %d elements"
+  $inLevel $outLevel $inLevelShift $inIndentStr (substr (printf "%v" $data) 0 $comSubStrLen) (len $data)) -}} */ -}}
 
   {{- if (eq $outLevel (sub 1 $inLevelShift) ) }}
     <div {{- with $childClass -}}{{ printf " class=\"%s\"" $childClass | safeHTMLAttr }}{{- end }}>
@@ -42,8 +42,8 @@
 
   {{- range $k, $v := $data }}
     {{- $outStr := $k }}
-    {{/* {{ partial "html-comment" (printf "[in=%d out=%d shift=%d]:%s Render Map key '%v'"
-    $inLevel $outLevel $inLevelShift $inIndentStr (substr (printf "%v" $outStr) 0 $comSubStrLen)) -}} */}}
+    {{- /* {{ partial "html-comment" (printf "[in=%d out=%d shift=%d]:%s Render Map key '%v'"
+    $inLevel $outLevel $inLevelShift $inIndentStr (substr (printf "%v" $outStr) 0 $comSubStrLen)) -}} */ -}}
     {{- if (eq $outLevel (sub $inLevelShift 3) ) }}
       <p {{- with $innerClass -}}{{ printf " class=\"%s\"" (index $innerClass (add $outLevel (sub $inLevelShift 1))) | safeHTMLAttr }}{{- end }}>
         <span {{- with $innerClass -}}{{ printf " class=\"%s\"" (index $innerClass (add $outLevel (sub $inLevelShift 1))) | safeHTMLAttr }}{{- end }}>
@@ -58,8 +58,8 @@
       {{- (strings.Repeat (add 1 $outLevel) $levelIndentStr) | safeHTML }}
     {{- end }}
     {{- $page.RenderString $renderOpt $outStr }}
-    {{/* {{ partial "html-comment" (printf "[in=%d out=%d shift=%d]:%s Closing tags after Map key '%v'"
-    $inLevel $outLevel $inLevelShift $inIndentStr (substr (printf "%v" $outStr) 0 $comSubStrLen)) -}} */}}
+    {{- /* {{ partial "html-comment" (printf "[in=%d out=%d shift=%d]:%s Closing tags after Map key '%v'"
+    $inLevel $outLevel $inLevelShift $inIndentStr (substr (printf "%v" $outStr) 0 $comSubStrLen)) -}} */ -}}
     {{- if (gt $outLevel $inLevelShift) }}
       {{- range $idx, $val := (seq $outLevel) }}
         {{ printf "%s</li>" (strings.Repeat (sub $outLevel $idx) $levelIndentStr) | safeHTML }}
@@ -80,8 +80,8 @@
       {{- else if reflect.IsSlice $subSet }}
         {{- $subSetType = "Slice" }}
       {{- end }}
-      {{/* {{ partial "html-comment" (printf "[in=%d out=%d shift=%d]:%s %s -> %s: RECURSIVE CALL with '%s'"
-      $inLevel $outLevel $inLevelShift $inIndentStr $dataType $subSetType (substr (printf "%v" $subSet) 0 $comSubStrLen) ) -}} */}}
+      {{- /* {{ partial "html-comment" (printf "[in=%d out=%d shift=%d]:%s %s -> %s: RECURSIVE CALL with '%s'"
+      $inLevel $outLevel $inLevelShift $inIndentStr $dataType $subSetType (substr (printf "%v" $subSet) 0 $comSubStrLen) ) -}} */ -}}
       {{- partial "vitae/role-achievements" (dict
       "Page" $page
       "ChildClass" $childClass
@@ -110,8 +110,8 @@
       {{- else if reflect.IsSlice $subSet }}
         {{- $subSetType = "Slice" }}
       {{- end }}
-      {{/* {{ partial "html-comment" (printf "[in=%d out=%d shift=%d]:%s Slice -> %s: RECURSIVE CALL with '%s'"
-      $inLevel $outLevel $inLevelShift $inIndentStr $subSetType (substr (printf "%v" $subSet) 0 $comSubStrLen)) -}} */}}
+      {{- /* {{ partial "html-comment" (printf "[in=%d out=%d shift=%d]:%s Slice -> %s: RECURSIVE CALL with '%s'"
+      $inLevel $outLevel $inLevelShift $inIndentStr $subSetType (substr (printf "%v" $subSet) 0 $comSubStrLen)) -}} */ -}}
       {{- partial "vitae/role-achievements" (dict
       "Page" $page
       "ChildClass" $childClass
@@ -129,7 +129,7 @@
 
 {{- else }}
   {{- $outStr := $data }}
-  {{/* {{ partial "html-comment" (printf "[in=%d out=%d shift=%d]:%s Value: Render '%s'" $inLevel $outLevel $inLevelShift $inIndentStr (substr (printf "%v" $outStr) 0 $comSubStrLen)) -}} */}}
+  {{- /* {{ partial "html-comment" (printf "[in=%d out=%d shift=%d]:%s Value: Render '%s'" $inLevel $outLevel $inLevelShift $inIndentStr (substr (printf "%v" $outStr) 0 $comSubStrLen)) -}} */ -}}
   {{- if (eq $outLevel (sub $inLevelShift 1) ) }}
     </div>
     <div {{- with $childClass -}}{{ printf " class=\"%s\"" $childClass | safeHTMLAttr }}{{- end }}>
@@ -152,12 +152,12 @@
   {{- else }}
     </span>
   {{- end }}
-  {{/* {{- if (eq $outLevel (sub $inLevelShift 1) ) }}
+  {{- /* {{- if (eq $outLevel (sub $inLevelShift 1) ) }}
     </div>
     <div {{- with $childClass -}}{{ printf " class=\"%s\"" $childClass | safeHTMLAttr }}{{- end }}>
-  {{- end }} */}}
-  {{/* {{ partial "html-comment" (printf "[in=%d out=%d shift=%d]:%s Closing tags after Value '%v'"
-  $inLevel $outLevel $inLevelShift $inIndentStr (substr (printf "%v" $outStr) 0 $comSubStrLen)) -}} */}}
+  {{- end }} */ -}}
+  {{- /* {{ partial "html-comment" (printf "[in=%d out=%d shift=%d]:%s Closing tags after Value '%v'"
+  $inLevel $outLevel $inLevelShift $inIndentStr (substr (printf "%v" $outStr) 0 $comSubStrLen)) -}} */ -}}
   {{- if (gt $outLevel $inLevelShift) }}
     {{- range $idx, $val := (seq $outLevel) }}
       {{ printf "%s</li>" (strings.Repeat (sub $outLevel $idx) $levelIndentStr) | safeHTML }}
@@ -168,4 +168,4 @@
   {{- else if (eq $outLevel (sub $inLevelShift 3) ) }}
     </span>
   {{- end }}
-{{- end }}
+{{- end -}}

@@ -31,7 +31,7 @@
       {{- with $vitaePage.main -}}
         {{- /* warnf "%s[%s]: Render header %d: main=%v" $page $template $vitaePageIndex . */ -}}
         {{- range $vitaeFeatureIndex, $vitaeFeature := . }}
-          {{ partial "vitae/section" (dict
+          {{ partial "vitae/sections/index" (dict
           "Page" $page
           "Feature" $vitaeFeature
           "Config" $vitaeParams
@@ -89,7 +89,7 @@
       {{- with $vitaePage.main -}}
         {{- /* warnf "%s[%s]: Render aside-header %d: main=%v" $page $template $vitaePageIndex . */ -}}
         {{- range $vitaeFeatureIndex, $vitaeFeature := . }}
-          {{ partial "vitae/section" (dict
+          {{ partial "vitae/sections/index" (dict
           "Page" $page
           "Feature" $vitaeFeature
           "Config" $vitaeParams
@@ -111,7 +111,7 @@
       {{- with $vitaePage.primary -}}
         {{- /* warnf "%s[%s]: Render aside-primary %d: %v" $page $template $vitaePageIndex . */ -}}
         {{- range $vitaeFeatureIndex, $vitaeFeature := . }}
-          {{ partial "vitae/section" (dict
+          {{ partial "vitae/sections/index" (dict
           "Page" $page
           "Feature" $vitaeFeature
           "Config" $vitaeParams

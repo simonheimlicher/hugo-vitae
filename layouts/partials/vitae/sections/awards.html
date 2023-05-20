@@ -1,0 +1,66 @@
+{{- $page := .Page -}}
+{{- $template := "vitae/sections/awards" -}}
+{{- $headingLevel := default 3 .HeadingLevel }}
+{{- $sectionClass := default "section-awards" .SectionClass }}
+{{- $childClass := default "" .ChildClass }}
+
+{{- $feature := .Feature }}
+{{- $collection := default .Feature.feature .Feature.collection }}
+{{- $layout := "screen" -}}
+{{- with $page.Layout -}}
+  {{- $layout = . -}}
+{{- end }}
+
+{{- $topLevelClass := delimit (slice $sectionClass $childClass) " " }}
+
+{{- $filterField := default "" $feature.filter_by -}}
+{{- $filterMatch := default "" $feature.filter_value -}}
+
+{{- $optInline := dict "display" "inline" }}
+
+{{- $awardCollection := (index .Data $collection) }}
+{{- with $awardCollection }}
+  {{- $awardList := $awardCollection }}
+
+  {{- if and $filterField $filterMatch }}
+    {{- $awardList = where $awardCollection $filterField $filterMatch }}
+  {{- end }}
+
+  {{- $logoImageParams := (dict "Page" $page "width" 512) }}
+  {{- $classPrefix := printf "%s award" $filterMatch }}
+  <div class="{{ $classPrefix }}_container {{ $topLevelClass }}">
+  {{- range $awardIdx, $award := $awardList }}
+    {{- $logoImage := default false .logo }}
+    <div class="{{- $classPrefix }}{{ with $logoImage }} logo{{ end }}">
+      <h3 class="{{- $classPrefix }}_title">{{- .title }}</h3>
+      {{- with $logoImage }}
+        {{- partial "responsive-image" (merge $logoImageParams (dict "resource" .resource)) }}
+      {{- end }}
+      {{- with .organization }}
+      <span class="{{- $classPrefix }}_organization_name">{{- .name }}</span>
+      {{- with .description }}
+      <span class="{{- $classPrefix }}_organization_description">({{- . }})</span>
+      {{- end }}
+    {{- end }}
+    </div>
+    {{- $detailFields := slice "colleagues" "details" }}
+    <div class="{{- $classPrefix }}_details">
+      {{- range $k := $detailFields }}
+      <span class="{{ $classPrefix }}_{{ $k }}">
+        {{- $v := (index $award $k) }}
+        {{- if reflect.IsSlice $v }}
+          {{- range $vv := $v }}
+            {{- $page.RenderString $optInline $vv -}}
+          {{- end }}
+        {{- else }}
+          {{- $page.RenderString $optInline $v -}}
+        {{- end }}
+      </span>
+      {{- end }}
+    </div>
+  {{- end }}
+  </div>
+{{- /* {{- else }}
+  {{- warnf "%s[%s]: Failed to obtain awardCollection via (index .Data $feature.collection) with $feature.collection=%v"
+      $page $template $feature.collection }} */ -}}
+{{- end }}
