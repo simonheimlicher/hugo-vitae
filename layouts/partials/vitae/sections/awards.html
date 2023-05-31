@@ -26,23 +26,25 @@
     {{- $awardList = where $awardCollection $filterField $filterMatch }}
   {{- end }}
 
-  {{- $logoImageParams := (dict "Page" $page "width" 512) }}
+  {{- $logoImageParams := (dict "Page" $page "width" 512 "figureclass" "award_logo") }}
   {{- $classPrefix := printf "%s award" $filterMatch }}
   <div class="{{ $classPrefix }}_container {{ $topLevelClass }}">
   {{- range $awardIdx, $award := $awardList }}
     {{- $logoImage := default false .logo }}
-    <div class="{{- $classPrefix }}{{ with $logoImage }} logo{{ end }}">
-      <h3 class="{{- $classPrefix }}_title">{{- .title }}</h3>
+    <div class="{{- $classPrefix }}_header{{ with $logoImage }} logo{{ end }}">
       {{- with $logoImage }}
         {{- partial "responsive-image" (merge $logoImageParams (dict "resource" .resource)) }}
       {{- end }}
-      {{- with .organization }}
+      <h3 class="{{- $classPrefix }}_title">{{- .title }}</h3>
+    </div>
+    {{- with .organization }}
+    <div class="{{- $classPrefix }}_organization">
       <span class="{{- $classPrefix }}_organization_name">{{- .name }}</span>
       {{- with .description }}
       <span class="{{- $classPrefix }}_organization_description">({{- . }})</span>
       {{- end }}
-    {{- end }}
     </div>
+    {{- end }}
     {{- $detailFields := slice "colleagues" "details" }}
     <div class="{{- $classPrefix }}_details">
       {{- range $k := $detailFields }}

@@ -48,12 +48,24 @@
         {{- $timelineOrgClass = "timeline-org-within" }}
       {{- end }}
     {{- end }}
+
     {{- $topLevelClass := strings.TrimLeft " " (delimit (slice $timelineClass $timelineOrgClass $sectionClass $childClass) " ") }}
-    <div class="organization-header {{ $topLevelClass }}">
+
+    <!-- Use urlize to sanitize organization name -->
+    {{- $imgAssetID := printf "%s/%s*" $logoImageRoot (anchorize $org.organization) -}}
+    {{- $logoImageResource := partial "claris/_functions/resources/images/image-resource" (dict "Page" $page "resource" $imgAssetID) -}}
+
+    {{- $oganizationHeaderClassList := slice "organization-header" }}
+    {{ if $singleRoleWithoutDetails }}
+      {{- $oganizationHeaderClassList = append "single-role" $oganizationHeaderClassList }}
+    {{ else if $logoImageResource }}
+      {{- $oganizationHeaderClassList = append "logo" $oganizationHeaderClassList }}
+    {{ end }}
+    {{- $oganizationHeaderClass := (delimit (append $topLevelClass $oganizationHeaderClassList) " ") }}
+
+    <div class="{{ $oganizationHeaderClass }}">
+    {{- if and $logoImageResource (not $singleRoleWithoutDetails) }}
       <div class="organization-logo">
-        <!-- Use urlize to sanitize organization name -->
-        {{- $imgAssetID := printf "%s/%s*" $logoImageRoot (anchorize $org.organization) -}}
-        {{- $logoImageResource := partial "claris/_functions/resources/images/image-resource" (dict "Page" $page "resource" $imgAssetID) -}}
         {{- if $logoImageResource }}
           {{- $logoImageResource = $logoImageResource.Fill $sizeSpec }}
           {{- if $org.website }}
@@ -71,34 +83,52 @@
           {{- errorf "Partial %s: organization=%s: logo '%s' not found" $template $org.organization $imgAssetID }}
         {{- end }}
       </div>
-      {{- if $org.website }}
-        <a class="organization-link" target="_self" href="{{ $org.website }}">
       {{- end }}
-        <h{{ $headingLevel }} class="organization-title">{{ $org.organization }}</h{{ $headingLevel }}>
-      {{- if $org.website }}
-        </a>
-      {{- end }}
-      {{- if $singleRoleWithoutDetails }}
-        {{- $titleLayout := and $firstRole.supertitle $firstRole.subtitle}}
-      <h{{ add 1 $headingLevel }} class="role-title{{- if $titleLayout }} partition{{ end }}">
-        {{- if $titleLayout }}
-          <div class="role-supertitle">{{ $page.RenderString $firstRole.supertitle }}</div>
-          <div class="role-subtitle">{{ $page.RenderString $firstRole.subtitle }}</div>
-        {{- else }}
-          {{- partial "vitae/render-markdown" (dict "Page" $page "Data" $firstRole.role) $page $firstRole.role }}</h{{ add 1 $headingLevel }}>
+      <div class="organization-header-main">
+        {{- if $org.website }}
+          <a class="organization-link" target="_self" href="{{ $org.website }}">
         {{- end }}
-      {{- end }}
-      {{- if $feature.organization_duration }}
-        <span class="organization-period stage-period">{{- partial
-          "vitae/_functions/date-period-duration" (dict
-          "PeriodList" $org.roles
-          "DurationFirst" true
-          "DateFormat" $dateFormat
-          "Container" "span"
-          "DateContainer" "span"
-          "Separator" "")
-          -}}</span>
-      {{- end }}
+          <h{{ $headingLevel }} class="organization-title">{{ $org.organization }}</h{{ $headingLevel }}>
+        {{- if $org.website }}
+          </a>
+        {{- end }}
+          {{- if $feature.organization_duration }}
+            {{- $location := "" }}
+            {{- with $org.location }}
+              {{- $location = printf "%s" . }}
+              {{- with $org.country }}
+                {{- if ne $org.country "Switzerland" }}
+                  {{- $location = printf "%s, %s" $location . }}
+                {{- end }}
+              {{- end }}
+            {{- end }}
+            {{- with $location }}
+            <p class="organization-location">{{ . }}</p>
+            {{- end }}
+          {{- end }}
+        {{- if $singleRoleWithoutDetails }}
+          {{- $titleLayout := and $firstRole.supertitle $firstRole.subtitle}}
+        <h{{ add 1 $headingLevel }} class="role-title{{- if $titleLayout }} partition{{ end }}">
+          {{- if $titleLayout }}
+            <span class="role-supertitle">{{ $page.RenderString $firstRole.supertitle }}</span>
+            <span class="role-subtitle">{{ $page.RenderString $firstRole.subtitle }}</span>
+          {{- else }}
+            {{- partial "vitae/render-markdown" (dict "Page" $page "Data" $firstRole.role) $page $firstRole.role }}
+          {{- end }}
+        </h{{ add 1 $headingLevel }}>
+        {{- end }}
+        {{- if $feature.organization_duration }}
+          <span class="organization-period stage-period">{{- partial
+            "vitae/_functions/date-period-duration" (dict
+            "PeriodList" $org.roles
+            "DurationFirst" true
+            "DateFormat" $dateFormat
+            "Container" "span"
+            "DateContainer" "span"
+            "Separator" "")
+            -}}</span>
+        {{- end }}
+      </div>
     </div>
 
     {{- if not $singleRoleWithoutDetails }}
@@ -122,11 +152,12 @@
           {{- $titleLayout := and $role.supertitle $role.subtitle}}
           <h{{ add 1 $headingLevel }} class="role-title{{- if $titleLayout }} partition{{ end }}">
             {{- if $titleLayout }}
-              <div class="role-supertitle">{{ $page.RenderString $role.supertitle }}</div>
-              <div class="role-subtitle">{{ $page.RenderString $role.subtitle }}</div>
+              <span class="role-supertitle">{{ $page.RenderString $role.supertitle }}</span>
+              <span class="role-subtitle">{{ $page.RenderString $role.subtitle }}</span>
             {{- else }}
-              {{- partial "vitae/render-markdown" (dict "Page" $page "Data" $role.role) $page $role.role }}</h{{ add 1 $headingLevel }}>
+              {{- partial "vitae/render-markdown" (dict "Page" $page "Data" $role.role) $page $role.role }}
             {{- end }}
+          </h{{ add 1 $headingLevel }}>
           {{- with $role.period }}
             {{- if $feature.role_duration }}
               <span class="role-period num-roles-{{ $numRoles }} stage-period">

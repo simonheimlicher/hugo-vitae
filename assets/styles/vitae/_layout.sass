@@ -23,6 +23,7 @@ $page-width: 210.0791667mm // DIN A4 for Chrome
 // Page margins
 $page-mar-h: 10mm
 $page-mar-v: $page-mar-h * $page-height / $page-width
+$page-mar-ratio-top-bottom: 2 / 3
 
 $column-pad-h: $page-mar-h / 2
 $column-pad-v: $page-mar-h / 4
@@ -56,6 +57,7 @@ $screen-pad-v: 1rem
 
   --page-margin-h: #{$page-mar-h}
   --page-margin-v: #{$page-mar-v}
+  --page-margin-ratio-top-bottom: #{$page-mar-ratio-top-bottom}
 
   --column-padding-h: #{$column-pad-h}
   --column-padding-v: #{$column-pad-v}
@@ -67,13 +69,23 @@ $screen-pad-v: 1rem
   --column-padding-screen-v: #{$screen-pad-v}
 
 .vitae
+  --page-scale-factor: 1.0
   --font-size-smaller: 90% // 9pt
 
-  --page-margin-left: var(--page-margin-h)
-  --page-margin-right: var(--page-margin-h)
-  --page-margin-top: var(--page-margin-v)
-  --page-margin-bottom: var(--page-margin-v)
-  --aside-margin-v: calc(0.5 * var(--page-margin-v))
+  --page-width: calc(#{$page-width} * var(--page-scale-factor))
+  --page-height: calc(#{$page-height} * var(--page-scale-factor))
+
+  --page-margin-left: calc( var(--page-margin-h) * var(--page-scale-factor))
+  --page-margin-right: calc( var(--page-margin-h) * var(--page-scale-factor))
+  --page-margin-top: calc( (var(--page-margin-ratio-top-bottom) ) / (1 + var(--page-margin-ratio-top-bottom) ) * 2 * var(--page-margin-v) * var(--page-scale-factor))
+  --page-margin-bottom: calc( 1 / (1 + var(--page-margin-ratio-top-bottom) ) * var(--page-margin-v) * 2 * var(--page-scale-factor))
+  --aside-margin-v: calc(0.5 * var(--page-margin-v) * var(--page-scale-factor))
+
+  --column-padding-h: calc(#{$column-pad-h} * var(--page-scale-factor))
+  --column-padding-v: calc(#{$column-pad-v} * var(--page-scale-factor))
+
+  --gap-h: #{$column-pad-h} * var(--page-scale-factor)
+  --gap-v: #{$column-pad-v} * var(--page-scale-factor)
 
   #printPreviewContainer
     display: none
@@ -104,20 +116,20 @@ $screen-pad-v: 1rem
       padding-bottom: 0
 
   .vitae
-    --page-width: calc(#{$page-width} * var(--page-scale-factor))
-    --page-height: calc(#{$page-height} * var(--page-scale-factor))
+    // --page-width: calc(#{$page-width} * var(--page-scale-factor))
+    // --page-height: calc(#{$page-height} * var(--page-scale-factor))
 
-    --page-margin-left: calc(var(--page-margin-h) * var(--page-scale-factor))
-    --page-margin-right: calc(var(--page-margin-h) * var(--page-scale-factor))
-    --page-margin-top: calc(var(--page-margin-v) * var(--page-scale-factor))
-    --page-margin-bottom: calc(var(--page-margin-v) * var(--page-scale-factor))
-    --aside-margin-v: calc(0.5 * var(--page-margin-v) * var(--page-scale-factor))
+    // --page-margin-left: calc( var(--page-margin-h) * var(--page-scale-factor))
+    // --page-margin-right: calc( var(--page-margin-h) * var(--page-scale-factor))
+    // --page-margin-top: calc( (var(--page-margin-ratio-top-bottom) ) / (1 + var(--page-margin-ratio-top-bottom) ) * 2 * var(--page-margin-v) * var(--page-scale-factor))
+    // --page-margin-bottom: calc( 1 / (1 + var(--page-margin-ratio-top-bottom) ) * var(--page-margin-v) * 2 * var(--page-scale-factor))
+    // --aside-margin-v: calc(0.5 * var(--page-margin-v) * var(--page-scale-factor))
 
-    --column-padding-h: calc(#{$column-pad-h} * var(--page-scale-factor))
-    --column-padding-v: calc(#{$column-pad-v} * var(--page-scale-factor))
+    // --column-padding-h: calc(#{$column-pad-h} * var(--page-scale-factor))
+    // --column-padding-v: calc(#{$column-pad-v} * var(--page-scale-factor))
 
-    --gap-h: #{$column-pad-h} * var(--page-scale-factor)
-    --gap-v: #{$column-pad-v} * var(--page-scale-factor)
+    // --gap-h: #{$column-pad-h} * var(--page-scale-factor)
+    // --gap-v: #{$column-pad-v} * var(--page-scale-factor)
 
     --screen-page-sep: 1.5rem
 
@@ -327,15 +339,18 @@ $screen-pad-v: 1rem
           //   flex: 0 1 auto
           // & > .timeline
           //   flex: 0.5 1 auto
-          .organization-header
-            flex: 2 0 auto
+          // .organization-header
+          //   flex: 0.25 0 auto
           .role-header
             flex: 1 0 auto
-          .role-section-heading
+          .organization-header + .role-header
             flex: 0.5 0 auto
-          .role-header + .role-section-heading,
-          .role-header:has(+ .role-section-heading)
-            flex: 0 0 auto
+          .role-section-heading
+            flex: 1 0 auto
+          .role-header + .role-section-heading
+            flex: 0.25 0 auto
+          // .role-header:has(+ .role-section-heading)
+          //   flex: 0 0 auto
 
       .page-first:not(.page-last)
         grid-template-rows: auto
