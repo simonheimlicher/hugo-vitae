@@ -1,5 +1,86 @@
 vitae:
 
+# ------ Layout EXECUTIVE --------- #
+  executive:
+    contact:
+      title: section-contact
+      screen: true
+      print: true
+    links:
+      screen: true
+      print: true
+    pages:
+      # Front page
+      - main:
+          - feature: about
+            title: false
+            level: 1
+            portrait: true
+            tagline: true
+            profile: true
+            contact: true
+          - feature: stages
+            collection: stages
+            filter_by: type
+            filter_value: professional
+            title: section-career-summary
+            headings: true
+            organization_period: true
+            role_period: true
+            skills: false
+            details: false
+            results: false
+            responsibilities: false
+            achievements: false
+          - feature: stages
+            collection: stages
+            filter_by: type
+            filter_value: education
+            title: section-education
+          - feature: skills
+            collection: skills
+            filter_by: type
+            filter_value: language
+            title: section-language-skills
+          - feature: awards
+            title: section-awards
+            screen: true
+            print: true
+          - feature: publications
+            collection: publications
+            filter_by: kind
+            filter_value: patent
+            title: section-patents
+            screen: true
+            print: true
+          # - feature: publications
+          #   collection: publications
+          #   filter_by: kind
+          #   filter_value: publication
+          #   title: section-publications
+          #   remark: selected-publications
+          #   screen: true
+          #   print: true
+          - feature: links
+            title: section-connect
+            screen: true
+            print: true
+      # Detailed experience
+      - main:
+          - feature: stages
+            collection: stages
+            filter_by: type
+            filter_value: professional
+            title: section-experience
+            organization_period: true
+            role_period: true
+            organization_duration: true
+            role_duration: true
+            skills: false
+            responsibilities: true
+            details: false
+            headings: true
+
 # ------ Layout RESUME --------- #
   resume:
     contact:
@@ -25,20 +106,21 @@ vitae:
             filter_by: type
             filter_value: professional
             title: section-experience
+            organization_period: true
+            role_period: true
             organization_duration: true
             role_duration: true
-            skills: false
+            timeline_for_single_role: true
             responsibilities: true
-            details: false
+            results: true
             headings: true
+            skills: false
         primary:
           - feature: stages
             collection: stages
             filter_by: type
             filter_value: education
             title: section-education
-            organization_duration: false
-            role_duration: false
           - feature: skills
             collection: skills
             filter_by: type

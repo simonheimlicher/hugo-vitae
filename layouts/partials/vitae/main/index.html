@@ -43,20 +43,22 @@
 {{- else }}
   {{/* {{ warnf "%s[%s]: No resource matching %s found in page bundle or in parent page bundle"  $page $template $bundleDataPath }} */}}
   {{- $vitaeData = index site.Data $vitaeDataRoot }}
-  {{- if (isset $vitaeData site.Language.Lang) }}
-    {{- $vitaeData = index $vitaeData site.Language.Lang }}
-    {{ warnf "%s[%s]: Initializing data from site.Data.%s.%s"
-        $page $template $vitaeDataRoot site.Language.Lang }}
-    {{ partial "html-comment" (printf "[%s]: Initializing data from site.Data.%s.%s"
-        $template $vitaeDataRoot site.Language.Lang) -}}
-  {{- else }}
-    {{ warnf "%s[%s]: No data for language '%s'. Initializing data from site.Data.%s"
-        $page $template $vitaeDataRoot site.Language.Lang }}
-    {{ partial "html-comment" (printf "[%s]: No data for language '%s'. Initializing data from site.Data.%s"
-        $template site.Language.Lang $vitaeDataRoot) -}}
-    {{/* {{ partial "html-comment" (printf "[%s]: No data for language '%s'. Initializing data from site.Data.%s: %v"
-        $template site.Language.Lang $vitaeDataRoot ($vitaeData | jsonify (dict "indent" "  "))) -}} */}}
-{{- end }}
+  {{- if $vitaeData }}
+    {{- if (isset $vitaeData site.Language.Lang) }}
+      {{- $vitaeData = index $vitaeData site.Language.Lang }}
+      {{ warnf "%s[%s]: Initializing data from site.Data.%s.%s"
+          $page $template $vitaeDataRoot site.Language.Lang }}
+      {{ partial "html-comment" (printf "[%s]: Initializing data from site.Data.%s.%s"
+          $template $vitaeDataRoot site.Language.Lang) -}}
+    {{- else }}
+      {{ warnf "%s[%s]: No data for language '%s'. Initializing data from site.Data.%s"
+          $page $template $vitaeDataRoot site.Language.Lang }}
+      {{ partial "html-comment" (printf "[%s]: No data for language '%s'. Initializing data from site.Data.%s"
+          $template site.Language.Lang $vitaeDataRoot) -}}
+      {{/* {{ partial "html-comment" (printf "[%s]: No data for language '%s'. Initializing data from site.Data.%s: %v"
+          $template site.Language.Lang $vitaeDataRoot ($vitaeData | jsonify (dict "indent" "  "))) -}} */}}
+    {{- end }}
+  {{- end }}
 {{- end }}
 
 {{- if $vitaeData }}
@@ -80,6 +82,7 @@
 {{- with $asideSecondary -}}{{- $layoutClass = "page-layout_aside-primary-secondary" -}}
 {{- end }}
 
+{{- $mainContentPrefix := "main/content" }}
 {{- $containerClass := "vitae" }}
 {{- $originalInnerClass := "vitae_inner"  }}
 {{- with $layout }}{{ $containerClass = printf "%s layout-%s" $containerClass $layout }}
@@ -105,8 +108,6 @@
     "OriginalInnerClass" $originalInnerClass
     ) $pp }}
 
-{{/* {{- warnf "[%s]: BEGIN [layout=%v media=%v printPreview=%v printView=%v"
-    $template $pp.Layout $pp.Media $pp.PrintPreview $pp.PrintView }} */}}
 {{ partial "html-comment" (printf "[%s]: BEGIN [layout=%v media=%v printPreview=%v printView=%v"
     $template $pp.Layout $pp.Media $pp.PrintPreview $pp.PrintView) }}
 
@@ -117,7 +118,7 @@
   <div id="originalContainer" class="view-screen">
     <div id="contentContainer" class="{{- $originalInnerClass }} {{ $layoutClass -}}">
       {{/* {{- warnf "%s[%s]: Calling partial %s with pp:\n%v" $page $template (path.Join $pp.Type $pp.Layout) ($pp | jsonify (dict "indent" "  ")) }} */}}
-      {{- partial (path.Join $pp.Type $pp.Layout) $pp }}
+      {{- partial (path.Join $pp.Type $mainContentPrefix $pp.Layout) $pp }}
     </div>
   </div>
 </div>

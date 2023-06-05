@@ -2,6 +2,7 @@
 {{- $page := . }}
 {{- $template := "partials/vitae/print-preview" }}
 {{- $printControl := false }}
+{{- $pdfDownloadURL := false }}
 {{- $printPreviewToggleID := "printPreviewToggle" }}
 {{- $printPreviewToggleClass := "print-preview_toggle" }}
 {{- $containerClass := "print-preview" }}
@@ -23,21 +24,22 @@
   {{- with .PrintControl }}
     {{- $printControl = . }}
   {{- else }}
-    {{- $printControl = default false ($page.Param "printControl") }}
+    {{- $printControl = default $printControl ($page.Param "printControl") }}
+  {{- end }}
+  {{- with .PDFDownloadURL }}
+    {{- $pdfDownloadURL = . }}
+  {{- else }}
+    {{- $pdfDownloadURL = default $pdfDownloadURL ($page.Param "pdfDownloadURL") }}
   {{- end }}
 {{- end }}
-{{- $p := $page.Params }}
 
 {{- $layout := $pp.Layout }}
 {{- $media := $pp.Media }}
 {{- $printPreview := $pp.PrintPreview }}
 {{- $printView := $pp.PrintView }}
 
-{{- $printControl := site.Param "printControl" }}
-{{- $pdfDownloadURL := default false $p.pdfDownloadURL }}
-
-{{- /* warnf "%s[%s]: .Params=%v printPreview=%v printView=%v $page $template $p $printPreview $printView */ -}}
 {{- if (or $printPreview $printView) }}
+  {{/* {{- warnf "%s[%s]: .Params=%v printPreview=%v printView=%v" $page $template $printPreview $printView -}} */}}
   {{- if $printPreview }}
     {{- $targetClass = printf "%s preview-%s" $targetClass "prepare" }}
   {{- else }}
@@ -45,8 +47,7 @@
   {{- end }}
 
   {{/* {{- partial "html-comment" (printf "BEGIN partial '%s'" $template) }} */}}
-  {{- with .Class }}
-    {{- $targetClass = printf "%s preview-%s" $targetClass . }}
+  {{- if or $printControl $pdfDownloadURL }}
   <nav id="printPreviewNav" class="{{- $navigationClass }}">
     {{- if $printControl }}
     <a id="{{ $printPreviewToggleID }}" {{- with $printPreviewToggleClass }}{{- printf " class=\"%s\"" . | safeHTMLAttr -}}{{- end }} title="Toggle print preview">
@@ -55,7 +56,7 @@
     <a id="printButton" class="print-preview_button-print"  title="Print">
       {{ partial "sprite" (dict "icon" "file-pdf") }}
     </a>
-    {{- else if ($p.pdfDownloadURL) }}
+    {{- else if ($pdfDownloadURL) }}
     <a id="pdfDownloadButton" class="print-preview_button-pdf-download"  title="Download PDF">
       {{ partial "sprite" (dict "icon" "file-pdf") }}
     </a>

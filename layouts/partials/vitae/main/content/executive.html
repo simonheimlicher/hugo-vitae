@@ -1,0 +1,40 @@
+{{- $page := . }}
+{{- $pp := . }}
+{{- if reflect.IsMap . }}
+{{- $page = .Page }}
+{{- end }}
+{{- /* Restore context as if "." had been passed */ -}}
+{{- with $page }}
+{{- $page = . }}
+{{- $template := printf "vitae/main/content/executive)" }}
+
+{{ partial "html-comment" (printf "BEGIN '%s'" $template) }}
+
+{{- $paginationContainerClass := $pp.PaginationContainerClass }}
+{{- $paginationOrderAttr := $pp.PaginationOrderAttr }}
+{{- $paginationPolicyAttr := $pp.PaginationPolicyAttr }}
+{{- $vitaeParams := $pp.VitaeParams }}
+{{- $vitaeData := $pp.VitaeData }}
+
+{{- $mainColumnChildClass := "vitae-page" }}
+{{- range $vitaePageIndex, $vitaePage := $vitaeParams.pages }}
+  {{- /* warnf "Render page %d %s" $vitaePageIndex $template */ -}}
+  <article class="vitae-main-container {{ $pp.PaginationContainerClass }}"
+  {{ printf "%s=\"%d\"" $pp.PaginationOrderAttr 9 | safeHTMLAttr }}
+  {{ printf "%s=\"%s\"" $pp.PaginationPolicyAttr "break" | safeHTMLAttr -}}
+  >
+  {{- range $vitaeFeatureIndex, $vitaeFeature := $vitaePage.main }}
+    {{ partial "vitae/sections/index" (dict
+    "Page" $page
+    "Feature" $vitaeFeature
+    "Config" $vitaeParams
+    "PageIndex" $vitaePageIndex
+    "FeatureIndex" $vitaeFeatureIndex
+    "Container" false
+    "ChildClass" $mainColumnChildClass
+    "Data" $vitaeData) }}
+  {{- end }}
+  </article>
+{{- end }}
+{{ partial "html-comment" (printf "END   '%s'" $template) }}
+{{- end }}

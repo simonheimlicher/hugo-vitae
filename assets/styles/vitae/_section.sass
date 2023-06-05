@@ -39,34 +39,6 @@ $inline-list-sep-width: $inline-list-item-separation / 3.0
   h1, h2, h3, h4, h5, h6
     margin-bottom: 0
 
-  .view-screen
-    .portrait
-      margin: 0 auto
-      max-width: 50%
-      .shape-round
-        border-radius: 50%
-      .shadow
-        @include drop-shadow(2em, 0.2, 0.2)
-
-      @media screen and (min-width: $screenViewBreakpointWidthNarrow)
-        margin: 0 var(--column-padding-h) var(--column-padding-v) 0
-        max-width: 100%
-
-
-      @media screen and (min-width: $screenViewBreakpointWidthTwoColumn)
-        margin: 0 // var(--column-padding-v) var(--column-padding-h)
-
-  .view-print
-    .portrait
-      padding: 0
-      // @include full-bleed(top, left)
-      @include full-bleed(top, auto)
-      img
-        padding: 0
-        margin: 0
-        border-radius: 0
-      border-bottom: 0.125rem solid var(--theme-text)
-
   .section-title
     position: relative
     font-family: var(--font-section-title)
@@ -87,42 +59,7 @@ $inline-list-sep-width: $inline-list-item-separation / 3.0
       border-top: 0.125rem solid var(--border-color-faint)
       // z-index: 99
 
-  .organization
-    &-logo
-      display: flex
-      flex-direction: row
-      align-items: center
-      &-image
-        // Reset max-width and max-height to avoid side-effects from base.scss
-        max-width: unset
-        max-height: unset
-        width: calc(var(--organization-logo-width))
-    &-title
-      margin: 0
-      padding: 0
-      // FIXME: The margin-top does not seem to be required anymore
-      // margin-top: calc((var(--organization-logo-width) - var(--font-size-heading-organization)) / 2 + var(--font-size-heading-organization) * (1 - var(--line-height-heading)))
-      color: var(--theme-text)
-      font-size: var(--font-size-heading-organization)
-      font-weight: var(--font-weight-heading-organization)
-      margin-right: auto
-
-  .role
-    &-header
-      position: relative
-      display: flex
-      // FIXME: When there is only one item in .role-header, make sure it has
-      // appropriate margin to determine if it sticks to the flex-start or flex-end position
-      // E.g. role-title needs margin-right: auto
-      justify-content: space-between // horizontal: stick to both ends
-      align-items: center // vertical: center
-      break-after: avoid
-    &-title
-      margin: 0
-      padding: 0
-      font-size: var(--font-size-heading-role)
-      font-weight: var(--font-weight-heading-role)
-
+  /* ----- Feature STAGES ------ */
   .section-stages
     position: relative
 
@@ -174,7 +111,24 @@ $inline-list-sep-width: $inline-list-item-separation / 3.0
         left: 0
         width: calc( var(--stage-timeline-width) )
         height: 100%
+        display: flex
+        flex-direction: row
+        align-items: center
         user-select: none
+        &-image
+          // Reset max-width and max-height to avoid side-effects from base.scss
+          max-width: unset
+          max-height: unset
+          width: calc(var(--organization-logo-width))
+      &-title
+        margin: 0
+        padding: 0
+        // FIXME: The margin-top does not seem to be required anymore
+        // margin-top: calc((var(--organization-logo-width) - var(--font-size-heading-organization)) / 2 + var(--font-size-heading-organization) * (1 - var(--line-height-heading)))
+        color: var(--theme-text)
+        font-size: var(--font-size-heading-organization)
+        font-weight: var(--font-weight-heading-organization)
+        margin-right: auto
       &-period
         user-select: none
 
@@ -200,9 +154,22 @@ $inline-list-sep-width: $inline-list-item-separation / 3.0
 
   .section-stages
     .role
+      &-header
+        position: relative
+        display: flex
+        // FIXME: When there is only one item in .role-header, make sure it has
+        // appropriate margin to determine if it sticks to the flex-start or flex-end position
+        // E.g. role-title needs margin-right: auto
+        justify-content: space-between // horizontal: stick to both ends
+        align-items: center // vertical: center
+        break-after: avoid
       &-title
+        margin: 0
         margin-right: auto
         // margin-top: calc(var(--stage-role-sep-vert))
+        padding: 0
+        font-size: var(--font-size-heading-role)
+        font-weight: var(--font-weight-heading-role)
         font-size: var(--font-size-heading-role)
         font-weight: var(--font-weight-heading-role)
         &.partition
@@ -316,7 +283,6 @@ $inline-list-sep-width: $inline-list-item-separation / 3.0
 
   .organization-header + .role-header
     padding-top: 0
-
 
   .aside-primary .section-stages
     // --font-size-heading-organization: 1em
@@ -524,6 +490,39 @@ html[data-mode="dim"]
       //   font-size: var(--font-size-smaller)
     &_details
 
+/* ----- Layout RESUME ------ */
+.vitae
+  &.layout-resume
+    .view-screen
+      .portrait
+        margin: 0 auto
+        max-width: 50%
+        .shape-round
+          border-radius: 50%
+        .shadow
+          @include drop-shadow(2em, 0.2, 0.2)
+
+        @media screen and (min-width: $screenViewBreakpointWidthNarrow)
+          margin: 0 var(--column-padding-h) var(--column-padding-v) 0
+          max-width: 100%
+
+
+        @media screen and (min-width: $screenViewBreakpointWidthTwoColumn)
+          margin: 0 // var(--column-padding-v) var(--column-padding-h)
+
+    .view-print
+      .portrait
+        padding: 0
+        // @include full-bleed(top, left)
+        @include full-bleed(top, auto)
+        img
+          padding: 0
+          margin: 0
+          border-radius: 0
+        border-bottom: 0.125rem solid var(--theme-text)
+
+
+/* ----- Layout LETTER ------ */
 .vitae
   &.layout-letter
     .application-header

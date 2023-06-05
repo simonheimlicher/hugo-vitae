@@ -3,6 +3,8 @@
 {{- $firstPeriodBegin := time now }}
 {{- $lastPeriodEnd := $lastPeriodEndInitial }}
 {{- $periodList := . }}
+{{- $showPeriod := false }}
+{{- $showDuration := false }}
 {{- $durationFirst := false }}
 {{- $dateFormat := "2006 Jan" }}
 {{- $containerStr := "" }}
@@ -13,6 +15,12 @@
   {{/* {{- warnf "        date-period-duration: $periodList='%q'" $periodList }} */}}
   {{- with (index $periodList "PeriodList" )}}
     {{- $periodList = . }}
+  {{- end }}
+  {{- with .ShowPeriod }}
+    {{- $showPeriod = . }}
+  {{- end }}
+  {{- with .ShowDuration }}
+    {{- $showDuration = . }}
   {{- end }}
   {{- with .DurationFirst }}
     {{- $durationFirst = . }}
@@ -63,18 +71,40 @@
 {{- if eq $lastPeriodEnd $lastPeriodEndInitial }}
   {{- $lastPeriodEnd = "" }}
 {{- end }}
-{{- $entirePeriodStr := partial "vitae/_functions/date-period" (dict
-"Period" (slice $firstPeriodBegin $lastPeriodEnd)
-"DateFormat" $dateFormat
-"DateContainer" $dateContainerStr) }}
-{{- $durationStr := partial "vitae/_functions/date-duration" (dict "Period" (slice $firstPeriodBegin $lastPeriodEnd) "DateFormat" $dateFormat) }}
-{{- with $containerStr }}
-  {{- $entirePeriodStr = printf "<%s class=\"date-period\">%s</%s>" $containerStr $entirePeriodStr $containerStr }}
-  {{- $durationStr = printf "<%s class=\"date-duration\">%s</%s>" $containerStr $durationStr $containerStr }}
+
+{{- $entirePeriodStr := "" }}
+{{- if $showPeriod }}
+  {{- $entirePeriodStr = partial "vitae/_functions/date-period" (dict
+  "Period" (slice $firstPeriodBegin $lastPeriodEnd)
+  "DateFormat" $dateFormat
+  "DateContainer" $dateContainerStr) }}
 {{- end }}
-{{- if $durationFirst }}
-  {{ $ret = printf "%s %s %s" $durationStr $separatorStr $entirePeriodStr }}
+
+{{- $durationStr := "" }}
+{{- if $showDuration }}
+  {{- $durationStr = partial "vitae/_functions/date-duration" (dict "Period" (slice $firstPeriodBegin $lastPeriodEnd) "DateFormat" $dateFormat) }}
+{{- end }}
+
+{{- with $containerStr }}
+  {{- with $entirePeriodStr }}
+    {{- $entirePeriodStr = printf "<%s class=\"date-period\">%s</%s>" $containerStr $entirePeriodStr $containerStr }}
+  {{- end }}
+  {{- with $durationStr}}
+    {{- $durationStr = printf "<%s class=\"date-duration\">%s</%s>" $containerStr $durationStr $containerStr }}
+  {{- end }}
+{{- end }}
+
+{{- with $durationStr }}
+  {{- with $entirePeriodStr }}
+    {{- if $durationFirst }}
+      {{ $ret = printf "%s %s %s" $durationStr $separatorStr $entirePeriodStr }}
+    {{- else }}
+      {{ $ret = printf "%s %s %s" $entirePeriodStr $separatorStr $durationStr }}
+    {{- end }}
+  {{- else }}
+    {{ $ret = $durationStr }}
+  {{- end }}
 {{- else }}
-  {{ $ret = printf "%s %s %s" $entirePeriodStr $separatorStr $durationStr }}
+  {{ $ret = $entirePeriodStr }}
 {{- end }}
 {{- return safeHTML $ret -}}

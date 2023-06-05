@@ -331,6 +331,7 @@ const init = function (reset) {
 
         previewTargetElement: document.querySelector('#printPreviewTarget'),
 
+        printControl: document.querySelector('#printPreviewNav'),
         previewButton: document.querySelector('#printPreviewToggle'),
         printButton: document.querySelector('#printButton'),
 

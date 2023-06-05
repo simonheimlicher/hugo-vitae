@@ -7,13 +7,9 @@
   {{ partial "html-comment" $templateMeta }}
 
   {{- $mainClass := "main vitae" }}
-  {{- $partial := "vitae/main" }}
+  {{- $partial := "vitae/main/index" }}
   {{- $pp := (dict "Page" . "PrintView" true) }}
     {{ partial "html-comment" (printf "Calling partial '%s'[%v]" $partial $pp) }}
     {{- partial $partial $pp}}
   {{ partial "html-comment" (printf "END   define main '%s'" $template) }}
-{{- end }}
-
-{{- define "footer" }}
-  {{ partialCached "vitae/footer/index" . .Kind .Type }}
 {{- end }}

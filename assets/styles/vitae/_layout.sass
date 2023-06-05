@@ -107,30 +107,13 @@ $screen-pad-v: 1rem
   //   background: var(--print-preview-background)
   .main.vitae
     .view-print
-      // background: var(--choice-bg)
       background: var(--neutral-theme-haze)
       padding-bottom: 0
     .view-screen
-      // background: var(--choice-bg)
       background: var(--choice-bg)
       padding-bottom: 0
 
   .vitae
-    // --page-width: calc(#{$page-width} * var(--page-scale-factor))
-    // --page-height: calc(#{$page-height} * var(--page-scale-factor))
-
-    // --page-margin-left: calc( var(--page-margin-h) * var(--page-scale-factor))
-    // --page-margin-right: calc( var(--page-margin-h) * var(--page-scale-factor))
-    // --page-margin-top: calc( (var(--page-margin-ratio-top-bottom) ) / (1 + var(--page-margin-ratio-top-bottom) ) * 2 * var(--page-margin-v) * var(--page-scale-factor))
-    // --page-margin-bottom: calc( 1 / (1 + var(--page-margin-ratio-top-bottom) ) * var(--page-margin-v) * 2 * var(--page-scale-factor))
-    // --aside-margin-v: calc(0.5 * var(--page-margin-v) * var(--page-scale-factor))
-
-    // --column-padding-h: calc(#{$column-pad-h} * var(--page-scale-factor))
-    // --column-padding-v: calc(#{$column-pad-v} * var(--page-scale-factor))
-
-    // --gap-h: #{$column-pad-h} * var(--page-scale-factor)
-    // --gap-v: #{$column-pad-v} * var(--page-scale-factor)
-
     --screen-page-sep: 1.5rem
 
     .main-column
@@ -530,48 +513,49 @@ $screen-pad-v: 1rem
 
 @media screen
   .vitae
-    .view-screen
-      font-size: var(--font-size)
-      --column-padding-h: var(--column-padding-screen-h)
-      --column-padding-v: var(--column-padding-screen-v)
-      --gap-h: var(--column-padding-screen-v)
-      --gap-v: var(--column-padding-screen-v)
+    &.layout-resume
+      .view-screen
+        font-size: var(--font-size)
+        --column-padding-h: var(--column-padding-screen-h)
+        --column-padding-v: var(--column-padding-screen-v)
+        --gap-h: var(--column-padding-screen-v)
+        --gap-v: var(--column-padding-screen-v)
 
-      .vitae_inner
-        display: grid
-        grid-template-columns: var(--column-padding-h) repeat(14, 1fr) var(--column-padding-h)
-        grid-template-rows: minmax(min-content, max-content) 1fr
-        .main-header, .header
-          grid-column: 1 / span 16
-          grid-row: 1
-        .main-column
-          grid-column: 1 / span 16
-          grid-row: 2
-        .aside-primary
-          grid-column: 1 / span 16
-          grid-row: 3
+        .vitae_inner
+          display: grid
+          grid-template-columns: var(--column-padding-h) repeat(14, 1fr) var(--column-padding-h)
+          grid-template-rows: minmax(min-content, max-content) 1fr
+          .main-header, .header
+            grid-column: 1 / span 16
+            grid-row: 1
+          .main-column
+            grid-column: 1 / span 16
+            grid-row: 2
+          .aside-primary
+            grid-column: 1 / span 16
+            grid-row: 3
 
-        .main-header, .header, .main-column, .aside-header, .aside-primary
-          padding-top: var(--column-padding-v)
-          padding-right: var(--column-padding-h)
-          padding-bottom: var(--column-padding-v)
-          padding-left: var(--column-padding-h)
-          padding-top: calc(max(var(--column-padding-v), env(safe-area-inset-top)))
-          padding-right: calc(max(var(--column-padding-h), env(safe-area-inset-right)))
-          padding-bottom: calc(max(var(--column-padding-v), env(safe-area-inset-bottom)))
-          padding-left: calc(max(var(--column-padding-h), env(safe-area-inset-left)))
+          .main-header, .header, .main-column, .aside-header, .aside-primary
+            padding-top: var(--column-padding-v)
+            padding-right: var(--column-padding-h)
+            padding-bottom: var(--column-padding-v)
+            padding-left: var(--column-padding-h)
+            padding-top: calc(max(var(--column-padding-v), env(safe-area-inset-top)))
+            padding-right: calc(max(var(--column-padding-h), env(safe-area-inset-right)))
+            padding-bottom: calc(max(var(--column-padding-v), env(safe-area-inset-bottom)))
+            padding-left: calc(max(var(--column-padding-h), env(safe-area-inset-left)))
 
-        .main-column
-          --border-color-faint: var(--theme-xxhaze)
-          background: var(--bg)
+          .main-column
+            --border-color-faint: var(--theme-xxhaze)
+            background: var(--bg)
 
-        .main-header, .header, .aside-header, .aside-primary
-          --border-color-faint: var(--theme-xxhaze)
-          background-color: var(--theme-haze)
+          .main-header, .header, .aside-header, .aside-primary
+            --border-color-faint: var(--theme-xxhaze)
+            background-color: var(--theme-haze)
 
-      .portrait
-        max-width: 16rem;
-        margin: 0 var(--column-padding-h) var(--column-padding-v) 0
+        .portrait
+          max-width: 16rem;
+          margin: 0 var(--column-padding-h) var(--column-padding-v) 0
 
     &.layout-letter
       .organization
@@ -685,35 +669,40 @@ $screen-pad-v: 1rem
         --border-color-faint: var(--theme-xxhaze)
         background-color: var(--choice-bg)
 
+.vitae
+  &.layout-executive
+    .view-screen //, .view-print
+
 
 @media screen and (min-width: $screenViewBreakpointWidthNarrow)
   .vitae
-    .view-screen
-      --column-padding-v: calc(1.5 * var(--column-padding-screen-v))
-      --column-padding-h: calc(1.5 * var(--column-padding-screen-h))
-      .vitae_inner
-        .about
-          display: grid
-          grid-template-columns: 2fr 3fr
-          gap: var(--gap-v) var(--gap-h)
-          .portrait
-            grid-column: 1
-            grid-row: 1 / span 2
-          .name
-            text-align: right
-            grid-column: 2
-            grid-row: 1
-            padding: 0
-          .tagline
-            text-align: right
-            grid-column: 2
-            grid-row: 2
-          .profile
-            grid-column: 1 / span 2
-            grid-row: 3
-          .contact
-            grid-column: 1 / span 2
-            grid-row: 4
+    &.layout-resume
+      .view-screen
+        --column-padding-v: calc(1.5 * var(--column-padding-screen-v))
+        --column-padding-h: calc(1.5 * var(--column-padding-screen-h))
+        .vitae_inner
+          .about
+            display: grid
+            grid-template-columns: 2fr 3fr
+            gap: var(--gap-v) var(--gap-h)
+            .portrait
+              grid-column: 1
+              grid-row: 1 / span 2
+            .name
+              text-align: right
+              grid-column: 2
+              grid-row: 1
+              padding: 0
+            .tagline
+              text-align: right
+              grid-column: 2
+              grid-row: 2
+            .profile
+              grid-column: 1 / span 2
+              grid-row: 3
+            .contact
+              grid-column: 1 / span 2
+              grid-row: 4
 
     &.layout-letter
       .view-screen
@@ -730,58 +719,59 @@ $screen-pad-v: 1rem
 
 @media screen and (min-width: $screenViewBreakpointWidthOneColumn)
   .vitae
-    .view-screen
-      --font-size: 112.5%
-      --column-padding-v: calc(2 * var(--column-padding-screen-v))
-      --column-padding-h: calc(2 * var(--column-padding-screen-h))
-      .vitae_inner
-        .header
-          grid-column: 1 / span 16
-          grid-row: 1
-        .main-column
-          grid-column: 1 / span 16
-          grid-row: 2
-        .aside-primary
-          grid-column: 1 / span 16
-          grid-row:
-          display: grid
-          grid-template-columns: 3fr 2fr
-          gap: var(--column-padding-v) var(--column-padding-h)
-          .section-stages
-            grid-column: 1
-            grid-row: 1 / span 2
-          .section-languages
-            grid-column: 2
+    &.layout-resume
+      .view-screen
+        --font-size: 112.5%
+        --column-padding-v: calc(2 * var(--column-padding-screen-v))
+        --column-padding-h: calc(2 * var(--column-padding-screen-h))
+        .vitae_inner
+          .header
+            grid-column: 1 / span 16
             grid-row: 1
-          .section-links
-            grid-column: 2
+          .main-column
+            grid-column: 1 / span 16
             grid-row: 2
+          .aside-primary
+            grid-column: 1 / span 16
+            grid-row:
+            display: grid
+            grid-template-columns: 3fr 2fr
+            gap: var(--column-padding-v) var(--column-padding-h)
+            .section-stages
+              grid-column: 1
+              grid-row: 1 / span 2
+            .section-languages
+              grid-column: 2
+              grid-row: 1
+            .section-links
+              grid-column: 2
+              grid-row: 2
 
 
-        .about
-          display: grid
-          grid-template-columns: 2fr 3fr
-          align-items: stretch
-          > *:not(.portrait):not(.name)
-            margin-top: auto
-          .portrait
-            grid-column: 1
-            grid-row: 1 / span 3
-            margin-bottom: auto
-          .name
-            text-align: left
-            grid-column: 2
-            grid-row: 1
-          .tagline
-            text-align: left
-            grid-column: 2
-            grid-row: 2
-          .profile
-            grid-column: 2
-            grid-row: 3 / span 2
-          .contact
-            grid-column: 1
-            grid-row: 4
+          .about
+            display: grid
+            grid-template-columns: 2fr 3fr
+            align-items: stretch
+            > *:not(.portrait):not(.name)
+              margin-top: auto
+            .portrait
+              grid-column: 1
+              grid-row: 1 / span 3
+              margin-bottom: auto
+            .name
+              text-align: left
+              grid-column: 2
+              grid-row: 1
+            .tagline
+              text-align: left
+              grid-column: 2
+              grid-row: 2
+            .profile
+              grid-column: 2
+              grid-row: 3 / span 2
+            .contact
+              grid-column: 1
+              grid-row: 4
 
     &.layout-letter
       .view-screen
@@ -904,10 +894,11 @@ $screen-pad-v: 1rem
 
 @media screen and (min-width: $screenViewBreakpointWidthWide)
   .vitae
-    .view-screen
-      --font-size: 125%
-      // --column-padding-v: calc(4 * var(--column-padding-screen-v))
-      --column-padding-h: calc(4 * var(--column-padding-screen-h))
-      max-width: var(--screenViewWidthChrome)
-      margin-left: auto
-      margin-right: auto
+    &.layout-resume
+      .view-screen
+        --font-size: 125%
+        // --column-padding-v: calc(4 * var(--column-padding-screen-v))
+        --column-padding-h: calc(4 * var(--column-padding-screen-h))
+        max-width: var(--screenViewWidthChrome)
+        margin-left: auto
+        margin-right: auto
