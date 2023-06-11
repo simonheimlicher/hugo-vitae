@@ -37,7 +37,7 @@
   {{- if (eq $outLevel (sub 1 $inLevelShift) ) }}
     <div {{- with $childClass -}}{{ printf " class=\"%s\"" $childClass | safeHTMLAttr }}{{- end }}>
   {{- else if (eq $outLevel $inLevelShift) }}
-    <span {{- with $innerClass -}}{{ printf " class=\"%s\"" (index $innerClass (add $outLevel (sub $inLevelShift 1))) | safeHTMLAttr }}{{- end }}>
+    <span {{- with $innerClass -}}{{ printf ` data-inner-level="%v" class="%s"` (add $outLevel (sub $inLevelShift 1)) (index $innerClass (add $outLevel (sub $inLevelShift 1))) | safeHTMLAttr }}{{- end }}>
   {{- end }}
 
   {{- range $k, $v := $data }}
@@ -45,11 +45,11 @@
     {{- /* {{ partial "html-comment" (printf "[in=%d out=%d shift=%d]:%s Render Map key '%v'"
     $inLevel $outLevel $inLevelShift $inIndentStr (substr (printf "%v" $outStr) 0 $comSubStrLen)) -}} */ -}}
     {{- if (eq $outLevel (sub $inLevelShift 3) ) }}
-      <p {{- with $innerClass -}}{{ printf " class=\"%s\"" (index $innerClass (add $outLevel (sub $inLevelShift 1))) | safeHTMLAttr }}{{- end }}>
-        <span {{- with $innerClass -}}{{ printf " class=\"%s\"" (index $innerClass (add $outLevel (sub $inLevelShift 1))) | safeHTMLAttr }}{{- end }}>
+      <p {{- with $innerClass -}}{{ printf ` data-outer-level="%v" class="%s"` (add $outLevel (sub $inLevelShift 1)) (index $innerClass (add $outLevel (sub $inLevelShift 1))) | safeHTMLAttr }}{{- end }}>
+        <span {{- with $innerClass -}}{{ printf ` data-inner-level="%v" class="%s"` (add $outLevel (sub $inLevelShift 1)) (index $innerClass (add $outLevel (sub $inLevelShift 1))) | safeHTMLAttr }}{{- end }}>
       {{- $outStr = printf "%s%s" $outStr (index $outSuffix (add $outLevel (sub $inLevelShift 1)) ) }}
     {{- else if (eq $outLevel (sub $inLevelShift 2) ) }}
-        <span {{- with $innerClass -}}{{ printf " class=\"%s\"" (index $innerClass (add $outLevel (sub $inLevelShift 1))) | safeHTMLAttr }}{{- end }}>
+        <span {{- with $innerClass -}}{{ printf ` data-inner-level="%v" class="%s"` (add $outLevel (sub $inLevelShift 1)) (index $innerClass (add $outLevel (sub $inLevelShift 1))) | safeHTMLAttr }}{{- end }}>
     {{- else }}
       {{- range $idx, $val := (seq $outLevel) }}
         {{ printf "%s<ul class=\"ul-level-%d\">" (strings.Repeat $idx $levelIndentStr) (add $idx 1) | safeHTML }}
@@ -141,7 +141,8 @@
     {{- end }}
     {{- (strings.Repeat (add 1 $outLevel) $levelIndentStr) | safeHTML }}
   {{- else }}
-    <span {{- with $innerClass -}}{{ printf " class=\"%s\"" (index $innerClass (add $outLevel (sub $inLevelShift 1))) | safeHTMLAttr }}{{- end }}>
+    {{- partial "html-comment" (printf "[in=%d out=%d shift=%d]:%s Value: Render '%s'" $inLevel $outLevel $inLevelShift $inIndentStr (substr (printf "%v" $outStr) 0 $comSubStrLen)) }}
+    <span {{- with $innerClass -}}{{ printf ` data-inner-level="%v" class="%s"` (add $outLevel (sub $inLevelShift 1)) (index $innerClass (add $outLevel (sub $inLevelShift 1))) | safeHTMLAttr }}{{- end }}>
   {{- end }}
   {{ $page.RenderString $renderOpt $outStr }}
   {{- if (gt $outLevel 0) }}

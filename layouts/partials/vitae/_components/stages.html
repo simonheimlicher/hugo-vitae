@@ -1,14 +1,14 @@
 {{- $page := .Page -}}
 {{- $headingLevel := default 3 .HeadingLevel }}
-{{- $sectionClass := default "section-stages" .SectionClass }}
+{{- $sectionClass := default "component_stages" .SectionClass }}
 {{- $childClass := default "" .ChildClass }}
 {{- $partialOutput := default true .PartialOutput }}
-{{- $template := "vitae/sections/stages" }}
+{{- $template := "vitae/_components/stages" }}
 
-{{- $feature := .Feature }}
-{{- $filterField := default "type" $feature.filter_by -}}
-{{- $filterMatch := default "professional" $feature.filter_value -}}
-{{- $timelineForSingleRole := default false $feature.timeline_for_single_role }}
+{{- $component := .Component }}
+{{- $filterField := default "type" $component.filter_by -}}
+{{- $filterMatch := default "professional" $component.filter_value -}}
+{{- $timelineForSingleRole := default false $component.timeline_for_single_role }}
 
 {{- $logoImageWidthHeight := 96 }}
 {{- $logoImageDisplayWidthHeight := 48 }}
@@ -20,7 +20,7 @@
 
 {{- $homeCountry := "Switzerland" }}
 
-{{- $orgList := (index .Data $feature.collection) }}
+{{- $orgList := (index .Data $component.collection) }}
 {{- range $orgIdx, $org := $orgList }}
 
   {{- $roleList := where $org.roles $filterField $filterMatch }}
@@ -63,7 +63,22 @@
     {{- $oganizationHeaderClass := (delimit (append $topLevelClass $oganizationHeaderClassList) " ") }}
 
     <div class="{{ $oganizationHeaderClass }}">
-    {{- if and $logoImageResource (not $singleRoleWithoutDetails) }}
+      {{- if or $component.organization_period $component.organization_duration }}
+        {{- with $org.roles }}
+          <div class="organization-period stage-period">{{- partial
+            "vitae/_functions/date-period-duration" (dict
+            "PeriodList" .
+            "ShowPeriod" $component.organization_period
+            "ShowDuration" $component.organization_duration
+            "DurationFirst" true
+            "DateFormat" $dateFormat
+            "Container" "span"
+            "DateContainer" "span"
+            "Separator" "")
+            -}}</div>
+        {{- end }}
+      {{- end }}
+    {{- if and $logoImageResource (not (or $singleRoleWithoutDetails (not (default true $component.logo)) ) ) }}
       <div class="organization-logo">
         {{- if $logoImageResource }}
           {{- $logoImageResource = $logoImageResource.Fill $sizeSpec }}
@@ -91,7 +106,7 @@
         {{- if $org.website }}
           </a>
         {{- end }}
-          {{- if default true $feature.organization_location }}
+          {{- if default true $component.organization_location }}
             {{- $location := "" }}
             {{- with $org.location }}
               {{- $location = printf "%s" . }}
@@ -116,19 +131,6 @@
           {{- end }}
         </h{{ add 1 $headingLevel }}>
         {{- end }}
-        {{- if or $feature.organization_period $feature.organization_duration }}
-          <span class="organization-period stage-period">{{- partial
-            "vitae/_functions/date-period-duration" (dict
-            "PeriodList" $org.roles
-            "ShowPeriod" $feature.organization_period
-            "ShowDuration" $feature.organization_duration
-            "DurationFirst" true
-            "DateFormat" $dateFormat
-            "Container" "span"
-            "DateContainer" "span"
-            "Separator" "")
-            -}}</span>
-        {{- end }}
       </div>
     </div>
 
@@ -150,6 +152,22 @@
           {{- if $showTimeline }}
             <span class="role-dot"></span>
           {{- end }}
+          {{- if or $component.role_period $component.role_duration }}
+            {{- with $role.period }}
+              <div class="role-period num-roles-{{ $numRoles }} stage-period">
+              {{- partial
+                "vitae/_functions/date-period-duration" (dict
+                "PeriodList" .
+                "ShowPeriod" $component.role_period
+                "ShowDuration" $component.role_duration
+                "DurationFirst" true
+                "DateFormat" $dateFormat
+                "Container" "span"
+                "DateContainer" "span"
+                "Separator" "")
+                -}}</div>
+            {{- end }}
+          {{- end }}
           {{- $titleLayout := and $role.supertitle $role.subtitle}}
           <h{{ add 1 $headingLevel }} class="role-title{{- if $titleLayout }} partition{{ end }}">
             {{- if $titleLayout }}
@@ -159,30 +177,14 @@
               {{- partial "vitae/render-markdown" (dict "Page" $page "Data" $role.role) $page $role.role }}
             {{- end }}
           </h{{ add 1 $headingLevel }}>
-          {{- with $role.period }}
-            {{- if or $feature.role_period $feature.role_duration }}
-              <span class="role-period num-roles-{{ $numRoles }} stage-period">
-              {{- partial
-                "vitae/_functions/date-period-duration" (dict
-                "PeriodList" .
-                "ShowPeriod" $feature.role_period
-                "ShowDuration" $feature.role_duration
-                "DurationFirst" true
-                "DateFormat" $dateFormat
-                "Container" "span"
-                "DateContainer" "span"
-                "Separator" "")
-                -}}</span>
-            {{- end }}
-          {{- end }}
         </div>
 
         {{- if and (not $timelineForSingleRole) (ge $roleIdx (sub $numRoles 1) ) }}
           {{- $topLevelClass = strings.TrimLeft " " (delimit (slice $timelineClass $sectionClass $childClass) " ") }}
         {{- end }}
-        {{- $roleSectionSeparatorParams := (dict "feature" $feature "headinglevel" $headingLevel "toplevelclass" $topLevelClass) }}
+        {{- $roleSectionSeparatorParams := (dict "component" $component "headinglevel" $headingLevel "toplevelclass" $topLevelClass) }}
 
-        {{- if default true $feature.skills }}
+        {{- if default true $component.skills }}
           {{- with $role.skills }}
             <div class="role-skills{{ with $topLevelClass }} {{ . }}{{ end }}">
               {{- partial "vitae/section-experience-skills" (dict "Page" $page "Data" .) $page . }}
@@ -190,7 +192,7 @@
           {{- end }}
         {{- end }}
 
-        {{- if default true $feature.details }}
+        {{- if default true $component.details }}
           {{- with $role.details }}
             <div class="role-details{{ with $topLevelClass }} {{ . }}{{ end }}">
               {{- partial "vitae/render-markdown" (dict "Page" $page "Data" .) $page . }}
@@ -198,7 +200,7 @@
           {{- end }}
         {{- end }}
 
-        {{- if default true $feature.results }}
+        {{- if default true $component.results }}
           {{- with $role.results }}
             {{- $nestedBulletsClass := "role-results" }}
             {{- with $topLevelClass }}
@@ -214,7 +216,7 @@
           {{- end }}
         {{- end }}
 
-        {{- if default true $feature.responsibilities }}
+        {{- if default true $component.responsibilities }}
           {{- with $role.responsibilities }}
             {{- partial $roleSectionSeparator (merge $roleSectionSeparatorParams (dict "section" "responsibilities") ) }}
             {{- if reflect.IsSlice . }}
@@ -240,7 +242,7 @@
           {{- end }}
         {{- end }}
         {{- with $role.achievements }}
-          {{- if default true $feature.achievements }}
+          {{- if default true $component.achievements }}
             {{- partial $roleSectionSeparator (merge $roleSectionSeparatorParams (dict "section" "achievements") ) }}
             {{- $roleAchievementsClass := "role-achievements" }}
             {{- with $topLevelClass }} {{ $roleAchievementsClass = printf "%s %s" $roleAchievementsClass . }}{{ end }}
@@ -259,7 +261,7 @@
 {{- end }}
 
 {{- define "partials/role-section-separator.html" }}
-          {{- if .feature.headings }}
+          {{- if .component.headings }}
 
             <h{{- (add 2 .headinglevel) }} class="role-section-heading{{ with .toplevelclass }} {{ . }}{{ end }}">
               <span>{{ page.RenderString (T (printf "section-title_%s" .section ) ) }}</span><span class="separator-line"></span>

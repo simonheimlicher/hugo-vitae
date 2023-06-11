@@ -1,0 +1,222 @@
+@use 'sass:math';
+// Columns for 2-column layout
+// Fit content to iPad in landscape orientation:
+// 1024px = 64rem, minus 2 x 1.5rem for margin
+$vitae-content_wide_max-width: 61rem;
+// Fit content to iPad in portrait orientation:
+// 768px = 48rem, minus 2 x 1.5rem for margin
+$vitae-content_max-width: 41rem;
+$vitae-screenViewWidthWideAsideMin: 18rem;
+$vitae-screenViewWidthWideAsideMax: 24rem;
+$vitae-screenViewWidthAsideMin: 16rem;
+
+
+// Horizontal breakpoints
+// $screenViewBreakpointWidthWide: 84rem
+// $screenViewBreakpointWidthTwoColumn: 61rem
+// $screenViewBreakpointWidthOneColumn: 48rem
+// $screenViewBreakpointWidthNarrow: 28rem
+// $screenViewBreakpointWidthMobile: 20rem
+
+// Vertical breakpoints
+$screenViewBreakpointHeightTall: 48rem;
+$screenViewBreakpointHeightShallow: 42rem;
+
+$vitae-two-column-grid-column-gap: 1rem;
+$vitae-wide-grid-column-gap: 2rem;
+$font-size-scale-factor: math.pow(2.0, 1/4);
+$font-size-factor-normal: 1.0;
+$font-size-factor-smaller-4: #{$font-size-factor-normal / math.pow($font-size-scale-factor, 4)};
+$font-size-factor-smaller-3: #{$font-size-factor-normal / math.pow($font-size-scale-factor, 3)};
+$font-size-factor-smaller-2: #{$font-size-factor-normal / math.pow($font-size-scale-factor, 2)};
+$font-size-factor-smaller-1: #{$font-size-factor-normal / math.pow($font-size-scale-factor, 1)};
+$font-size-factor-larger-1: #{$font-size-factor-normal * math.pow($font-size-scale-factor, 1)};
+$font-size-factor-larger-2: #{$font-size-factor-normal * math.pow($font-size-scale-factor, 2)};
+$font-size-factor-larger-3: #{$font-size-factor-normal * math.pow($font-size-scale-factor, 3)};
+$font-size-factor-larger-4: #{$font-size-factor-normal * math.pow($font-size-scale-factor, 4)};
+$font-size-factor-larger-5: #{$font-size-factor-normal * math.pow($font-size-scale-factor, 5)};
+
+.vitae {
+  --font-size-base: 100%;
+  --line-height: 1.5;
+  --line-height-heading: 1.1;
+  --font-size-label: var(--font-size-normal);
+  --line-height-label: var(--line-height-heading);
+
+  --font-header: var(--font);
+  --font-body: var(--font);
+  --font-section: var(--font);
+  --font-section-title: var(--font);
+  --text-color-faint: var(--text-faint);
+  --border-color: var(--xaccent);
+  --border-color-faint: var(--neutral-haze);
+  --experience-organization-logo-column-width: 4rem;
+  --grid-column-gap: #{$vitae-two-column-grid-column-gap};
+
+  --font-weight: 400;
+  --font-weight-strong: 600;
+  --font-weight-em: var(--font-weight);
+  --font-weight-heading: var(--font-weight-strong);
+  --font-weight-caps: var(--font-weight);
+  --font-weight-caps-strong: var(--font-weight-strong);
+
+  --font-style: regular;
+
+  // FIXME: Disabled ligatures as application tracking systems (ATS) are not able to extract text from the PDF
+  // --font-variant-ligatures: discretionary-ligatures
+  // --font-variant-numeric: oldstyle-nums
+  --font-variant-ligatures: none;
+  --font-variant-numeric: normal;
+
+  --heading-padding-top: 0.5em;
+  --heading-padding-bottom: 0.125em;
+  --heading-margin-top: 0;
+  --heading-margin-bottom: 0;
+
+  // --list-style_indent: 1em
+  --list-style_indent: 0;
+
+  // FIXME: Override --choice-bg to change the background color of main.main_claris
+  --choice-bg: var(--haze);
+}
+.vitae {
+  * {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+  }
+  font-family: var(--font);
+  font-style: var(--font-style);
+  font-weight: var(--font-weight);
+  font-variant-ligatures: var(--font-variant-ligatures);
+  font-variant-numeric: var(--font-variant-numeric);
+  font-size: calc(var(--font-size-normal));
+  color: var(--text);
+  line-height: var(--line-height);
+
+  // At discretion of browser
+  font-kerning: auto;
+
+  // Allow breaking long words including URLs
+  // https://css-tricks.com/snippets/css/prevent-long-urls-from-breaking-out-of-container/
+  // These are technically the same, but use both
+  // https://stackoverflow.com/a/67249632/617559
+  // Prioritizes keeping any and all words unbroken while avoiding overflow, so if a word
+  // is too long to fit on the rest of the line, it wraps first and tries to fit the rest
+  // of the text on the next line
+  overflow-wrap: break-word;
+  word-wrap: break-word;
+
+  // word-break: break-all; Prioritizes minimizing the space wasted while avoiding overflow,
+  // before keeping any words unbroken, so it never wraps anywhere but at the right margin
+  // word-break: break-word
+
+  // Adds a hyphen where the word breaks, if supported
+  hyphens: auto;
+
+  // FIXME: Include proper list style within .vitae container
+  @include list-style_indented(0rem, var(--list-style_indent));
+
+  // Set bottom padding to 0 to avoid padding with different background color
+  // Yet still account for safe area (e.g. notch on iPhones)
+  padding-bottom: calc(min(0px, env(safe-area-inset-bottom, 0px)));
+}
+
+.vitae {
+  .layout-letter {
+    .view-print {
+      --print-font-scale-factor: 1.1;
+    }
+  }
+  h1,
+  h2,
+  h3,
+  h4,
+  h5 {
+    color: var(--header-text);
+    font-family: inherit;
+    font-weight: var(--font-weight-heading);
+    line-height: var(--line-height-heading);
+    padding: var(--heading-padding-top) 0 var(--heading-padding-bottom) 0;
+    margin: var(--heading-margin-top) 0 var(--heading-margin-bottom) 0;
+    break-after: avoid;
+    // Avoid hyphenation in headings
+    hyphens: manual;
+    &:hover .link {
+      opacity: 1;
+    }
+  }
+  h1 {
+    font-size: calc(var(--font-size-larger-3));
+  }
+  h2 {
+    font-size: calc(var(--font-size-larger-2));
+  }
+  h3 {
+    font-size: calc(var(--font-size-larger-1));
+  }
+  h4,
+  h5,
+  h6 {
+    font-size: calc(var(--font-size-normal));
+  }
+}
+header,
+section,
+article,
+aside {
+  clear: both;
+}
+img {
+  margin: 0;
+  padding: 0;
+  height: auto;
+  &:focus,
+  &:focus-within {
+    outline: none !important;
+    border: none !important;
+  }
+}
+a {
+  text-decoration: none;
+  color: inherit;
+  &:focus,
+  &:focus-within {
+    outline: none !important;
+  }
+  &:hover {
+    @media (any-hover: hover) {
+      color: var(--text-hover);
+    }
+  }
+  &:active {
+    color: var(--xaccent);
+  }
+  &:focus {
+    outline: var(--accent);
+  }
+  // Avoid adding a hyphen where the word breaks
+  hyphens: none;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+}
+img,
+svg {
+  max-width: 100%;
+  vertical-align: middle;
+}
+ul {
+  list-style: none;
+  -webkit-padding-start: 0;
+  -moz-padding-start: 0;
+}
+em {
+  font-weight: var(--font-weight-em);
+}
+b,
+strong {
+  font-weight: var(--font-weight-strong);
+}
+address {
+  font-style: var(--font-style);
+}

@@ -1,0 +1,37 @@
+{{- $page := .Page }}
+{{- $fragment := .Fragment }}
+{{- $config := .Config }}
+{{- $template := "partials/vitae/fragments/date-of-birth" }}
+{{- $outputFormat := default "HTML" (partial "claris/_functions/output-format" $page).Name }}
+{{- $media := cond (eq $outputFormat "print") "print" "screen" }}
+{{/* {{- warnf "%s[%s]: outputFormat:%s" $page $template $outputFormat }} */}}
+{{- $obfuscatedLink := "partials/claris/_components/obfuscated-link.html" }}
+
+{{- $addressFields := default (slice
+  (dict "street" "SEP")
+  (dict "zip" " ")
+  (dict "city" ", ")
+  (dict "country" "")
+) .AddressFields }}
+
+{{- $contactIcons := true }}
+
+{{- /* warnf "%s[%s]: .Fragment=%s .Config=%s .Data=%s" $page $template $fragment $config .Data.features.date-of-birth */ -}}
+{{- with $dateOfBirthData := (index .Data.features.date_of_birth) }}
+  {{- with (index . $media) }}
+    {{- $dateOfBirthData = . }}
+  {{- end -}}
+  {{- with $dateOfBirth := $dateOfBirthData.date }}
+    <div class="date-of-birth_date fragment_item">
+      {{- if $contactIcons }}
+      {{ partial "fa-icon" "solid/cake-candles" }}
+      {{- end -}}
+      <div class="date-of-birth-text">
+        {{- with $config.title }}
+          <span class="date-of-birth-title section-title">{{- default . (T .) -}}</span>
+        {{- end }}
+        <time class="date-of-birth_date" datetime="{{ time.Format "2006-01-02" . }}">{{ time.Format "Jan 2, 2006" . | safeHTML }}</time>
+      </div>
+    </div>
+  {{- end -}}
+{{- end -}}

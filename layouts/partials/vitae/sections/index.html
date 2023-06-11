@@ -62,8 +62,8 @@
 {{- end -}}
 {{- with $partial }}
   {{ partial "html-comment" (printf "BEGIN %s: " $partial)}}
-  {{/* {{ partial "html-comment" ( printf "%s: partial=%s: headingLevel: %v childClass:%s\nfeature: %s\n"
-  $template $partial $headingLevel $childClass ($feature | jsonify ) ) }} */}}
+  {{- /* {{- partial "html-comment" ( printf "%s: partial=%s: headingLevel: %v childClass:%s\nfeature: %s\n"
+  $template $partial $headingLevel $childClass ($feature | jsonify ) ) }} */ -}}
   {{- /* warnf "%s[%s/%s]: Render section '%s' using '%s' .Feature=%s" $page $template $media $sectionID $partial $feature */ -}}
   {{ partial $partial (merge $sectionArgs (dict
     "Feature" $feature

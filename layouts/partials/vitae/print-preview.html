@@ -38,11 +38,12 @@
 {{- $printPreview := $pp.PrintPreview }}
 {{- $printView := $pp.PrintView }}
 
-{{- if (or $printPreview $printView) }}
+{{- if (or $printControl $printPreview $printView) }}
   {{/* {{- warnf "%s[%s]: .Params=%v printPreview=%v printView=%v" $page $template $printPreview $printView -}} */}}
-  {{- if $printPreview }}
+  {{- if $printControl}}
+  {{- else if $printPreview }}
     {{- $targetClass = printf "%s preview-%s" $targetClass "prepare" }}
-  {{- else }}
+  {{- else if $printView }}
     {{- $targetClass = printf "%s preview-%s" $targetClass "render" }}
   {{- end }}
 

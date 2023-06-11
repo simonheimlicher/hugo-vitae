@@ -1,0 +1,48 @@
+{{- $page := .Page -}}
+{{- $template := "vitae/_components/profile" -}}
+{{- $headingLevel := default 3 .HeadingLevel }}
+{{- $sectionClass := default "section-profile" .SectionClass }}
+{{- $childClass := default "" .ChildClass }}
+
+{{- $component := .Component }}
+
+{{- $topLevelClass := delimit (slice $sectionClass $childClass) " " }}
+
+{{- $filterField := default "type" $component.filter_by -}}
+{{- $filterMatch := default false $component.filter_value -}}
+
+{{- $optInline := dict "display" "inline" }}
+
+{{- $personalProfile := (index .Data (default $component.component $component.collection) ) }}
+{{- with $personalProfile }}
+  {{- with .content }}
+    <div class="profile_content">
+      {{- page.RenderString . }}
+    </div>
+  {{- end }}
+  {{- with $competencyCollection := .competencies }}
+    {{- $competencyList := . }}
+    {{- $classPrefix := "competency" }}
+    {{- with $filterMatch }}
+      {{- if reflect.IsSlice . }}
+        {{- $competencyList = where $competencyCollection $filterField "in" . }}
+        {{- $classPrefix = printf "%s %s" $filterMatch (delimit $classPrefix "_") }}
+      {{- else }}
+        {{- $competencyList = where $competencyCollection $filterField . }}
+        {{- $classPrefix = printf "%s %s" $filterMatch $classPrefix }}
+      {{- end }}
+    {{- end }}
+    {{- with $competencyList }}
+      {{- partial "claris/_components/panels" (dict
+          "Page" $page
+          "HeadingLevel" $headingLevel
+          "Nested" false
+          "Panels" . )
+        }}
+          {{/* "ContainerClass" (printf "%s_competencies" $sectionClass) */}}
+    {{- end }}
+  {{- /* {{- else }}
+    {{- warnf "%s[%s]: Failed to obtain competencyCollection via (index .Data $component.collection) with $component.collection=%v"
+        $page $template $component.collection }} */ -}}
+  {{- end }}
+{{- end }}

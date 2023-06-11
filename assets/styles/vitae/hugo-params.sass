@@ -43,11 +43,11 @@ $screenViewBodyPadding: {{ default "1.5rem" ($page.Param "screenViewBodyPadding"
 $screenViewWidthAsideMin: {{ default "12rem" ($page.Param "screenViewWidthAsideMin") }}
 
 // Parameters for layout with one aside
-$screenViewColumnWidthMin: calc(#{$screenViewBreakpointWidthOneColumn} - 2 * #{$screenViewBodyPadding});
-$screenViewColumnWidthMax: calc(#{$screenViewBreakpointWidthTwoColumn} - 2 * #{$screenViewBodyPadding});
+$screenViewColumnWidthMin: calc(#{$screenViewBreakpointWidthOneColumn} - 2 * #{$screenViewBodyPadding})
+$screenViewColumnWidthMax: calc(#{$screenViewBreakpointWidthTwoColumn} - 2 * #{$screenViewBodyPadding})
 
 // Parameters for layout with two asides
-$screenViewColumnWidthWideMin: #{$screenViewColumnWidthMin};
+$screenViewColumnWidthWideMin: #{$screenViewColumnWidthMin}
 $screenViewColumnWidthWideMax: {{ default "80rem" ($page.Param "screenViewColumnWidthWideMax") }}
 $screenViewWidthWideAsideMin: {{ default "14rem" ($page.Param "screenViewWidthWideAsideMin") }}
 $screenViewWidthWideAsideMax: {{ default "24rem" ($page.Param "screenViewWidthWideAsideMax") }}

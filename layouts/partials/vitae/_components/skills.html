@@ -1,10 +1,10 @@
 {{- $page := .Page -}}
-{{- $template := "vitae/sections/skills" -}}
+{{- $template := "vitae/_components/skills" }}
 {{- $headingLevel := default 3 .HeadingLevel }}
 {{- $sectionClass := default "section-skills" .SectionClass }}
 {{- $childClass := default "" .ChildClass }}
 
-{{- $feature := .Feature }}
+{{- $component := .Component }}
 
 {{- $layout := "screen" -}}
 {{- with $page.Layout -}}
@@ -13,13 +13,13 @@
 
 {{- $topLevelClass := delimit (slice $sectionClass $childClass) " " }}
 
-{{- $filterField := default "type" $feature.filter_by -}}
-{{- $filterMatch := default "language" $feature.filter_value -}}
+{{- $filterField := default "type" $component.filter_by -}}
+{{- $filterMatch := default "language" $component.filter_value -}}
 
 {{- $optInline := dict "display" "inline" }}
 
 
-{{- $skillCollection := (index .Data $feature.collection) }}
+{{- $skillCollection := (index .Data $component.collection) }}
 {{- with $skillCollection }}
   {{- $skillList := where $skillCollection $filterField $filterMatch }}
 
@@ -32,14 +32,14 @@
     {{- with .level }}
     <div class="{{- $classPrefix }}_level">
       <span class="{{- $classPrefix }}_level_description">{{- .description }}</span>
-      {{- if default true $feature.level_bar }}
+      {{- if default true $component.level_bar }}
         <div class="{{- $classPrefix }}_level_bar">
           <span class="{{- $classPrefix }}_level_bar_tab" style="width: {{ .value }}%">&nbsp;</span>
         </div>
       {{- end }}
     </div>
     {{- end }}
-    {{- if default true $feature.details }}
+    {{- if default true $component.details }}
       {{- $detailFields := slice "certificates" "details" }}
       <div class="{{- $classPrefix }}_details">
         {{- range $k := $detailFields }}
@@ -59,6 +59,6 @@
   {{- end }}
   </div>
 {{- /* {{- else }}
-  {{- warnf "%s[%s]: Failed to obtain skillCollection via (index .Data $feature.collection) with $feature.collection=%v"
-      $page $template $feature.collection }} */ -}}
+  {{- warnf "%s[%s]: Failed to obtain skillCollection via (index .Data $component.collection) with $component.collection=%v"
+      $page $template $component.collection }} */ -}}
 {{- end }}

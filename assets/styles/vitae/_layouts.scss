@@ -1,0 +1,643 @@
+// Default Layout
+// Styles that define the Vitae Default layout
+// NOTE: This includes styles for all media types
+
+// Hints:
+// https://css-tricks.com/new-year-new-job-lets-make-a-grid-powered-resume/
+// Inexplicable empty space on print from Chrome: https://stackoverflow.com/questions/35001518/inexplicable-empty-space-on-print-from-chrome
+// Inexplicable margin between elements on print in Chrome, but not in Firefox: https://stackoverflow.com/questions/71550887/inexplicable-margin-between-elements-on-print-in-chrome-but-not-in-firefox
+// Reference for @page: https://www.princexml.com/samples/catalog/PrinceCatalogue.html
+
+// Using table footer to have footer repeating on every page:
+// https://stackoverflow.com/a/69136303/617559
+
+// Target page dimensions for on screen preview
+// $page-width: 210mm // DIN A4
+// $page-height: 297mm // DIN A4
+// FIXME: It appears that Chrome v109 thinks that A4 is only 1122px high
+// $page-height: 1122px // DIN A4
+// DIN A4 for Chrome
+$page-height: 296.8625mm;
+// DIN A4 for Chrome
+// $page-width: 794px
+$page-width: 210.0791667mm;
+
+// Page margins
+$page-mar-h: 10mm;
+$page-mar-v: $page-mar-h * $page-height / $page-width;
+$page-mar-ratio-top-bottom: 2 / 3;
+
+$column-pad-h: $page-mar-h / 2;
+$column-pad-v: $page-mar-h / 4;
+
+$screen-pad-h: 1rem;
+$screen-pad-v: 1rem;
+
+.vitae {
+  @media screen {
+    --page-scale-factor: 1.0;
+  }
+
+  --font-size-dimension: 1pt;
+  --root-font-size-number: 12;
+  // Target 9pt size of body font on paper
+  --body-font-size-number: 9;
+  // 1:1 scaling
+  --print-font-scale-factor: 1.0;
+
+  --page-width: #{$page-width};
+  --page-height: #{$page-height};
+  --page-scale-factor: 1;
+
+  // font-size: var(--print-font-size)
+  // font-size: var(--root-font-size)
+  // font-size: calc(var(--font-size-dimension) * var(--root-font-size-number))
+  // font-size: calc(100% / var(--root-scale-factor))
+
+  --page-margin-h: #{$page-mar-h};
+  --page-margin-v: #{$page-mar-v};
+  --page-margin-ratio-top-bottom: #{$page-mar-ratio-top-bottom};
+
+  --column-padding-h: #{$column-pad-h};
+  --column-padding-v: #{$column-pad-v};
+
+  --gap-h: #{$column-pad-h};
+  --gap-v: #{$column-pad-v};
+
+  --column-padding-screen-h: #{$screen-pad-h};
+  --column-padding-screen-v: #{$screen-pad-v};
+}
+.vitae {
+  --page-scale-factor: 1.0;
+
+  --page-width: calc(#{$page-width} * var(--page-scale-factor));
+  --page-height: calc(#{$page-height} * var(--page-scale-factor));
+
+  --page-margin-left: calc( var(--page-margin-h) * var(--page-scale-factor));
+  --page-margin-right: calc( var(--page-margin-h) * var(--page-scale-factor));
+  --page-margin-top: calc( (var(--page-margin-ratio-top-bottom) ) / (1 + var(--page-margin-ratio-top-bottom) ) * 2 * var(--page-margin-v) * var(--page-scale-factor));
+  --page-margin-bottom: calc( 1 / (1 + var(--page-margin-ratio-top-bottom) ) * var(--page-margin-v) * 2 * var(--page-scale-factor));
+  --aside-margin-v: calc(0.5 * var(--page-margin-v) * var(--page-scale-factor));
+
+  --column-padding-h: calc(#{$column-pad-h} * var(--page-scale-factor));
+  --column-padding-v: calc(#{$column-pad-v} * var(--page-scale-factor));
+
+  --gap-h: #{$column-pad-h} * var(--page-scale-factor);
+  --gap-v: #{$column-pad-v} * var(--page-scale-factor);
+
+  #printPreviewContainer {
+    display: none;
+  }
+  #vitaeContainer {
+    &[data-print-preview-visible='true'] {
+      #originalContainer {
+        display: none;
+      }
+      #printPreviewContainer {
+        display: block;
+      }
+    }
+  }
+  .view-print {
+    --font-size-normal: calc(var(--print-font-scale-factor) * var(--font-size-dimension) * var(--body-font-size-number) * var(--page-scale-factor));
+  }
+}
+@media screen {
+  .main.vitae {
+    .view-print {
+      background: var(--neutral-theme-haze);
+      padding-bottom: 0;
+    }
+  }
+  .vitae {
+    --screen-page-sep: 1.5rem;
+
+    .main-column {
+      background: var(--bg);
+    }
+    .vitae_inner {
+      margin: 0 auto;
+    }
+    .print-preview_inner {
+      @include wrap;
+      background: var(--print-preview-background);
+    }
+    #printPreviewContainer {
+      // Ensure this element is above footer
+      z-index: 1;
+      // Ensure that navigation bar on mobile screens remains fixed
+      // while print preview scrolls horizontally
+      overflow: auto;
+    }
+    .view-print {
+      .pagination-section {
+        display: flex;
+        flex-wrap: wrap;
+        flex-direction: row;
+        justify-content: center;
+        min-width: min-content;
+        padding: var(--screen-page-sep);
+        gap: var(--screen-page-sep);
+      }
+      .pagination-page {
+        position: relative;
+        width: var(--page-width);
+        margin: 0;
+        background: var(--bg);
+        overflow: hidden;
+        box-shadow: 0.2rem 0.2rem 0.6rem hsla(0, 0%, 50%, 0.5);
+      }
+      .print-preview_target {
+        .pagination-page {
+          height: var(--page-height);
+        }
+      }
+    }
+    .print-preview_inner {
+      // FIXME: Ensure 'main' element covers entire 'body' when two pages are shown horizontally
+      width: 100%;
+    }
+  }
+}
+@media print {
+  .vitae {
+    --bg: var(--print-bg);
+
+    .pagination-page {
+      padding: 0mm;
+      margin: 0mm;
+      background: var(--bg);
+      // width: 210mm // PrinceXML
+      // height: 297mm // PrinceXML
+      // page-break-before: always // PrinceXML
+      width: var(--page-width);
+      height: var(--page-height);
+      // PrinceXML
+      page-break-before: auto;
+      // PrinceXML
+      position: relative;
+      // PrinceXML
+      overflow: hidden;
+    }
+    @page {
+      padding: 0mm;
+      margin: 0mm;
+      size: A4 portrait;
+    }
+  }
+  body {
+    // background: white
+    margin: 0mm;
+  }
+  main #printPreviewContainer {
+    display: none;
+  }
+}
+
+@mixin full-bleed_column($vertical: none, $horizontal: none) {
+  $margin_top: 0;
+  $margin_right: 0;
+  $margin_bottom: 0;
+  $margin_left: 0;
+
+  @if $vertical == 'top' {
+    $margin_top: calc(-1 * var(--page-margin-top));
+  }  @else if $vertical == 'bottom' {
+    $margin_bottom: calc(-1 * var(--page-margin-bottom));
+  }
+
+  @if $horizontal == 'right' {
+    $margin_right: calc(-1 * var(--page-margin-right));
+    $margin_left: calc(-1 * var(--column-padding-left));
+  }  @else if $horizontal == 'left' {
+    $margin_right: calc(-1 * var(--column-padding-right));
+    $margin_left: calc(-1 * var(--page-margin-left));
+  }
+
+  margin: $margin_top $margin_right $margin_bottom $margin_left;
+}
+@mixin full-bleed_page($vertical: none, $horizontal: none) {
+  $margin_top: 0;
+  $margin_right: 0;
+  $margin_bottom: 0;
+  $margin_left: 0;
+
+  @if $vertical == 'top' {
+    $margin_top: calc(-1 * var(--page-margin-top));
+  }  @else if $vertical == 'bottom' {
+    $margin_bottom: calc(-1 * var(--page-margin-bottom));
+  }
+
+  @if $horizontal == 'right' {
+    $margin_right: calc(-1 * var(--page-margin-right));
+  }  @else if $horizontal == 'left' {
+    $margin_left: calc(-1 * var(--page-margin-left));
+  }  @else if $horizontal == 'both' {
+    $margin_right: calc(-1 * var(--page-margin-right));
+    $margin_left: calc(-1 * var(--page-margin-left));
+  }
+
+  margin: $margin_top $margin_right $margin_bottom $margin_left;
+}
+.vitae {
+  --row-gap: calc(2.0 * var(--column-padding-v));
+  --column-gap: calc(2.0 * var(--column-padding-h));
+  --column-padding-left: calc(var(--column-padding-h));
+  --column-padding-right: calc(var(--column-padding-h));
+
+  --aside-width: calc(var(--page-width) / 4);
+}
+.vitae {
+  .view-screen {
+    @include font-size-scale(1rem);
+  }
+  .view-print {
+    @include font-size-scale(9pt);
+    .pagination-container {
+      position: relative;
+      padding: 0;
+      overflow: visible;
+    }
+    .section + .section {
+      margin-top: var(--row-gap);
+    }
+    .print-preview_overflow {
+      .pagination-container {
+        overflow: hidden;
+        height: 100%;
+      }
+    }
+    .main-column {
+      --border-color-faint: var(--theme-xxhaze);
+    }
+    .header,
+    .main-header,
+    .aside-primary {
+      --border-color-faint: var(--theme-xxhaze);
+    }
+    .pagination-page {
+      position: relative;
+
+      /* ----- Layout RESUME ------ */
+      &.main-aside-primary {
+        &::before {
+          content: "";
+          position: absolute;
+          top: 0;
+          bottom: 0;
+          left: 0;
+          width: calc(var(--page-margin-left) + var(--aside-width) + var(--column-gap) / 2);
+          background-color: var(--theme-haze);
+          z-index: 0;
+        }
+        &::after {
+          content: "";
+          position: absolute;
+          top: 0;
+          right: 0;
+          bottom: 0;
+          left: 0;
+          background: var(--bg);
+          z-index: -1;
+        }
+        display: grid;
+        padding: var(--page-margin-top) var(--page-margin-right) var(--page-margin-bottom) var(--page-margin-left);
+        grid-template-rows: minmax(min-content, max-content) 1fr;
+        row-gap: var(--row-gap);
+        grid-template-columns: var(--aside-width) auto;
+        column-gap: var(--column-gap);
+        align-items: start;
+        .header {
+          grid-column: 1;
+          grid-row: 1;
+        }
+        .aside-primary {
+          grid-column: 1;
+          grid-row: 2;
+        }
+        .main-column {
+          grid-column: 2;
+          grid-row: 1 / span 2;
+        }
+      }
+    }
+    .header,
+    .main-header,
+    .main-column,
+    .aside-header,
+    .aside-primary,
+    .aside-secondary {
+      h1,
+      h2,
+      h3,
+      h4,
+      h5,
+      h6 {
+        &.feature-first {
+          padding-top: 0;
+          margin-top: calc((1 - var(--line-height-heading)) * 1em);
+        }
+      }
+      .feature-first {
+        padding-top: 0;
+        h1,
+        h2,
+        h3,
+        h4,
+        h5,
+        h6 {
+          &:first-of-type {
+            padding-top: 0;
+            margin-top: calc((1 - var(--line-height-heading)) * 1em);
+          }
+        }
+        & > p:first-of-type,
+        & > li:first-of-type {
+          padding-top: 0;
+          margin-top: calc((1 - var(--line-height)) * 1em);
+        }
+      }
+    }
+  }
+}
+.vitae {
+  .view-print.print-preview_overflow {
+    .pagination-page {
+      height: var(--page-height);
+      overflow: hidden;
+    }
+    .main-column,
+    .aside-primary,
+    .aside-secondary {
+      // height: 100%
+      overflow: hidden;
+    }
+// Adapt layout after pagination
+  }
+}
+.vitae[data-print-preview-status="done"] {
+  &.layout-resume,
+  &.layout-executive {
+    .view-print {
+      .pagination-page {
+        &.main-aside-primary {
+          .main-column,
+          .aside-primary,
+          .aside-secondary {
+            display: flex;
+            flex-direction: column;
+            flex-wrap: nowrap;
+            justify-content: space-between;
+            // & > *
+            //   flex: 0 1 auto
+            // & > .timeline
+            //   flex: 0.5 1 auto
+            // .organization-header
+            //   flex: 0.25 0 auto
+            .role-header {
+              flex: 1 0 auto;
+            }
+            .organization-header + .role-header {
+              flex: 0.5 0 auto;
+            }
+            .role-section-heading {
+              flex: 1 0 auto;
+            }            // .role-header:has(+ .role-section-heading)
+            //   flex: 0 0 auto
+            .role-header + .role-section-heading {
+              flex: 0.25 0 auto;
+            }
+          }
+        }
+      }
+      .page-first:not(.page-last) {
+        grid-template-rows: auto;
+        .main-column,
+        .aside-primary,
+        .aside-secondary {
+          height: 100%;
+        }
+        .aside-primary,
+        .aside-secondary {
+          & > * {
+            flex: 0 1 auto;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-end;
+          }
+        }
+      }
+      .page-last {
+        &.pagination-page.main-aside-primary {
+          // Only allow one row
+          grid-template-rows: 1fr;
+          .header {
+            display: none;
+          }
+          .aside-primary {
+            grid-row: 1;
+          }
+          .main-column {
+            grid-row: 1;
+            height: 100%;
+          }
+          .aside-primary,
+          .aside-secondary {
+            // & > *
+            //   flex: 0 1 auto
+            //   height: 100%
+            //   display: flex
+            //   flex-direction: column
+            //   justify-content: flex-end
+            height: 100%;
+          }
+        }
+      }
+    }
+  }
+}
+.vitae,
+.vitae[data-print-preview-status="done"] {
+  &.layout-letter {
+    --font-size-heading-organization: 24pt;
+    --organization-logo-width: 48px;
+    .view-print {
+      .pagination-page.main-aside-primary {
+        grid-template-rows: minmax(min-content, max-content) 1fr;
+        grid-template-columns: var(--aside-width) auto;
+        gap: var(--row-gap) var(--column-gap);
+        align-items: start;
+        .aside-header {
+          grid-row: 1 / span 2;
+          grid-column: 1;
+        }
+        .aside-primary {
+          grid-column: 1;
+          grid-row: 3;
+        }
+        .main-header {
+          grid-column: 2;
+          grid-row: 1;
+        }
+        .main-column {
+          grid-column: 2;
+          grid-row: 2 / span 2;
+        }
+        --font-size-h1: 2.4em;
+        .main-header {
+          grid-column: 2;
+          grid-row: 1;
+          // background: var(--theme-xhaze)
+          display: flex;
+          flex-direction: row;
+          gap: var(--row-gap) var(--column-gap);
+          align-items: center;
+          flex-wrap: wrap;
+          justify-content: space-between;
+          .selflink-item {
+            margin-left: auto;
+          }
+        }
+        .aside-header,
+        .aside-primary {
+          display: flex;
+          gap: var(--row-gap) var(--column-gap);
+          flex-direction: column;
+          background: var(--theme-haze);
+        }
+        .aside-header {
+          .about {
+            display: flex;
+            gap: var(--row-gap) var(--column-gap);
+            flex-direction: column;
+            width: 100%;
+            max-width: 25em;
+            margin: 0 auto;
+            .name {
+              text-align: left;
+            }
+            .selflink {
+              display: flex;
+              flex-direction: row;
+              gap: var(--column-padding-v) var(--column-padding-h);
+              align-items: center;
+              flex-wrap: nowrap;
+              justify-content: space-between;
+            }
+          }
+        }
+        .organization {
+          &-header {
+            display: flex;
+            flex-direction: row;
+            justify-content: flex-start;
+            align-items: center;
+            flex: 0;
+            gap: 0.5em;
+            min-height: var(--organization-logo-width);
+            break-after: avoid;
+            margin: 0;
+            padding: 0;
+          }
+          &-logo {
+            align-self: center;
+          }
+          &-title {
+            margin: calc( (1 - var(--line-height-heading)) * 1em) 0 0 0;
+            padding: 0;
+          }
+        }
+        .role-header {
+          position: relative;
+          display: flex;
+          align-items: center;
+          justify-content: flex-end;
+          flex: 0 1 auto;
+          margin-left: auto;
+          width: auto;
+          text-align: right;
+          padding: 0;
+          break-after: avoid;
+          .role-title {
+            font-weight: var(--font-weight-strong);
+            margin: 0;
+            margin: calc( (1 - var(--line-height-heading)) * 1em) 0 0 0;
+            padding: 0;
+          }
+// Adapt layout after pagination
+        }
+      }
+    }
+  }
+}
+.vitae[data-print-preview-status="done"] {
+  &.layout-letter {
+    .view-print {
+      .main-column,
+      .aside-primary,
+      .aside-secondary {
+        display: flex;
+        flex-direction: column;
+        flex-wrap: nowrap;
+        justify-content: space-between;
+        & > * {
+          flex: 0 1 auto;
+        }
+        & > .timeline {
+          flex: 0.5 1 auto;
+        }
+      }
+      .page-first.page-last {
+        grid-template-rows: auto;
+        .main-column,
+        .aside-primary,
+        .aside-secondary {
+          height: 100%;
+        }
+      }
+      .page-first:not(.page-last) {
+        grid-template-rows: auto;
+        .main-column,
+        .aside-primary,
+        .aside-secondary {
+          height: 100%;
+        }
+        .aside-primary,
+        .aside-secondary {
+          & > * {
+            flex: 0 1 auto;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-end;
+          }
+        }
+      }
+      .page-last:not(.page-first) {
+        &.pagination-page.main-aside-primary {
+          // Only allow one row
+          grid-template-rows: 1fr;
+          .main-header {
+            display: none;
+          }
+          .aside-primary {
+            grid-row: 1;
+          }
+          .main-column {
+            grid-row: 1;
+          }
+          .aside-primary,
+          .aside-secondary {            // & > *
+            //   flex: 0 1 auto
+            //   height: 100%
+            //   display: flex
+            //   flex-direction: column
+            //   justify-content: flex-end
+            height: 100%;
+          }
+        }
+      }
+    }
+  }
+}

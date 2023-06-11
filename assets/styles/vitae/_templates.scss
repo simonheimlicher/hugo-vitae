@@ -1,0 +1,69 @@
+/* ----- Templates for layout EXECUTIVE ------ */
+.vitae.layout-executive .view-print .template {
+  // Part front page
+  &_front-page {
+    padding: var(--page-margin-top) var(--page-margin-right) var(--page-margin-bottom) var(--page-margin-left);
+    .slot_main {
+      display: grid;
+      gap: var(--inner_margin-y-2) var(--inner_margin-x);
+      grid-template-columns: repeat(12, 1fr);
+      align-items: start;
+      .section {
+        &_personal-profile {
+          grid-column: 1 / span all;
+          grid-row: 1;
+        }
+        &_career-summary {
+          grid-column: 1 / span 8;
+          grid-row: 2 / span 2;
+        }
+        &_education {
+          grid-column: 9 / span 4;
+          grid-row: 2;
+        }
+        &_language-skills {
+          grid-column: 9 / span 4;
+          grid-row: 2;
+        }
+        &_award-selection {
+          grid-column: 9 / span 4;
+          grid-row: 3;
+        }
+        &_patent-selection {
+          grid-column: 1 / span 8;
+          grid-row: 4;
+        }
+      }
+    }
+    .footer {
+      grid-column: 1 / span all;
+      display: grid;
+      row-gap: var(--row-gap);
+      grid-template-columns: repeat(12, 1fr);
+      column-gap: var(--column-gap);
+      align-items: start;
+      .section {
+        &-connect {
+          grid-column: 9 / span 4;
+          grid-row: 4;
+        }
+      }
+    }
+  }
+  &_career-timeline {
+    .slot_main {
+      display: grid;
+      padding: var(--page-margin-top) var(--page-margin-right) var(--page-margin-bottom) var(--page-margin-left);
+      // grid-template-rows: minmax(min-content, max-content) 1fr
+      row-gap: var(--row-gap);
+      grid-template-columns: repeat(12, 1fr);
+      column-gap: var(--column-gap);
+      align-items: start;
+      .section {
+        &_experience, &_education {
+          grid-column: 1 / span all;
+        }
+      }
+    }
+  }
+}

@@ -1,3 +1,20 @@
+@mixin font-size-scale($font-size: 1rem, $scale: 1.0) {
+  @if ($font-size != 0) {
+    --font-size-base: #{$scale} * #{$font-size};
+  }
+  --font-size-normal:    #{$font-size-factor-normal}    * #{$scale} * var(--font-size-base);
+  --font-size-smaller-4: #{$font-size-factor-smaller-4} * #{$scale} * var(--font-size-base);
+  --font-size-smaller-3: #{$font-size-factor-smaller-3} * #{$scale} * var(--font-size-base);
+  --font-size-smaller-2: #{$font-size-factor-smaller-2} * #{$scale} * var(--font-size-base);
+  --font-size-smaller-1: #{$font-size-factor-smaller-1} * #{$scale} * var(--font-size-base);
+  --font-size-larger-1:  #{$font-size-factor-larger-1}  * #{$scale} * var(--font-size-base);
+  --font-size-larger-2:  #{$font-size-factor-larger-2}  * #{$scale} * var(--font-size-base);
+  --font-size-larger-3:  #{$font-size-factor-larger-3}  * #{$scale} * var(--font-size-base);
+  --font-size-larger-4:  #{$font-size-factor-larger-4}  * #{$scale} * var(--font-size-base);
+  --font-size-larger-5:  #{$font-size-factor-larger-5}  * #{$scale} * var(--font-size-base);
+  font-size: calc(var(--font-size-normal));
+}
+
 
 @mixin wrap() {
   padding: 0 $screenViewBodyPaddingNarrow;
@@ -24,7 +41,8 @@
     & > * {
       padding-left: $list-item-separation;
     }
-    li {      // padding-left: 1ch;
+    li {
+      // padding-left: 1ch;
       padding-left: $list-item-separation;
       margin-left: -$list-item-separation / 3.0 - $list-sep-width;
     }
@@ -78,4 +96,25 @@
   &:hover {
     box-shadow: 0 0 $dist rgba(0, 0, 0, $hover-opacity);
   }
+}
+
+@mixin lower-caps($spacing: 0.05ch) {
+  font-weight: var(--font-weight-caps);
+  font-variant: all-small-caps;
+  letter-spacing: $spacing;
+  text-transform: lowercase;
+}
+
+@mixin upper-caps($spacing: 0.05ch) {
+  font-weight: var(--font-weight-caps);
+  font-variant: small-caps;
+  letter-spacing: $spacing;
+  text-transform: uppercase;
+}
+
+@mixin upper-caps-strong($spacing: 0.05ch) {
+  font-weight: var(--font-weight-caps-strong);
+  font-variant: small-caps;
+  letter-spacing: $spacing;
+  text-transform: uppercase;
 }

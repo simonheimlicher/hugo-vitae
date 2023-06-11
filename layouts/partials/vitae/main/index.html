@@ -68,18 +68,8 @@
 {{/* {{ warnf "%s[%s]: vitaeData.features.about: %s"  $page $template ($vitaeData.features.about | jsonify (dict "indent" "  ")) }} */}}
 
 {{- $printViewVisibleAttr := "" }}
-{{- if (or $printPreview $printView) }}
+{{- if $printView }}
   {{- $printViewVisibleAttr = "data-print-preview-visible=\"true\"" }}
-{{- end }}
-
-{{- $asideSecondary := false }}
-{{- range $vitaePageIndex, $vitaePage := $vitaeParams.pages }}
-  {{- with $vitaePage.secondary -}}
-    {{- $asideSecondary = true }}
-  {{- end }}
-{{- end }}
-{{- $layoutClass := "page-layout_aside-primary" }}
-{{- with $asideSecondary -}}{{- $layoutClass = "page-layout_aside-primary-secondary" -}}
 {{- end }}
 
 {{- $mainContentPrefix := "main/content" }}
@@ -88,6 +78,8 @@
 {{- with $layout }}{{ $containerClass = printf "%s layout-%s" $containerClass $layout }}
 {{- end }}
 
+{{- $paginationSectionClass := "pagination-section" }}
+{{- $paginationPageClass := "pagination-page" }}
 {{- $paginationContainerClass := "pagination-container" }}
 {{- $paginationOrderAttr := "data-pagination-order" }}
 {{- $paginationPolicyAttr := "data-pagination-policy" }}
@@ -101,6 +93,8 @@
     "PrintView" $printView
     "VitaeParams" $vitaeParams
     "VitaeData" $vitaeData
+    "PartClass" $paginationSectionClass
+    "PaginationPageClass" $paginationPageClass
     "PaginationContainerClass" $paginationContainerClass
     "PaginationOrderAttr" $paginationOrderAttr
     "PaginationPolicyAttr" $paginationPolicyAttr
@@ -115,8 +109,8 @@
   {{- if (or $pp.PrintPreview $pp.PrintView) }}
     {{- partial "vitae/print-preview" (merge $pp (dict "ContainerClass" "view-print")) }}
   {{- end }}
-  <div id="originalContainer" class="view-screen">
-    <div id="contentContainer" class="{{- $originalInnerClass }} {{ $layoutClass -}}">
+  <div id="originalContainer" class="view-{{ cond $pp.PrintPreview "print" "screen" }}">
+    <div id="contentContainer" class="{{- $originalInnerClass }}">
       {{/* {{- warnf "%s[%s]: Calling partial %s with pp:\n%v" $page $template (path.Join $pp.Type $pp.Layout) ($pp | jsonify (dict "indent" "  ")) }} */}}
       {{- partial (path.Join $pp.Type $mainContentPrefix $pp.Layout) $pp }}
     </div>

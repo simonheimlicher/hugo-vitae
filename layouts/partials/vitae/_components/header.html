@@ -1,0 +1,88 @@
+{{- $sectionArgs := . }}
+{{- $page := .Page }}
+{{- $p := .Page.Params }}
+{{- $s := site.Params }}
+{{- $template := "vitae/_components/header" }}
+{{- $component := .Component }}
+{{- $config := .Config }}
+{{- $media := default "screen" $p.media }}
+{{- $headingLevel := default 2 .HeadingLevel }}
+{{- $childClass := default "" .ChildClass }}
+{{- $title := .Title | markdownify }}
+
+{{- $debug := false }}
+{{- /* {{- $debug = page.Scratch.Get "clarisdebug" }} */ -}}
+{{/* {{- $debug = or $debug (not (not (findRE `^/([^/]+-demo/)?leadership` $page.RelPermalink) ) ) -}} */}}
+{{/* {{- warnf "%s[%s]: media=%s .Component=%s .Config=%s" $page $template $media $component $config -}} */}}
+
+{{- $containerClassList := (slice "header") }}
+
+{{- with $childClass }}
+  {{- $containerClassList = $containerClassList | append (slice .) }}
+{{- end }}
+
+{{- with .Data.features.about }}
+  {{- with .portrait }}
+    {{- $containerClassList =  $containerClassList | append (slice "portrait_style-background") }}
+    {{- range $key, $value := .overlay }}
+      {{- $containerClassList = $containerClassList | append (slice (printf "portrait_overlay_%s-%s" $key $value) ) }}
+    {{- end }}
+  {{- end }}
+{{- end }}
+<div class="{{ delimit $containerClassList " " }}">
+{{- with .Data.features.about }}
+  {{- with .portrait }}
+    {{- $classPrefix := "portrait" }}
+    {{- $portraitImageArgs := (dict
+      "resource" .resource
+      "position" .position
+      "style" .style
+      "alt" .alt
+      "title" .title
+      "credit" .credit
+      "figureclass" (printf "%s_figure" $classPrefix)
+      "imgclass" (printf "%s_img" $classPrefix)
+      "fetchpriority" "high"
+    ) }}
+    {{- if $debug }}
+      {{- warnf "%s[%s]: Found portrait image resource .version.default.resource=%v in \nportraitImage=%v\nNow calling responsive-image with .resource=%v in portraitImageArgs=%v"
+          $page $template .resource
+          (jsonify (dict "indent" "  ") )
+          $portraitImageArgs.resource
+          (jsonify (dict "indent" "  ") $portraitImageArgs) -}}
+    {{- end }}
+
+    {{- partial "responsive-image" (merge $portraitImageArgs (dict "Page" $page)) $portraitImageArgs }}
+
+    {{- $page.Scratch.Add "claris.image.prioritized" 1 }}
+    {{- if $debug }}
+      {{- warnf "%s[%s]: claris.image.prioritized incremented to %d" $page $template ($page.Scratch.Get "claris.image.prioritized") }}
+    {{- end }}
+  {{- end }}
+  <div class="overlay">
+  {{- with or $component.headline .headline }}
+      <h{{ $headingLevel }} class="headline content-title">
+      <span class="name">{{- .name | page.RenderString }}</span>
+      {{- with .role }}
+        <span class="role">{{. | page.RenderString }}</span>
+      {{- end -}}
+      {{- with .degree }}
+        <span class="degree">{{. | page.RenderString }}</span>
+      {{- end -}}
+      </h{{ $headingLevel }}>
+  {{- end -}}
+  {{- with $component.fragments }}
+    {{- range $fragment := . }}
+      {{- $fragmentName := .fragment }}
+      {{- $fragmentConfig := merge (index $config $fragmentName) . }}
+      {{- $partial := printf "vitae/fragments/%s" $fragmentName}}
+      {{- warnf "%s[%s]: media=%s component=%s: Calling fragment=%s with .Config=%s"
+          $page $template $media $component $fragmentName $fragmentConfig -}}
+      <div class="fragment_{{ $fragmentName }} fragment">
+      {{- partial $partial (merge $sectionArgs (dict "Fragment" $fragmentName "Config" $fragmentConfig ))  }}
+      </div>
+    {{- end }}
+  {{- end }}
+  </div>
+{{- end }}
+</div>
