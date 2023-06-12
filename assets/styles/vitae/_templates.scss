@@ -52,16 +52,21 @@
   }
   &_career-timeline {
     .slot_main {
-      display: grid;
       padding: var(--page-margin-top) var(--page-margin-right) var(--page-margin-bottom) var(--page-margin-left);
-      // grid-template-rows: minmax(min-content, max-content) 1fr
-      row-gap: var(--row-gap);
-      grid-template-columns: repeat(12, 1fr);
-      column-gap: var(--column-gap);
-      align-items: start;
-      .section {
-        &_experience, &_education {
-          grid-column: 1 / span all;
+      display: flex;
+      flex-direction: column;
+      &.grid {
+        display: grid;
+        // grid-template-rows: minmax(min-content, max-content) 1fr
+        row-gap: var(--row-gap);
+        grid-template-columns: repeat(12, 1fr);
+        column-gap: var(--column-gap);
+        align-items: start;
+        grid-auto-flow: dense column;
+        .section {
+          &_experience, &_education {
+            grid-column: 1 / span all;
+          }
         }
       }
     }

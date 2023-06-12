@@ -13,6 +13,7 @@ vitae:
     parts:
       # Front page
       - template: front-page
+        # enabled: false
         pagination_policy: first
         slots:
         - slot: header
@@ -30,10 +31,12 @@ vitae:
           sections:
           - section: personal-profile
             title: section-personal-profile
+            container: section
             components:
             - component: profile
           - section: career-summary
             title: section-career-summary
+            container: section
             components:
             - component: stages
               collection: stages
@@ -43,6 +46,7 @@ vitae:
               organization_period: true
               role_period: true
               logo: false
+              star: false
               skills: false
               details: false
               results: false
@@ -50,6 +54,7 @@ vitae:
               achievements: false
           - section: language-skills
             title: section-language-skills
+            container: section
             components:
             - component: skills
               collection: skills
@@ -59,6 +64,7 @@ vitae:
               level_bar: false
           - section: award-selection
             title: section-awards
+            container: section
             components:
             - component: awards
               details: false
@@ -86,12 +92,17 @@ vitae:
               collection: stages
               filter_by: type
               filter_value: professional
+              style:
+                timeline: column
+                # timeline: dot-dash
               organization_period: true
               role_period: true
-              organization_duration: true
-              role_duration: true
+              # organization_duration: true
+              # role_duration: true
+              star: true
               skills: false
-              responsibilities: true
+              responsibilities: false
+              achievements: false
               details: false
               headings: true
           - section: education

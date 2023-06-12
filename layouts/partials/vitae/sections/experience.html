@@ -43,7 +43,7 @@
             {{- if .website }}
               </a>
             {{- end }}
-              <span class="organization-period experience-period">{{ partial "vitae/_functions/date-period-duration" (dict "PeriodList" .roles "DurationFirst" true "DateFormat" $dateFormat "Container" "span" "DateContainer" "span" "Separator" "") }}</span>
+              <span class="organization-period experience-period">{{ partial "vitae/_functions/date-period-duration" (dict "PeriodList" .roles "DurationFirst" true "DateFormat" $dateFormat "Container" "span" "DateContainer" "span" "PeriodDurationSeparator" "") }}</span>
             </div>
             <ul class="timeline-list">
             {{- $multipleRoles:= (gt (len .roles) 1) }}
@@ -56,7 +56,7 @@
                       <h4 class="role-title">{{ .role }}</h4>
                       {{ with .period }}
                         {{- if $multipleRoles }}
-                      <span class="role-period experience-period">{{ partialCached "vitae/_functions/date-period-duration" (dict "PeriodList" . "DurationFirst" true "DateFormat" $dateFormat "Container" "span" "DateContainer" "span" "Separator" "") . }}</span>
+                      <span class="role-period experience-period">{{ partialCached "vitae/_functions/date-period-duration" (dict "PeriodList" . "DurationFirst" true "DateFormat" $dateFormat "Container" "span" "DateContainer" "span" "PeriodDurationSeparator" "") . }}</span>
                         {{- end }}
                       {{ end }}
                     </div>

@@ -3,6 +3,7 @@
 
 {{- $dateFormat := "2006 Jan" }}
 {{- $dateContainerStr := "" }}
+{{- $periodBeginEndSeparatorStr := `–` }}
 
 {{- $period := . }}
 
@@ -16,6 +17,9 @@
   {{- end }}
   {{- with .DateClass }}
     {{- $dateClassStr = . }}
+  {{- end }}
+  {{- with .PeriodBeginEndSeparator }}
+    {{- $periodBeginEndSeparatorStr = . }}
   {{- end }}
 {{- end }}
 
@@ -39,5 +43,5 @@
     {{- end -}}
   {{- end -}}
 {{- end -}}
-{{ $periodStr = printf "%s–%s" (index $periodList 0) (index $periodList 1) }}
+{{ $periodStr = printf "%s%s%s" (index $periodList 0) $periodBeginEndSeparatorStr (index $periodList 1) }}
 {{- return $periodStr -}}

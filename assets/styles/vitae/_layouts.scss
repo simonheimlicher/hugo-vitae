@@ -1,5 +1,6 @@
-// Default Layout
-// Styles that define the Vitae Default layout
+@use 'sass:math';
+
+// Styles that define the Vitae layouts
 // NOTE: This includes styles for all media types
 
 // Hints:
@@ -24,11 +25,11 @@ $page-width: 210.0791667mm;
 
 // Page margins
 $page-mar-h: 10mm;
-$page-mar-v: $page-mar-h * $page-height / $page-width;
-$page-mar-ratio-top-bottom: 2 / 3;
+$page-mar-v: math.div($page-mar-h * $page-height, $page-width);
+$page-mar-ratio-top-bottom: math.div(2, 3);
 
-$column-pad-h: $page-mar-h / 2;
-$column-pad-v: $page-mar-h / 4;
+$column-pad-h: math.div($page-mar-h, 2);
+$column-pad-v: math.div($page-mar-h, 4);
 
 $screen-pad-h: 1rem;
 $screen-pad-v: 1rem;

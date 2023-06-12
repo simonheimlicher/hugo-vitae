@@ -9,7 +9,8 @@
 {{- $dateFormat := "2006 Jan" }}
 {{- $containerStr := "" }}
 {{- $dateContainerStr := "" }}
-{{- $separatorStr := " • " }}
+{{- $periodBeginEndSeparatorStr := false }}
+{{- $periodDurationSeparatorStr := " • " }}
 
 {{- if reflect.IsMap $periodList }}
   {{/* {{- warnf "        date-period-duration: $periodList='%q'" $periodList }} */}}
@@ -34,11 +35,14 @@
   {{- with .DateContainer }}
     {{- $dateContainerStr = . }}
   {{- end }}
-  {{- with .Separator }}
-    {{- $separatorStr = . }}
+  {{- with .PeriodBeginEndSeparator }}
+    {{- $periodBeginEndSeparatorStr = . }}
+  {{- end }}
+  {{- with .PeriodDurationSeparator }}
+    {{- $periodDurationSeparatorStr = . }}
   {{- else }}
     {{- with .DateContainer }}
-      {{- $separatorStr = "" }}
+      {{- $periodDurationSeparatorStr = "" }}
     {{- end }}
   {{- end }}
 {{/* {{- else }}
@@ -77,7 +81,9 @@
   {{- $entirePeriodStr = partial "vitae/_functions/date-period" (dict
   "Period" (slice $firstPeriodBegin $lastPeriodEnd)
   "DateFormat" $dateFormat
-  "DateContainer" $dateContainerStr) }}
+  "DateContainer" $dateContainerStr
+  "PeriodBeginEndSeparator" $periodBeginEndSeparatorStr
+  ) -}}
 {{- end }}
 
 {{- $durationStr := "" }}
@@ -97,9 +103,9 @@
 {{- with $durationStr }}
   {{- with $entirePeriodStr }}
     {{- if $durationFirst }}
-      {{ $ret = printf "%s %s %s" $durationStr $separatorStr $entirePeriodStr }}
+      {{ $ret = printf "%s %s %s" $durationStr $periodDurationSeparatorStr $entirePeriodStr }}
     {{- else }}
-      {{ $ret = printf "%s %s %s" $entirePeriodStr $separatorStr $durationStr }}
+      {{ $ret = printf "%s %s %s" $entirePeriodStr $periodDurationSeparatorStr $durationStr }}
     {{- end }}
   {{- else }}
     {{ $ret = $durationStr }}

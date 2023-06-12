@@ -94,13 +94,13 @@
       }
     }
   }
-  .contact-link ~ .contact-link {
-    margin-top: calc(2 * var(--section-title-sep-vert));
-    padding-top: calc(2 * var(--section-title-sep-vert));
+  .contact_link ~ .contact_link {
+    margin-top: calc(2 * var(--section_title_sep-vert));
+    padding-top: calc(2 * var(--section_title_sep-vert));
     &::before {
       position: absolute;
       content: "";
-      // top: calc(var(--section-title-sep-vert) /-4)
+      // top: calc(var(--section_title_sep-vert) /-4)
       top: 0;
       height: 0;
       // left: calc( var(--column-padding-left) / -2)
@@ -283,90 +283,53 @@ html[data-mode="dim"] {
 .vitae .component {
 
   /* ----- Component STAGES ------ */
-
   &_stages {
+    // --font-size-heading-organization: 1.25rem
+    --font-size-heading-organization: var(--font-size-larger-2);
+    --font-weight-heading-organization: var(--font-weight-strong);
+    --font-size-heading-role: var(--font-size-larger-2);
+    --font-weight-heading-role: var(--font-weight-strong);
+    --font-center-offset-heading-role: 0.5;
+    --line-height: 1.5;
+    // --line-height-heading: var(--line-height)
+    --line-height-heading: 1.2;
+
+    --section_title_sep-vert: 0.5rem;
+
+    --inline-list-item-separation: 2ch;
+    --inline-list-sep-width: var(--inline-list-item-separation) / 3.0;
+
+    --organization_logo_width: 2rem;
+    --organization_logo_padding-right: 0.75rem;
+    --organization_logo_column_width: var(--organization_logo_width) + var(--organization_logo_padding-right);
+
+    --timeline_width: 5rem;
+    --timeline_column_padding-right: 0.75rem;
+    --timeline_column_width: var(--timeline_width) + var(--timeline_column_padding-right);
+
+    --tl-marker-border-radius: 50%;
+    --tl-marker-pad-v: 0.25rem;
+    --tl-marker-width: 0.5rem;
+    --tl-marker-height: var(--tl-marker-width);
+    --tl-item-pad-v: 0.25rem;
+    --tl-line-width: 2px;
+    --tl-offset-left: (-1 * var(--timeline_width) / 2 - var(--timeline_column_padding-right));
+
+    --stage-org-sep-vert: 1.0rem;
+    --stage-org-header-mar-v: 0.125rem;
+    --stage-role-sep-vert: 1.0rem;
+    --stage-org-role-sep-vert: 0.5rem;
+
+    // FIXME: DEBUG
+    // --tl-marker-border-radius: 0;
+    // --tl-marker-width: 20rem;
+    // --tl-marker-height: 1px;
+    // --tl-item-pad-v: 3rem;
+    // --stage-org-role-sep-vert: 7rem;
+
     position: relative;
-    &.organization-header {
-      width: 100%;
-      display: flex;
-      flex-direction: row;
-      // horizontal: stick to both ends
-      justify-content: space-between;
-      align-items: center;
-      gap: 0.5em;
-      padding: 0;
-      margin: var(--stage-org-header-mar-v) 0;
-      break-after: avoid;
-      // FIXME: Setting a negative margin on .feature-last
-      // breaks the JavaScript function to distribute content
-      // across pages
-      // &.feature-last
-      //   // border: 1px solid blue
-      //   margin-bottom: -0.25em
-      &.logo {
-        min-height: var(--organization-logo-width);
-        // margin-top: var(--section-title-sep-vert);
-        // padding-left: calc( var(--organization-logo-column-width) );
-      }
-      &.single-role {
-        font-size: calc(var(--font-size-smaller-1));
-      }
-      .organization-header-main {
-        width: 100%;
-        display: flex;
-        flex-direction: row;
-        justify-content: space-between;
-        align-items: baseline;
-        gap: 0.5em;
-        padding-bottom: 0.25em;
-      }
-    }
-    & + .organization-header {
-      margin-top: var(--stage-org-sep-vert);
-      &::before {
-        border-top: 0.125em solid var(--border-color-faint);
-        top: calc(var(--stage-org-sep-vert) / -2);
-        content: "";
-        height: 0;
-        position: absolute;
-        // left: calc( var(--column-padding-left) / -2)
-        // right: calc( var(--column-padding-right) / -2)
-        left: 0;
-        right: 0;
-      }
-    }
-    .organization {
-      &-logo {
-        // position: absolute;
-        // top: 0;
-        // left: 0;
-        width: calc( var(--stage-timeline-width) );
-        height: 100%;
-        display: flex;
-        flex-direction: row;
-        align-items: center;
-        user-select: none;
-        &-image {
-          // Reset max-width and max-height to avoid side-effects from base.scss
-          max-width: unset;
-          max-height: unset;
-          width: calc(var(--organization-logo-width));
-        }
-      }
-      &-title {
-        margin: 0;
-        padding: 0;
-        // FIXME: The margin-top does not seem to be required anymore
-        // margin-top: calc((var(--organization-logo-width) - var(--font-size-heading-organization)) / 2 + var(--font-size-heading-organization) * (1 - var(--line-height-heading)))
-        color: var(--theme-text);
-        font-size: calc(var(--font-size-heading-organization));
-        font-weight: var(--font-weight-heading-organization);
-        margin-right: auto;
-      }
-      &-period {
-        user-select: none;
-      }
-    }
+
+    // Periods of time such as "Mar 2022-Jul 2023"
     .stage-period {
       font-size: calc(var(--font-size-smaller-1));
       display: flex;
@@ -390,57 +353,302 @@ html[data-mode="dim"] {
       }
     }
 
-    .role {
-      &-header {
-        position: relative;
+    .organization_title, .role_title {
+      margin: 0;
+      padding: 0;
+      color: var(--theme-text);
+    }
+    .organization_title {
+      font-size: calc(var(--font-size-heading-organization));
+      font-weight: var(--font-weight-heading-organization);
+    }
+    .role_title {
+      font-size: calc(var(--font-size-heading-role));
+      font-weight: var(--font-weight-heading-role);
+    }
+
+    .organization {
+      &_logo {
+        user-select: none;
+        &-image {
+          // Reset max-width and max-height to avoid side-effects from base.scss
+          max-width: unset;
+          max-height: unset;
+          width: calc(var(--organization_logo_width));
+        }
+      }
+      &_period {
+        user-select: none;
+      }
+    }
+
+    /*
+     * Timeline style COLUMN
+     */
+
+    // First column is dedicated to timeline to facilitate scanning by year
+    &.timeline_column {
+      margin-left: calc(var(--timeline_column_width) + 0.5rem);
+      padding-left: 0.5rem;
+      border-left: var(--tl-line-width) solid var(--border-color-faint);
+      // Header for organizations
+      &.organization_header {
+        margin-top: 1.5rem;
+      }
+      // Header for roles at organizations
+      &.role_header {
+        .stage_main {
+          padding: calc(var(--stage-role-sep-vert) + var(--tl-item-pad-v)) 0 calc(var(--tl-item-pad-v)) 0;
+        }
+      }
+      // Reduced padding between organization header and first role header
+      &.organization_header + .role_header {
+        .stage_main {
+          padding-top: calc(var(--stage-org-role-sep-vert));
+        }
+      }
+      &.stage {
+        &_header {
+          display: grid;
+          grid-template-columns: calc(var(--timeline_column_width)) 1fr;
+          grid-auto-flow: dense;
+          margin-left: 0;
+          padding-left: 0;
+          border-left: none;
+          break-after: avoid;
+          .stage {
+            &_period {
+              grid-column: 1;
+              text-align: right;
+            }
+            &_main {
+              grid-column: 2;
+              margin-left: 0.5rem;
+              padding-left: 0.5rem;
+              border-left: var(--tl-line-width) solid var(--border-color-faint);
+            }
+          }
+          &.logo {
+            grid-template-columns: calc(var(--timeline_column_width)) calc(var(--organization_logo_column_width)) 1fr;
+            .stage {
+              &_logo {
+                grid-column: 2;
+                margin-left: 0.5rem;
+              }
+              &_main {
+                grid-column: 3;
+                border: none;
+              }
+            }
+          }
+        }
+        &_period {
+          font-size: calc(var(--font-size-normal));
+        }
+      }
+    }
+
+    /*
+     * Timeline style DOT-DASH
+     */
+
+    // Similar to LinkedIn
+    &.timeline_dot-dash {
+      // Header for organizations
+      &.organization_header {
+        width: 100%;
         display: flex;
-        // FIXME: When there is only one item in .role-header, make sure it has
-        // appropriate margin to determine if it sticks to the flex-start or flex-end position
-        // E.g. role-title needs margin-right: auto
+        flex-direction: row;
         // horizontal: stick to both ends
         justify-content: space-between;
-        // vertical: center
+        align-items: center;
+        gap: 0.5rem;
+        padding: 0;
+        margin: var(--stage-org-header-mar-v) 0;
+        break-after: avoid;
+        // FIXME: Setting a negative margin on .feature-last
+        // breaks the JavaScript function to distribute content
+        // across pages
+        // &.feature-last
+        //   // border: 1px solid blue
+        //   margin-bottom: -0.25rem
+        &.logo {
+          min-height: var(--organization_logo_width);
+          // margin-top: var(--section_title_sep-vert);
+        }
+        &.single-role {
+          font-size: calc(var(--font-size-smaller-1));
+        }
+        .organization {
+          &_main {
+            display: flex;
+            flex-direction: row;
+            justify-content: space-between;
+            align-items: baseline;
+            gap: 0.5rem;
+            padding-bottom: 0.25rem;
+          }
+          &_logo {
+            height: 100%;
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+            user-select: none;
+            &-image {
+              // Reset max-width and max-height to avoid side-effects from base.scss
+              max-width: unset;
+              max-height: unset;
+              width: calc(var(--organization_logo_width));
+            }
+          }
+        }
+      }
+      & + .organization_header {
+        margin-top: var(--stage-org-sep-vert);
+        &::before {
+          border-top: 0.125rem solid var(--border-color-faint);
+          top: calc(var(--stage-org-sep-vert) / -2);
+          content: "";
+          height: 0;
+          position: absolute;
+          // left: calc( var(--column-padding-left) / -2)
+          // right: calc( var(--column-padding-right) / -2)
+          left: 0;
+          right: 0;
+        }
+      }
+
+      // Header for roles at organizations
+      &.role_header {
+        padding: calc(var(--stage-role-sep-vert) + var(--tl-item-pad-v)) 0 calc(var(--tl-item-pad-v)) 0;
+      }
+      // Reduced padding between organization header and first role header
+      &.organization_header + .role_header {
+        padding-top: calc(var(--stage-org-role-sep-vert));
+      }
+
+      &.role_header {
+        position: relative;
+        display: flex;
+        // FIXME: When there is only one item in .role_header, make sure it has
+        // appropriate margin to determine if it sticks to the flex-start or flex-end position
+        // E.g. role_title needs margin-right: auto
+        // horizontal: stick to both ends
+        justify-content: space-between;
         align-items: center;
         break-after: avoid;
+        // Dot in the timeline to the left of the role header
+        .role-dot {
+          position: absolute;
+          display: block;
+          border-radius: var(--tl-marker-border-radius);
+          background-color: var(--border-color-faint);
+          height: var(--tl-marker-height);
+          width: var(--tl-marker-width);
+          top: calc((100% + var(--stage-role-sep-vert)) / 2 - var(--tl-marker-height) / 2);
+          left: calc((var(--timeline_width) / 2 - var(--tl-marker-width) / 2) );
+        }
       }
-      &-title {
-        margin: 0;
+
+      &.timeline {
+        padding-left: calc( var(--timeline_column_width) );
+        // Timeline line part above dot
+        &_role-within,
+        &_role-last {
+          &.role_header::before {
+            position: absolute;
+            display: block;
+            content: "";
+            border-radius: 0;
+            background-color: var(--border-color-faint);
+            width: var(--tl-line-width);
+            top: 0;
+            height: calc(50% - var(--tl-marker-height) / 2 - var(--tl-marker-pad-v) + var(--stage-role-sep-vert) / 2);
+            left: calc((var(--timeline_width) / 2 - var(--tl-line-width) / 2) );
+          }
+        }
+
+        &_role-within,
+        &_role-first {
+          // Timeline line part below dot
+          &::before {
+            position: absolute;
+            display: block;
+            content: "";
+            border-radius: 0;
+            background-color: var(--border-color-faint);
+            // z-index: 99
+            width: var(--tl-line-width);
+            top: var(--tl-marker-pad-v);
+            top: 0;
+            bottom: 0;
+            left: calc((var(--timeline_width) / 2 - var(--tl-line-width) / 2) );
+          }
+          // Timeline line part below dot for role header
+          &.role_header {
+            &::after {
+              position: absolute;
+              display: block;
+              content: "";
+              border-radius: 0;
+              background-color: var(--border-color-faint);
+              width: var(--tl-line-width);
+              height: calc(50% - var(--tl-marker-height) / 2 - var(--tl-marker-pad-v) - var(--stage-role-sep-vert) / 2);
+              bottom: 0;
+              left: calc((var(--timeline_width) / 2 - var(--tl-line-width) / 2) );
+            }
+          }
+        }
+        &.organization_header {
+          &.logo {
+            padding-left: calc(var(--timeline_column_width));
+          }
+        }
+
+        // Timeline for role header following immediately after organization header:
+        &.organization_header + .role_header {
+          .role-dot {
+            top: calc((100% + var(--stage-org-role-sep-vert) - var(--tl-item-pad-v)) / 2 - var(--tl-marker-height) / 2);
+          }
+          &::before {
+            content: none;
+          }
+          &::after {
+            position: absolute;
+            display: block;
+            content: "";
+            border-radius: 0;
+            background-color: var(--border-color-faint);
+            // z-index: 99
+            width: var(--tl-line-width);
+            height: calc(50% - var(--tl-marker-height) / 2 + var(--tl-item-pad-v) / 2 - var(--tl-marker-pad-v));
+            height: calc((100% - var(--stage-org-role-sep-vert) + var(--tl-item-pad-v)) / 2 - var(--tl-marker-height) / 2 - var(--tl-marker-pad-v));
+            bottom: 0;
+            left: calc((var(--timeline_width) / 2 - var(--tl-line-width) / 2) );
+          }
+        }
+      }
+    }
+
+    .role {
+      &_title {
         margin-right: auto;
-        // margin-top: calc(var(--stage-role-sep-vert))
-        padding: 0;
-        font-size: calc(var(--font-size-heading-role));
-        font-weight: var(--font-weight-heading-role);
-        font-size: calc(var(--font-size-heading-role));
-        font-weight: var(--font-weight-heading-role);
         &.partition {
           display: flex;
           align-items: center;
-          column-gap: 1em;
+          column-gap: 1rem;
         }
       }
       &-supertitle {
         font-weight: var(--font-weight-heading);
-        padding-bottom: 0.5em;
+        padding-bottom: 0.5rem;
       }
       &-subtitle {
         font-style: italic;
       }
     }
+
     &.role {
-      &-header {
-        position: relative;
-        width: 100%;
-        display: flex;
-        // FIXME: When there is only one item in .role-header, make sure it has
-        // appropriate margin to determine if it sticks to the flex-start or flex-end position
-        // E.g. role-title needs margin-right: auto
-        // horizontal: stick to both ends
-        justify-content: space-between;
-        // center to align with role-period even if either or both are multiple lines
-        align-items: center;
-        padding: calc(calc(var(--stage-role-sep-vert)) + var(--tl-item-pad-v)) 0 calc(var(--tl-item-pad-v)) 0;
-        break-after: avoid;
-      }
       &-skills {
         font-size: calc(var(--font-size-smaller-1));
         .role-skills {
@@ -463,18 +671,52 @@ html[data-mode="dim"] {
       &-details {
         font-size: calc(var(--font-size-smaller-1));
       }
+      &_star {
+        &_container {
+          // outline: 1px solid grey;
+          display: grid;
+          grid-auto-flow: dense column;
+          grid-template-columns: 1fr 4fr;
+          row-gap: 0;
+          column-gap: 1rem;
+          padding-bottom: 1rem;
+          .role_star {
+            &_title {
+              grid-column: 1;
+              padding: 0 0 0.5rem 0;
+              margin: calc(var(--font-size-larger-1) * (1 - var(--line-height-heading))) 0 0 0;
+              font-size: calc(var(--font-size-larger-1));
+            }
+            &_situation {
+              grid-row: 1 / span 2;
+              grid-column: 2;
+              margin: calc(var(--font-size-normal) * (1 - var(--line-height))) 0 0 0;
+            }
+            &_task {
+              grid-row: 2 / span 4;
+              grid-column: 1;
+            }
+            &_action {
+              grid-column: 2;
+            }
+            &_result {
+              grid-column: 2;
+            }
+          }
+        }
+      }
       &-responsibilities {
-        padding-top: 0.5em;
+        padding-top: 0.5rem;
         &.twocolumn {
           display: flex;
-          column-gap: 1em;
+          column-gap: 1rem;
         }
         .skill {
           font-weight: var(--font-weight-heading);
           width: min-content;
           min-width: 25%;
           hyphens: none;
-        }        // .responsibility
+        }
       }
       &-results {
         ul,
@@ -516,115 +758,30 @@ html[data-mode="dim"] {
         // across pages
         // &.feature-last
         //   border: 1px solid red
-        //   margin-bottom: -0.5em
+        //   margin-bottom: -0.5rem
         &.feature-first {
           p:first-child,
           ul:first-child {
             padding: 0;
-            margin-top: calc((1 - var(--line-height)) * 1em);
+            margin-top: calc((1 - var(--line-height)) * 1rem);
           }
         }
       }
     }
-    &.role-section-heading {
-      display: flex;
-      align-items: center;
-      margin: 0;
-      padding: 0.75em 0 0.25em 0;
-      font-weight: var(--font-weight);
-      font-family: var(--font-section-title);
-      font-variant: small-caps;
-      text-transform: uppercase;
-      .separator-line {
-        flex: 1 1 auto;
-        border-bottom: 1px solid var(--border-color-faint);
-        margin-left: 1em;
-      }
-    }
-
-    .organization-header + .role-header {
-      padding-top: 0;
-    }
-    .career-summary & {
-      // --font-size-heading-organization: 1em
-      --font-size-heading-role: 1em;
-      --font-weight-heading-role: var(--font-weight);
-      .role-title {
-        color: var(--text);
-      }
-    }
-    .career-timeline & {
-      &.role-header {
-        &.timeline {
-          padding-left: calc( var(--organization-logo-column-width) );
-          // Line part above dot
-          &-role-within,
-          &-role-last {
-            &::before {
-              position: absolute;
-              display: block;
-              content: "";
-              border-radius: 0;
-              background-color: var(--border-color-faint);
-              // z-index: 100
-              width: var(--tl-line-width);
-              top: 0;
-              height: calc(50% - var(--tl-marker-height) / 2 - var(--tl-marker-pad-v) + var(--stage-role-sep-vert) / 2);
-              left: calc((var(--organization-logo-width) / 2 - var(--tl-line-width) / 2) );
-            }          // Line part below dot
-          }
-          &-role-within,
-          &-role-first {
-            &::after {
-              position: absolute;
-              display: block;
-              content: "";
-              border-radius: 0;
-              background-color: var(--border-color-faint);
-              // z-index: 99
-              width: var(--tl-line-width);
-              height: calc(50% - var(--tl-marker-height) / 2 - var(--tl-marker-pad-v) - var(--stage-role-sep-vert) / 2);
-              bottom: 0;
-              left: calc((var(--organization-logo-width) / 2 - var(--tl-line-width) / 2) );
-            }
-          }
-          .role-dot {
-            position: absolute;
-            display: block;
-            border-radius: 50%;
-            background-color: var(--border-color-faint);
-            height: var(--tl-marker-height);
-            width: var(--tl-marker-width);
-            top: calc(50% - var(--tl-marker-height) / 2 + var(--stage-role-sep-vert) / 2);
-            left: calc((var(--organization-logo-width) / 2 - var(--tl-marker-width) / 2) );
-          }
-        }
-      }
-      // No line above dot of first role
-      &.organization-header.timeline + .role-header {
-        &::before {
-          content: none;
-        }
-      }
-      &.timeline {
-        padding-left: calc( var(--stage-timeline-width) );
-        &-role-within,
-        &-role-first {
-          &::before {
-            position: absolute;
-            display: block;
-            content: "";
-            border-radius: 0;
-            background-color: var(--border-color-faint);
-            // z-index: 99
-            width: var(--tl-line-width);
-            top: var(--tl-marker-pad-v);
-            top: 0;
-            bottom: 0;
-            left: calc((var(--organization-logo-width) / 2 - var(--tl-line-width) / 2) );
-          }
-        }
-      }
+  }
+  &.role-section-heading {
+    display: flex;
+    align-items: center;
+    margin: 0;
+    padding: 0.75rem 0 0.25rem 0;
+    font-weight: var(--font-weight);
+    font-family: var(--font-section_title);
+    font-variant: small-caps;
+    text-transform: uppercase;
+    .separator-line {
+      flex: 1 1 auto;
+      border-bottom: 1px solid var(--border-color-faint);
+      margin-left: 1rem;
     }
   }
 }
@@ -632,7 +789,7 @@ html[data-mode="dim"] {
 // Dark mode
 .vitae .view-screen .component {
   html[data-mode="dim"] {
-    .organization-logo-image {
+    .organization_logo_image {
       border: 0.125rem solid var(--text);
       background: var(--text);
       border-radius: 0.125rem;
@@ -640,7 +797,7 @@ html[data-mode="dim"] {
   }
   @media screen and (prefers-color-scheme: dark) {
     html:not([data-mode="lit"]) {
-      .organization-logo-image {
+      .organization_logo_image {
         border: 0.125rem solid var(--text);
         background: var(--text);
         border-radius: 0.125rem;

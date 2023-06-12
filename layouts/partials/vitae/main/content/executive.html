@@ -11,7 +11,7 @@
 Part: an independent section of one or more printed pages
 PaginationPage: a printed page that is part of a Part
 -->
-{{- range $partIndex, $part := $vitaeParams.parts }}
+{{- range $partIndex, $part := where $vitaeParams.parts "enabled" "ne" false }}
   <!-- Initially, all content is placed within one Pagination Page
   When rendering the print preview with `print-view.js`,
   this DOM node is cloned and the content is distributed across as many
@@ -19,8 +19,8 @@ PaginationPage: a printed page that is part of a Part
   <div class="{{ $pp.PartClass}}">
     <div class="{{ printf "template_%s" $part.template }} {{ $pp.PaginationPageClass}}">
       {{- range $slotIndex, $slot := $part.slots }}
-        {{- partial "html-comment" (printf "[%s]: slot[%T] name=%s:\n%v"
-            $template $slot $slot.slot (jsonify (dict "indent" "  ") $slot) ) }}
+        {{- /* {{- partial "html-comment" (printf "[%s]: slot[%T] name=%s:\n%v"
+            $template $slot $slot.slot (jsonify (dict "indent" "  ") $slot) ) }} */ -}}
         <div class="{{ printf "slot_%s" $slot.slot }} {{ $pp.PaginationContainerClass }}"
         {{- $paginationPolicy := default "break" $part.pagination_policy }}
         {{ printf `%s="%d"` $pp.PaginationOrderAttr 9 | safeHTMLAttr }}
@@ -29,7 +29,7 @@ PaginationPage: a printed page that is part of a Part
           {{- range $sectionIndex, $section := $slot.sections }}
             {{- $sectionName := $section.section }}
             {{- $childClass := default "" .child_class }}
-            {{- $sectionContainer := default "section" .container }}
+            {{- $sectionContainer := default "" .container }}
             {{- if $sectionContainer }}
               {{ printf `<%s class="section_%s section">` $sectionContainer $sectionName | safeHTML }}
             {{- else }}
@@ -55,15 +55,14 @@ PaginationPage: a printed page that is part of a Part
                 <h{{ $headingLevel }} class="component-title_{{ $componentName }} component-title {{ $childClass }}">{{ $componentTitle }}</h{{ $headingLevel }}>
                 {{- $headingLevel = (add $headingLevel 1) }}
               {{- end }}
-              {{- $partialExt := ".html" }}
-              {{- $partial := false -}}
-              {{- $collection := index .Data (default "features" $component.collection) -}}
+              {{- $componentStyle := $component.style | default false }}
               {{- partial $componentPartial (dict
                 "Page" $page
                 "Config" $vitaeParams
                 "PageIndex" $partIndex
                 "Component" $component
-                "ComponentIndex" $componentIndex
+                "Style" $componentStyle
+                "Index" $componentIndex
                 "ChildClass" $childClass
                 "Container" false
                 "Data" $vitaeData
