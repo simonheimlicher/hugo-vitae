@@ -1,12 +1,12 @@
 {{- $page := .Page -}}
 {{- $template := "vitae/_components/profile" -}}
 {{- $headingLevel := default 3 .HeadingLevel }}
-{{- $sectionClass := default "section-profile" .SectionClass }}
+{{- $componentClass := default "component_profile" .ComponentClass }}
 {{- $childClass := default "" .ChildClass }}
 
 {{- $component := .Component }}
 
-{{- $topLevelClass := delimit (slice $sectionClass $childClass) " " }}
+{{- $topLevelClass := delimit (slice $componentClass $childClass) " " }}
 
 {{- $filterField := default "type" $component.filter_by -}}
 {{- $filterMatch := default false $component.filter_value -}}
@@ -16,7 +16,7 @@
 {{- $personalProfile := (index .Data (default $component.component $component.collection) ) }}
 {{- with $personalProfile }}
   {{- with .content }}
-    <div class="profile_content">
+    <div class="profile_content {{ $topLevelClass }}">
       {{- page.RenderString . }}
     </div>
   {{- end }}
@@ -36,10 +36,10 @@
       {{- partial "claris/_components/panels" (dict
           "Page" $page
           "HeadingLevel" $headingLevel
+          "ContainerClass" (printf "profile_competencies %s" $componentClass)
           "Nested" false
           "Panels" . )
         }}
-          {{/* "ContainerClass" (printf "%s_competencies" $sectionClass) */}}
     {{- end }}
   {{- /* {{- else }}
     {{- warnf "%s[%s]: Failed to obtain competencyCollection via (index .Data $component.collection) with $component.collection=%v"

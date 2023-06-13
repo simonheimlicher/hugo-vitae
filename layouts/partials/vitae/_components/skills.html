@@ -1,7 +1,7 @@
 {{- $page := .Page -}}
 {{- $template := "vitae/_components/skills" }}
 {{- $headingLevel := default 3 .HeadingLevel }}
-{{- $sectionClass := default "section-skills" .SectionClass }}
+{{- $componentClass := default "component_skills" .ComponentClass }}
 {{- $childClass := default "" .ChildClass }}
 
 {{- $component := .Component }}
@@ -11,7 +11,7 @@
   {{- $layout = . -}}
 {{- end }}
 
-{{- $topLevelClass := delimit (slice $sectionClass $childClass) " " }}
+{{- $topLevelClass := delimit (slice $componentClass $childClass) " " }}
 
 {{- $filterField := default "type" $component.filter_by -}}
 {{- $filterMatch := default "language" $component.filter_value -}}

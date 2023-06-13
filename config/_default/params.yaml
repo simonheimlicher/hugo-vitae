@@ -42,8 +42,13 @@ vitae:
               collection: stages
               filter_by: type
               filter_value: professional
+              style:
+                timeline: column
+                # timeline: dot-dash
+                heading: normal
+              links: false
               headings: true
-              organization_period: true
+              # organization_period: true
               role_period: true
               logo: false
               star: false

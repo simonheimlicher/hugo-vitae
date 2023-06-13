@@ -1,7 +1,7 @@
 {{- $page := .Page -}}
 {{- $template := "vitae/_components/awards" -}}
 {{- $headingLevel := default 3 .HeadingLevel }}
-{{- $sectionClass := default "section-awards" .SectionClass }}
+{{- $componentClass := default "component_awards" .ComponentClass }}
 {{- $childClass := default "" .ChildClass }}
 
 {{- $component := .Component }}
@@ -11,7 +11,7 @@
   {{- $layout = . -}}
 {{- end }}
 
-{{- $topLevelClass := delimit (slice $sectionClass $childClass) " " }}
+{{- $topLevelClass := delimit (slice $componentClass $childClass) " " }}
 
 {{- $filterField := default "" $component.filter_by -}}
 {{- $filterMatch := default "" $component.filter_value -}}

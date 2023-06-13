@@ -1,22 +1,58 @@
 @use 'sass:math';
+@use "sass:list";
+@use "sass:map";
 
-@mixin font-size-scale($font-size: 1rem, $scale: 1.0) {
+@mixin font-size-scale($font-size: 1rem, $shift: 0, $smallest: 9, $largest: 9) {
+
+  $scale: 1;
+  $font-size-factor-normal: 1;
+  $smaller-factor-idx-max: 5;
+  $larger-factor-idx-max: 5;
+
   @if ($font-size != 0) {
-    --font-size-base: #{$scale} * #{$font-size};
+    --font-size-base: #{$font-size};
   }
-  --font-size-normal:    #{$font-size-factor-normal}    * #{$scale} * var(--font-size-base);
-  --font-size-smaller-4: #{$font-size-factor-smaller-4} * #{$scale} * var(--font-size-base);
-  --font-size-smaller-3: #{$font-size-factor-smaller-3} * #{$scale} * var(--font-size-base);
-  --font-size-smaller-2: #{$font-size-factor-smaller-2} * #{$scale} * var(--font-size-base);
-  --font-size-smaller-1: #{$font-size-factor-smaller-1} * #{$scale} * var(--font-size-base);
-  --font-size-larger-1:  #{$font-size-factor-larger-1}  * #{$scale} * var(--font-size-base);
-  --font-size-larger-2:  #{$font-size-factor-larger-2}  * #{$scale} * var(--font-size-base);
-  --font-size-larger-3:  #{$font-size-factor-larger-3}  * #{$scale} * var(--font-size-base);
-  --font-size-larger-4:  #{$font-size-factor-larger-4}  * #{$scale} * var(--font-size-base);
-  --font-size-larger-5:  #{$font-size-factor-larger-5}  * #{$scale} * var(--font-size-base);
+
+  --font-size-normal: #{$font-size-factor-normal * math.pow($font-size-scale-factor, $shift)} * var(--font-size-base);
+
+  @for $i from 1 through $smaller-factor-idx-max {
+    @if ($i < $smallest) {
+      --font-size-smaller-#{$i}: #{math.div($font-size-factor-normal, math.pow($font-size-scale-factor, $i + $shift))} * var(--font-size-base);
+    }
+    @else {
+      --font-size-smaller-#{$i}: #{math.div($font-size-factor-normal, math.pow($font-size-scale-factor, $smallest + $shift))} * var(--font-size-base);
+    }
+  }
+
+  @for $i from 1 through $larger-factor-idx-max {
+    @if ($i < $largest) {
+      --font-size-larger-#{$i}: #{$font-size-factor-normal * math.pow($font-size-scale-factor, $i + $shift)} * var(--font-size-base);
+    }
+    @else {
+      --font-size-larger-#{$i}: #{$font-size-factor-normal * math.pow($font-size-scale-factor, $largest + $shift)} * var(--font-size-base);
+    }
+  }
+
   font-size: calc(var(--font-size-normal));
+
+  // --font-size-smaller-4: #{$font-size-factor-smaller-4} * #{$scale} * var(--font-size-base);
+  // --font-size-smaller-3: #{$font-size-factor-smaller-3} * #{$scale} * var(--font-size-base);
+  // --font-size-smaller-2: #{$font-size-factor-smaller-2} * #{$scale} * var(--font-size-base);
+  // --font-size-smaller-1: #{$font-size-factor-smaller-1} * #{$scale} * var(--font-size-base);
+  // --font-size-larger-1:  #{$font-size-factor-larger-1}  * #{$scale} * var(--font-size-base);
+  // --font-size-larger-2:  #{$font-size-factor-larger-2}  * #{$scale} * var(--font-size-base);
+  // --font-size-larger-3:  #{$font-size-factor-larger-3}  * #{$scale} * var(--font-size-base);
+  // --font-size-larger-4:  #{$font-size-factor-larger-4}  * #{$scale} * var(--font-size-base);
+  // --font-size-larger-5:  #{$font-size-factor-larger-5}  * #{$scale} * var(--font-size-base);
 }
 
+@mixin flush-top($line-height: var(--line-height)) {
+  margin-top: calc(1em * (1 - 0.5 * $line-height) - 1ex);
+}
+
+@mixin flush-top-heading($line-height: var(--line-height-heading)) {
+  @include flush-top($line-height);
+}
 
 @mixin wrap() {
   padding: 0 $screenViewBodyPaddingNarrow;

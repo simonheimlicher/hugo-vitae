@@ -7,7 +7,7 @@
 {{- $config := .Config }}
 {{- $media := default "screen" $p.media }}
 {{- $headingLevel := default 2 .HeadingLevel }}
-{{- $sectionClass := default "section-contact" .SectionClass }}
+{{- $componentClass := default "component_contact" .ComponentClass }}
 {{- $childClass := default "" .ChildClass }}
 {{- $title := .Title | markdownify }}
 
@@ -17,7 +17,7 @@
 {{/* {{- warnf "%s[%s]: media=%s .Component=%s .Config=%s" $page $template $media $component $config -}} */}}
 
 {{- with .Data.features.about }}
-  {{- $topLevelClass := delimit (slice $sectionClass $childClass) " " }}
+  {{- $topLevelClass := delimit (slice $componentClass $childClass) " " }}
   <div class="details_container {{ $topLevelClass }}">
   {{- range $fragment := $component.fragments }}
     {{- $fragmentConfig := (index $config $fragment) }}

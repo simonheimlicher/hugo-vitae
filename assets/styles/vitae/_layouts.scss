@@ -336,7 +336,7 @@ $screen-pad-v: 1rem;
       h6 {
         &.feature-first {
           padding-top: 0;
-          margin-top: calc((1 - var(--line-height-heading)) * 1em);
+          @include flush-top-heading;
         }
       }
       .feature-first {
@@ -349,13 +349,13 @@ $screen-pad-v: 1rem;
         h6 {
           &:first-of-type {
             padding-top: 0;
-            margin-top: calc((1 - var(--line-height-heading)) * 1em);
+            @include flush-top-heading;
           }
         }
         & > p:first-of-type,
         & > li:first-of-type {
           padding-top: 0;
-          margin-top: calc((1 - var(--line-height)) * 1em);
+          @include flush-top;
         }
       }
     }
@@ -545,8 +545,9 @@ $screen-pad-v: 1rem;
             align-self: center;
           }
           &-title {
-            margin: calc( (1 - var(--line-height-heading)) * 1em) 0 0 0;
+            margin: 0;
             padding: 0;
+            @include flush-top-heading;
           }
         }
         .role-header {
@@ -563,8 +564,8 @@ $screen-pad-v: 1rem;
           .role-title {
             font-weight: var(--font-weight-strong);
             margin: 0;
-            margin: calc( (1 - var(--line-height-heading)) * 1em) 0 0 0;
             padding: 0;
+            @include flush-top-heading;
           }
 // Adapt layout after pagination
         }

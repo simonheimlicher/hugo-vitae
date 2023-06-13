@@ -1,6 +1,6 @@
 {{- $page := .Page -}}
 {{- $headingLevel := default 3 .HeadingLevel }}
-{{- $sectionClass := default "component_stages" .SectionClass }}
+{{- $componentClass := default "component_stages" .ComponentClass }}
 {{- $childClass := default "" .ChildClass }}
 {{- $partialOutput := default true .PartialOutput }}
 {{- $template := "vitae/_components/stages" }}
@@ -76,7 +76,7 @@
       {{- end }}
     {{- end }}
 
-    {{- $topLevelClass := strings.TrimLeft " " (delimit (slice $timelineClass $timelineOrgClass $styleClass $sectionClass $childClass) " ") }}
+    {{- $topLevelClass := strings.TrimLeft " " (delimit (slice $timelineClass $timelineOrgClass $styleClass $componentClass $childClass) " ") }}
 
     {{- $logoImageResource := false }}
     {{- if default true $component.logo }}
@@ -187,7 +187,7 @@
             {{- $timelineRoleClass = "timeline_role-last" }}
           {{- end }}
         {{- end }}
-        {{- $topLevelClass = strings.TrimLeft " " (delimit (slice $timelineClass $timelineRoleClass $timelineOrgClass $styleClass $sectionClass $childClass) " ") }}
+        {{- $topLevelClass = strings.TrimLeft " " (delimit (slice $timelineClass $timelineRoleClass $timelineOrgClass $styleClass $componentClass $childClass) " ") }}
 
         {{- if $stagePeriodInHeader }}
         <div class="role_header stage_header{{ with $topLevelClass }} {{ . }}{{ end }}">
@@ -233,7 +233,7 @@
         </div>
 
         {{- if and (not $timelineForSingleRole) (ge $roleIdx (sub $numRoles 1) ) }}
-          {{- $topLevelClass = strings.TrimLeft " " (delimit (slice $timelineClass $styleClass $sectionClass $childClass) " ") }}
+          {{- $topLevelClass = strings.TrimLeft " " (delimit (slice $timelineClass $styleClass $componentClass $childClass) " ") }}
         {{- end }}
         {{- $roleSectionSeparatorParams := (dict "component" $component "headinglevel" $headingLevel "toplevelclass" $topLevelClass) }}
 
