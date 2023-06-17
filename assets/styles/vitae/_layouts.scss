@@ -259,6 +259,9 @@ $screen-pad-v: 1rem;
 
     @include link-lvhfa-reset;
 
+    --line-width_separator: 0.25pt;
+    --line-width_separator_heading: 0.5pt;
+
     --border-color: var(--text);
     --border-color-faint: var(--text-color-faint);
 
@@ -267,11 +270,8 @@ $screen-pad-v: 1rem;
       padding: 0;
       overflow: visible;
     }
-    .section + .section {
-      margin-top: var(--row-gap);
-    }
     .print-preview_overflow {
-      .pagination-container {
+      .pagination-container[data-pagination-policy="break"] {
         overflow: hidden;
         height: 100%;
       }
@@ -327,6 +327,9 @@ $screen-pad-v: 1rem;
         .main-column {
           grid-column: 2;
           grid-row: 1 / span 2;
+        }
+        .section + .section {
+          margin-top: var(--row-gap);
         }
       }
     }
@@ -387,12 +390,14 @@ $screen-pad-v: 1rem;
 // Adapt layout after pagination
 .vitae[data-print-preview-status="done"] {
   &.layout-executive .view-print .pagination-page {
-    .pagination-container {
+    .pagination-container[data-pagination-policy="break"] {
       display: flex;
       flex-direction: column;
       flex-wrap: nowrap;
       justify-content: space-between;
-      height: 100%;
+      &.slot_main {
+        height: 100%;
+      }
       // & > * {
       //   flex: 0 1 auto;
       // }

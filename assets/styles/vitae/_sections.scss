@@ -16,7 +16,6 @@ $inline-list-sep-width: math.div($inline-list-item-separation, 3.0);
 
   --section-title-sep-vert: 0.5rem;
   --section-title_first-section_sep-vert: var(--section-title-sep-vert);
-  --section-title_sep-line_width: 0.25pt;
 
   --inline-list-item-separation: 2ch;
   --inline-list-sep-width: var(--inline-list-item-separation) / 3.0;
@@ -75,7 +74,7 @@ $inline-list-sep-width: math.div($inline-list-item-separation, 3.0);
       // right: calc( var(--column-padding-right) / -2)
       left: 0;
       right: 0;
-      border-top: calc(var(--section-title_sep-line_width)) solid var(--border-color-faint);
+      border-top: calc(var(--line-width_separator_heading)) solid var(--border-color-faint);
     }
   }
 }
@@ -123,8 +122,7 @@ $inline-list-sep-width: math.div($inline-list-item-separation, 3.0);
     & + .organization-header {
       margin-top: var(--stage-org-sep-vert);
       &::before {
-        border-top: 0.125rem solid var(--border-color-faint);
-        top: calc(var(--stage-org-sep-vert) / -2);
+        border-top: calc(var(--line-width_separator_heading)) solid var(--border-color-faint);        top: calc(var(--stage-org-sep-vert) / -2);
         content: "";
         height: 0;
         position: absolute;
@@ -482,8 +480,7 @@ $inline-list-sep-width: math.div($inline-list-item-separation, 3.0);
         & + .publication_item {
           margin-top: var(--publication-sep-vert);
           &::before {
-            border-top: 0.125rem solid var(--border-color-faint);
-            top: calc(var(--publication-sep-vert) / -2);
+            border-top: calc(var(--line-width_separator)) solid var(--border-color-faint);            top: calc(var(--publication-sep-vert) / -2);
             content: "";
             height: 0;
             position: absolute;
@@ -682,7 +679,7 @@ $inline-list-sep-width: math.div($inline-list-item-separation, 3.0);
     .slot {
       &_main {
         .section ~ .section {
-          border-top: 0.125rem solid var(--border-color-faint);
+          border-top: calc(var(--line-width_separator_heading)) solid var(--border-color-faint);
         }
       }
     }

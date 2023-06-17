@@ -10,7 +10,9 @@ vitae:
     links:
       screen: true
       print: true
+
     parts:
+
       # Front page
       - template: front-page
         # enabled: false
@@ -44,7 +46,7 @@ vitae:
               filter_value: professional
               links: false
               date_format: 2006
-              unit: false
+              unit: 1
               style:
                 timeline: shallow
                 # timeline: column
@@ -52,43 +54,9 @@ vitae:
                 heading: normal
                 logo: false
               organization:
-                period: false
-                details: false
-                location: false
-              role:
-                unit: 1
                 period: true
                 details: false
-                summary: false
-                description: false
-                responsibilities_achievements: false
-                star: false
-                skills: false
-                results: false
-                responsibilities: false
-                achievements: false
-          - section: career-summary-timeline
-            title: section-career-summary
-            container: section
-            components:
-            - component: stages
-              collection: stages
-              filter_by: type
-              filter_value: professional
-              links: false
-              date_format: 2006
-              unit: false
-              style:
-                # timeline: shallow
-                timeline: column
-                heading: normal
-                logo: false
-              organization:
-                period: false
-                details: false
-                location: false
               role:
-                unit: 1
                 period: true
                 details: false
                 summary: false
@@ -118,14 +86,15 @@ vitae:
               screen: true
               print: true
 
-        - slot: footer
-          sections:
-          - section: connect
-            title: section-connect
-            components:
-            - component: links
-              screen: true
-              print: true
+        # - slot: footer
+        #   sections:
+        #   - section: connect
+        #     title: section-connect
+        #     components:
+        #     - component: links
+        #       screen: true
+        #       print: true
+
       # Career timeline
       - template: career-timeline
         # enabled: false
@@ -168,7 +137,7 @@ vitae:
       #   - slot: main
       #     sections:
           - section: education
-            enabled: false
+            # enabled: false
             title: section-education
             components:
             - component: stages
@@ -178,6 +147,10 @@ vitae:
               style:
                 timeline: column
                 logo: left
+              # organization:
+              #   period: true
+              #   duration: true
+              #   details: true
               role:
                 period: true
                 duration: false

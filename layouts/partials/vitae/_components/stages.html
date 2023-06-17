@@ -138,6 +138,7 @@
     {{ end }}
 
     {{- $stagePeriodInHeader := true }}
+    {{- $organizationMetaInHeader := true }}
 
     {{- if $stagePeriodInHeader }}
     <div class="{{ delimit (append $topLevelClass $oganizationHeaderClassList) ` ` }}">
@@ -175,11 +176,13 @@
         {{- end }}
         </h{{ $headingLevel }}>
 
-        {{- partial "stage_meta" (merge $inlinePartialParams (dict
-          "Organization" $org
-          "HomeCountry" $homeCountry
-          "Template" $template
-        ) ) -}}
+        {{- if $organizationMetaInHeader }}
+          {{- partial "stage_meta" (merge $inlinePartialParams (dict
+            "Organization" $org
+            "HomeCountry" $homeCountry
+            "Template" $template
+          ) ) -}}
+        {{- end }}
       </div>
       {{- if $logoImageResource }}
       <div class="stage_logo">
@@ -198,6 +201,16 @@
       </div>
       {{- end }}
     </div>
+
+    {{- if not $organizationMetaInHeader }}
+      {{- partial "stage_meta" (merge $inlinePartialParams (dict
+        "Organization" $org
+        "StageType" "organization"
+        "HomeCountry" $homeCountry
+        "TopLevelClass" $topLevelClass
+        "Template" $template
+      ) ) -}}
+    {{- end }}
 
     {{- range $roleIdx, $role := $roleList }}
 
@@ -504,26 +517,28 @@
   {{- $componentStageType := index .Component $stageType }}
   {{- $template := .Template }}
 
-  {{- $config := (dict
+  {{- $metaConfig := (dict
     "unit" (default true (default $component.unit $componentStageType.unit))
+    "location" (default true (default $component.location $componentStageType.location))
+    "details" (default true (default $component.details $componentStageType.details))
   ) -}}
 
-  {{- if or $config.unit
-      (default true $stage.location)
-      (default true $stage.details) -}}
+  {{- if or $metaConfig.unit
+      $metaConfig.location
+      $metaConfig.details -}}
 
     <div class="{{ printf `%s_meta stage_meta` $stageType }}{{ with .TopLevelClass }} {{ . }}{{ end }}">
       <div class="stage_main">
 
-        {{- if or $config.unit
-          (default true $stage.location) }}
+        {{- if or $metaConfig.unit
+          $metaConfig.location }}
         <p class="stage_meta_unit">
           {{- $stageMetaSeparatorStr := " · " }}
           {{- $unitSeparatorStr := ", " }}
           {{- $stageUnitMarkup := "" }}
           {{- $stageLocationStr := "" }}
 
-          {{- if $config.unit }}
+          {{- if $metaConfig.unit }}
             {{- /* {{- warnf "%s[%s]: org.unit=%v division=%v %v org=%v department=%v %v org=%v"
                 page $template (default true $org.unit)
                 $stage.division (cond (eq $stage.division $org.division) "==" "!=") $org.division
@@ -531,7 +546,7 @@
             {{- if or (eq $stage $org) (not (default true $org.unit) ) (ne $stage.unit $org.unit) }}
               {{- with $stage.unit }}
                 {{- if reflect.IsSlice . }}
-                  {{- $unitLimit := cond (eq (printf "%T" $config.unit) "int") (int $config.unit) 99 }}
+                  {{- $unitLimit := cond (eq (printf "%T" $metaConfig.unit) "int") (int $metaConfig.unit) 99 }}
                   {{- range $unit := first $unitLimit . }}
                     {{- if reflect.IsMap . }}
                       {{- range $unitType, $unitName := . }}
@@ -576,7 +591,7 @@
             {{- end }}
           {{- end }}
 
-          {{- if default true $stage.location }}
+          {{- if $metaConfig.location }}
             {{- with $org.location }}
               {{- $orgLocationStr = printf "%s" . }}
               {{- with $org.country }}
@@ -607,7 +622,7 @@
           </p>
         {{- end }}
 
-        {{- if default true $stage.details }}
+        {{- if $metaConfig.details }}
           {{- with $stage.details }}
             <p class="stage_details">
               {{- partial "render_string_slice" . }}
