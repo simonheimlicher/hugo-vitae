@@ -22,7 +22,7 @@
   {{- range $fragment := $component.fragments }}
     {{- $fragmentConfig := (index $config $fragment) }}
     {{- $partial := printf "vitae/fragments/%s" $fragment}}
-    {{- /* warnf "%s[%s]: media=%s component=%s: Calling fragment=%s with .Config=%s"
+    {{- /* warnf "%s[%s]: media=%s component=%v: Calling fragment=%s with .Config=%v"
         $page $template $media $component $fragment $fragmentConfig */ -}}
     {{- partial $partial (merge $sectionArgs (dict "Fragment" $fragment "Config" $fragmentConfig ))  }}
   {{- end }}

@@ -93,10 +93,10 @@
 
 {{- with $containerStr }}
   {{- with $entirePeriodStr }}
-    {{- $entirePeriodStr = printf "<%s class=\"date-period\">%s</%s>" $containerStr $entirePeriodStr $containerStr }}
+    {{- $entirePeriodStr = printf "<%s class=\"date_period\">%s</%s>" $containerStr $entirePeriodStr $containerStr }}
   {{- end }}
   {{- with $durationStr}}
-    {{- $durationStr = printf "<%s class=\"date-duration\">%s</%s>" $containerStr $durationStr $containerStr }}
+    {{- $durationStr = printf "<%s class=\"date_duration\">%s</%s>" $containerStr $durationStr $containerStr }}
   {{- end }}
 {{- end }}
 

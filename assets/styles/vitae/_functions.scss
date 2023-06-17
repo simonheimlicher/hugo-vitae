@@ -54,6 +54,15 @@
   @include flush-top($line-height);
 }
 
+@mixin inner_margin_padding($margin_base, $padding_base, $denominator: 4) {
+  --inner_margin_base: #{$margin_base};
+  --inner_padding_base: #{$padding_base};
+  @for $numerator from 1 to (3 * $denominator + 1) {
+    --inner_margin_#{$denominator}-#{$numerator}: #{math.div($numerator, $denominator)} * var(--inner_margin_base);
+    --inner_padding_#{$denominator}-#{$numerator}: #{math.div($numerator, $denominator)} * var(--inner_padding_base);
+  }
+}
+
 @mixin wrap() {
   padding: 0 $screenViewBodyPaddingNarrow;
   padding: env(safe-area-inset-top) calc(#{$screenViewBodyPaddingNarrow} + env(safe-area-inset-right)) env(safe-area-inset-bottom) calc(#{$screenViewBodyPaddingNarrow} + env(safe-area-inset-left));

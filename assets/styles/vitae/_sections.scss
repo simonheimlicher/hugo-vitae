@@ -15,6 +15,8 @@ $inline-list-sep-width: math.div($inline-list-item-separation, 3.0);
   --line-height-heading: 1.2;
 
   --section-title-sep-vert: 0.5rem;
+  --section-title_first-section_sep-vert: var(--section-title-sep-vert);
+  --section-title_sep-line_width: 0.25pt;
 
   --inline-list-item-separation: 2ch;
   --inline-list-sep-width: var(--inline-list-item-separation) / 3.0;
@@ -58,8 +60,11 @@ $inline-list-sep-width: math.div($inline-list-item-separation, 3.0);
     @include upper-caps-strong
     // margin-bottom: var(--section-title-sep-vert);
   }
+  .section:first-child .section-title {
+    margin-top: var(--section-title_first-section_sep-vert);
+  }
   .section-title ~ .section-title {
-    margin-top: var(--section-title-sep-vert);
+    margin-top: calc(var(--section-title-sep-vert));
     &::before {
       position: absolute;
       content: "";
@@ -70,7 +75,7 @@ $inline-list-sep-width: math.div($inline-list-item-separation, 3.0);
       // right: calc( var(--column-padding-right) / -2)
       left: 0;
       right: 0;
-      border-top: 0.125rem solid var(--border-color-faint);
+      border-top: calc(var(--section-title_sep-line_width)) solid var(--border-color-faint);
     }
   }
 }
@@ -173,12 +178,12 @@ $inline-list-sep-width: math.div($inline-list-item-separation, 3.0);
       &.num-roles-1 {
         opacity: 0;
       }
-      .date-duration {
+      .date_duration {
         @include lower-caps;
         color: var(--text-color-faint);
         user-select: none;
       }
-      .date-period {
+      .date_period {
         // color: var(--text-color-faint)
         font-size: calc(var(--font-size-smaller-1));
       }
@@ -678,30 +683,6 @@ $inline-list-sep-width: math.div($inline-list-item-separation, 3.0);
       &_main {
         .section ~ .section {
           border-top: 0.125rem solid var(--border-color-faint);
-        }
-      }
-    }
-    .section {
-      &_career-summary,
-      &_education {
-        .organization-title {
-          font-weight: 400;
-        }
-      }
-      // &_career-summary {
-      //   .role-header {
-      //     padding: 0.25rem 0 0.25rem calc(var(--organization-logo-column-width));
-      //   }
-      // }
-      &_award-selection {
-        &_container {
-          display: flex;
-          flex-direction: row;
-          align-items: flex-start;
-          gap: 1rem;
-        }
-        &_item {
-          max-width: 30%;
         }
       }
     }

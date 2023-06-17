@@ -6,7 +6,7 @@
 {{- $component := .Component }}
 {{- $config := .Config }}
 {{- $media := default "screen" $p.media }}
-{{- $headingLevel := default 2 .HeadingLevel }}
+{{- $headingLevel := default 1 .HeadingLevel }}
 {{- $childClass := default "" .ChildClass }}
 {{- $title := .Title | markdownify }}
 
@@ -66,18 +66,18 @@
       {{- with .role }}
         <span class="role">{{. | page.RenderString }}</span>
       {{- end -}}
-      {{- with .degree }}
-        <span class="degree">{{. | page.RenderString }}</span>
-      {{- end -}}
       </h{{ $headingLevel }}>
+    {{- with .degree }}
+      <p class="degree">{{. | page.RenderString }}</p>
+    {{- end -}}
   {{- end -}}
   {{- with $component.fragments }}
     {{- range $fragment := . }}
       {{- $fragmentName := .fragment }}
       {{- $fragmentConfig := merge (index $config $fragmentName) . }}
       {{- $partial := printf "vitae/fragments/%s" $fragmentName}}
-      {{- warnf "%s[%s]: media=%s component=%s: Calling fragment=%s with .Config=%s"
-          $page $template $media $component $fragmentName $fragmentConfig -}}
+      {{- /* {{- warnf "%s[%s]: media=%s component=%v: Calling fragment=%s with .Config=%v"
+          $page $template $media $component $fragmentName $fragmentConfig -}} */ -}}
       <div class="fragment_{{ $fragmentName }} fragment">
       {{- partial $partial (merge $sectionArgs (dict "Fragment" $fragmentName "Config" $fragmentConfig ))  }}
       </div>

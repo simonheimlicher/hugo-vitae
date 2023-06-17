@@ -42,21 +42,63 @@ vitae:
               collection: stages
               filter_by: type
               filter_value: professional
+              links: false
+              date_format: 2006
+              unit: false
               style:
-                timeline: column
+                timeline: shallow
+                # timeline: column
                 # timeline: dot-dash
                 heading: normal
+                logo: false
+              organization:
+                period: false
+                details: false
+                location: false
+              role:
+                unit: 1
+                period: true
+                details: false
+                summary: false
+                description: false
+                responsibilities_achievements: false
+                star: false
+                skills: false
+                results: false
+                responsibilities: false
+                achievements: false
+          - section: career-summary-timeline
+            title: section-career-summary
+            container: section
+            components:
+            - component: stages
+              collection: stages
+              filter_by: type
+              filter_value: professional
               links: false
-              headings: true
-              # organization_period: true
-              role_period: true
-              logo: false
-              star: false
-              skills: false
-              details: false
-              results: false
-              responsibilities: false
-              achievements: false
+              date_format: 2006
+              unit: false
+              style:
+                # timeline: shallow
+                timeline: column
+                heading: normal
+                logo: false
+              organization:
+                period: false
+                details: false
+                location: false
+              role:
+                unit: 1
+                period: true
+                details: false
+                summary: false
+                description: false
+                responsibilities_achievements: false
+                star: false
+                skills: false
+                results: false
+                responsibilities: false
+                achievements: false
           - section: language-skills
             title: section-language-skills
             container: section
@@ -86,6 +128,7 @@ vitae:
               print: true
       # Career timeline
       - template: career-timeline
+        # enabled: false
         pagination_policy: break
         slots:
         - slot: main
@@ -99,24 +142,47 @@ vitae:
               filter_value: professional
               style:
                 timeline: column
+                logo: left
                 # timeline: dot-dash
-              organization_period: true
-              role_period: true
-              # organization_duration: true
-              # role_duration: true
-              star: true
-              skills: false
-              responsibilities: false
-              achievements: false
-              details: false
-              headings: true
+              organization:
+                period: true
+                duration: true
+                details: true
+              role:
+                headings: false
+                period: true
+                duration: false
+                details: true
+                summary: false
+                description: false
+                responsibilities_achievements: true
+                star: false
+                skills: false
+                responsibilities: false
+                achievements: false
+
+      # # Education timeline
+      # - template: career-timeline
+      #   pagination_policy: break
+      #   slots:
+      #   - slot: main
+      #     sections:
           - section: education
+            enabled: false
             title: section-education
             components:
             - component: stages
               collection: stages
               filter_by: type
               filter_value: education
+              style:
+                timeline: column
+                logo: left
+              role:
+                period: true
+                duration: false
+                details: true
+                description: true
       # Appendix
       # - template: main-aside-primary
       #   pagination_policy: break

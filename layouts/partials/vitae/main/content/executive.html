@@ -26,7 +26,7 @@ PaginationPage: a printed page that is part of a Part
         {{ printf `%s="%d"` $pp.PaginationOrderAttr 9 | safeHTMLAttr }}
         {{ printf `%s="%s"` $pp.PaginationPolicyAttr $paginationPolicy | safeHTMLAttr -}}
         >
-          {{- range $sectionIndex, $section := $slot.sections }}
+          {{- range $sectionIndex, $section := where $slot.sections "enabled" "ne" false }}
             {{- $sectionName := $section.section }}
             {{- $childClass := default "" .child_class }}
             {{- $sectionContainer := default "" .container }}

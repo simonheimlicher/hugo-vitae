@@ -251,9 +251,17 @@ $screen-pad-v: 1rem;
 .vitae {
   .view-screen {
     @include font-size-scale(1rem);
+    @include inner_margin_padding(1.5rem, 1rem);
   }
   .view-print {
-    @include font-size-scale(9pt);
+    @include font-size-scale(10pt);
+    @include inner_margin_padding(18pt, 12pt);
+
+    @include link-lvhfa-reset;
+
+    --border-color: var(--text);
+    --border-color-faint: var(--text-color-faint);
+
     .pagination-container {
       position: relative;
       padding: 0;
@@ -373,49 +381,82 @@ $screen-pad-v: 1rem;
       // height: 100%
       overflow: hidden;
     }
-// Adapt layout after pagination
   }
 }
+
+// Adapt layout after pagination
 .vitae[data-print-preview-status="done"] {
-  &.layout-resume,
-  &.layout-executive {
+  &.layout-executive .view-print .pagination-page {
+    .pagination-container {
+      display: flex;
+      flex-direction: column;
+      flex-wrap: nowrap;
+      justify-content: space-between;
+      height: 100%;
+      // & > * {
+      //   flex: 0 1 auto;
+      // }
+      // & > .timeline {
+      //   flex: 0.5 1 auto;
+      // }
+      // .organization-header {
+      //   flex: 0.25 0 auto;
+      // }
+      // .role_header {
+      //   flex: 1 0 auto;
+      // }
+      .stage_header {
+        flex: 1 0 auto;
+      }
+      .stage_header:has( + .stage_meta) {
+        flex: 0 0 auto;
+      }
+      .stage_header:has( + .stage_header) {
+        flex: 0.25 0 auto;
+      }
+      .stage_meta, .stage_content {
+        flex: 0.5 0 auto;
+      }
+    }
+  }
+  &.layout-resume {
     .view-print {
       .pagination-page {
-        &.main-aside-primary {
-          .main-column,
-          .aside-primary,
-          .aside-secondary {
-            display: flex;
-            flex-direction: column;
-            flex-wrap: nowrap;
-            justify-content: space-between;
-            // & > *
-            //   flex: 0 1 auto
-            // & > .timeline
-            //   flex: 0.5 1 auto
-            // .organization-header
-            //   flex: 0.25 0 auto
-            .role-header {
-              flex: 1 0 auto;
-            }
-            .organization-header + .role-header {
-              flex: 0.5 0 auto;
-            }
-            .role-section-heading {
-              flex: 1 0 auto;
-            }            // .role-header:has(+ .role-section-heading)
-            //   flex: 0 0 auto
-            .role-header + .role-section-heading {
-              flex: 0.25 0 auto;
-            }
+        .pagination-container {
+          display: flex;
+          flex-direction: column;
+          flex-wrap: nowrap;
+          justify-content: space-between;
+          // & > *
+          //   flex: 0 1 auto
+          // & > .timeline
+          //   flex: 0.5 1 auto
+          // .organization-header
+          //   flex: 0.25 0 auto
+          .role-header {
+            flex: 1 0 auto;
+          }
+          .organization-header + .role-header {
+            flex: 0.5 0 auto;
+          }
+          .role-section-heading {
+            flex: 1 0 auto;
+          }            // .role-header:has(+ .role-section-heading)
+          //   flex: 0 0 auto
+          .role-header + .role-section-heading {
+            flex: 0.25 0 auto;
+          }
+          .stage_content {
+            flex: 0.25 0 auto;
+          }
+          .stage_content {
+            flex: 0.25 0 auto;
           }
         }
       }
       .page-first:not(.page-last) {
         grid-template-rows: auto;
-        .main-column,
-        .aside-primary,
-        .aside-secondary {
+        .pagination-container {
           height: 100%;
         }
         .aside-primary,
@@ -458,6 +499,7 @@ $screen-pad-v: 1rem;
     }
   }
 }
+
 .vitae,
 .vitae[data-print-preview-status="done"] {
   &.layout-letter {

@@ -47,7 +47,7 @@ publication_link_further-info:
 private-data-requires-javascript:
   other: 'Private: access requires JavaScript'
 section-title_responsibilities:
-  other: Main responsibilities
+  other: Responsibilities
 section-title_achievements:
   other: Key achievements
 section-awards:
@@ -56,3 +56,7 @@ section-career-summary:
   other: Career summary
 section-personal-profile:
   other: Personal profile
+organization_unit_division:
+  other: division
+organization_unit_department:
+  other: department

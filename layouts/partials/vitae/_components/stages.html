@@ -6,6 +6,7 @@
 {{- $template := "vitae/_components/stages" }}
 
 {{- $component := .Component }}
+{{- $config := .Config }}
 
 {{- $style := (dict "timeline" "dot-dash") }}
 {{- $styleClass := "" }}
@@ -15,22 +16,31 @@
   {{- end }}
 {{- end }}
 {{- range $key, $value := $style }}
-  {{- $styleClass = trim (printf "%s %s_%s" $styleClass $key $value) " " }}
+  {{- if . }}
+    {{- $styleClass = trim (printf "%s %s_%v" $styleClass $key .) " " }}
+  {{- end }}
 {{- end }}
+
+{{- $renderOptInline := dict "display" "inline" }}
+{{- $renderOptBlock := dict "display" "block" }}
+
+{{- $dateFormat := default "Jan 2006" (string $component.date_format) }}
 
 {{- $timelineBaseClass := "timeline" }}
 
 {{- $timelineForSingleRole := false }}
 {{- $durationFirst := false }}
 {{- $periodDurationSeparator := "" }}
-{{- $periodBeginEndSeparator := "-" }}
+{{- $periodBeginEndSeparator := "–" }}
 {{- with $style }}
   {{- with .timeline }}
     {{- if eq . "dot-dash" }}
       {{- $durationFirst = true }}
     {{- else if eq . "column" }}
       {{- $timelineForSingleRole = true }}
-      {{- $periodBeginEndSeparator = "<br>-" }}
+      {{- $periodBeginEndSeparator = "–" }}
+    {{- else if eq . "shallow" }}
+      {{- $timelineForSingleRole = true }}
     {{- end }}
   {{- end }}
 {{- end }}
@@ -42,16 +52,38 @@
 {{- $logoImageDisplayWidthHeight := 48 }}
 {{- $sizeSpec := printf "%dx%d center png" (int $logoImageWidthHeight) (int $logoImageWidthHeight) }}
 {{- $logoImageRoot := "images/organization-logos" }}
-{{- $dateFormat := default "Jan 2006" (default site.Params.periodDateFormat .Params.periodDateFormat )}}
 
-{{- $roleSectionSeparator := "role-section-separator"}}
+{{- $roleStarHeading := false }}
+{{- $roleStarHeadingParams := (dict "HeadingLevel" $headingLevel) }}
+{{- $roleSectionSeparator := false }}
+{{- if .component.headings }}
+  {{- $roleSectionSeparator = "role_section-separator" }}
+  {{- $roleStarHeading = "role_star_column_heading" }}
+{{- end }}
 
-{{- $homeCountry := "Switzerland" }}
+{{- $homeCountry := default "USA" .Data.features.contact.print.address.country }}
 
-{{- $orgList := (index .Data (default $component.component $component.collection) ) }}
+{{- $orgListRaw := (index .Data (default $component.component $component.collection) ) }}
+{{- $orgList := slice }}
+{{- range $org := $orgListRaw }}
+  {{- with .roles }}
+    {{- $roleList := where . $filterField $filterMatch }}
+    {{- if gt (len $roleList) 0 }}
+      {{- $orgList = append (merge $org (dict "roles" $roleList)) $orgList }}
+    {{- end }}
+  {{- end }}
+{{- end }}
+
+{{- $numOrgs := 0 }}
+{{- $singleOrg := false }}
+{{- with $orgList }}
+  {{- $numOrgs = len $orgList }}
+  {{- $singleOrg = eq $numOrgs 1 }}
+{{- end }}
+
 {{- range $orgIdx, $org := $orgList }}
 
-  {{- $roleList := where $org.roles $filterField $filterMatch }}
+  {{- $roleList := $org.roles }}
   {{- $numRoles := (len $roleList) }}
 
   {{- $timelineClass := "" }}
@@ -61,25 +93,28 @@
     {{- $firstRole := index $roleList 0 }}
     {{- $roleHasDetails := false }}
     {{ with $firstRole }}
-      {{- $roleHasDetails = or .details .star .results .responsibilities .achievements }}
+      {{- $roleHasDetails = or .details .summary .description .responsibilities_achievements .star .results .responsibilities .achievements }}
     {{- end }}
-    {{- $singleRoleWithoutDetails := and (eq $numRoles 1) (not $roleHasDetails) }}
     {{- $showTimeline := or (and $timelineForSingleRole $roleHasDetails) (gt $numRoles 1) }}
     {{- if $showTimeline }}
       {{- $timelineClass = $timelineBaseClass }}
-      {{- if (eq $orgIdx 0) }}
-        {{- $timelineOrgClass = "timeline_org-first" }}
-      {{- else if (eq $orgIdx (sub (len $orgList) 1 ) ) }}
-        {{- $timelineOrgClass = "timeline_org-last" }}
+      {{- if $singleOrg }}
+        {{- $timelineOrgClass = "timeline_org_single" }}
+      {{- else if (eq $orgIdx 0) }}
+        {{- $timelineOrgClass = "timeline_org_first" }}
+      {{- else if (eq $orgIdx (sub $numOrgs 1 ) ) }}
+        {{- $timelineOrgClass = "timeline_org_last" }}
       {{- else }}
-        {{- $timelineOrgClass = "timeline_org-within" }}
+        {{- $timelineOrgClass = printf "timeline_org_within timeline_org_%d_of_%d" $orgIdx $numOrgs }}
       {{- end }}
     {{- end }}
+
+    {{- $inlinePartialParams := (dict "Component" $component "HeadingLevel" $headingLevel) }}
 
     {{- $topLevelClass := strings.TrimLeft " " (delimit (slice $timelineClass $timelineOrgClass $styleClass $componentClass $childClass) " ") }}
 
     {{- $logoImageResource := false }}
-    {{- if default true $component.logo }}
+    {{- if default "left" $style.logo }}
       <!-- Use urlize to sanitize organization name -->
       {{- $imgAssetID := printf "%s/%s*" $logoImageRoot (anchorize $org.organization) -}}
       {{- with partial "claris/_functions/resources/images/image-resource" (dict "Page" $page "resource" $imgAssetID) }}
@@ -90,11 +125,16 @@
       {{- end }}
     {{- end }}
 
+    {{- $stageHeaderClassPrefix := "stage_header" }}
     {{- $oganizationHeaderClassList := slice "organization_header stage_header" }}
-    {{ if $singleRoleWithoutDetails }}
-      {{- $oganizationHeaderClassList = append "single-role" $oganizationHeaderClassList }}
-    {{ else if $logoImageResource }}
-      {{- $oganizationHeaderClassList = append "logo" $oganizationHeaderClassList }}
+    {{ if $component.organization.period }}
+      {{- $oganizationHeaderClassList = append (printf "%s_period" $stageHeaderClassPrefix) $oganizationHeaderClassList }}
+    {{ end }}
+    {{ if $component.organization.duration }}
+      {{- $oganizationHeaderClassList = append (printf "%s_duration" $stageHeaderClassPrefix) $oganizationHeaderClassList }}
+    {{ end }}
+    {{ if $logoImageResource }}
+      {{- $oganizationHeaderClassList = append (printf "%s_logo" $stageHeaderClassPrefix) $oganizationHeaderClassList }}
     {{ end }}
 
     {{- $stagePeriodInHeader := true }}
@@ -102,25 +142,28 @@
     {{- if $stagePeriodInHeader }}
     <div class="{{ delimit (append $topLevelClass $oganizationHeaderClassList) ` ` }}">
     {{- end }}
-      {{- if or $component.organization_period $component.organization_duration }}
-        {{- with $org.roles }}
-          <div class="organization_period stage_period{{ if not $stagePeriodInHeader }} {{ $topLevelClass }}{{ end }}">{{- partial
-            "vitae/_functions/date-period-duration" (dict
-            "PeriodList" .
-            "ShowPeriod" $component.organization_period
-            "ShowDuration" $component.organization_duration
-            "DurationFirst" $durationFirst
-            "DateFormat" $dateFormat
-            "Container" "span"
-            "DateContainer" "span"
-            "PeriodDurationSeparator" $periodDurationSeparator
-            "PeriodBeginEndSeparator" $periodBeginEndSeparator
-          ) -}}</div>
-        {{- end }}
+
+    {{- if or $component.organization.period $component.organization.duration }}
+      {{- with $org.roles }}
+        <div class="organization_period stage_period{{ if not $stagePeriodInHeader }} {{ $topLevelClass }}{{ end }}">{{- partial
+          "vitae/_functions/date-period-duration" (dict
+          "PeriodList" .
+          "ShowPeriod" $component.organization.period
+          "ShowDuration" $component.organization.duration
+          "DurationFirst" $durationFirst
+          "DateFormat" $dateFormat
+          "Container" "span"
+          "DateContainer" "span"
+          "PeriodDurationSeparator" $periodDurationSeparator
+          "PeriodBeginEndSeparator" $periodBeginEndSeparator
+        ) -}}</div>
       {{- end }}
+    {{- end }}
+
     {{- if not $stagePeriodInHeader }}
     <div class="{{ delimit (append $topLevelClass $oganizationHeaderClassList) ` ` }}">
     {{- end }}
+
       <div class="organization_header_main stage_main">
         <h{{ $headingLevel }} class="organization_title">
         {{- if $org.website }}
@@ -131,39 +174,20 @@
           </a>
         {{- end }}
         </h{{ $headingLevel }}>
-        {{- if default true $component.organization_location }}
-          {{- $location := "" }}
-          {{- with $org.location }}
-            {{- $location = printf "%s" . }}
-            {{- with $org.country }}
-              {{- if ne $org.country $homeCountry }}
-                {{- $location = printf "%s, %s" $location . }}
-              {{- end }}
-            {{- end }}
-          {{- end }}
-          {{- with $location }}
-          <p class="organization_location">{{ . }}</p>
-          {{- end }}
-        {{- end }}
-        {{- if $singleRoleWithoutDetails }}
-          {{- $titleLayout := and $firstRole.supertitle $firstRole.subtitle}}
-        <h{{ add 1 $headingLevel }} class="role_title{{- if $titleLayout }} partition{{ end }}">
-          {{- if $titleLayout }}
-            <span class="role-supertitle">{{ $page.RenderString $firstRole.supertitle }}</span>
-            <span class="role-subtitle">{{ $page.RenderString $firstRole.subtitle }}</span>
-          {{- else }}
-            {{- partial "vitae/render-markdown" (dict "Page" $page "Data" $firstRole.role) $page $firstRole.role }}
-          {{- end }}
-        </h{{ add 1 $headingLevel }}>
-        {{- end }}
+
+        {{- partial "stage_meta" (merge $inlinePartialParams (dict
+          "Organization" $org
+          "HomeCountry" $homeCountry
+          "Template" $template
+        ) ) -}}
       </div>
-      {{- if and $logoImageResource (not $singleRoleWithoutDetails) }}
-      <div class="organization_logo stage_logo">
+      {{- if $logoImageResource }}
+      <div class="stage_logo">
         {{- $logoImageResource = $logoImageResource.Fill $sizeSpec }}
         {{- if $org.website }}
         <a class="organization_logo_link organization_link" target="_self" href="{{ $org.website }}">
         {{- end }}
-        <img class="organization_logo_image"
+        <img class="stage_logo_img"
               src="{{ absURL $logoImageResource.Permalink }}"
               width="{{ $logoImageDisplayWidthHeight }}"
               height="{{ $logoImageDisplayWidthHeight }}"
@@ -175,165 +199,261 @@
       {{- end }}
     </div>
 
-    {{- if not $singleRoleWithoutDetails }}
-      {{- range $roleIdx, $role := $roleList }}
+    {{- range $roleIdx, $role := $roleList }}
 
-        {{- $timelineRoleClass := "" }}
-        {{- if $showTimeline }}
-          {{- $timelineRoleClass = "timeline_role-within" }}
-          {{- if (eq $roleIdx 0) }}
-            {{- $timelineRoleClass = "timeline_role-first" }}
-          {{- else if (eq $roleIdx (sub (len $roleList) 1 ) ) }}
-            {{- $timelineRoleClass = "timeline_role-last" }}
+      {{- $stageHeaderClassPrefix := "stage_header" }}
+      {{- $roleHeaderClassList := slice "role_header stage_header" }}
+      {{ if $component.role.period }}
+        {{- $roleHeaderClassList = append (printf "%s_period" $stageHeaderClassPrefix) $roleHeaderClassList }}
+      {{ end }}
+      {{ if $component.role.duration }}
+        {{- $roleHeaderClassList = append (printf "%s_duration" $stageHeaderClassPrefix) $roleHeaderClassList }}
+      {{ end }}
+
+      {{- $singleRole := eq (len $roleList) 1}}
+
+      {{- $timelineRoleClass := "" }}
+      {{- if $showTimeline }}
+        {{- if $singleRole }}
+          {{- $timelineRoleClass = "timeline_role_single" }}
+        {{- else if (eq $roleIdx 0) }}
+          {{- $timelineRoleClass = "timeline_role_first" }}
+        {{- else if (eq $roleIdx (sub (len $roleList) 1 ) ) }}
+          {{- $timelineRoleClass = "timeline_role_last" }}
+        {{- else }}
+          {{- $timelineRoleClass = "timeline_role_within" }}
+        {{- end }}
+      {{- end }}
+
+      {{- $topLevelClass = strings.TrimLeft " " (delimit (slice $timelineClass $timelineRoleClass $timelineOrgClass $styleClass $componentClass $childClass) " ") }}
+
+      {{- if $stagePeriodInHeader }}
+      <div class="{{ delimit (append $topLevelClass $roleHeaderClassList) ` ` }}">
+        {{- if and $showTimeline (in (slice "dot-dash" "column") $style.timeline) }}
+          <div class="{{ printf `timeline_%s_marker stage_timeline` $style.timeline }}"></div>
+        {{- end }}
+      {{- end }}
+
+        {{- if or $component.role.period $component.role.duration }}
+          {{- with $role.period }}
+            <div class="role_period num-roles-{{ $numRoles }} stage_period{{ if not $stagePeriodInHeader }} {{ $topLevelClass }}{{ end }}">
+            {{- partial
+              "vitae/_functions/date-period-duration" (dict
+              "PeriodList" .
+              "ShowPeriod" $component.role.period
+              "ShowDuration" $component.role.duration
+              "DurationFirst" $durationFirst
+              "DateFormat" $dateFormat
+              "Container" "span"
+              "DateContainer" "span"
+              "PeriodDurationSeparator" $periodDurationSeparator
+              "PeriodBeginEndSeparator" $periodBeginEndSeparator
+            ) -}}
+            </div>
           {{- end }}
         {{- end }}
-        {{- $topLevelClass = strings.TrimLeft " " (delimit (slice $timelineClass $timelineRoleClass $timelineOrgClass $styleClass $componentClass $childClass) " ") }}
 
-        {{- if $stagePeriodInHeader }}
-        <div class="role_header stage_header{{ with $topLevelClass }} {{ . }}{{ end }}">
-          {{- if and $showTimeline (in (slice "dot-dash") $style.timeline) }}
-            <span class="role-dot"></span>
-          {{- end }}
-        {{- end }}
+      {{- if not $stagePeriodInHeader }}
+      <div class="{{ delimit (append $topLevelClass $roleHeaderClassList) ` ` }}">
+      {{- end }}
 
-          {{- if or $component.role_period $component.role_duration }}
-            {{- with $role.period }}
-              <div class="role_period num-roles-{{ $numRoles }} stage_period{{ if not $stagePeriodInHeader }} {{ $topLevelClass }}{{ end }}">
-              {{- partial
-                "vitae/_functions/date-period-duration" (dict
-                "PeriodList" .
-                "ShowPeriod" $component.role_period
-                "ShowDuration" $component.role_duration
-                "DurationFirst" $durationFirst
-                "DateFormat" $dateFormat
-                "Container" "span"
-                "DateContainer" "span"
-                "PeriodDurationSeparator" $periodDurationSeparator
-                "PeriodBeginEndSeparator" $periodBeginEndSeparator
-              ) -}}
-              </div>
+        <div class="role_header_main stage_main">
+          <h{{ add 1 $headingLevel }} class="role_title{{ if $role.supertitle }} supertitle{{ end }}{{ if $role.subtitle }} subtitle{{ end }}">
+            {{- with $role.supertitle }}
+              <span class="role_supertitle">{{ $page.RenderString . }}</span>
             {{- end }}
-          {{- end }}
-
-        {{- if not $stagePeriodInHeader }}
-        <div class="role_header{{ with $topLevelClass }} {{ . }}{{ end }}">
-        {{- end }}
-
-          <div class="role_header_main stage_main">
-            {{- $titleLayout := and $role.supertitle $role.subtitle}}
-            <h{{ add 1 $headingLevel }} class="role_title{{- if $titleLayout }} partition{{ end }}">
-              {{- if $titleLayout }}
-                <span class="role-supertitle">{{ $page.RenderString $role.supertitle }}</span>
-                <span class="role-subtitle">{{ $page.RenderString $role.subtitle }}</span>
-              {{- else }}
-                {{- partial "vitae/render-markdown" (dict "Page" $page "Data" $role.role) $page $role.role }}
-              {{- end }}
-            </h{{ add 1 $headingLevel }}>
-          </div>
+            {{- $page.RenderString $role.role }}
+            {{- with $role.subtitle }}
+              <span class="role_subtitle">{{ $page.RenderString . }}</span>
+            {{- end }}
+          </h{{ add 1 $headingLevel }}>
         </div>
+      </div>
 
-        {{- if and (not $timelineForSingleRole) (ge $roleIdx (sub $numRoles 1) ) }}
-          {{- $topLevelClass = strings.TrimLeft " " (delimit (slice $timelineClass $styleClass $componentClass $childClass) " ") }}
-        {{- end }}
-        {{- $roleSectionSeparatorParams := (dict "component" $component "headinglevel" $headingLevel "toplevelclass" $topLevelClass) }}
+      {{- if and (not $timelineForSingleRole) (ge $roleIdx (sub $numRoles 1) ) }}
+        {{- $topLevelClass = strings.TrimLeft " " (delimit (slice $timelineClass $styleClass $componentClass $childClass) " ") }}
+      {{- end }}
 
-        {{- if default true $component.skills }}
-          {{- with $role.skills }}
-            <div class="role-skills{{ with $topLevelClass }} {{ . }}{{ end }}">
-              {{- partial "vitae/section-experience-skills" (dict "Page" $page "Data" .) $page . }}
-            </div>
-          {{- end }}
-        {{- end }}
+      {{- partial "stage_meta" (merge $inlinePartialParams (dict
+        "Organization" $org
+        "Role" $role
+        "StageType" "role"
+        "HomeCountry" $homeCountry
+        "TopLevelClass" $topLevelClass
+        "Template" $template
+      ) ) -}}
 
-        {{- if default true $component.details }}
-          {{- with $role.details }}
-            <div class="role-details{{ with $topLevelClass }} {{ . }}{{ end }}">
-              {{- partial "vitae/render-markdown" (dict "Page" $page "Data" .) $page . }}
-            </div>
-          {{- end }}
-        {{- end }}
+      {{- $containerClass := "" }}
+      {{- if and $showTimeline (in (slice "column" "shallow") $style.timeline) }}
+        {{- $containerClass = "stage_content" }}
+      {{- end }}
 
-        {{- if default true $component.results }}
-          {{- with $role.results }}
-            {{- $nestedBulletsClass := "role-results" }}
-            {{- with $topLevelClass }}
-              {{- $nestedBulletsClass = printf "%s %s" $nestedBulletsClass . }}
-            {{- end }}
-            {{- if $partialOutput }}
-              {{- partial "vitae/nested-bullets" (dict "Page" $page "ChildClass" $nestedBulletsClass "PartialOutput" true "Data" .) $page . }}
-            {{- else }}
-              <div class="role-results{{ with $topLevelClass }} {{ . }}{{ end }}">
-                {{- partial "vitae/nested-bullets" (dict "Page" $page "Data" .) $page . }}
+      {{- if default true $component.role.summary }}
+        {{- with $value := $role.summary }}
+          {{- with $containerClass }}
+            <div class="{{ $containerClass }} {{ $topLevelClass }}">
+              <div class="timeline_column_line stage_timeline">
+              <div class="{{ printf `timeline_%smarker` $style.timeline }} stage_timeline"></div>
               </div>
-            {{- end }}
+          {{- end }}
+          <div class="role_summary_container stage_main{{ with (and (not $containerClass) $topLevelClass) }} {{ . }}{{ end }}">
+            {{- partial "render_string_slice" $value }}
+          </div>
+          {{- with $containerClass }}
+            </div>
           {{- end }}
         {{- end }}
+      {{- end }}
 
-        {{- if default true $component.star }}
-          {{- with $role.star }}
-            {{- $starKeys := (slice "situation" "task" "action" "result") }}
-            {{- range $starMap := . }}
-              <div class="role_star_container{{ with $topLevelClass }} {{ . }}{{ end }}">
+      {{- if default true $component.role.description }}
+        {{- with $value := $role.description }}
+          {{- with $containerClass }}
+            <div class="{{ $containerClass }} {{ $topLevelClass }}">
+              <div class="stage_timeline">
+              </div>
+          {{- end }}
+          <div class="role_description_container stage_main{{ with (and (not $containerClass) $topLevelClass) }} {{ . }}{{ end }}">
+            {{- partial "render_string_slice" $value }}
+          </div>
+          {{- with $containerClass }}
+            </div>
+          {{- end }}
+        {{- end }}
+      {{- end }}
+
+      {{- if default true $component.role.responsibilities_achievements }}
+        {{- with $role.responsibilities_achievements }}
+          {{- $roleStarHeadingParams := (dict "HeadingLevel" $headingLevel) }}
+          {{- range $starRecordIndex, $starRecord := . }}
+            {{- with $containerClass }}
+              <div class="{{ $containerClass }} {{ $topLevelClass }}">
+                <div class="stage_timeline">
+                </div>
+            {{- end }}
+            <div class="role_star_header stage_header{{ with (and (not $containerClass) $topLevelClass) }} {{ . }}{{ end }}">
+              {{- if and $roleStarHeading (eq $starRecordIndex 0) }}
+                {{ partial $roleStarHeading (merge $roleStarHeadingParams (dict "Section" "responsibilities") ) }}
+              {{- end }}
               <h{{ add $headingLevel 2 }} class="role_star_title">
-                {{- default $starMap.title (T $starMap.title) -}}
+                {{- $starRecord.title -}}
               </h{{ add $headingLevel 2 }}>
               {{/* <pre>{{ jsonify (dict "indent" "  ") . }}</pre> */}}
-              {{- range $key := $starKeys }}
-                {{- $value := index $starMap $key }}
-                {{- if reflect.IsSlice $value }}
-                  {{- range $value }}
-                    <div class="role_star_{{ $key }} role_star">
-                      {{ page.RenderString . }}
-                    </div>
-                  {{- end }}
-                {{- else }}
-                  <div class="role_star_{{ $key }} role_star">
-                    {{ page.RenderString $value }}
-                  </div>
-                {{- end }}
+              {{- with $starRecord.responsibilities }}
+                <div class="role_star_responsibilities role_star">
+                  {{- partial "render_string_slice" . }}
+                </div>
               {{- end }}
+            </div>
+            <div class="role_star_main stage_main{{ with (and (not $containerClass) $topLevelClass) }} {{ . }}{{ end }}">
+              {{- if and $roleStarHeading (eq $starRecordIndex 0) }}
+                {{ partial $roleStarHeading (merge $roleStarHeadingParams (dict "Section" "achievements") ) }}
+              {{- end }}
+              {{- with $starRecord.achievements }}
+                <div class="role_star_achievements role_star">
+                  {{- partial "render_string_slice" . }}
+                </div>
+              {{- end }}
+            </div>
+            {{- with $containerClass }}
               </div>
             {{- end }}
           {{- end }}
         {{- end }}
+      {{- end }}
 
-        {{- if default true $component.responsibilities }}
-          {{- with $role.responsibilities }}
-            {{- partial $roleSectionSeparator (merge $roleSectionSeparatorParams (dict "section" "responsibilities") ) }}
-            {{- if reflect.IsSlice . }}
-              {{- range . }}
-                {{- if reflect.IsMap . }}
-                  {{- range $skill, $responsibility := . }}
-                    <div class="role-responsibilities {{ with $topLevelClass }} {{ . }}{{ end }}">
-                      <div class="skill">{{ page.RenderString $skill }}</div>
-                      <div class="responsibility">{{ page.RenderString $responsibility }}</div>
+      {{- if default true $component.role.star }}
+        {{- with $role.star }}
+          {{- $starHeaderKeys := (slice "task" "situation") }}
+          {{- $starMainKeys := (slice "result" "action") }}
+          {{- range $starRecordIndex, $starRecord := . }}
+            {{- with $containerClass }}
+              <div class="{{ $containerClass }} {{ $topLevelClass }}">
+                <div class="stage_timeline">
+                </div>
+            {{- end }}
+            <div class="role_star_container stage_main{{ with (and (not $containerClass) $topLevelClass) }} {{ . }}{{ end }}">
+              <div class="role_star_header">
+                {{- if and $roleStarHeading (eq $starRecordIndex 0) }}
+                  {{ partial $roleStarHeading (merge $roleStarHeadingParams (dict "Section" "responsibilities") ) }}
+                {{- end }}
+                <h{{ add $headingLevel 2 }} class="role_star_title">
+                  {{- default $starRecord.title (T $starRecord.title) -}}
+                </h{{ add $headingLevel 2 }}>
+                {{/* <pre>{{ jsonify (dict "indent" "  ") . }}</pre> */}}
+                {{- range $key := $starHeaderKeys }}
+                  {{- with index $starRecord $key }}
+                    <div class="role_star_{{ $key }} role_star">
+                      {{- partial "render_string_slice" . }}
                     </div>
                   {{- end }}
-                {{- else }}
-                  <div class="role-responsibilities{{ with $topLevelClass }} {{ . }}{{ end }}">
-                    {{ page.RenderString . }}
-                  </div>
                 {{- end }}
-              {{- end }}
-            {{- else }}
-              <div class="role-responsibilities{{ with $topLevelClass }} {{ . }}{{ end }}">
-                {{ page.RenderString . }}
+              </div>
+              <div class="role_star_main">
+                {{- if and $roleStarHeading (eq $starRecordIndex 0) }}
+                  {{ partial $roleStarHeading (merge $roleStarHeadingParams (dict "Section" "achievements") ) }}
+                {{- end }}
+                {{- range $key := $starMainKeys }}
+                  {{- with index $starRecord $key }}
+                    <div class="role_star_{{ $key }} role_star">
+                      {{- partial "render_string_slice" . }}
+                    </div>
+                  {{- end }}
+                {{- end }}
+              </div>
+            </div>
+            {{- with $containerClass }}
               </div>
             {{- end }}
           {{- end }}
         {{- end }}
-        {{- with $role.achievements }}
-          {{- if default true $component.achievements }}
-            {{- partial $roleSectionSeparator (merge $roleSectionSeparatorParams (dict "section" "achievements") ) }}
-            {{- $roleAchievementsClass := "role-achievements" }}
-            {{- with $topLevelClass }} {{ $roleAchievementsClass = printf "%s %s" $roleAchievementsClass . }}{{ end }}
-            {{- if $partialOutput }}
-              {{- partial "vitae/role-achievements" (dict "Page" $page "ChildClass" $roleAchievementsClass "PartialOutput" true "Data" .) $page . }}
-            {{- else }}
-              <div class="role-achievements{{ with $topLevelClass }} {{ . }}{{ end }}">
-                {{- partial "vitae/role-achievements" (dict "Page" $page "Data" .) $page . }}
-              </div>
+      {{- end }}
+
+      {{- if default true $component.role.responsibilities }}
+        {{- with $role.responsibilities }}
+          {{- if $roleSectionSeparator }}
+            {{- partial $roleSectionSeparator (merge $inlinePartialParams (dict
+                "Section" "responsibilities"
+                "TopLevelClass" $topLevelClass
+            ) ) }}
+          {{- end }}
+          {{- if reflect.IsSlice . }}
+            {{- range . }}
+              {{- if reflect.IsMap . }}
+                {{- range $skill, $responsibility := . }}
+                  <div class="role_responsibilities {{ with $topLevelClass }} {{ . }}{{ end }}">
+                    <div class="skill">{{ page.RenderString $skill }}</div>
+                    <div class="responsibility">{{ page.RenderString $responsibility }}</div>
+                  </div>
+                {{- end }}
+              {{- else }}
+                <div class="role_responsibilities{{ with $topLevelClass }} {{ . }}{{ end }}">
+                  {{ page.RenderString . }}
+                </div>
+              {{- end }}
             {{- end }}
+          {{- else }}
+            <div class="role_responsibilities{{ with $topLevelClass }} {{ . }}{{ end }}">
+              {{ page.RenderString . }}
+            </div>
+          {{- end }}
+        {{- end }}
+      {{- end }}
+      {{- with $role.achievements }}
+        {{- if default true $component.role.achievements }}
+          {{- if $roleSectionSeparator }}
+            {{- partial $roleSectionSeparator (merge $inlinePartialParams (dict
+                "Section" "achievements"
+                "TopLevelClass" $topLevelClass
+            ) ) }}
+          {{- end }}
+          {{- $roleAchievementsClass := "role_achievements" }}
+          {{- with $topLevelClass }} {{ $roleAchievementsClass = printf "%s %s" $roleAchievementsClass . }}{{ end }}
+          {{- if $partialOutput }}
+            {{- partial "vitae/role-achievements" (dict "Page" $page "ChildClass" $roleAchievementsClass "PartialOutput" true "Data" .) $page . }}
+          {{- else }}
+            <div class="role_achievements{{ with $topLevelClass }} {{ . }}{{ end }}">
+              {{- partial "vitae/role-achievements" (dict "Page" $page "Data" .) $page . }}
+            </div>
           {{- end }}
         {{- end }}
       {{- end }}
@@ -341,11 +461,160 @@
   {{- end }}
 {{- end }}
 
-{{- define "partials/role-section-separator.html" }}
-          {{- if .component.headings }}
+{{- define "partials/render_string_slice.html" }}
+                {{- if reflect.IsSlice . }}
+                  <ul>
+                  {{- range . }}
+                    <li>
+                      {{ page.RenderString . }}
+                    </li>
+                  {{- end }}
+                  </ul>
+                {{- else }}
+                    {{ page.RenderString . }}
+                {{- end }}
+{{- end }}
 
-            <h{{- (add 2 .headinglevel) }} class="role-section-heading{{ with .toplevelclass }} {{ . }}{{ end }}">
-              <span>{{ page.RenderString (T (printf "section_title_%s" .section ) ) }}</span><span class="separator-line"></span>
-            </h{{- (add 2 .headinglevel) }}>
+{{- define "partials/role_section-separator.html" }}
+            <h{{- (add 2 .HeadingLevel) }} class="role_section-heading{{ with .TopLevelClass }} {{ . }}{{ end }}">
+              <span>{{ page.RenderString (T (printf "section-title_%s" .section ) ) }}</span><span class="separator-line"></span>
+            </h{{- (add 2 .HeadingLevel) }}>
+{{- end }}
+
+{{- define "partials/role_star_column_heading.html" }}
+          {{- with .HeadingLevel }}
+            <h{{- (add 2 .) }} class="role_star_column_heading">
           {{- end }}
+          {{- with .Section }}
+              {{ page.RenderString (default . (T (printf "section-title_%s" . ) ) ) }}
+          {{- end }}
+          {{- with .HeadingLevel }}
+            </h{{- (add 2 .) }}>
+          {{- end }}
+{{- end }}
+
+{{- define "partials/stage_meta.html" }}
+  {{- $org := .Organization }}
+  {{- $role := .Role }}
+  {{- $stage := default $org $role }}
+  {{- $stageType := cond (not (not .Role)) "role" "organization" }}
+  {{- $homeCountry := .HomeCountry }}
+  {{- $orgLocationStr := default "" .OrganizationLocationStr }}
+  {{- $component := .Component }}
+  {{- $componentStageType := index .Component $stageType }}
+  {{- $template := .Template }}
+
+  {{- $config := (dict
+    "unit" (default true (default $component.unit $componentStageType.unit))
+  ) -}}
+
+  {{- if or $config.unit
+      (default true $stage.location)
+      (default true $stage.details) -}}
+
+    <div class="{{ printf `%s_meta stage_meta` $stageType }}{{ with .TopLevelClass }} {{ . }}{{ end }}">
+      <div class="stage_main">
+
+        {{- if or $config.unit
+          (default true $stage.location) }}
+        <p class="stage_meta_unit">
+          {{- $stageMetaSeparatorStr := " · " }}
+          {{- $unitSeparatorStr := ", " }}
+          {{- $stageUnitMarkup := "" }}
+          {{- $stageLocationStr := "" }}
+
+          {{- if $config.unit }}
+            {{- /* {{- warnf "%s[%s]: org.unit=%v division=%v %v org=%v department=%v %v org=%v"
+                page $template (default true $org.unit)
+                $stage.division (cond (eq $stage.division $org.division) "==" "!=") $org.division
+                $stage.department (cond (eq $stage.department $org.department) "==" "!=") $org.department }} */ -}}
+            {{- if or (eq $stage $org) (not (default true $org.unit) ) (ne $stage.unit $org.unit) }}
+              {{- with $stage.unit }}
+                {{- if reflect.IsSlice . }}
+                  {{- $unitLimit := cond (eq (printf "%T" $config.unit) "int") (int $config.unit) 99 }}
+                  {{- range $unit := first $unitLimit . }}
+                    {{- if reflect.IsMap . }}
+                      {{- range $unitType, $unitName := . }}
+                        {{- if and $unitSeparatorStr $stageUnitMarkup }}
+                          {{- $stageUnitMarkup = printf `%s%s` $stageUnitMarkup $unitSeparatorStr }}
+                        {{- end }}
+                        {{- $stageUnitMarkup = printf `%s<span class="organization_unit">%s</span>` $stageUnitMarkup . }}
+                        {{ with default $unitType (T (printf "organization_unit_%s" $unitType) ) }}
+                          {{- $stageUnitMarkup = printf `%s <span class="organization_unit_label">%s</span>` $stageUnitMarkup . }}
+                        {{- end }}
+                      {{- end }}
+                    {{- else }}
+                      {{- if and $unitSeparatorStr $stageUnitMarkup }}
+                        {{- $stageUnitMarkup = printf `%s%s` $stageUnitMarkup $unitSeparatorStr }}
+                      {{- end }}
+                      {{- $stageUnitMarkup = printf `%s<span class="organization_unit">%s</span>` $stageUnitMarkup . }}
+                    {{- end }}
+                  {{- end }}
+                {{- else }}
+                  {{- if reflect.IsMap . }}
+                    {{- range $unitType, $unitName := . }}
+                      {{- if and $unitSeparatorStr $stageUnitMarkup }}
+                        {{- $stageUnitMarkup = printf `%s%s` $stageUnitMarkup $unitSeparatorStr }}
+                      {{- end }}
+                      {{- $stageUnitMarkup = printf `%s<span class="organization_unit">%s</span>` $stageUnitMarkup . }}
+                      {{ with default $unitType (T (printf "organization_unit_%s" $unitType) ) }}
+                        {{- $stageUnitMarkup = printf `%s <span class="organization_unit_label">%s</span>` $stageUnitMarkup . }}
+                      {{- end }}
+                    {{- end }}
+                  {{- else }}
+                    {{- if and $unitSeparatorStr $stageUnitMarkup }}
+                      {{- $stageUnitMarkup = printf `%s%s` $stageUnitMarkup $unitSeparatorStr }}
+                    {{- end }}
+                    {{- $stageUnitMarkup = printf `%s<span class="organization_unit">%s</span>` $stageUnitMarkup . }}
+                  {{- end }}
+                {{- end }}
+              {{- end }}
+
+              {{- with $stageUnitMarkup }}
+                <span class="stage_unit">{{ safeHTML . }}</span>
+              {{- end }}
+            {{- end }}
+          {{- end }}
+
+          {{- if default true $stage.location }}
+            {{- with $org.location }}
+              {{- $orgLocationStr = printf "%s" . }}
+              {{- with $org.country }}
+                {{- if ne $org.country $homeCountry }}
+                  {{- $orgLocationStr = printf "%s, %s" $orgLocationStr . }}
+                {{- end }}
+              {{- end }}
+            {{- end }}
+            {{- with $stage.location }}
+              {{- $stageLocationStr = printf "%s" . }}
+              {{- with $stage.country }}
+                {{- if ne $stage.country $homeCountry }}
+                  {{- $stageLocationStr = printf "%s, %s" $stageLocationStr . }}
+                {{- end }}
+              {{- end }}
+            {{- end }}
+            {{- if not (and $role (eq $stageLocationStr $orgLocationStr)) }}
+              {{- with $stageLocationStr }}
+                <span class="stage_location">
+                  {{- if $stageUnitMarkup }}
+                    {{- $stageMetaSeparatorStr }}
+                  {{- end }}
+                  {{- . -}}
+                  </span>
+              {{- end }}
+            {{- end }}
+          {{- end }}
+          </p>
+        {{- end }}
+
+        {{- if default true $stage.details }}
+          {{- with $stage.details }}
+            <p class="stage_details">
+              {{- partial "render_string_slice" . }}
+            </p>
+          {{- end }}
+        {{- end }}
+      </div>
+    </div>
+  {{- end }}
 {{- end }}

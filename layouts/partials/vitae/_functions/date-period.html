@@ -4,7 +4,7 @@
 {{- $dateFormat := "2006 Jan" }}
 {{- $dateContainerStr := "" }}
 {{- $periodBeginEndSeparatorStr := `–` }}
-
+{{- $collapseSameBeginEnd := default true .CollapseSameBeginEnd }}
 {{- $period := . }}
 
 {{- if reflect.IsMap . }}
@@ -23,19 +23,27 @@
   {{- end }}
 {{- end }}
 
+{{- $dateTimeStrLast := "" }}
 {{- range $date := $period -}}
   {{- with $date -}}
-    {{- with $dateContainerStr }}
-      {{- $dateClassStr := "date-period-begin" }}
-      {{- if (gt (len $periodList) 0) }}{{- $dateClassStr = "date-period-end" }}{{- end }}
-      {{ $periodList = append (printf "<%s class=\"%s\">%s</%s>"
-        $dateContainerStr $dateClassStr (time.Format $dateFormat $date) $dateContainerStr | safeHTML) $periodList }}
-    {{- else -}}
-      {{ $periodList = append (time.Format $dateFormat $date) $periodList }}
-    {{- end -}}
+    {{- $dateTimeStr := time.Format $dateFormat $date }}
+    {{- if or (not $collapseSameBeginEnd) (ne $dateTimeStr $dateTimeStrLast) }}
+      {{- with $dateContainerStr }}
+        {{- $dateClassStr := "date_period_begin" }}
+        {{- if (gt (len $periodList) 0) }}
+          {{- $dateClassStr = "date_period_end" }}
+        {{- end }}
+        {{ $periodList = append (
+            printf "<%s class=\"%s\">%s</%s>" $dateContainerStr $dateClassStr $dateTimeStr $dateContainerStr | safeHTML
+          ) $periodList }}
+      {{- else -}}
+        {{ $periodList = append $dateTimeStr $periodList }}
+      {{- end -}}
+      {{- $dateTimeStrLast = $dateTimeStr }}
+    {{- end }}
   {{- else -}}
     {{- with $dateContainerStr }}
-      {{- $dateClassStr := "date-period-end" }}
+      {{- $dateClassStr := "date_period_end" }}
       {{ $periodList = append (printf "<%s class=\"%s\">%s</%s>"
         $dateContainerStr $dateClassStr (T "period-until-present" ) $dateContainerStr) $periodList }}
     {{- else -}}
@@ -43,5 +51,9 @@
     {{- end -}}
   {{- end -}}
 {{- end -}}
-{{ $periodStr = printf "%s%s%s" (index $periodList 0) $periodBeginEndSeparatorStr (index $periodList 1) }}
+{{- if (eq (len $periodList) 2) }}
+  {{ $periodStr = printf "%s%s%s" (index $periodList 0) $periodBeginEndSeparatorStr (index $periodList 1) }}
+{{- else }}
+  {{ $periodStr = printf "%s" (index $periodList 0) }}
+{{- end }}
 {{- return $periodStr -}}
