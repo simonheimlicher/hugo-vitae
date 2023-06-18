@@ -10,7 +10,8 @@
       --aside_column: calc(var(--main_column) + var(--main_column_width));
       --aside_column_width: calc(var(--num_columns) - var(--main_column_width));
       display: grid;
-      gap: var(--inner_margin_4-1) var(--inner_margin_4-2);
+      // gap: var(--inner_margin_4-1) var(--inner_margin_4-2);
+      gap: var(--inner_margin_4-4) var(--inner_margin_4-4);
       grid-template-columns: repeat(var(--num_columns), 1fr);
       align-items: start;
       grid-auto-flow: dense row;
