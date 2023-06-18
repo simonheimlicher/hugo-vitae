@@ -58,8 +58,8 @@
   --inner_margin_base: #{$margin_base};
   --inner_padding_base: #{$padding_base};
   @for $numerator from 1 to (3 * $denominator + 1) {
-    --inner_margin_#{$denominator}-#{$numerator}: #{math.div($numerator, $denominator)} * var(--inner_margin_base);
-    --inner_padding_#{$denominator}-#{$numerator}: #{math.div($numerator, $denominator)} * var(--inner_padding_base);
+    --inner_margin_#{$denominator}-#{$numerator}: calc(#{math.div($numerator, $denominator)} * var(--inner_margin_base));
+    --inner_padding_#{$denominator}-#{$numerator}: calc(#{math.div($numerator, $denominator)} * var(--inner_padding_base));
   }
 }
 

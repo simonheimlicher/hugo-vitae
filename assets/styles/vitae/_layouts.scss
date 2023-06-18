@@ -251,7 +251,7 @@ $screen-pad-v: 1rem;
 .vitae {
   .view-screen {
     @include font-size-scale(1rem);
-    @include inner_margin_padding(1.5rem, 1rem);
+    // @include inner_margin_padding(1.5rem, 1rem);
   }
   .view-print {
     @include font-size-scale(10pt);

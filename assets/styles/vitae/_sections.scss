@@ -4,14 +4,12 @@ $inline-list-item-separation: 2ch;
 $inline-list-sep-width: math.div($inline-list-item-separation, 3.0);
 
 .vitae {
-  // --font-size-heading-organization: 1.25rem
   --font-size-heading-organization: var(--font-size-larger-1);
   --font-weight-heading-organization: var(--font-weight-strong);
   --font-size-heading-role: var(--font-size-larger-1);
   --font-weight-heading-role: var(--font-weight-strong);
   --font-center-offset-heading-role: 0.5;
   --line-height: 1.5;
-  // --line-height-heading: var(--line-height)
   --line-height-heading: 1.2;
 
   --section-title-sep-vert: 0.5rem;
@@ -57,7 +55,6 @@ $inline-list-sep-width: math.div($inline-list-item-separation, 3.0);
     position: relative;
     font-family: var(--font-section-title);
     @include upper-caps-strong
-    // margin-bottom: var(--section-title-sep-vert);
   }
   .section:first-child .section-title {
     margin-top: var(--section-title_first-section_sep-vert);
@@ -67,11 +64,8 @@ $inline-list-sep-width: math.div($inline-list-item-separation, 3.0);
     &::before {
       position: absolute;
       content: "";
-      // top: calc(var(--section-title-sep-vert) /-4)
       top: 0;
       height: 0;
-      // left: calc( var(--column-padding-left) / -2)
-      // right: calc( var(--column-padding-right) / -2)
       left: 0;
       right: 0;
       border-top: calc(var(--line-width_separator_heading)) solid var(--border-color-faint);
@@ -103,7 +97,6 @@ $inline-list-sep-width: math.div($inline-list-item-separation, 3.0);
       //   margin-bottom: -0.25rem
       &.logo {
         min-height: var(--organization-logo-width);
-        // margin-top: var(--section-title-sep-vert);
         padding-left: calc( var(--organization-logo-column-width) );
       }
       &.single-role {

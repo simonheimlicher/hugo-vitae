@@ -18,7 +18,6 @@
 
 {{- $optInline := dict "display" "inline" }}
 
-
 {{- $skillCollection := (index .Data $component.collection) }}
 {{- with $skillCollection }}
   {{- $skillList := where $skillCollection $filterField $filterMatch }}

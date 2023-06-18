@@ -527,12 +527,15 @@
       $metaConfig.location
       $metaConfig.details -}}
 
-    <div class="{{ printf `%s_meta stage_meta` $stageType }}{{ with .TopLevelClass }} {{ . }}{{ end }}">
-      <div class="stage_main">
-
+    {{- with .TopLevelClass }}
+      <div class="{{ printf `%s_meta stage_meta` $stageType }} {{ . }}">
+        <div class="stage_main">
+    {{- else }}
+      <div class="{{ printf `%s_meta stage_meta` $stageType }}">
+    {{- end }}
         {{- if or $metaConfig.unit
           $metaConfig.location }}
-        <p class="stage_meta_unit">
+        <p class="stage_unit_location">
           {{- $stageMetaSeparatorStr := " · " }}
           {{- $unitSeparatorStr := ", " }}
           {{- $stageUnitMarkup := "" }}
@@ -630,6 +633,8 @@
           {{- end }}
         {{- end }}
       </div>
-    </div>
+    {{- with .TopLevelClass }}
+      </div>
+    {{- end }}
   {{- end }}
 {{- end }}

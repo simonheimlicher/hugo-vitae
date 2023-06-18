@@ -6,8 +6,7 @@
     }
   }
   .vitae {
-    &.layout-resume,
-    &.layout-executive {
+    &.layout-resume {
       .view-screen {
         // font-size: calc(var(--font-size-normal))
         --column-padding-h: var(--column-padding-screen-h);

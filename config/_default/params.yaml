@@ -67,6 +67,14 @@ vitae:
                 results: false
                 responsibilities: false
                 achievements: false
+          - section: award-selection
+            title: section-awards
+            container: section
+            components:
+            - component: awards
+              details: false
+              screen: true
+              print: true
           - section: language-skills
             title: section-language-skills
             container: section
@@ -75,14 +83,13 @@ vitae:
               collection: skills
               filter_by: type
               filter_value: language
-              details: false
-              level_bar: false
-          - section: award-selection
-            title: section-awards
+              details: true
+              level_bar: true
+          - section: connect
+            title: section-connect
             container: section
             components:
-            - component: awards
-              details: false
+            - component: links
               screen: true
               print: true
 
