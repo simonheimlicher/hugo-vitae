@@ -1,29 +1,37 @@
-{{- $sectionArgs := . }}
 {{- $page := .Page }}
-{{- $p := .Page.Params }}
-{{- $s := site.Params }}
-{{- $mediaType := default "screen" .MediaType }}
-{{- $childClass := default "" .ChildClass }}
 {{- $template := "vitae/_components/links" }}
+
+{{- $mediaType := default "screen" .MediaType }}
+{{- $headingLevel := default 3 .HeadingLevel }}
+{{- $componentClass := default "component_links" .ComponentClass }}
+{{- $childClass := default "" .ChildClass }}
+
 {{- $component := .Component }}
+
 {{- $linkIcons := true }}
 {{- $qrCodes := true }}
-{{- /* warnf "%s[%s/%s]: %v" $page $template $mediaType $sectionArgs.Data.components.links */ -}}
+
+{{- $topLevelClass := delimit (slice $componentClass $childClass) " " }}
+
+{{- $classPrefix := printf "link" }}
+
 {{ if (index .Component $mediaType) -}}
+  <div class="{{ $classPrefix }}_container {{ $topLevelClass }}">
   {{ with .Data.features.links }}
     {{- $last := sub (len .) 1 -}}
     {{- range $i, $e := . -}}
-      <div class="link-item{{- if $qrCodes }} link-item-with-qrcode{{- end }}{{- with $childClass }} {{ . }}{{- end }}">
-        <a href="{{ $e.url }}" title="Connect via {{ $e.title }}" class="link-item-icon qrcode-link">
+      <div class="{{ $classPrefix }}_item{{- if $qrCodes }} {{ $classPrefix }}_item_with-qrcode{{- end }}{{- with $childClass }} {{ . }}{{- end }}">
+        <a href="{{ $e.url }}" title="Connect via {{ $e.title }}" class="{{ $classPrefix }}_item_icon qrcode-link">
           {{- if $linkIcons }}{{ partial "fa-icon" $e.icon }}{{ end -}}
-            <span class="link-{{- $e.title -}}">{{- $e.title -}}</span>
+            <span class="{{ $classPrefix }}_{{- $e.title -}}">{{- $e.title -}}</span>
         </a>
         {{- if $qrCodes }}
-          <a href="{{ $e.url }}" title="QR code to connect via {{ $e.title }}" class="link-item-qrcode qrcode-link">
+          <a href="{{ $e.url }}" title="QR code to connect via {{ $e.title }}" class="{{ $classPrefix }}_item_qrcode qrcode-link">
             {{ partial "qrcode-svg" (dict "Content" $e.url) }}
           </a>
         {{- end -}}
       </div>
     {{- end -}}
   {{- end }}
+  </div>
 {{- end }}
