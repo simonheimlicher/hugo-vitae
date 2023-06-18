@@ -419,9 +419,14 @@ html[data-mode="dim"] {
       --tl-col_stage_logo_width: 18pt;
       --tl-col_stage_logo_height: 18pt;
 
-      --tl-col_timeline_width: var(--line-width_separator);
-      --tl-col_stage-marker_width: 6pt;
+      // FIXME: In Chrome, the alignment of timeline marker and line
+      // gets out of control when the width of the timeline is less than
+      // 3pt
+      --tl-col_timeline_width: 3pt;
+      --tl-col_timeline_color: var(--neutral-haze);
+      --tl-col_stage-marker_width: 9pt;
       --tl-col_stage-marker_height: var(--tl-col_stage-marker_width);
+      --tl-col_stage-marker_background: var(--neutral-haze);
 
       &.logo_left {
         --tl-col_timeline-column_width: var(--tl-col_stage_logo_width);
@@ -451,7 +456,7 @@ html[data-mode="dim"] {
           width: $line-width;
           height: $line-height;
           content: "";
-          background-color: var(--border-color-faint);
+          background-color: var(--tl-col_timeline_color);
         }
         &.timeline_org_single, &.timeline_org_last {
           &.timeline_role_last, &.timeline_role_single {
@@ -480,7 +485,7 @@ html[data-mode="dim"] {
           width: $marker-width;
           height: $marker-height;
           border-radius: 50%;
-          background-color: var(--border-color-faint);
+          background-color: var(--tl-col_stage-marker_background);
         }
         &::before {
           position: absolute;
@@ -502,7 +507,7 @@ html[data-mode="dim"] {
           width: $line-width;
           height: $line-height;
           content: "";
-          background-color: var(--border-color-faint);
+          background-color: var(--tl-col_timeline_color);
         }
         &.timeline_org_last {
           &.timeline_role_last, &.timeline_role_single {
@@ -583,7 +588,8 @@ html[data-mode="dim"] {
         &.logo_left {
           @include timeline_column_header(
             calc(var(--tl-col_stage_logo_height) + var(--tl-col_stage-marker_height)), null, null,
-            calc(var(--tl-col_timeline-column_width) / 2));
+            calc(var(--tl-col_timeline-column_width) / 2),
+            calc(100% - var(--tl-col_stage_logo_height) + var(--tl-col_stage-marker_height)));
         }
       }
       &.organization_header {
@@ -613,7 +619,19 @@ html[data-mode="dim"] {
         &.logo_left {
           &.stage_header_period {
             position: relative;
-            @include timeline_column_header(null, null, null, calc(var(--tl-col_timeline-column_width) / 2));
+            @include timeline_column_header(0px, null, null, calc(var(--tl-col_timeline-column_width) / 2));
+            &.timeline_org_last, &.timeline_org_single {
+              &.timeline_role_last, &.timeline_role_single {
+                position: relative;
+                // background-color: rgba(red, 0.2);
+                @include timeline_column_header(
+                  0px,
+                  null,
+                  null,
+                  calc(var(--tl-col_timeline-column_width) / 2),
+                  calc(100% - var(--tl-col_stage_logo_height) + var(--tl-col_stage-marker_height)));
+              }
+            }
           }
         }
       }
@@ -667,7 +685,7 @@ html[data-mode="dim"] {
               grid-column: 1;
             }
             &_main {
-              grid-column: 3 / span all;
+              grid-column: 5 / span all;
             }
           }
           &.stage {
