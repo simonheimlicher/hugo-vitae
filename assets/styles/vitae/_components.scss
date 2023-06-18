@@ -1055,6 +1055,22 @@ html[data-mode="dim"] {
         @include upper-caps;
       }
     }
+    dl {
+      display: grid;
+      // font-size: calc(var(--font-size-larger-1));
+      gap: var(--inner_margin_4-2) var(--inner_margin_4-4);
+      dt {
+        grid-column: 1;
+        width: auto;
+        hyphens: manual;
+      }
+      dd {
+        grid-column: 2;
+        width: auto;
+        padding-left: var(--inner_padding_4-4);
+        border-left: var(--line-width_separator_heading) solid var(--border-color-faint);
+      }
+    }
   }
 
   /*
