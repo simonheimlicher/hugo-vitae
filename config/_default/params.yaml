@@ -26,6 +26,8 @@ vitae:
               portrait: true
               degrees: true
               tagline: true
+              # style:
+              #   font-size: larger-1
               fragments:
               - fragment: contact
               - fragment: date-of-birth
@@ -36,6 +38,8 @@ vitae:
             container: section
             components:
             - component: profile
+              # style:
+              #   font-size: larger-1
           - section: career-summary
             title: section-career-summary
             container: section
@@ -51,8 +55,13 @@ vitae:
                 timeline: shallow
                 # timeline: column
                 # timeline: dot-dash
-                heading: normal
+                heading: larger-1
                 logo: false
+              function: false
+              unit: true
+              label:
+                function: false
+                unit: false
               organization:
                 period: true
                 details: false
@@ -67,32 +76,42 @@ vitae:
                 results: false
                 responsibilities: false
                 achievements: false
-          - section: award-selection
-            title: section-awards
-            container: section
-            components:
-            - component: awards
-              details: false
-              screen: true
-              print: true
-          - section: language-skills
-            title: section-language-skills
-            container: section
-            components:
-            - component: skills
-              collection: skills
-              filter_by: type
-              filter_value: language
-              details: true
-              level_bar: true
-          - section: connect
-            title: section-connect
-            container: section
-            components:
-            - component: links
-              screen: true
-              print: true
+          # - section: award-selection
+          #   title: section-awards
+          #   container: section
+          #   components:
+          #   - component: awards
+          #     details: false
+          #     screen: true
+          #     print: true
+          #     style:
+          #       logo: false
+          # - section: language-skills
+          #   title: section-language-skills
+          #   container: section
+          #   components:
+          #   - component: skills
+          #     collection: skills
+          #     filter_by: type
+          #     filter_value: language
+          #     details: false
+          #     level_bar: true
+          # - section: connect
+          #   title: section-connect
+          #   container: section
+          #   components:
+          #   - component: links
+          #     screen: true
+          #     print: true
 
+          - section: key-achievements
+            title: section-key-achievements
+            container: section
+            components:
+            - component: profile
+              collection: achievements
+              # style:
+              #   font-size: larger-1
         # - slot: footer
         #   sections:
         #   - section: connect
@@ -122,7 +141,7 @@ vitae:
                 # timeline: dot-dash
               organization:
                 period: true
-                duration: true
+                # duration: true
                 details: true
               role:
                 headings: false
@@ -252,7 +271,8 @@ vitae:
           #   screen: true
           #   print: true
           - feature: links
-            title: section-connect
+            # title: section-connect
+            title: false
             screen: true
             print: true
 

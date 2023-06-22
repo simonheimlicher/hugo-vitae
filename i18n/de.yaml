@@ -56,7 +56,13 @@ section-career-summary:
   other: Berufliche Laufbahn
 section-personal-profile:
   other: Persönliches Profil
-organization_unit_division:
+stage_function_label:
+  other: Funktion
+stage_unit_label_division:
   other: Bereich
-organization_unit_department:
+stage_unit_label_department:
   other: Abteilung
+stage_unit_label_team:
+  other: Team
+stage_unit_label_business_area:
+  other: Business Area

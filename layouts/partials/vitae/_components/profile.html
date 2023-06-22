@@ -1,12 +1,24 @@
 {{- $page := .Page -}}
 {{- $template := "vitae/_components/profile" -}}
+{{- $component := .Component }}
 {{- $headingLevel := default 3 .HeadingLevel }}
 {{- $componentClass := default "component_profile" .ComponentClass }}
 {{- $childClass := default "" .ChildClass }}
 
-{{- $component := .Component }}
+{{- $style := (dict "font-size" "normal") }}
+{{- $styleClass := "" }}
+{{- with .Style }}
+  {{- if reflect.IsMap . }}
+    {{- $style = . }}
+  {{- end }}
+{{- end }}
+{{- range $key, $value := $style }}
+  {{- if . }}
+    {{- $styleClass = trim (printf "%s %s_%v" $styleClass $key .) " " }}
+  {{- end }}
+{{- end }}
 
-{{- $topLevelClass := delimit (slice $componentClass $childClass) " " }}
+{{- $topLevelClass := delimit (slice $styleClass $componentClass $childClass) " " }}
 
 {{- $filterField := default "type" $component.filter_by -}}
 {{- $filterMatch := default false $component.filter_value -}}

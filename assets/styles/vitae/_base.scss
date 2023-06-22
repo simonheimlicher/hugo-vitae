@@ -27,6 +27,8 @@ $vitae-two-column-grid-column-gap: 1rem;
 
 $font-size-scale-factor: math.pow(2.0, math.div(1, 4) );
 
+$font-size-scale-factor: math.pow(2.0, math.div(1, 5) );
+
 .vitae {
   --font-size-base: 100%;
   --line-height: 1.5;

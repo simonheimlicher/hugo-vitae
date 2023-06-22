@@ -2,48 +2,43 @@
 @use "sass:list";
 @use "sass:map";
 
+@function round-dec($value, $fractionDigits: 0) {
+  $power: math.pow(10, $fractionDigits);
+  @return math.div(math.round($power * $value), $power);
+}
+
 @mixin font-size-scale($font-size: 1rem, $shift: 0, $smallest: 9, $largest: 9) {
 
-  $scale: 1;
+  $dec-digits: 2;
   $font-size-factor-normal: 1;
   $smaller-factor-idx-max: 5;
-  $larger-factor-idx-max: 5;
+  $larger-factor-idx-max: 6;
 
   @if ($font-size != 0) {
     --font-size-base: #{$font-size};
   }
 
-  --font-size-normal: #{$font-size-factor-normal * math.pow($font-size-scale-factor, $shift)} * var(--font-size-base);
+  --font-size-normal: #{round-dec($font-size-factor-normal * math.pow($font-size-scale-factor, $shift), $dec-digits)} * var(--font-size-base);
 
   @for $i from 1 through $smaller-factor-idx-max {
     @if ($i < $smallest) {
-      --font-size-smaller-#{$i}: #{math.div($font-size-factor-normal, math.pow($font-size-scale-factor, $i + $shift))} * var(--font-size-base);
+      --font-size-smaller-#{$i}: #{round-dec(math.div($font-size-factor-normal, math.pow($font-size-scale-factor, $i + $shift)), $dec-digits)} * var(--font-size-base);
     }
     @else {
-      --font-size-smaller-#{$i}: #{math.div($font-size-factor-normal, math.pow($font-size-scale-factor, $smallest + $shift))} * var(--font-size-base);
+      --font-size-smaller-#{$i}: #{round-dec(math.div($font-size-factor-normal, math.pow($font-size-scale-factor, $smallest + $shift)), $dec-digits)} * var(--font-size-base);
     }
   }
 
   @for $i from 1 through $larger-factor-idx-max {
     @if ($i < $largest) {
-      --font-size-larger-#{$i}: #{$font-size-factor-normal * math.pow($font-size-scale-factor, $i + $shift)} * var(--font-size-base);
+      --font-size-larger-#{$i}: #{round-dec($font-size-factor-normal * math.pow($font-size-scale-factor, $i + $shift), $dec-digits)} * var(--font-size-base);
     }
     @else {
-      --font-size-larger-#{$i}: #{$font-size-factor-normal * math.pow($font-size-scale-factor, $largest + $shift)} * var(--font-size-base);
+      --font-size-larger-#{$i}: #{round($font-size-factor-normal * math.pow($font-size-scale-factor, $largest + $shift), $dec-digits)} * var(--font-size-base);
     }
   }
 
   font-size: calc(var(--font-size-normal));
-
-  // --font-size-smaller-4: #{$font-size-factor-smaller-4} * #{$scale} * var(--font-size-base);
-  // --font-size-smaller-3: #{$font-size-factor-smaller-3} * #{$scale} * var(--font-size-base);
-  // --font-size-smaller-2: #{$font-size-factor-smaller-2} * #{$scale} * var(--font-size-base);
-  // --font-size-smaller-1: #{$font-size-factor-smaller-1} * #{$scale} * var(--font-size-base);
-  // --font-size-larger-1:  #{$font-size-factor-larger-1}  * #{$scale} * var(--font-size-base);
-  // --font-size-larger-2:  #{$font-size-factor-larger-2}  * #{$scale} * var(--font-size-base);
-  // --font-size-larger-3:  #{$font-size-factor-larger-3}  * #{$scale} * var(--font-size-base);
-  // --font-size-larger-4:  #{$font-size-factor-larger-4}  * #{$scale} * var(--font-size-base);
-  // --font-size-larger-5:  #{$font-size-factor-larger-5}  * #{$scale} * var(--font-size-base);
 }
 
 @mixin flush-top($line-height: var(--line-height)) {
@@ -57,7 +52,7 @@
 @mixin inner_margin_padding($margin_base, $padding_base, $denominator: 4) {
   --inner_margin_base: #{$margin_base};
   --inner_padding_base: #{$padding_base};
-  @for $numerator from 1 to (3 * $denominator + 1) {
+  @for $numerator from 0 to (3 * $denominator + 1) {
     --inner_margin_#{$denominator}-#{$numerator}: calc(#{math.div($numerator, $denominator)} * var(--inner_margin_base));
     --inner_padding_#{$denominator}-#{$numerator}: calc(#{math.div($numerator, $denominator)} * var(--inner_padding_base));
   }

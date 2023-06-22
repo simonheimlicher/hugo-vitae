@@ -1,3 +1,6 @@
+author:
+  name: Simon Heimlicher
+
 ignoreFiles:
   - \.DS_Store$
   - \.vscode$
@@ -38,10 +41,7 @@ outputs:
 #     - HTML
 #     - print
 
-Author:
-  name: Simon Heimlicher
-
-Security:
+security:
   _merge: deep
   enableInlineShortcodes: false
   exec:
@@ -62,8 +62,21 @@ Security:
     urls:
       - .*
 
-Imaging:
+imaging:
   anchor: Smart
   resampleFilter: Lanczos
   hint: photo
   quality: 85
+
+# https://discourse.gohugo.io/t/change-location-of-resources-directory/15682/3
+# https://gohugo.io/getting-started/configuration/#configure-file-caches
+# Avoid using resourceDir in the project directory
+# Since resourceDir cannot be set from the command line or environment variables,
+# we set it indirectly via --cacheDir or HUGO_CACHE_DIR
+caches:
+  assets:
+    # dir: :resourceDir/_gen
+    dir: :cacheDir/resources/_gen
+  images:
+    # dir: :resourceDir/_gen
+    dir: :cacheDir/resources/_gen

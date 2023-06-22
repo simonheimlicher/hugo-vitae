@@ -7,6 +7,7 @@
 {{- $config := .Config }}
 {{- $media := default "screen" $p.media }}
 {{- $headingLevel := default 1 .HeadingLevel }}
+{{- $componentClass := default "component_header" .ComponentClass }}
 {{- $childClass := default "" .ChildClass }}
 {{- $title := .Title | markdownify }}
 
@@ -15,21 +16,30 @@
 {{/* {{- $debug = or $debug (not (not (findRE `^/([^/]+-demo/)?leadership` $page.RelPermalink) ) ) -}} */}}
 {{/* {{- warnf "%s[%s]: media=%s .Component=%s .Config=%s" $page $template $media $component $config -}} */}}
 
-{{- $containerClassList := (slice "header") }}
-
-{{- with $childClass }}
-  {{- $containerClassList = $containerClassList | append (slice .) }}
+{{- $style := (dict "font-size" "normal") }}
+{{- $styleClass := "" }}
+{{- with .Style }}
+  {{- if reflect.IsMap . }}
+    {{- $style = . }}
+  {{- end }}
 {{- end }}
+{{- range $key, $value := $style }}
+  {{- if . }}
+    {{- $styleClass = trim (printf "%s %s_%v" $styleClass $key .) " " }}
+  {{- end }}
+{{- end }}
+
+{{- $topLevelClass := (slice $styleClass $componentClass $childClass) }}
 
 {{- with .Data.features.about }}
   {{- with .portrait }}
-    {{- $containerClassList =  $containerClassList | append (slice "portrait_style-background") }}
+    {{- $topLevelClass =  $topLevelClass | append (slice "portrait_style-background") }}
     {{- range $key, $value := .overlay }}
-      {{- $containerClassList = $containerClassList | append (slice (printf "portrait_overlay_%s-%s" $key $value) ) }}
+      {{- $topLevelClass = $topLevelClass | append (slice (printf "portrait_overlay_%s-%s" $key $value) ) }}
     {{- end }}
   {{- end }}
 {{- end }}
-<div class="{{ delimit $containerClassList " " }}">
+<div class="{{ delimit $topLevelClass " " }}">
 {{- with .Data.features.about }}
   {{- with .portrait }}
     {{- $classPrefix := "portrait" }}

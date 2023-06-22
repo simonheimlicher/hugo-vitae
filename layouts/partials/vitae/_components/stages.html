@@ -45,6 +45,11 @@
   {{- end }}
 {{- end }}
 
+{{- $stagePeriodInHeader := true }}
+{{- $organizationMetaInHeader := in (slice "shallow") $style.timeline }}
+{{- $roleMetaInHeader := in (slice "shallow") $style.timeline }}
+
+
 {{- $filterField := default "type" $component.filter_by -}}
 {{- $filterMatch := default "professional" $component.filter_value -}}
 
@@ -109,7 +114,7 @@
       {{- end }}
     {{- end }}
 
-    {{- $inlinePartialParams := (dict "Component" $component "HeadingLevel" $headingLevel) }}
+    {{- $inlinePartialParams := (dict "Style" $style "Component" $component "HeadingLevel" $headingLevel) }}
 
     {{- $topLevelClass := strings.TrimLeft " " (delimit (slice $timelineClass $timelineOrgClass $styleClass $componentClass $childClass) " ") }}
 
@@ -136,9 +141,6 @@
     {{ if $logoImageResource }}
       {{- $oganizationHeaderClassList = append (printf "%s_logo" $stageHeaderClassPrefix) $oganizationHeaderClassList }}
     {{ end }}
-
-    {{- $stagePeriodInHeader := true }}
-    {{- $organizationMetaInHeader := true }}
 
     {{- if $stagePeriodInHeader }}
     <div class="{{ delimit (append $topLevelClass $oganizationHeaderClassList) ` ` }}">
@@ -169,8 +171,11 @@
         <h{{ $headingLevel }} class="organization_title">
         {{- if $org.website }}
           <a class="organization_link" target="_self" href="{{ $org.website }}">
-        {{- end }}
+        {{- end -}}
         {{ $org.organization }}
+        {{- with $org.remark }}
+          <span class="remark">({{ page.RenderString $renderOptInline . }})</span>
+        {{- end -}}
         {{- if $org.website }}
           </a>
         {{- end }}
@@ -280,6 +285,15 @@
               <span class="role_subtitle">{{ $page.RenderString . }}</span>
             {{- end }}
           </h{{ add 1 $headingLevel }}>
+        {{- if $roleMetaInHeader }}
+          {{- partial "stage_meta" (merge $inlinePartialParams (dict
+            "Organization" $org
+            "Role" $role
+            "StageType" "role"
+            "HomeCountry" $homeCountry
+            "Template" $template
+          ) ) -}}
+        {{- end }}
         </div>
       </div>
 
@@ -287,14 +301,16 @@
         {{- $topLevelClass = strings.TrimLeft " " (delimit (slice $timelineClass $styleClass $componentClass $childClass) " ") }}
       {{- end }}
 
-      {{- partial "stage_meta" (merge $inlinePartialParams (dict
-        "Organization" $org
-        "Role" $role
-        "StageType" "role"
-        "HomeCountry" $homeCountry
-        "TopLevelClass" $topLevelClass
-        "Template" $template
-      ) ) -}}
+      {{- if not $roleMetaInHeader }}
+        {{- partial "stage_meta" (merge $inlinePartialParams (dict
+          "Organization" $org
+          "Role" $role
+          "StageType" "role"
+          "HomeCountry" $homeCountry
+          "TopLevelClass" $topLevelClass
+          "Template" $template
+        ) ) -}}
+      {{- end }}
 
       {{- $containerClass := "" }}
       {{- if and $showTimeline (in (slice "column" "shallow") $style.timeline) }}
@@ -475,17 +491,17 @@
 {{- end }}
 
 {{- define "partials/render_string_slice.html" }}
-                {{- if reflect.IsSlice . }}
-                  <ul>
-                  {{- range . }}
-                    <li>
-                      {{ page.RenderString . }}
-                    </li>
-                  {{- end }}
-                  </ul>
-                {{- else }}
+              {{- if reflect.IsSlice . }}
+                <ul>
+                {{- range . }}
+                  <li>
                     {{ page.RenderString . }}
+                  </li>
                 {{- end }}
+                </ul>
+              {{- else }}
+                  {{ page.RenderString . }}
+              {{- end }}
 {{- end }}
 
 {{- define "partials/role_section-separator.html" }}
@@ -513,33 +529,50 @@
   {{- $stageType := cond (not (not .Role)) "role" "organization" }}
   {{- $homeCountry := .HomeCountry }}
   {{- $orgLocationStr := default "" .OrganizationLocationStr }}
+  {{- $style := .Style }}
   {{- $component := .Component }}
   {{- $componentStageType := index .Component $stageType }}
+  {{- $topLevelClass := .TopLevelClass }}
   {{- $template := .Template }}
 
   {{- $metaConfig := (dict
-    "unit" (default true (default $component.unit $componentStageType.unit))
-    "location" (default true (default $component.location $componentStageType.location))
-    "details" (default true (default $component.details $componentStageType.details))
+    "function" (and $stage.function (default true (default $component.function $componentStageType.function)) )
+    "unit" (and $stage.unit (default true (default $component.unit $componentStageType.unit)) )
+    "location" (and $stage.location (default true (default $component.location $componentStageType.location)) )
+    "details" (and $stage.details (default true (default $component.details $componentStageType.details)) )
   ) -}}
 
-  {{- if or $metaConfig.unit
+  {{- $childContainer := "span" }}
+  {{- if $topLevelClass }}
+    {{- $childContainer = "p" }}
+  {{- end }}
+  {{- $markup := "" }}
+
+  {{- if or $metaConfig.function
+      $metaConfig.unit
       $metaConfig.location
       $metaConfig.details -}}
 
-    {{- with .TopLevelClass }}
-      <div class="{{ printf `%s_meta stage_meta` $stageType }} {{ . }}">
-        <div class="stage_main">
-    {{- else }}
-      <div class="{{ printf `%s_meta stage_meta` $stageType }}">
-    {{- end }}
-        {{- if or $metaConfig.unit
-          $metaConfig.location }}
-        <p class="stage_unit_location">
+        {{- if or $metaConfig.function $metaConfig.unit $metaConfig.location }}
+          {{- $functionUnitLocationMarkup := "" }}
           {{- $stageMetaSeparatorStr := " · " }}
           {{- $unitSeparatorStr := ", " }}
+          {{- $stageFunctionMarkup := "" }}
           {{- $stageUnitMarkup := "" }}
-          {{- $stageLocationStr := "" }}
+          {{- $stageLocationMarkup := "" }}
+
+          {{- if $metaConfig.function }}
+            {{- with $stageFunction := $stage.function }}
+              {{ with and $style.label.function (default "function" (T "stage_function_label") ) }}
+                {{- $stageFunctionMarkup = printf `<span class="stage_function_label">%s:</span> <span class="stage_function">%s</span>` (strings.FirstUpper . ) $stageFunction }}
+              {{- else }}
+                {{- $stageFunctionMarkup = printf `<span class="stage_function">%s</span>` (strings.FirstUpper . ) }}
+              {{- end }}
+            {{- end }}
+            {{- with $stageFunctionMarkup }}
+              {{- $functionUnitLocationMarkup = printf `%s<span class="stage_function">%s</span>` $functionUnitLocationMarkup . }}
+            {{- end }}
+          {{- end }}
 
           {{- if $metaConfig.unit }}
             {{- /* {{- warnf "%s[%s]: org.unit=%v division=%v %v org=%v department=%v %v org=%v"
@@ -556,16 +589,16 @@
                         {{- if and $unitSeparatorStr $stageUnitMarkup }}
                           {{- $stageUnitMarkup = printf `%s%s` $stageUnitMarkup $unitSeparatorStr }}
                         {{- end }}
-                        {{- $stageUnitMarkup = printf `%s<span class="organization_unit">%s</span>` $stageUnitMarkup . }}
-                        {{ with default $unitType (T (printf "organization_unit_%s" $unitType) ) }}
-                          {{- $stageUnitMarkup = printf `%s <span class="organization_unit_label">%s</span>` $stageUnitMarkup . }}
+                        {{- $stageUnitMarkup = printf `%s<span class="stage_unit">%s</span>` $stageUnitMarkup . }}
+                        {{ with default $unitType (T (printf "stage_unit_label_%s" $unitType) ) }}
+                          {{- $stageUnitMarkup = printf `%s <span class="stage_unit_label">%s</span>` $stageUnitMarkup . }}
                         {{- end }}
                       {{- end }}
                     {{- else }}
                       {{- if and $unitSeparatorStr $stageUnitMarkup }}
                         {{- $stageUnitMarkup = printf `%s%s` $stageUnitMarkup $unitSeparatorStr }}
                       {{- end }}
-                      {{- $stageUnitMarkup = printf `%s<span class="organization_unit">%s</span>` $stageUnitMarkup . }}
+                      {{- $stageUnitMarkup = printf `%s<span class="stage_unit">%s</span>` $stageUnitMarkup . }}
                     {{- end }}
                   {{- end }}
                 {{- else }}
@@ -574,22 +607,28 @@
                       {{- if and $unitSeparatorStr $stageUnitMarkup }}
                         {{- $stageUnitMarkup = printf `%s%s` $stageUnitMarkup $unitSeparatorStr }}
                       {{- end }}
-                      {{- $stageUnitMarkup = printf `%s<span class="organization_unit">%s</span>` $stageUnitMarkup . }}
-                      {{ with default $unitType (T (printf "organization_unit_%s" $unitType) ) }}
-                        {{- $stageUnitMarkup = printf `%s <span class="organization_unit_label">%s</span>` $stageUnitMarkup . }}
+                      {{- $stageUnitMarkup = printf `%s<span class="stage_unit">%s</span>` $stageUnitMarkup . }}
+                      {{ with default $unitType (T (printf "stage_unit_label_%s" $unitType) ) }}
+                        {{- $stageUnitMarkup = printf `%s <span class="stage_unit_label">%s</span>` $stageUnitMarkup . }}
                       {{- end }}
                     {{- end }}
                   {{- else }}
                     {{- if and $unitSeparatorStr $stageUnitMarkup }}
                       {{- $stageUnitMarkup = printf `%s%s` $stageUnitMarkup $unitSeparatorStr }}
                     {{- end }}
-                    {{- $stageUnitMarkup = printf `%s<span class="organization_unit">%s</span>` $stageUnitMarkup . }}
+                    {{- $stageUnitMarkup = printf `%s<span class="stage_unit">%s</span>` $stageUnitMarkup . }}
                   {{- end }}
                 {{- end }}
               {{- end }}
 
               {{- with $stageUnitMarkup }}
-                <span class="stage_unit">{{ safeHTML . }}</span>
+                {{- if $stageFunctionMarkup }}
+                  {{- with and $style.label.unit (default "unit" (T "unit") ) }}
+                    {{- $functionUnitLocationMarkup = printf `%s%s<span class="stage_unit_prefix">%s:</span>` $functionUnitLocationMarkup }}
+                  {{- end }}
+                  {{- $functionUnitLocationMarkup = printf `%s%s` $functionUnitLocationMarkup $stageMetaSeparatorStr }}
+                {{- end }}
+                {{- $functionUnitLocationMarkup = printf `%s%s` $functionUnitLocationMarkup (. | strings.FirstUpper) }}
               {{- end }}
             {{- end }}
           {{- end }}
@@ -604,37 +643,44 @@
               {{- end }}
             {{- end }}
             {{- with $stage.location }}
-              {{- $stageLocationStr = printf "%s" . }}
+              {{- $stageLocationMarkup = printf "%s" . }}
               {{- with $stage.country }}
                 {{- if ne $stage.country $homeCountry }}
-                  {{- $stageLocationStr = printf "%s, %s" $stageLocationStr . }}
+                  {{- $stageLocationMarkup = printf "%s, %s" $stageLocationMarkup . }}
                 {{- end }}
               {{- end }}
             {{- end }}
-            {{- if not (and $role (eq $stageLocationStr $orgLocationStr)) }}
-              {{- with $stageLocationStr }}
-                <span class="stage_location">
-                  {{- if $stageUnitMarkup }}
-                    {{- $stageMetaSeparatorStr }}
-                  {{- end }}
-                  {{- . -}}
-                  </span>
+            {{- if not (and $role (eq $stageLocationMarkup $orgLocationStr)) }}
+              {{- with $stageLocationMarkup }}
+                {{- $functionUnitLocationMarkup = printf `%s<span class="stage_location">%s%s</span>` $functionUnitLocationMarkup (cond (not (not $stageUnitMarkup)) $stageMetaSeparatorStr "") . }}
               {{- end }}
             {{- end }}
           {{- end }}
-          </p>
+          {{- with $functionUnitLocationMarkup }}
+            {{ $markup = printf `%s<%s class="stage_function_unit_location function=%v unit=%v location=%v">%s</%s>` $markup $childContainer $metaConfig.function $metaConfig.unit $metaConfig.location . $childContainer }}
+          {{- end }}
         {{- end }}
 
         {{- if $metaConfig.details }}
           {{- with $stage.details }}
-            <p class="stage_details">
-              {{- partial "render_string_slice" . }}
-            </p>
+            {{ $markup = printf `%s<%s class="stage_details">%s</%s>` $markup $childContainer (partial "render_string_slice" .) $childContainer }}
           {{- end }}
         {{- end }}
-      </div>
-    {{- with .TopLevelClass }}
-      </div>
+
+    {{- with $markup }}
+      {{- with $topLevelClass }}
+        <div class="{{ printf `%s_meta stage_meta` $stageType }} {{ . }}">
+          <div class="stage_main">
+      {{- else }}
+        <span class="{{ printf `%s_meta stage_meta` $stageType }}">
+      {{- end }}
+      {{- $markup | safeHTML }}
+      {{- with $topLevelClass }}
+          </div>
+        </div>
+      {{- else }}
+        </span>
+      {{- end }}
     {{- end }}
   {{- end }}
 {{- end }}

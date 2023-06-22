@@ -53,10 +53,19 @@ section-title_achievements:
 section-awards:
   other: Awards
 section-career-summary:
-  other: Career summary
+  other: career summary
 section-personal-profile:
-  other: Personal profile
-organization_unit_division:
+  other: profile
+section-key-achievements:
+  other: Key achievements
+stage_function_label:
+  other: function
+stage_unit_label_division:
   other: division
-organization_unit_department:
+stage_unit_label_department:
   other: department
+stage_unit_label_team:
+  other: team
+stage_unit_label_business_area:
+  other: business area
+

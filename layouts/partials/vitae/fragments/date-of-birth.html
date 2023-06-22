@@ -30,7 +30,7 @@
         {{- with $config.title }}
           <span class="date-of-birth-title section-title">{{- default . (T .) -}}</span>
         {{- end }}
-        <time class="date-of-birth_date" datetime="{{ time.Format "2006-01-02" . }}">{{ time.Format "Jan 2, 2006" . | safeHTML }}</time>
+        <time class="date-of-birth_date" datetime="{{ time.Format "2006-01-02" . }}">{{ time.Format "January 2, 2006" . | safeHTML }}</time>
       </div>
     </div>
   {{- end -}}

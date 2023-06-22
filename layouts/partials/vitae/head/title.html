@@ -11,6 +11,7 @@
   {{- $supertitle := "" }}
   {{- $fulltitle := "" }}
   {{- $role := (.Page.Param "role") | markdownify | plainify }}
+  {{- $titleDateFormat := "2006-01-02"}}
 
   {{- if $title }}
     {{- with (findRE `\{[^\}" ]+\}` $title) }}
@@ -25,8 +26,11 @@
           {{- $date = $page.ExpiryDate }}
         {{- else if (eq $datePlaceholder "lastmod" ) }}
           {{- $date = $page.Lastmod }}
+        {{- else if (eq $datePlaceholder "now" ) }}
+          {{- $date = now }}
+          {{- $titleDateFormat = "2006-01-02T15-04-05"}}
         {{- end }}
-        {{- $title = replaceRE . ($date | time.Format "2006-01-02") $title }}
+        {{- $title = replaceRE . ($date | time.Format $titleDateFormat) $title }}
         {{- if $debug }}
           {{- warnf "%s[%s]: \ntitle=%v\n$date=%v from\n.Title=%v\n.Date=%v\n.PublishDate=%v\n.ExpiryDate=%v\n.Lastmod=%v"
               $page $template $title $date $page.Title

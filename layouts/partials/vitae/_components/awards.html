@@ -1,17 +1,26 @@
 {{- $page := .Page -}}
 {{- $template := "vitae/_components/awards" -}}
+{{- $component := .Component }}
 {{- $headingLevel := default 3 .HeadingLevel }}
 {{- $componentClass := default "component_awards" .ComponentClass }}
 {{- $childClass := default "" .ChildClass }}
 
-{{- $component := .Component }}
 {{- $collection := default .Component.component .Component.collection }}
-{{- $layout := "screen" -}}
-{{- with $page.Layout -}}
-  {{- $layout = . -}}
+
+{{- $style := (dict "logo" "left") }}
+{{- $styleClass := "" }}
+{{- with .Style }}
+  {{- if reflect.IsMap . }}
+    {{- $style = . }}
+  {{- end }}
+{{- end }}
+{{- range $key, $value := $style }}
+  {{- if . }}
+    {{- $styleClass = trim (printf "%s %s_%v" $styleClass $key .) " " }}
+  {{- end }}
 {{- end }}
 
-{{- $topLevelClass := delimit (slice $componentClass $childClass) " " }}
+{{- $topLevelClass := delimit (slice $styleClass $componentClass $childClass) " " }}
 
 {{- $filterField := default "" $component.filter_by -}}
 {{- $filterMatch := default "" $component.filter_value -}}
@@ -31,7 +40,7 @@
   <div class="{{ $classPrefix }}_container {{ $topLevelClass }}">
   {{- range $awardIdx, $award := $awardList }}
     <div class="{{- $classPrefix }}_item">
-      {{- $logoImage := default false .logo }}
+      {{- $logoImage := and (default true $style.logo)  .logo }}
       <div class="{{- $classPrefix }}_header{{ with $logoImage }} logo{{ end }}">
         {{- with $logoImage }}
           {{- partial "responsive-image" (merge $logoImageParams (dict "resource" .resource)) }}
