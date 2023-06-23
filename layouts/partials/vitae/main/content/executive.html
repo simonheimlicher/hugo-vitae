@@ -19,8 +19,8 @@ PaginationPage: a printed page that is part of a Part
   <div class="{{ $pp.PartClass}}">
     <div class="{{ printf "template_%s" $part.template }} {{ $pp.PaginationPageClass}}">
       {{- range $slotIndex, $slot := $part.slots }}
-        {{- /* {{- partial "html-comment" (printf "[%s]: slot[%T] name=%s:\n%v"
-            $template $slot $slot.slot (jsonify (dict "indent" "  ") $slot) ) }} */ -}}
+        {{/* {{- partial "html-comment" (printf "[%s]: slot[%T] name=%s:\n%v"
+            $template $slot $slot.slot (jsonify (dict "indent" "  ") $slot) ) }} */}}
         <div class="{{ printf "slot_%s" $slot.slot }} {{ $pp.PaginationContainerClass }}"
         {{- $paginationPolicy := default "break" $part.pagination_policy }}
         {{ printf `%s="%d"` $pp.PaginationOrderAttr 9 | safeHTMLAttr }}

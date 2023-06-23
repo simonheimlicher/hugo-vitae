@@ -66,3 +66,7 @@ stage_unit_label_team:
   other: Team
 stage_unit_label_business_area:
   other: Business Area
+fragment_citizenship_postfix:
+  other: Bürger
+fragment_nationality_prefix:
+  other: "Nationalität:"

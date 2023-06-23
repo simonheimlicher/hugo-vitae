@@ -30,7 +30,11 @@ vitae:
               #   font-size: larger-1
               fragments:
               - fragment: contact
-              - fragment: date-of-birth
+              - fragment: personal
+                fields:
+                - field: date_of_birth
+                - field: citizenship
+                  title: fragment_citizenship
         - slot: main
           sections:
           - section: personal-profile

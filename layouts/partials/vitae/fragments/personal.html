@@ -1,0 +1,75 @@
+{{- $page := .Page }}
+{{- $fragment := .Fragment }}
+{{- $config := .Config }}
+{{- $data := .Data }}
+{{- $template := "partials/vitae/fragments/personal" }}
+{{- $outputFormat := default "HTML" (partial "claris/_functions/output-format" $page).Name }}
+{{- $media := cond (eq $outputFormat "print") "print" "screen" }}
+{{/* {{- warnf "%s[%s]: outputFormat:%s" $page $template $outputFormat }} */}}
+
+{{- $classPrefix := "fragment_personal" }}
+{{- $fragmentItemSeparatorStr := " · " }}
+
+{{- $contactIcons := true }}
+
+{{- /* warnf "%s[%s]: .Fragment=%s .Config=%s .Data=%s" $page $template $fragment $config $data.features.date-of-birth */ -}}
+
+{{- with $config.fields }}
+  <div class="{{ $classPrefix }} fragment_item">
+  {{- range $fieldIndex, $field := . }}
+    {{- $fieldName := $field }}
+    {{- if reflect.IsMap $fieldName }}
+      {{- $fieldName = $field.field }}
+    {{- end }}
+    {{- $fieldData := false }}
+    {{- with ($fieldData = (index $data.features $fieldName)) }}
+      {{- with (index . $media) }}
+        {{- $fieldData = . }}
+      {{- end -}}
+    {{- end }}
+    {{- with $fieldData }}
+      {{- $classPrefix := $fieldName }}
+      {{- if eq $fieldName "date_of_birth" }}
+        {{- with $dateOfBirth := $fieldData.date }}
+          {{- if $contactIcons }}
+            {{ partial "fa-icon" "solid/cake-candles" }}
+          {{- end }}
+          {{- with $field.title }}
+            <span class="{{ $classPrefix }}_title">
+              {{- default . (T .) }}
+            </span>
+          {{- end }}
+          <span class="{{ $classPrefix }}_text">
+            <time class="{{ $classPrefix }}_date" datetime="{{ time.Format "2006-01-02" . }}">{{ time.Format "January 2, 2006" . | safeHTML }}</time>
+          </span>
+        {{- end -}}
+      {{- else if eq $fieldName "citizenship" }}
+        {{- with $country := $fieldData.country }}
+          {{- with $fragmentItemSeparatorStr }}
+            <span class="{{ $classPrefix }}_separator">
+              {{- safeHTML . }}
+            </span>
+          {{- end }}
+          <span class="{{ $classPrefix }}_text">
+            {{- with $field.title }}
+              {{- with T (printf "%s_prefix" . ) }}
+                <span class="{{ $classPrefix }}_prefix">
+                  {{- . | strings.FirstUpper | page.RenderString }}
+                </span>
+              {{- end }}
+            {{- end }}
+              {{ page.RenderString . }}
+            {{- with $field.title }}
+              {{- with T (printf "%s_suffix" . ) }}
+                <span class="{{ $classPrefix }}_suffix">
+                  {{- page.RenderString . }}
+                </span>
+              {{- end }}
+            {{- end }}
+          </span>
+        {{- end }}
+      {{- end }}
+    {{- end }}
+  {{- end }}
+  </div>
+{{- end -}}
