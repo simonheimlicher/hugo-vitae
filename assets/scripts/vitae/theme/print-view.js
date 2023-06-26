@@ -48,7 +48,7 @@ const transferOverflow = function (conf) {
       let baseElement = el['clonePages'][0];
       let overflowElement = el['clonePages'][1];
 
-      if (['break'].includes(el['policy'])) {
+      if (conf['paginationPoliciesToPaginate'].includes(el['policy'])) {
         // Move elements from base to overflow until base no longer overflows
         // console.log('Moving direct descendants of baseElement ', baseElement, ' to overflowElement: ', overflowElement);
         let baseElementOverflow = baseElement.scrollHeight > baseElement.clientHeight;
@@ -114,12 +114,14 @@ const transferOverflow = function (conf) {
 };
 
 const numberPages = function (conf) {
+  let documentSections = [];
   let documentPages = [];
 
   conf['paginationSections'].forEach(function (paginationSection) {
-    documentPages.push(paginationSection.targetPageElement);
+    documentSections.push(paginationSection.targetPageElement);
     for (let pageIndex = 0, page = paginationSection.targetPageElement; page; ++pageIndex, page = page.nextElementSibling) {
       // pushClass(page, "page-" + pageIndex);
+      documentPages.push(page);
       if (pageIndex == 0) {
         pushClass(page, "page-first");
       }
@@ -168,9 +170,18 @@ const numberPages = function (conf) {
       });
     }
   });
+
   // Number documentPages
   let pageNumber = 1;
   documentPages.forEach(function (page) {
+    let pageNumberPlaceholder = page.querySelector('[data-page-placeholder="page-number"]');
+    if (pageNumberPlaceholder) {
+      pageNumberPlaceholder.innerHTML = pageNumber;
+    }
+    let totalPagesPlaceholder = page.querySelector('[data-page-placeholder="total-pages"]');
+    if (totalPagesPlaceholder) {
+      totalPagesPlaceholder.innerHTML = documentPages.length;
+    }
     page.dataset.pageNumber = pageNumber++;
   });
 };
@@ -289,11 +300,9 @@ const preparePrintPreview = function (conf) {
 
         let overflowElement = el['clonePages'][1];
 
-        if (['first', 'break'].includes(el['policy'])) {
-          // Remove all elements from the pagination columns on the clonePages page
-          while (overflowElement.firstChild) {
-            overflowElement.removeChild(overflowElement.lastChild);
-          }
+        // Remove all elements from the pagination columns on the clonePages page
+        while (overflowElement.firstChild) {
+          overflowElement.removeChild(overflowElement.lastChild);
         }
       });
 
@@ -365,6 +374,8 @@ const init = function (reset) {
     paginationContainerSelector: ".pagination-container",
     paginationOrderAttr: "data-pagination-order",
     paginationPolicyAttr: "data-pagination-policy",
+
+    paginationPoliciesToPaginate: ["break"],
   };
 
   let paginationSections = [];
@@ -383,12 +394,15 @@ const init = function (reset) {
 
     const containerElements = paginationPage.querySelectorAll(conf['paginationContainerSelector']);
     containerElements.forEach(function (el, idx) {
-      paginationContainers.push({
-        'order': el.getAttribute(conf['paginationOrderAttr']),
-        'policy': el.getAttribute(conf['paginationPolicyAttr']),
-        'selector': '.' + el.className.split(' ').join('.'),
-        'originalContainer': el,
-      });
+      const policy = el.getAttribute(conf['paginationPolicyAttr']);
+      if (conf['paginationPoliciesToPaginate'].includes(policy)) {
+        paginationContainers.push({
+          'order': el.getAttribute(conf['paginationOrderAttr']),
+          'policy': policy,
+          'selector': '.' + el.className.split(' ').join('.'),
+          'originalContainer': el,
+        });
+      }
     });
     paginationContainers.sort((a, b) => (a.order > b.order) ? 1 : -1);
     paginationSections.push({

@@ -25,8 +25,12 @@ $page-width: 210.0791667mm;
 
 // Page margins
 $page-mar-h: 10mm;
+
+$page-mar-ratio-top-bottom: math.div(1, 1);
+$page-mar-top: math.div( math.round(10 * math.div($page-mar-ratio-top-bottom, (1 + $page-mar-ratio-top-bottom) ) * $page-mar-h * 2), 10);
+$page-mar-bottom: math.div( math.round(10 * math.div(1, (1 + $page-mar-ratio-top-bottom) ) * $page-mar-h * 2), 10);
+
 $page-mar-v: math.div($page-mar-h * $page-height, $page-width);
-$page-mar-ratio-top-bottom: math.div(2, 3);
 
 $column-pad-h: math.div($page-mar-h, 2);
 $column-pad-v: math.div($page-mar-h, 4);
@@ -36,7 +40,7 @@ $screen-pad-v: 1rem;
 
 .vitae {
   @media screen {
-    --page-scale-factor: 1.0;
+    --page_scale-factor: 1.0;
   }
 
   --font-size-dimension: 1pt;
@@ -46,18 +50,18 @@ $screen-pad-v: 1rem;
   // 1:1 scaling
   --print-font-scale-factor: 1.0;
 
-  --page-width: #{$page-width};
-  --page-height: #{$page-height};
-  --page-scale-factor: 1;
+  --page_width: #{$page-width};
+  --page_height: #{$page-height};
+  --page_scale-factor: 1;
 
   // font-size: var(--print-font-size)
   // font-size: var(--root-font-size)
   // font-size: calc(var(--font-size-dimension) * var(--root-font-size-number))
   // font-size: calc(100% / var(--root-scale-factor))
 
-  --page-margin-h: #{$page-mar-h};
-  --page-margin-v: #{$page-mar-v};
-  --page-margin-ratio-top-bottom: #{$page-mar-ratio-top-bottom};
+  --page_margin_base_h: #{$page-mar-h};
+  --page_margin_base_v: #{$page-mar-v};
+  --page_margin_ratio-top-bottom: #{$page-mar-ratio-top-bottom};
 
   --column-padding-h: #{$column-pad-h};
   --column-padding-v: #{$column-pad-v};
@@ -69,22 +73,26 @@ $screen-pad-v: 1rem;
   --column-padding-screen-v: #{$screen-pad-v};
 }
 .vitae {
-  --page-scale-factor: 1.0;
+  --page_scale-factor: 1.0;
 
-  --page-width: calc(#{$page-width} * var(--page-scale-factor));
-  --page-height: calc(#{$page-height} * var(--page-scale-factor));
+  --page_width: calc(#{$page-width} * var(--page_scale-factor));
+  --page_height: calc(#{$page-height} * var(--page_scale-factor));
 
-  --page-margin-left: calc( var(--page-margin-h) * var(--page-scale-factor));
-  --page-margin-right: calc( var(--page-margin-h) * var(--page-scale-factor));
-  --page-margin-top: calc( (var(--page-margin-ratio-top-bottom) ) / (1 + var(--page-margin-ratio-top-bottom) ) * 2 * var(--page-margin-v) * var(--page-scale-factor));
-  --page-margin-bottom: calc( 1 / (1 + var(--page-margin-ratio-top-bottom) ) * var(--page-margin-v) * 2 * var(--page-scale-factor));
-  --aside-margin-v: calc(0.5 * var(--page-margin-v) * var(--page-scale-factor));
+  --page_margin_base_left: #{$page-mar-h};
+  --page_margin_base_right: #{$page-mar-h};
+  --page_margin_base_top: #{$page-mar-top};
+  --page_margin_base_bottom: #{$page-mar-bottom};
 
-  --column-padding-h: calc(#{$column-pad-h} * var(--page-scale-factor));
-  --column-padding-v: calc(#{$column-pad-v} * var(--page-scale-factor));
+  --page_margin_left: calc(var(--page_margin_base_left) * var(--page_scale-factor));
+  --page_margin_right: calc(var(--page_margin_base_right) * var(--page_scale-factor));
+  --page_margin_top: calc(var(--page_margin_base_top) * var(--page_scale-factor));
+  --page_margin_bottom: calc(var(--page_margin_base_bottom) * var(--page_scale-factor));
 
-  --gap-h: #{$column-pad-h} * var(--page-scale-factor);
-  --gap-v: #{$column-pad-v} * var(--page-scale-factor);
+  --column-padding-h: calc(#{$column-pad-h} * var(--page_scale-factor));
+  --column-padding-v: calc(#{$column-pad-v} * var(--page_scale-factor));
+
+  --gap-h: #{$column-pad-h} * var(--page_scale-factor);
+  --gap-v: #{$column-pad-v} * var(--page_scale-factor);
 
   #printPreviewContainer {
     display: none;
@@ -100,7 +108,7 @@ $screen-pad-v: 1rem;
     }
   }
   .view-print {
-    --font-size-normal: calc(var(--print-font-scale-factor) * var(--font-size-dimension) * var(--body-font-size-number) * var(--page-scale-factor));
+    --font-size-normal: calc(var(--print-font-scale-factor) * var(--font-size-dimension) * var(--body-font-size-number) * var(--page_scale-factor));
   }
 }
 @media screen {
@@ -142,7 +150,7 @@ $screen-pad-v: 1rem;
       }
       .pagination-page {
         position: relative;
-        width: var(--page-width);
+        width: var(--page_width);
         margin: 0;
         background: var(--bg);
         overflow: hidden;
@@ -150,7 +158,7 @@ $screen-pad-v: 1rem;
       }
       .print-preview_target {
         .pagination-page {
-          height: var(--page-height);
+          height: var(--page_height);
         }
       }
     }
@@ -171,8 +179,8 @@ $screen-pad-v: 1rem;
       // width: 210mm // PrinceXML
       // height: 297mm // PrinceXML
       // page-break-before: always // PrinceXML
-      width: var(--page-width);
-      height: var(--page-height);
+      width: var(--page_width);
+      height: var(--page_height);
       // PrinceXML
       page-break-before: auto;
       // PrinceXML
@@ -202,17 +210,17 @@ $screen-pad-v: 1rem;
   $margin_left: 0;
 
   @if $vertical == 'top' {
-    $margin_top: calc(-1 * var(--page-margin-top));
+    $margin_top: calc(-1 * var(--page_margin_top));
   }  @else if $vertical == 'bottom' {
-    $margin_bottom: calc(-1 * var(--page-margin-bottom));
+    $margin_bottom: calc(-1 * var(--page_margin_bottom));
   }
 
   @if $horizontal == 'right' {
-    $margin_right: calc(-1 * var(--page-margin-right));
+    $margin_right: calc(-1 * var(--page_margin_right));
     $margin_left: calc(-1 * var(--column-padding-left));
   }  @else if $horizontal == 'left' {
     $margin_right: calc(-1 * var(--column-padding-right));
-    $margin_left: calc(-1 * var(--page-margin-left));
+    $margin_left: calc(-1 * var(--page_margin_left));
   }
 
   margin: $margin_top $margin_right $margin_bottom $margin_left;
@@ -224,18 +232,18 @@ $screen-pad-v: 1rem;
   $margin_left: 0;
 
   @if $vertical == 'top' {
-    $margin_top: calc(-1 * var(--page-margin-top));
+    $margin_top: calc(-1 * var(--page_margin_top));
   }  @else if $vertical == 'bottom' {
-    $margin_bottom: calc(-1 * var(--page-margin-bottom));
+    $margin_bottom: calc(-1 * var(--page_margin_bottom));
   }
 
   @if $horizontal == 'right' {
-    $margin_right: calc(-1 * var(--page-margin-right));
+    $margin_right: calc(-1 * var(--page_margin_right));
   }  @else if $horizontal == 'left' {
-    $margin_left: calc(-1 * var(--page-margin-left));
+    $margin_left: calc(-1 * var(--page_margin_left));
   }  @else if $horizontal == 'both' {
-    $margin_right: calc(-1 * var(--page-margin-right));
-    $margin_left: calc(-1 * var(--page-margin-left));
+    $margin_right: calc(-1 * var(--page_margin_right));
+    $margin_left: calc(-1 * var(--page_margin_left));
   }
 
   margin: $margin_top $margin_right $margin_bottom $margin_left;
@@ -246,7 +254,7 @@ $screen-pad-v: 1rem;
   --column-padding-left: calc(var(--column-padding-h));
   --column-padding-right: calc(var(--column-padding-h));
 
-  --aside-width: calc(var(--page-width) / 4);
+  --aside-width: calc(var(--page_width) / 4);
 }
 .vitae {
   .view-screen {
@@ -264,6 +272,41 @@ $screen-pad-v: 1rem;
 
     --border-color: var(--text);
     --border-color-faint: var(--text-color-faint);
+
+    .pagination-page {
+      padding: var(--page_margin_top) var(--page_margin_right) var(--page_margin_bottom) var(--page_margin_left);
+      &.footer_name-page-number {
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+
+        --footer_margin_left: calc( var(--page_margin_base_left) * var(--page_scale-factor));
+        --footer_margin_right: calc( var(--page_margin_base_right) * var(--page_scale-factor));
+        --footer_margin_bottom: calc(var(--page_margin_base_bottom) / 2 * var(--page_scale-factor));
+
+        --page_margin_bottom: calc(0.5 * var(--page_margin_base_bottom) * var(--page_scale-factor));
+        // padding-bottom: var(--page_margin_bottom);
+      }
+      .footer_name-page-number {
+        // position: absolute;
+        // bottom: var(--footer_margin_bottom);
+        // left: var(--footer_margin_left);
+        // right: var(--footer_margin_right);
+        // margin: 0;
+        // padding: 0;
+        // margin-top: var(--inner_padding_4-2);
+        // padding-top: var(--inner_padding_4-2);
+
+        margin: var(--inner_padding_4-2) 0 0 0;
+        padding: var(--inner_padding_4-2) 0 0 0;
+        border-top: calc(var(--line-width_separator)) solid var(--border-color-faint);
+        // background-color: aqua;
+        display: flex;
+        flex-direction: column;
+        align-items: baseline;
+        justify-content: flex-end;
+      }
+    }
 
     .pagination-container {
       position: relative;
@@ -295,7 +338,7 @@ $screen-pad-v: 1rem;
           top: 0;
           bottom: 0;
           left: 0;
-          width: calc(var(--page-margin-left) + var(--aside-width) + var(--column-gap) / 2);
+          width: calc(var(--page_margin_left) + var(--aside-width) + var(--column-gap) / 2);
           background-color: var(--theme-haze);
           z-index: 0;
         }
@@ -310,7 +353,6 @@ $screen-pad-v: 1rem;
           z-index: -1;
         }
         display: grid;
-        padding: var(--page-margin-top) var(--page-margin-right) var(--page-margin-bottom) var(--page-margin-left);
         grid-template-rows: minmax(min-content, max-content) 1fr;
         row-gap: var(--row-gap);
         grid-template-columns: var(--aside-width) auto;
@@ -375,7 +417,7 @@ $screen-pad-v: 1rem;
 .vitae {
   .view-print.print-preview_overflow {
     .pagination-page {
-      height: var(--page-height);
+      height: var(--page_height);
       overflow: hidden;
     }
     .main-column,
@@ -413,14 +455,20 @@ $screen-pad-v: 1rem;
       .stage_header {
         flex: 1 0 auto;
       }
-      .stage_header:has( + .stage_meta) {
-        flex: 0 0 auto;
-      }
       .stage_header:has( + .stage_header) {
         flex: 0.25 0 auto;
       }
       .stage_meta, .stage_content {
         flex: 0.5 0 auto;
+      }
+      .stage_header:has( + .stage_meta) {
+        flex: 0 0 auto;
+      }
+      .organization_header:has( + .role_header) {
+        flex: 0 0 auto;
+      }
+      .stage_content.feature-last {
+        flex: 0;
       }
     }
   }

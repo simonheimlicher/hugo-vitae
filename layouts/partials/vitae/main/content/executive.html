@@ -17,7 +17,7 @@ PaginationPage: a printed page that is part of a Part
   this DOM node is cloned and the content is distributed across as many
   clones as required -->
   <div class="{{ $pp.PartClass}}">
-    <div class="{{ printf "template_%s" $part.template }} {{ $pp.PaginationPageClass}}">
+    <div class="{{ printf "template_%s" $part.template }} {{ $pp.PaginationPageClass}}{{ with $vitaeParams.footer }} footer_{{ .template }}{{ end }}">
       {{- range $slotIndex, $slot := $part.slots }}
         {{/* {{- partial "html-comment" (printf "[%s]: slot[%T] name=%s:\n%v"
             $template $slot $slot.slot (jsonify (dict "indent" "  ") $slot) ) }} */}}
@@ -76,6 +76,36 @@ PaginationPage: a printed page that is part of a Part
             {{- end }}
           {{- end }}
         </div>
+      {{- end }}
+      {{- with $vitaeParams.footer }}
+        {{- $footerContainer := default "footer" .container }}
+        {{- if $footerContainer }}
+          {{ printf `<%s class="slot_footer footer_%s">` $footerContainer .template | safeHTML }}
+        {{- end }}
+        {{- range $componentIndex, $component := .components }}
+          {{- $componentName := $component.component }}
+          {{- $childClass := default "" .child_class }}
+          {{- $componentPartial := printf "vitae/_components/%s" $componentName }}
+          {{- $componentContainer := default "" .container }}
+          {{- if $componentContainer }}
+            {{- printf `<%s class="component-container_%s component-container">` $componentContainer $componentName | safeHTML }}
+          {{- end }}
+          {{- $componentStyle := $component.style | default false }}
+          {{- partial $componentPartial (dict
+            "Page" $page
+            "Config" $vitaeParams
+            "PageIndex" $partIndex
+            "Component" $component
+            "Style" $componentStyle
+            "Index" $componentIndex
+            "ChildClass" $childClass
+            "Container" false
+            "Data" $vitaeData
+          ) -}}
+        {{- end }}
+        {{- with $footerContainer }}
+          {{ printf "</%s>" . | safeHTML }}
+        {{- end }}
       {{- end }}
     </div>
   </div>

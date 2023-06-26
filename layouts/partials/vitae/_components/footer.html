@@ -1,0 +1,39 @@
+{{- $componentArgs := . }}
+{{- $page := .Page -}}
+{{- $template := "vitae/_components/footer" -}}
+{{- $config := .Config }}
+{{- $component := .Component }}
+{{- $componentClass := default "component_footer" .ComponentClass }}
+{{- $childClass := default "" .ChildClass }}
+
+{{- $style := (dict "font-size" "normal") }}
+{{- $styleClass := "" }}
+{{- with .Style }}
+  {{- if reflect.IsMap . }}
+    {{- $style = . }}
+  {{- end }}
+{{- end }}
+{{- range $key, $value := $style }}
+  {{- if . }}
+    {{- $styleClass = trim (printf "%s %s_%v" $styleClass $key .) " " }}
+  {{- end }}
+{{- end }}
+
+{{- $topLevelClass := delimit (slice $styleClass $componentClass $childClass) " " }}
+
+{{- $optInline := dict "display" "inline" }}
+
+{{- with $component.fragments }}
+  <div class="footer_container {{ $topLevelClass }}">
+  {{- range $fragment := . }}
+    {{- $fragmentName := .fragment }}
+    {{- $fragmentConfig := merge (index $config $fragmentName) . }}
+    {{- $partial := printf "vitae/fragments/%s" $fragmentName}}
+    {{- /* {{- warnf "%s[%s]: component=%v: Calling fragment=%s with .Config=%v"
+        $page $template $component $fragmentName $fragmentConfig -}} */ -}}
+    <div class="fragment_{{ $fragmentName }} fragment">
+    {{- partial $partial (merge $componentArgs (dict "Fragment" $fragmentName "Config" $fragmentConfig ))  }}
+    </div>
+  {{- end }}
+  </div>
+{{- end }}

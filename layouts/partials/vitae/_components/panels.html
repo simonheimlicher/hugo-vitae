@@ -1,0 +1,60 @@
+{{- $page := .Page -}}
+{{- $template := "vitae/_components/panels" -}}
+{{- $component := .Component }}
+{{- $headingLevel := default 3 .HeadingLevel }}
+{{- $componentClass := default "component_panels" .ComponentClass }}
+{{- $childClass := default "" .ChildClass }}
+
+{{- $style := (dict "font-size" "normal") }}
+{{- $styleClass := "" }}
+{{- with .Style }}
+  {{- if reflect.IsMap . }}
+    {{- $style = . }}
+  {{- end }}
+{{- end }}
+{{- range $key, $value := $style }}
+  {{- if . }}
+    {{- $styleClass = trim (printf "%s %s_%v" $styleClass $key .) " " }}
+  {{- end }}
+{{- end }}
+
+{{- $topLevelClass := delimit (slice $styleClass $componentClass $childClass) " " }}
+
+{{- $filterField := default "type" $component.filter_by -}}
+{{- $filterMatch := default false $component.filter_value -}}
+
+{{- $optInline := dict "display" "inline" }}
+
+{{- $panelData := (index .Data (default $component.component $component.collection) ) }}
+{{- with $panelData }}
+  {{- with .content }}
+    <div class="panels_content {{ $topLevelClass }}">
+      {{- page.RenderString . }}
+    </div>
+  {{- end }}
+  {{- with $competencyCollection := .panels }}
+    {{- $competencyList := . }}
+    {{- $classPrefix := "panel" }}
+    {{- with $filterMatch }}
+      {{- if reflect.IsSlice . }}
+        {{- $competencyList = where $competencyCollection $filterField "in" . }}
+        {{- $classPrefix = printf "%s %s" $filterMatch (delimit $classPrefix "_") }}
+      {{- else }}
+        {{- $competencyList = where $competencyCollection $filterField . }}
+        {{- $classPrefix = printf "%s %s" $filterMatch $classPrefix }}
+      {{- end }}
+    {{- end }}
+    {{- with $competencyList }}
+      {{- partial "claris/_components/panels" (dict
+          "Page" $page
+          "HeadingLevel" $headingLevel
+          "ContainerClass" (printf "panels_cards %s" $componentClass)
+          "Nested" false
+          "Panels" . )
+        }}
+    {{- end }}
+  {{- /* {{- else }}
+    {{- warnf "%s[%s]: Failed to obtain competencyCollection via (index .Data $component.collection) with $component.collection=%v"
+        $page $template $component.collection }} */ -}}
+  {{- end }}
+{{- end }}

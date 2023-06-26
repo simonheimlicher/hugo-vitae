@@ -22,7 +22,7 @@
       {{- $fieldName = $field.field }}
     {{- end }}
     {{- $fieldData := false }}
-    {{- with ($fieldData = (index $data.features $fieldName)) }}
+    {{- with ($fieldData = (index $data $fragment $fieldName)) }}
       {{- with (index . $media) }}
         {{- $fieldData = . }}
       {{- end -}}

@@ -18,27 +18,27 @@
     --font-size-base: #{$font-size};
   }
 
-  --font-size-normal: #{round-dec($font-size-factor-normal * math.pow($font-size-scale-factor, $shift), $dec-digits)} * var(--font-size-base);
+  --font-size-normal: calc(#{round-dec($font-size-factor-normal * math.pow($font-size-scale-factor, $shift), $dec-digits)} * var(--font-size-base));
 
   @for $i from 1 through $smaller-factor-idx-max {
     @if ($i < $smallest) {
-      --font-size-smaller-#{$i}: #{round-dec(math.div($font-size-factor-normal, math.pow($font-size-scale-factor, $i + $shift)), $dec-digits)} * var(--font-size-base);
+      --font-size-smaller-#{$i}: calc(#{round-dec(math.div($font-size-factor-normal, math.pow($font-size-scale-factor, $i + $shift)), $dec-digits)} * var(--font-size-base));
     }
     @else {
-      --font-size-smaller-#{$i}: #{round-dec(math.div($font-size-factor-normal, math.pow($font-size-scale-factor, $smallest + $shift)), $dec-digits)} * var(--font-size-base);
+      --font-size-smaller-#{$i}: calc(#{round-dec(math.div($font-size-factor-normal, math.pow($font-size-scale-factor, $smallest + $shift)), $dec-digits)} * var(--font-size-base));
     }
   }
 
   @for $i from 1 through $larger-factor-idx-max {
     @if ($i < $largest) {
-      --font-size-larger-#{$i}: #{round-dec($font-size-factor-normal * math.pow($font-size-scale-factor, $i + $shift), $dec-digits)} * var(--font-size-base);
+      --font-size-larger-#{$i}: calc(#{round-dec($font-size-factor-normal * math.pow($font-size-scale-factor, $i + $shift), $dec-digits)} * var(--font-size-base));
     }
     @else {
-      --font-size-larger-#{$i}: #{round($font-size-factor-normal * math.pow($font-size-scale-factor, $largest + $shift), $dec-digits)} * var(--font-size-base);
+      --font-size-larger-#{$i}: calc(#{round($font-size-factor-normal * math.pow($font-size-scale-factor, $largest + $shift), $dec-digits)} * var(--font-size-base));
     }
   }
 
-  font-size: calc(var(--font-size-normal));
+  font-size: var(--font-size-normal);
 }
 
 @mixin flush-top($line-height: var(--line-height)) {

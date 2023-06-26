@@ -14,7 +14,7 @@
 {{- $dateFormat := default "Jan 2006" (default site.Params.periodDateFormat .Params.periodDateFormat )}}
 
 {{- $pubList := (index .Data $feature.collection) }}
-{{- $pubsByKindList := where $pubList $filterField $filterMatch }}
+{{- $pubsByKindList := where $pubList.publications $filterField $filterMatch }}
 {{- $numPubs := (len $pubsByKindList) }}
 
 {{ range sort $pubsByKindList "published" "desc" }}

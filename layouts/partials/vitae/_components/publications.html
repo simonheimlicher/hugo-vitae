@@ -1,0 +1,152 @@
+{{- $page := .Page -}}
+{{- $template := "vitae/_components/panels" -}}
+{{- $component := .Component }}
+{{- $headingLevel := default 3 .HeadingLevel }}
+{{- $componentClass := default "component_publications" .ComponentClass }}
+{{- $childClass := default "" .ChildClass }}
+
+{{- $style := (dict "abbreviate" "first_name") }}
+{{- $styleClass := "" }}
+{{- with .Style }}
+  {{- if reflect.IsMap . }}
+    {{- $style = . }}
+  {{- end }}
+{{- end }}
+{{- range $key, $value := $style }}
+  {{- if . }}
+    {{- $styleClass = trim (printf "%s %s_%v" $styleClass $key .) " " }}
+  {{- end }}
+{{- end }}
+
+{{- $dateFormat := default "Jan 2006" (default site.Params.periodDateFormat .Params.periodDateFormat )}}
+
+{{- $headingContainer := printf "h%d" $headingLevel }}
+{{- $titleSeparatorStr := `` }}
+{{- $fieldSeparatorStr := `<br>` }}
+
+{{- if eq $style.layout "compact" }}
+  {{- $headingContainer = "span" }}
+  {{- $titleSeparatorStr = `&middot;` }}
+  {{- $fieldSeparatorStr = `&middot;` }}
+{{- end }}
+
+{{- $filterField := default "type" $component.filter_by -}}
+{{- $filterMatch := default "publication" $component.filter_value -}}
+
+{{- $topLevelClass := delimit (slice "publication_item" $styleClass $componentClass $childClass) " " }}
+
+{{- $publicationData := (index .Data (default $component.component $component.collection) ) }}
+{{- with $publicationData }}
+  {{- $sortedPubList := slice }}
+
+  {{- if reflect.IsSlice . }}
+    {{- warnf `%s[%s]: .Data.publications must be a map with an element "publications[]"`
+        $page $template -}}
+  {{- end }}
+  {{- with .remarks }}
+    {{- with where . $filterField $filterMatch }}
+      <div class="publications_remark {{ $topLevelClass }}">
+        {{- range . }}
+          {{- page.RenderString .content }}
+        {{- end }}
+      </div>
+    {{- end }}
+  {{- end }}
+
+  {{- with .publications }}
+    {{- $sortedPubList = where . $filterField $filterMatch }}
+    {{- $sortedPubList = sort $sortedPubList "published" "desc" }}
+  {{- end }}
+
+  {{- $numPubs := (len $sortedPubList) }}
+  {{ range $sortedPubList }}
+  <div class="{{ $topLevelClass }}">
+    {{- if eq $.Feature.style "IEEE" }}
+      <span>
+        {{- range .authors -}}
+          {{- substr .first_name 0 1 }}. {{ with .middle_name }}{{ substr . 0 1 }}. {{ end }}{{ .last_name }},
+        {{- end -}}
+      </span>
+      {{- if .url }}
+      <a href="{{ .url }}">
+      {{- end -}}
+      {{- printf `<%s class="publication_title">"%v",</%s>` $headingContainer .title $headingContainer | safeHTML }}
+      {{- if .url }}
+      </a>
+      {{- end -}}
+      {{- if .journal }}
+      <span>
+        {{- "" -}}
+        <i>{{ .journal }}</i>,
+        {{- with .vol }} vol. {{.}},{{ end -}}
+        {{- with .page }} pp. {{.}},{{ end -}}
+      </span>
+      {{- else if .thesis }}
+      <span>{{ .thesis }},</span>
+      {{- end }}
+      <span>{{ .published }}</span>.
+    {{- else if eq $.Feature.style "APA" }}
+      <span>
+        {{- $last_index := sub (.authors | len) 1 -}}
+        {{- range $i, $e := .authors -}}
+        {{- if and (gt $i 0) (eq $i $last_index) }}& {{ end -}}
+        {{- $e.last_name }}, {{ substr $e.first_name 0 1 }}.{{ with $e.middle_name }} {{ substr . 0 1 }}.{{ end -}}
+        {{- if ne $i $last_index }}, {{ end -}}
+        {{- end -}}
+      </span>
+      <span>({{ .published }}).</span>
+      {{- if .url }}
+      <a href="{{ .url }}">
+      {{- end -}}
+      {{- printf `<%s class="publication_title">"%v",</%s>` $headingContainer .title $headingContainer | safeHTML }}
+      {{- if .url }}
+      </a>
+      {{- end -}}
+      {{- if .journal }}
+      <span>
+        {{- "" -}}
+        <i>{{- .journal -}}</i>
+        {{- if .vol }}, <i>{{.vol}}</i>{{with .issue}}({{.}}){{end}}{{ end -}}
+        {{- with .page }}, pp.{{.}}{{ end -}}
+        .
+        {{- "" -}}
+      </span>
+      {{ end }}
+    {{- else }}
+      {{- if .url }}
+      <a href="{{ .url }}" class="publication_link" title="{{ T "publication_link_further-info" }} {{ .title }}">
+      {{- end -}}
+      {{- printf `<%s class="publication_title">%v</%s>` $headingContainer .title $headingContainer | safeHTML }}
+      {{- if .url }}
+      </a>
+      {{- end -}}
+      {{- printf $titleSeparatorStr | safeHTML }}
+      <span class="publication_authors">
+        {{- $last_index := sub (.authors | len) 1 -}}
+        {{- range $i, $e := .authors -}}
+        {{- if and (gt $i 0) (eq $i $last_index) }} and {{ end -}}
+        {{- $firstName := cond (eq $style.abbreviate "first_name") (printf "%s.&nbsp;" (substr .first_name 0 1) ) (printf "%s " $e.first_name) }}
+        {{- $firstName | safeHTML }}{{ $e.last_name }}{{ with $e.middle_name }} {{ substr . 0 1 }}.{{ end -}}
+        {{- if (and (gt $last_index 1) (ne $i $last_index) ) }}, {{ end -}}
+        {{- end -}}
+      </span>
+      {{- if (eq .kind "publication") }}
+        {{- printf $fieldSeparatorStr | safeHTML }}
+        {{ with .proceedings }}<span class="publication_publication_published_proceedings">{{ . }},</span>{{ end }}
+        {{ with .published }}<span class="publication_publication_published_date">{{ (. | time).Format $dateFormat }}</span>{{ end }}
+      {{- else if (eq .kind "patent") }}
+        {{- with .organization }}, <span class="publication_patent_organization">{{ . }}</span>{{ end }}
+        {{- with .timeline }}
+          {{- $timeline := sort . "date" "desc" }}
+          {{- range $idx, $event := $timeline }}
+            {{- printf $fieldSeparatorStr | safeHTML }}
+            {{ with .event }}<span class="publication_patent_timeline_event">{{ . }} </span>{{ end }}
+            {{ with .organization }}<span class="publication_patent_timeline_organization"> by {{ . }}, </span>{{ end }}
+            {{ with .date }}<span class="publication_patent_timeline_date"> {{ ( . | time).Format $dateFormat }}</span>{{ end }}
+          {{- end }}
+        {{- end }}
+      {{- end -}}
+    {{- end -}}
+  </div>
+  {{ end }}
+{{ end }}

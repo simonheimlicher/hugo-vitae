@@ -1,0 +1,52 @@
+{{- $page := .Page }}
+{{- $fragment := .Fragment }}
+{{- $config := .Config }}
+{{- $data := .Data }}
+{{- $template := "partials/vitae/fragments/page-meta" }}
+{{- $outputFormat := default "HTML" (partial "claris/_functions/output-format" $page).Name }}
+{{- $media := cond (eq $outputFormat "print") "print" "screen" }}
+{{/* {{- warnf "%s[%s]: outputFormat:%s" $page $template $outputFormat }} */}}
+
+{{- $classPrefix := "fragment_page-meta" }}
+{{- $fragmentItemSeparatorStr := " · " }}
+
+{{- $contactIcons := true }}
+
+{{- /* warnf "%s[%s]: .Fragment=%s .Config=%s .Data=%s" $page $template $fragment $config $data.features.date-of-birth */ -}}
+
+{{- with $fields := $config.fields }}
+  {{- range $slot := (slice "start" "center" "end") }}
+    <div class="{{ $classPrefix }}_slot align_{{ . }}">
+      {{- range $fieldKey, $field := where $fields "align" "eq" $slot }}
+        {{- $fieldName := $field.field}}
+          {{- $fieldData := false }}
+          {{- $fieldContent := $field.content }}
+          {{- $fieldContentParts := false }}
+          {{- $placeholderID := false }}
+          {{/* field='{{ $fieldContent }}' */}}
+          {{- if strings.HasPrefix $fieldContent `{` }}
+            {{- $fieldContent = (strings.TrimLeft `{` (strings.TrimRight `}` $fieldContent) ) }}
+            {{- $fieldContentParts = split $fieldContent `.` }}
+            {{- with ($fieldData = index $data $fieldContentParts) }}
+              {{- if reflect.IsMap . }}
+                {{- with (index . $media) }}
+                  {{- $fieldData = . }}
+                {{- end -}}
+              {{- end }}
+            {{- else }}
+              {{- $placeholderID = delimit $fieldContentParts "-" }}
+            {{- end }}
+          {{- else }}
+            {{- $fieldData = default $fieldContent (T $fieldContent) }}
+          {{- end }}
+          <span{{ with $placeholderID }} data-page-placeholder="{{ . }}"{{ end }} class="{{ $classPrefix }}_text field_{{ $fieldName }}">
+            {{- with $fieldData }}
+              {{- page.RenderString . }}
+            {{- else }}
+              {{- page.RenderString (printf "{`%s`}" $placeholderID) }}
+            {{- end }}
+          </span>
+    {{- end }}
+    </div>
+  {{- end -}}
+{{- end -}}
