@@ -6,8 +6,9 @@
 {{- $componentClass := default "component_footer" .ComponentClass }}
 {{- $childClass := default "" .ChildClass }}
 
-{{- $style := (dict "font-size" "normal") }}
+{{- $style := dict }}
 {{- $styleClass := "" }}
+{{- $styleClassPrefix := "style" }}
 {{- with .Style }}
   {{- if reflect.IsMap . }}
     {{- $style = . }}
@@ -15,7 +16,7 @@
 {{- end }}
 {{- range $key, $value := $style }}
   {{- if . }}
-    {{- $styleClass = trim (printf "%s %s_%v" $styleClass $key .) " " }}
+    {{- $styleClass = trim (printf "%s %s_%s_%v" $styleClass $styleClassPrefix $key .) " " }}
   {{- end }}
 {{- end }}
 

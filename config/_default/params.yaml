@@ -57,13 +57,15 @@ vitae:
               date_format: 2006
               unit: 1
               style:
-                timeline: shallow
+                # timeline: shallow
                 # timeline: column
                 # timeline: dot-dash
-                heading: larger-1
-                logo: false
+                layout: compact
+                # heading: larger-1
+                heading: normal
+                # logo: false
+                # logo: left
               function: false
-              unit: true
               label:
                 function: false
                 unit: false
@@ -252,15 +254,20 @@ vitae:
       template: name-page-number
       components:
       - component: footer
+        # style:
+        #   font-size: normal
         fragments:
           - fragment: page-meta
             fields:
-              - field: content-type
-                content: Resume of
-                align: start
+              # - field: content-type
+              #   content: Resume of
+              #   align: start
               - field: name
                 content: "{personal.name}"
                 align: start
+              - field: content-type
+                content: Resume
+                align: center
               - field: page-number
                 content: "{page-number}"
                 align: end

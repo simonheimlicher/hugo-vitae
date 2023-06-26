@@ -218,9 +218,8 @@ html[data-mode="dim"] {
   /* ----- Component HEADER ------ */
   &_header {
     font-size: var(--font-size-normal);
-    &.font-size_larger-1 {
+    &.style_font-size_larger-1 {
       font-size: var(--font-size-larger-1);
-      // @include font-size-scale(0, 1);
     }
     display: grid;
     grid-template-columns: 2fr 1fr 2fr;
@@ -422,6 +421,11 @@ html[data-mode="dim"] {
     --stage-role-sep-vert: 1.0rem;
     --stage-org-role-sep-vert: 0.5rem;
 
+
+    --grid_period-column_width: 6em;
+    --grid_separator-column_width: var(--inner_margin_4-2);
+
+
     position: relative;
 
     // Periods of time such as "Mar 2022-Jul 2023"
@@ -491,18 +495,167 @@ html[data-mode="dim"] {
       }
     }
 
+    &.stage_header ~ .stage_content {
+      .stage_main {
+        padding-top: var(--inner_padding_4-4);
+      }
+    }
+    &.stage_header + .stage_meta .stage_main, &.stage_header .stage_main .stage_meta {
+      // outline: 1px solid yellow;
+      padding-top: var(--padding_stage_meta);
+    }
+    &.stage_header + .stage_content, &.stage_meta + .stage_content {
+      padding-top: 0;
+    }
+    &.stage_header {
+      .stage_meta {
+        padding-top: var(--padding_stage_meta);
+      }
+    }
+    &.stage_meta + .stage_content {
+      // outline: 1px solid yellow;
+      .stage_main {
+        padding-top: var(--inner_padding_4-3);
+      }
+    }
+    &.stage_content + .stage_content {
+      // outline: 1px solid yellow;
+      .stage_main {
+        padding-top: var(--inner_padding_4-3);
+      }
+    }
+
+    &.role_header {
+      // --tl-col_timeline_color: blue;
+      .stage_main {
+        padding-top: var(--padding_role_between);
+      }
+    }
+
+    // Header for organizations
+    &.organization_header {
+      margin-top: var(--inner_margin_4-2);
+    }
+    &.component_stages + .organization_header {
+      margin-top: 0;
+    }
+    &.stage_header, &.stage_meta, &.stage_content {
+      &:has(+ .organization_header) {
+        .stage_main {
+          padding-bottom: calc(var(--padding_organization_between));
+        }
+      }
+    }
+
+    // Header for roles at organizations
+    &.role_header {
+      .stage_main {
+        padding-top: var(--inner_padding_4-3);
+      }
+    }
+    &.role_header ~ .role_header {
+      .stage_main {
+        padding-top: calc(var(--padding_role_between));
+      }
+    }
+    &.organization_header + .role_header, &.stage_meta + .role_header {
+      .stage_main {
+        padding-top: calc(var(--padding_role_first));
+      }
+    }
+    &.stage {
+      &_header {
+        break-after: avoid;
+        .stage {
+          &_main {
+            grid-column: 1 / span all;
+            font-size: calc(var(--font-size_stage_header));
+          }
+        }
+        &.stage_header_period {
+          .stage {
+            &_period, &_timeline {
+              font-size: calc(var(--font-size_stage_header));
+              .date_period {
+                font-size: calc(var(--font-size_date_period));
+              }
+              .date_duration {
+                font-size: calc(var(--font-size_date_duration));
+              }
+            }
+          }
+          &.organization_header {
+            .date_period {
+              font-weight: var(--font-weight-heading-organization);
+            }
+          }
+        }
+      }
+      &_period {
+        font-size: var(--font-size-normal);
+      }
+      &_meta {
+        break-after: avoid;
+      }
+      &_header, &_meta, &_content {
+        display: grid;
+        align-items: baseline;
+        grid-template-columns:
+          calc(var(--grid_period-column_width)) calc(var(--grid_separator-column_width))
+          minmax(0px, max-content);
+        .stage {
+          &_timeline {
+            grid-column: 1;
+          }
+          &_main {
+            grid-column: 3 / span all;
+          }
+        }
+        &.stage {
+          &_header.stage_header_period, &_content {
+            .stage {
+              &_period {
+                grid-column: 1;
+                grid-row: 1;
+              }
+              &_main {
+                grid-row: 1;
+                grid-column: 3 / span all;
+              }
+            }
+          }
+          &_header {
+            .stage_main {
+              grid-column: 1 / span all;
+              // grid-row: 1;
+            }
+          }
+        }
+        &.role_single .role_period {
+          opacity: 0;
+        }
+      }
+    }
+    &.stage_meta, &.stage_header .stage_meta {
+      // background: red;
+      font-size: calc(var(--font-size_stage_header_meta));
+      .stage_details {
+        font-size: var(--font-size-normal);
+      }
+    }
+
     /*
      * Heading style LARGER-1
      */
 
     // First column is dedicated to timeline to facilitate scanning by year
-    &.heading_larger-1 {
+    &.style_heading_larger-1 {
       --font-size-heading-organization: var(--font-size-larger-1);
       // --font-weight-heading-organization: var(--font-weight);
       --font-size-heading-role: var(--font-size-larger-1);
       --font-weight-heading-role: var(--font-weight);
     }
-    &.heading_normal {
+    &.style_heading_normal {
       --font-size-heading-organization: var(--font-size-normal);
       // --font-weight-heading-organization: var(--font-weight);
       --font-size-heading-role: var(--font-size-normal);
@@ -514,19 +667,45 @@ html[data-mode="dim"] {
     }
 
     /*
-     * Timeline style COLUMN and SHALLOW
+     * Layout style SHALLOW
+     */
+
+     &.style_layout_shallow {
+      --padding_organization_between: var(--inner_padding_4-3);
+      --padding_role_first: var(--inner_padding_4-0);
+      --padding_role_between: var(--inner_padding_4-2);
+      --padding_stage_meta: 0px;
+      .stage {
+        &_main {
+          flex-direction: row;
+          justify-content: flex-start;
+          align-items: baseline;
+        }
+      }
+      .organization_title, .role_title {
+        display: inline-block;
+        & + .stage_meta {
+          &::before {
+            content: " · ";
+          }
+        }
+      }
+    }
+
+    /*
+     * Timeline style COLUMN
      */
 
     // First column is dedicated to timeline to facilitate scanning by year
-    &.timeline_column, &.timeline_shallow {
+    &.style_timeline_column {
 
-      --tl-col_separator-column_width: var(--inner_margin_4-2);
+      --grid_separator-column_width: var(--inner_margin_4-2);
 
-      --tl-col_period-column_width: 10em;
-      --tl-col_period_separator-column_width: 2 * var(--tl-col_separator-column_width);
-      --tl-col_timeline-column_width: var(--tl-col_period-column_width);
+      --grid_period-column_width: 10em;
+      --tl-col_period_separator-column_width: 2 * var(--grid_separator-column_width);
+      --tl-col_timeline-column_width: var(--grid_period-column_width);
 
-      --tl-col_main_separator-column_width: var(--tl-col_separator-column_width);
+      --tl-col_main_separator-column_width: var(--grid_separator-column_width);
 
       --tl-col_main-column_width: calc(var(--page_width) - 2 * var(--page-margin-h) - var(--tl-col_timeline-column_width) - var(--tl-col_main_separator-column_width));
 
@@ -542,16 +721,8 @@ html[data-mode="dim"] {
       --tl-col_stage-marker_height: var(--tl-col_stage-marker_width);
       --tl-col_stage-marker_background: var(--neutral-haze);
 
-      &.logo_left {
+      &.style_logo_left {
         --tl-col_timeline-column_width: var(--tl-col_stage_logo_width);
-      }
-      &.timeline_shallow {
-        --padding_organization_between: var(--inner_padding_4-3);
-        --padding_role_first: var(--inner_padding_4-0);
-        --padding_role_between: var(--inner_padding_4-2);
-        --padding_stage_meta: 0px;
-        --tl-col_period-column_width: 6em;
-        --tl-col_timeline-column_width: var(--tl-col_period-column_width);
       }
 
       @mixin timeline_column_line($top: 0px, $right: null, $bottom: null, $left: 0px,
@@ -582,8 +753,8 @@ html[data-mode="dim"] {
           content: "";
           background-color: var(--tl-col_timeline_color);
         }
-        &.timeline_org_single, &.timeline_org_last {
-          &.timeline_role_last, &.timeline_role_single {
+        &.org_single, &.org_last {
+          &.role_last, &.role_single {
             &::after {
               content: none;
             }
@@ -731,7 +902,7 @@ html[data-mode="dim"] {
         }
       }
 
-      &:not(.logo_left) {
+      &:not(.style_logo_left) {
         &.organization_header {
           // --tl-col_timeline_color: red;
           @include timeline_column_header(
@@ -754,7 +925,7 @@ html[data-mode="dim"] {
           .stage_main {
             padding-top: var(--padding_role_between);
           }
-          &.timeline_role_first {
+          &.role_first {
             // --tl-col_timeline_color: orange;
             @include timeline_column_header(
               0px,
@@ -764,7 +935,7 @@ html[data-mode="dim"] {
               calc(var(--tl-col_timeline-column_width) / 2)
             );
           }
-          &.timeline_role_single {
+          &.role_single {
             // --tl-col_timeline_color: yellow;
             @include timeline_column_header(
               0px,
@@ -775,7 +946,7 @@ html[data-mode="dim"] {
             );
           }
         }
-        // &.role_header.stage_header_period.timeline_role_single {
+        // &.role_header.stage_header_period.role_single {
         //   --tl-col_timeline_color: green;
         //   @include timeline_column_header(
         //     0px,
@@ -811,7 +982,7 @@ html[data-mode="dim"] {
         .stage_main {
           padding-top: var(--inner_padding_4-3);
         }
-        &.logo_left {
+        &.style_logo_left {
           &.stage_header_period {
             position: relative;
             // --tl-col_timeline_color: red;
@@ -820,8 +991,8 @@ html[data-mode="dim"] {
               null,
               null,
               calc(var(--tl-col_timeline-column_width) / 2));
-            &.timeline_org_last, &.timeline_org_single {
-              &.timeline_role_last, &.timeline_role_single {
+            &.org_last, &.org_single {
+              &.role_last, &.role_single {
                 position: relative;
                 // --tl-col_timeline_color: blue;
                 @include timeline_column_header_logo(
@@ -834,6 +1005,15 @@ html[data-mode="dim"] {
             }
           }
         }
+      }
+      &.organization_header + .stage_header.style_logo_left.stage_header_period {
+        // background-color: aqua;
+        // --tl-col_timeline_color: orange;
+        @include timeline_column_header_logo(
+          calc(var(--tl-col_stage-marker_height) / 2),
+          null,
+          null,
+          calc(var(--tl-col_timeline-column_width) / 2));
       }
       &.role_header ~ .role_header {
         .stage_main {
@@ -883,7 +1063,7 @@ html[data-mode="dim"] {
           display: grid;
           align-items: baseline;
           grid-template-columns:
-            calc(var(--tl-col_period-column_width)) calc(var(--tl-col_separator-column_width))
+            calc(var(--grid_period-column_width)) calc(var(--grid_separator-column_width))
             minmax(0px, max-content);
           .stage {
             &_timeline {
@@ -913,13 +1093,13 @@ html[data-mode="dim"] {
               }
             }
           }
-          &.timeline_role_single .role_period {
+          &.role_single .role_period {
             opacity: 0;
           }
-          &.logo_left {
+          &.style_logo_left {
             grid-template-columns:
-            calc(var(--tl-col_timeline-column_width)) calc(var(--tl-col_separator-column_width))
-            calc(var(--tl-col_period-column_width)) calc(var(--tl-col_separator-column_width))
+            calc(var(--tl-col_timeline-column_width)) calc(var(--grid_separator-column_width))
+            calc(var(--grid_period-column_width)) calc(var(--grid_separator-column_width))
             minmax(0px, max-content);
             .stage_logo {
               grid-column: 1;
@@ -961,30 +1141,6 @@ html[data-mode="dim"] {
           font-size: var(--font-size-normal);
         }
       }
-      &.timeline_shallow {
-        .stage {
-          &_main {
-            flex-direction: row;
-            justify-content: flex-start;
-            align-items: baseline;
-          }
-        }
-        .organization_title, .role_title {
-          display: inline-block;
-          & + .stage_meta {
-            &::before {
-              content: " · ";
-            }
-          }
-        }
-        // &.stage_header .stage_main {
-        //   *:not(:first-child) {
-        //     &::before {
-        //       content: " · ";
-        //     }
-        //   }
-        // }
-      }
     }
 
     /*
@@ -992,7 +1148,7 @@ html[data-mode="dim"] {
      */
 
     // Similar to LinkedIn
-    &.timeline_dot-dash {
+    &.style_timeline_dot-dash {
       --tl-dash-dot_column_width: 4rem;
       --tl-dash-dot_padding-right: 0.75rem;
       --tl-dash-dot_marker_border-radius: 50%;
@@ -1215,7 +1371,7 @@ html[data-mode="dim"] {
           grid-column: 2 / span all;
           display: grid;
           grid-auto-flow: dense column;
-          grid-template-columns: calc(var(--tl-col_period-column_width)) calc(var(--tl-col_period_separator-column_width)) minmax(0px, max-content);
+          grid-template-columns: calc(var(--grid_period-column_width)) calc(var(--tl-col_period_separator-column_width)) minmax(0px, max-content);
         }
         &_header {
           grid-column: 1;
@@ -1398,8 +1554,15 @@ html[data-mode="dim"] {
    * Component FOOTER
    */
   &_footer {
-    &_container {
-      width: 100%;
+    &.footer {
+      &_container {
+        width: 100%;
+        font-size: var(--font-size-smaller-1);
+        @include upper-caps;
+        &.style_font-size_normal {
+          font-size: var(--font-size-normal);
+        }
+      }
     }
   }
 }
@@ -1412,6 +1575,7 @@ html[data-mode="dim"] {
 
    &_page-meta {
     display: grid;
+    grid-template-columns: repeat(3, 1fr);
     grid-auto-flow: column dense;
     .align {
       &_start {

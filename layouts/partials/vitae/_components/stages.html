@@ -8,16 +8,61 @@
 {{- $component := .Component }}
 {{- $config := .Config }}
 
-{{- $style := (dict "timeline" "dot-dash") }}
+{{- $validStyles := (dict
+  "layout" (dict
+    "shallow" "shallow"
+    "narrow" "narrow"
+    "compact" (slice "shallow" "narrow")
+  )
+  "timeline" (dict
+    "false" false
+    "true" "column"
+    "column" "column"
+    "dot-dash" "dot-dash"
+  )
+  "heading" (dict
+    "normal" "normal"
+    "larger-1" "larger-1"
+    "smaller-1" "smaller-1"
+  )
+  "logo" (dict
+    "false" false
+    "true" "left"
+    "left" "left"
+  )
+) -}}
+
+{{- $style := dict }}
 {{- $styleClass := "" }}
+{{- $styleClassPrefix := "style" }}
 {{- with .Style }}
   {{- if reflect.IsMap . }}
     {{- $style = . }}
   {{- end }}
 {{- end }}
 {{- range $key, $value := $style }}
-  {{- if . }}
-    {{- $styleClass = trim (printf "%s %s_%v" $styleClass $key .) " " }}
+  {{- with $validValues := index $validStyles $key }}
+    {{- with index $validValues (string $value) }}
+      {{- if reflect.IsSlice . }}
+        {{- range . }}
+          {{- $styleClass = trim (printf "%s %s_%s_%v" $styleClass $styleClassPrefix $key .) " " }}
+        {{- end }}
+      {{- else }}
+        {{- $styleClass = trim (printf "%s %s_%s_%v" $styleClass $styleClassPrefix $key .) " " }}
+      {{- end }}
+    {{- else }}
+      {{- $validValuesList := slice }}
+      {{- range $validKey, $validValue := $validValues }}
+        {{- if and ($validValue) (not (in $validValuesList $validValue) ) }}
+          {{- $validValuesList = slice $validValue | append $validValuesList }}
+        {{- end }}
+      {{- end }}
+      {{- warnf `%s[%s]: Valid style key='%v' has invalid value='%v'. Valid values: '%v'`
+          $page $template $key $value
+          (delimit (sort $validValuesList) "', '") }}
+    {{- end }}
+  {{- else }}
+    {{- warnf `%s[%s]: Invalid style key='%v' with value='%v'` $page $template $key $value }}
   {{- end }}
 {{- end }}
 
@@ -38,16 +83,13 @@
       {{- $durationFirst = true }}
     {{- else if eq . "column" }}
       {{- $timelineForSingleRole = true }}
-      {{- $periodBeginEndSeparator = "–" }}
-    {{- else if eq . "shallow" }}
-      {{- $timelineForSingleRole = true }}
     {{- end }}
   {{- end }}
 {{- end }}
 
 {{- $stagePeriodInHeader := true }}
-{{- $organizationMetaInHeader := in (slice "shallow") $style.timeline }}
-{{- $roleMetaInHeader := in (slice "shallow") $style.timeline }}
+{{- $organizationMetaInHeader := in (slice "compact" "shallow") $style.layout }}
+{{- $roleMetaInHeader := in (slice "compact" "shallow") $style.layout }}
 
 
 {{- $filterField := default "type" $component.filter_by -}}
@@ -91,7 +133,7 @@
   {{- $roleList := $org.roles }}
   {{- $numRoles := (len $roleList) }}
 
-  {{- $timelineClass := "" }}
+  {{- $orgClass := "" }}
   {{- $timelineOrgClass := "" }}
 
   {{- if (gt $numRoles 0) }}
@@ -100,26 +142,22 @@
     {{ with $firstRole }}
       {{- $roleHasDetails = or .details .summary .description .responsibilities_achievements .star .results .responsibilities .achievements }}
     {{- end }}
-    {{- $showTimeline := or (and $timelineForSingleRole $roleHasDetails) (gt $numRoles 1) }}
-    {{- if $showTimeline }}
-      {{- $timelineClass = $timelineBaseClass }}
-      {{- if $singleOrg }}
-        {{- $timelineOrgClass = "timeline_org_single" }}
-      {{- else if (eq $orgIdx 0) }}
-        {{- $timelineOrgClass = "timeline_org_first" }}
-      {{- else if (eq $orgIdx (sub $numOrgs 1 ) ) }}
-        {{- $timelineOrgClass = "timeline_org_last" }}
-      {{- else }}
-        {{- $timelineOrgClass = printf "timeline_org_within timeline_org_%d_of_%d" $orgIdx $numOrgs }}
-      {{- end }}
+    {{- if $singleOrg }}
+      {{- $timelineOrgClass = "org_single" }}
+    {{- else if (eq $orgIdx 0) }}
+      {{- $timelineOrgClass = "org_first" }}
+    {{- else if (eq $orgIdx (sub $numOrgs 1 ) ) }}
+      {{- $timelineOrgClass = "org_last" }}
+    {{- else }}
+      {{- $timelineOrgClass = printf "org_within timeline_org_%d_of_%d" $orgIdx $numOrgs }}
     {{- end }}
 
     {{- $inlinePartialParams := (dict "Style" $style "Component" $component "HeadingLevel" $headingLevel) }}
 
-    {{- $topLevelClass := strings.TrimLeft " " (delimit (slice $timelineClass $timelineOrgClass $styleClass $componentClass $childClass) " ") }}
+    {{- $topLevelClass := strings.TrimLeft " " (delimit (slice $orgClass $timelineOrgClass $styleClass $componentClass $childClass) " ") }}
 
     {{- $logoImageResource := false }}
-    {{- if default "left" $style.logo }}
+    {{- if eq "left" $style.logo }}
       <!-- Use urlize to sanitize organization name -->
       {{- $imgAssetID := printf "%s/%s*" $logoImageRoot (anchorize $org.organization) -}}
       {{- with partial "claris/_functions/resources/images/image-resource" (dict "Page" $page "resource" $imgAssetID) }}
@@ -230,24 +268,22 @@
 
       {{- $singleRole := eq (len $roleList) 1}}
 
-      {{- $timelineRoleClass := "" }}
-      {{- if $showTimeline }}
-        {{- if $singleRole }}
-          {{- $timelineRoleClass = "timeline_role_single" }}
-        {{- else if (eq $roleIdx 0) }}
-          {{- $timelineRoleClass = "timeline_role_first" }}
-        {{- else if (eq $roleIdx (sub (len $roleList) 1 ) ) }}
-          {{- $timelineRoleClass = "timeline_role_last" }}
-        {{- else }}
-          {{- $timelineRoleClass = "timeline_role_within" }}
-        {{- end }}
+      {{- $roleClass := "" }}
+      {{- if $singleRole }}
+        {{- $roleClass = "role_single" }}
+      {{- else if (eq $roleIdx 0) }}
+        {{- $roleClass = "role_first" }}
+      {{- else if (eq $roleIdx (sub (len $roleList) 1 ) ) }}
+        {{- $roleClass = "role_last" }}
+      {{- else }}
+        {{- $roleClass = "role_within" }}
       {{- end }}
 
-      {{- $topLevelClass = strings.TrimLeft " " (delimit (slice $timelineClass $timelineRoleClass $timelineOrgClass $styleClass $componentClass $childClass) " ") }}
+      {{- $topLevelClass = strings.TrimLeft " " (delimit (slice $roleClass $roleClass $timelineOrgClass $styleClass $componentClass $childClass) " ") }}
 
       {{- if $stagePeriodInHeader }}
       <div class="{{ delimit (append $topLevelClass $roleHeaderClassList) ` ` }}">
-        {{- if and $showTimeline (in (slice "dot-dash" "column") $style.timeline) }}
+        {{- if in (slice "dot-dash" "column") $style.timeline }}
           <div class="{{ printf `timeline_%s_marker stage_timeline` $style.timeline }}"></div>
         {{- end }}
       {{- end }}
@@ -298,7 +334,7 @@
       </div>
 
       {{- if and (not $timelineForSingleRole) (ge $roleIdx (sub $numRoles 1) ) }}
-        {{- $topLevelClass = strings.TrimLeft " " (delimit (slice $timelineClass $styleClass $componentClass $childClass) " ") }}
+        {{- $topLevelClass = strings.TrimLeft " " (delimit (slice $roleClass $styleClass $componentClass $childClass) " ") }}
       {{- end }}
 
       {{- if not $roleMetaInHeader }}
@@ -312,9 +348,9 @@
         ) ) -}}
       {{- end }}
 
-      {{- $containerClass := "" }}
-      {{- if and $showTimeline (in (slice "column" "shallow") $style.timeline) }}
-        {{- $containerClass = "stage_content" }}
+      {{- $containerClass := "stage_content" }}
+      {{- if in (slice "dot-dash") $style.timeline }}
+        {{- $containerClass = "" }}
       {{- end }}
 
       {{- if default true $component.role.summary }}
@@ -542,6 +578,12 @@
     "details" (and $stage.details (default true (default $component.details $componentStageType.details)) )
   ) -}}
 
+  {{- warnf "%s[%s]: metaConfig.unit=%v[%T] component.unit=%v[%T] componentStageType=%v[%T]"
+      page $template
+      $metaConfig.unit $metaConfig.unit
+      $component.unit $component.unit
+      $componentStageType.unit $componentStageType.unit }}
+
   {{- $childContainer := "span" }}
   {{- if $topLevelClass }}
     {{- $childContainer = "p" }}
@@ -583,6 +625,10 @@
               {{- with $stage.unit }}
                 {{- if reflect.IsSlice . }}
                   {{- $unitLimit := cond (eq (printf "%T" $metaConfig.unit) "int") (int $metaConfig.unit) 99 }}
+                  {{- if (gt $unitLimit (len .)) }}
+                    {{- warnf "%s[%s]: metaConfig.unit=%v[%T]: only showing %d of %d organizational units"
+                        page $template $metaConfig.unit $metaConfig.unit $unitLimit (len .) }}
+                  {{- end }}
                   {{- range $unit := first $unitLimit . }}
                     {{- if reflect.IsMap . }}
                       {{- range $unitType, $unitName := . }}
