@@ -99,7 +99,7 @@ const transferOverflow = function (conf) {
   });
 
   if (overflowingContainers.length > 0) {
-    console.log('Pagination containers still have overflow: ', overflowingContainers);
+    // console.log('Pagination containers still have overflow: ', overflowingContainers);
   }
   else {
     // If we get here, none of the paginationContainers has overflow
@@ -109,7 +109,7 @@ const transferOverflow = function (conf) {
     // pushClass(conf['previewTargetElement'], conf['previewTargetElementDoneClass']);
     setPreviewStatus(conf, conf['previewStatusDone']);
     setPreviewVisibility(conf, true);
-    console.log('None of the pagination containers have overflow');
+    // console.log('None of the pagination containers have overflow');
   }
 };
 
