@@ -315,7 +315,7 @@ $screen-pad-v: 1rem;
       position: relative;
       padding: 0;
       overflow: visible;
-      h2, h3, div {
+      & > h2, & > h3, & > div {
         &:first-child {
           margin-top: 0;
           padding-top: 0;
