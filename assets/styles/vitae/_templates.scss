@@ -24,6 +24,10 @@
     --aside_column: calc(var(--main_column) + var(--main_column_width));
     --aside_column_width: calc(var(--num_columns) - var(--main_column_width));
 
+    .slot_header {
+      margin-bottom: var(--inner_margin_4-6);
+    }
+
     .slot_main {
       display: grid;
       // gap: var(--inner_margin_4-1) var(--inner_margin_4-2);
@@ -131,8 +135,15 @@
           // grid-row: 4;
           // grid-area: span 1 / span var(--aside_column_width);
         }
+        &_interests {
+          // grid-column: var(--aside_column) / span var(--aside_column_width);
+          grid-column: var(--main_column) / span var(--main_column_width);
+          // grid-column: 1 / span var(--num_columns);
+          // grid-row: 5;
+        }
         &_connect {
           grid-column: var(--aside_column) / span var(--aside_column_width);
+          // grid-column: 1 / span var(--num_columns);
           // grid-row: 5;
         }
       }

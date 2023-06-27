@@ -237,17 +237,29 @@ vitae:
               collection: skills
               filter_by: type
               filter_value: language
-              details: false
+              details: true
               level_bar: true
         # - slot: footer
         #   sections:
-        #   - section: connect
-        #     title: section-connect
-        #     container: section
-        #     components:
-        #     - component: links
-        #       screen: true
-        #       print: true
+          - section: interests
+            title: section-interests
+            container: section
+            components:
+            - component: panels
+              collection: interests
+          - section: connect
+            title: section-connect
+            container: section
+            components:
+            - component: links
+              screen: true
+              print: true
+              style:
+                # layout: shallow
+                layout: narrow
+                icon: true
+                text: true
+                qrcode: true
 
     # Footer to be repeated on every printed page
     footer:

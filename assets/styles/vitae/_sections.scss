@@ -668,15 +668,15 @@ $inline-list-sep-width: math.div($inline-list-item-separation, 3.0);
 /* ----- Layout EXECUTIVE ------ */
 .vitae.layout-executive .view-print .template {
   // Part FRONT PAGE
-  &_front-page {
-    .slot {
-      &_main {
-        .section ~ .section {
-          border-top: calc(var(--line-width_separator_heading)) solid var(--border-color-faint);
-        }
-      }
-    }
-  }
+  // &_front-page {
+  //   .slot {
+  //     &_main {
+  //       .section ~ .section {
+  //         border-top: calc(var(--line-width_separator_heading)) solid var(--border-color-faint);
+  //       }
+  //     }
+  //   }
+  // }
 
   // Part CAREER TIMELINE
   &_career-timeline {

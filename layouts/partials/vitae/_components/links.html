@@ -1,5 +1,6 @@
-{{- $page := .Page }}
 {{- $template := "vitae/_components/links" }}
+
+{{- $componentArgs := . }}
 
 {{- $mediaType := default "screen" .MediaType }}
 {{- $headingLevel := default 3 .HeadingLevel }}
@@ -8,10 +9,28 @@
 
 {{- $component := .Component }}
 
-{{- $linkIcons := true }}
-{{- $qrCodes := true }}
+{{- $style := default dict .Style }}
+{{- $validStyles := (dict
+  "layout" (dict
+    "shallow" "shallow"
+    "narrow" "narrow"
+  )
+  "logo" (dict
+    "false" false
+    "true" true
+  )
+) -}}
 
-{{- $topLevelClass := delimit (slice $componentClass $childClass) " " }}
+{{- $styleClass := partial "vitae/_functions/style-class" (dict
+  "Style" $style
+  "ValidStyles" $validStyles
+  ) -}}
+
+{{- $linkIcon := $style.icon }}
+{{- $linkText := $style.text }}
+{{- $qrCodes := $style.qrcode }}
+
+{{- $topLevelClass := delimit (slice $styleClass $componentClass $childClass) " " }}
 
 {{- $classPrefix := printf "link" }}
 
@@ -20,13 +39,31 @@
   {{ with .Data.features.links }}
     {{- $last := sub (len .) 1 -}}
     {{- range $i, $e := . -}}
-      <div class="{{ $classPrefix }}_item{{- if $qrCodes }} {{ $classPrefix }}_item_with-qrcode{{- end }}{{- with $childClass }} {{ . }}{{- end }}">
-        <a href="{{ $e.url }}" title="Connect via {{ $e.title }}" class="{{ $classPrefix }}_item_icon qrcode-link">
-          {{- if $linkIcons }}{{ partial "fa-icon" $e.icon }}{{ end -}}
-            <span class="{{ $classPrefix }}_{{- $e.title -}}">{{- $e.title -}}</span>
-        </a>
-        {{- if $qrCodes }}
-          <a href="{{ $e.url }}" title="QR code to connect via {{ $e.title }}" class="{{ $classPrefix }}_item_qrcode qrcode-link">
+      {{- $qrCode := and $qrCodes (default true $e.qrcode) }}
+      <div class="{{ $classPrefix }}_item{{- if $qrCode }} {{ $classPrefix }}_item_with-qrcode{{- end }}{{- with $childClass }} {{ . }}{{- end }}">
+        {{- if $linkIcon }}
+          <a href="{{ $e.url }}" title="Connect via {{ $e.title }}" class="{{ $classPrefix }}_icon">
+            {{- partial "fa-icon" $e.icon }}
+          </a>
+        {{- end }}
+        {{- if $linkText }}
+          <div class="{{ $classPrefix }}_text">
+        {{- end }}
+          <a href="{{ $e.url }}" title="Connect via {{ $e.title }}" class="{{ $classPrefix }}_icon">
+            <span class="{{ $classPrefix }}_{{- $e.title | anchorize -}}">
+              {{- $e.title -}}
+            </span>
+          </a>
+        {{- if $linkText }}
+          <a href="{{ $e.url }}" title="Connect via {{ $e.title }}" class="{{ $classPrefix }}_text">
+            <span class="{{ $classPrefix }}_{{- $e.title | anchorize -}}">
+              {{ $e.url | strings.TrimLeft "https://" | strings.TrimLeft "www." }}
+            </span>
+          </a>
+        </div>
+        {{- end }}
+        {{- if $qrCode }}
+          <a href="{{ $e.url }}" title="QR code to connect via {{ $e.title }}" class="{{ $classPrefix }}_qrcode qrcode-link">
             {{ partial "qrcode-svg" (dict "Content" $e.url) }}
           </a>
         {{- end -}}

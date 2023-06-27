@@ -1,0 +1,39 @@
+{{- $styleClass := "" }}
+{{- $template := "vitae/_functions/style-class" }}
+
+{{- $styleClassPrefix := "style" }}
+
+{{- $validStyles := .ValidStyles }}
+
+{{- $style := dict }}
+{{- with .Style }}
+  {{- if reflect.IsMap . }}
+    {{- $style = . }}
+  {{- end }}
+{{- end }}
+{{- range $key, $value := $style }}
+  {{- with $validValues := index $validStyles $key }}
+    {{- with index $validValues (string $value) }}
+      {{- if reflect.IsSlice . }}
+        {{- range . }}
+          {{- $styleClass = trim (printf "%s %s_%s_%v" $styleClass $styleClassPrefix $key .) " " }}
+        {{- end }}
+      {{- else }}
+        {{- $styleClass = trim (printf "%s %s_%s_%v" $styleClass $styleClassPrefix $key .) " " }}
+      {{- end }}
+    {{- else }}
+      {{- $validValuesList := slice }}
+      {{- range $validKey, $validValue := $validValues }}
+        {{- if and ($validValue) (not (in $validValuesList $validValue) ) }}
+          {{- $validValuesList = slice $validValue | append $validValuesList }}
+        {{- end }}
+      {{- end }}
+      {{- warnf `%s[%s]: Valid style key='%v' has invalid value='%v'. Valid values: '%v'`
+          page $template $key $value
+          (delimit (sort $validValuesList) "', '") }}
+    {{- end }}
+  {{- else }}
+    {{- warnf `%s[%s]: Invalid style key='%v' with value='%v'` page $template $key $value }}
+  {{- end }}
+{{- end }}
+{{- return $styleClass }}

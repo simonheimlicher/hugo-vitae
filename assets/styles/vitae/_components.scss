@@ -1520,26 +1520,35 @@ html[data-mode="dim"] {
         // @include font-size-scale(0, -1);
         .link {
           &_item {
-            width: 100%;
+            width: max-content;
             display: flex;
             flex-direction: row;
             align-items: center;
-            justify-content: space-between;
             max-width: unset;
-            &_icon {
-              .icon {
-                margin-right: var(--inner_margin_4-4);
-                width: 12pt;
-              }
+            justify-content: flex-start;;
+          }
+          &_icon {
+            .icon {
+              margin-right: var(--inner_margin_4-1);
+              width: 12pt;
             }
-            &_qrcode {
-              .qrcode-svg {
+          }
+          &_text {
+            display: flex;
+            flex-direction: column;
+          }
+          &_qrcode {
+            .qrcode-svg {
+              width: 100%;
+              display: flex;
+              justify-content: flex-end;
+              svg {
                 width: 30pt;
                 height: auto;
-                background: var(--bg);
                 min-width: unset;
                 max-width: unset;
               }
+              background: var(--bg);
             }
           }
           &_title {

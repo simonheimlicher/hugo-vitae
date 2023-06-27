@@ -58,6 +58,8 @@ section-personal-profile:
   other: profile
 section-key-achievements:
   other: achievements
+section-interests:
+  other: personal interests
 stage_function_label:
   other: function
 stage_unit_label_division:

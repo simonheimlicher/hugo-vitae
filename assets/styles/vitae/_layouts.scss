@@ -147,6 +147,9 @@ $screen-pad-v: 1rem;
         min-width: min-content;
         padding: var(--screen-page-sep);
         gap: var(--screen-page-sep);
+        & + .pagination-section {
+          padding-top: 0;
+        }
       }
       .pagination-page {
         position: relative;
@@ -312,6 +315,12 @@ $screen-pad-v: 1rem;
       position: relative;
       padding: 0;
       overflow: visible;
+      h2, h3, div {
+        &:first-child {
+          margin-top: 0;
+          padding-top: 0;
+        }
+      }
     }
     .print-preview_overflow {
       .pagination-container[data-pagination-policy="break"] {
@@ -432,13 +441,17 @@ $screen-pad-v: 1rem;
 // Adapt layout after pagination
 .vitae[data-print-preview-status="done"] {
   &.layout-executive .view-print .pagination-page {
-    .pagination-container[data-pagination-policy="break"] {
-      display: flex;
-      flex-direction: column;
-      flex-wrap: nowrap;
-      justify-content: space-between;
+    // .pagination-container[data-pagination-policy="break"] {
+    .pagination-container {
+      // display: flex;
+      // flex-direction: column;
+      // flex-wrap: nowrap;
+      // justify-content: space-between;
       &.slot_main {
         height: 100%;
+        & > * {
+          flex: 0 1 auto;
+        }
       }
       // & > * {
       //   flex: 0 1 auto;
@@ -553,6 +566,7 @@ $screen-pad-v: 1rem;
   }
 }
 
+// Adapt layout after pagination
 .vitae,
 .vitae[data-print-preview-status="done"] {
   &.layout-letter {
@@ -662,12 +676,13 @@ $screen-pad-v: 1rem;
             padding: 0;
             @include flush-top-heading;
           }
-// Adapt layout after pagination
         }
       }
     }
   }
 }
+
+// Adapt layout after pagination
 .vitae[data-print-preview-status="done"] {
   &.layout-letter {
     .view-print {
