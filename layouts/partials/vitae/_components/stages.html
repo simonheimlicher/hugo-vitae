@@ -34,6 +34,7 @@
 ) -}}
 
 {{- $styleClass := partial "vitae/_functions/style-class" (dict
+  "Template" $template
   "Style" $style
   "ValidStyles" $validStyles
   ) -}}
@@ -542,6 +543,8 @@
   {{- $componentStageType := index .Component $stageType }}
   {{- $topLevelClass := .TopLevelClass }}
   {{- $template := .Template }}
+  {{- $debug := false }}
+
 
   {{- $metaConfig := (dict
     "function" (and $stage.function (default true (default $component.function $componentStageType.function)) )
@@ -550,11 +553,13 @@
     "details" (and $stage.details (default true (default $component.details $componentStageType.details)) )
   ) -}}
 
-  {{- warnf "%s[%s]: metaConfig.unit=%v[%T] component.unit=%v[%T] componentStageType=%v[%T]"
-      page $template
-      $metaConfig.unit $metaConfig.unit
-      $component.unit $component.unit
-      $componentStageType.unit $componentStageType.unit }}
+  {{- if $debug }}
+    {{- warnf "%s[%s]: metaConfig.unit=%v[%T] component.unit=%v[%T] componentStageType=%v[%T]"
+        page $template
+        $metaConfig.unit $metaConfig.unit
+        $component.unit $component.unit
+        $componentStageType.unit $componentStageType.unit }}
+  {{- end }}
 
   {{- $childContainer := "span" }}
   {{- if $topLevelClass }}
@@ -597,9 +602,11 @@
               {{- with $stage.unit }}
                 {{- if reflect.IsSlice . }}
                   {{- $unitLimit := cond (eq (printf "%T" $metaConfig.unit) "int") (int $metaConfig.unit) 99 }}
-                  {{- if (gt $unitLimit (len .)) }}
-                    {{- warnf "%s[%s]: metaConfig.unit=%v[%T]: only showing %d of %d organizational units"
-                        page $template $metaConfig.unit $metaConfig.unit $unitLimit (len .) }}
+                  {{- if $debug }}
+                    {{- if (gt $unitLimit (len .)) }}
+                      {{- warnf "%s[%s]: metaConfig.unit=%v[%T]: only showing %d of %d organizational units"
+                          page $template $metaConfig.unit $metaConfig.unit $unitLimit (len .) }}
+                    {{- end }}
                   {{- end }}
                   {{- range $unit := first $unitLimit . }}
                     {{- if reflect.IsMap . }}

@@ -1,16 +1,12 @@
 {{- $styleClass := "" }}
 {{- $template := "vitae/_functions/style-class" }}
 
-{{- $styleClassPrefix := "style" }}
-
+{{- $callingTemplate := .Template }}
+{{- $style := .Style }}
 {{- $validStyles := .ValidStyles }}
 
-{{- $style := dict }}
-{{- with .Style }}
-  {{- if reflect.IsMap . }}
-    {{- $style = . }}
-  {{- end }}
-{{- end }}
+{{- $styleClassPrefix := "style" }}
+
 {{- range $key, $value := $style }}
   {{- with $validValues := index $validStyles $key }}
     {{- with index $validValues (string $value) }}
@@ -28,12 +24,12 @@
           {{- $validValuesList = slice $validValue | append $validValuesList }}
         {{- end }}
       {{- end }}
-      {{- warnf `%s[%s]: Valid style key='%v' has invalid value='%v'. Valid values: '%v'`
-          page $template $key $value
+      {{- warnf `%s[%s --> %s]: Valid style key='%v' has invalid value='%v'. Valid values: '%v'`
+          page $callingTemplate $template $key $value
           (delimit (sort $validValuesList) "', '") }}
     {{- end }}
   {{- else }}
-    {{- warnf `%s[%s]: Invalid style key='%v' with value='%v'` page $template $key $value }}
+    {{- warnf `%s[%s --> %s]: Invalid style key='%v' with value='%v'` page $callingTemplate $template $key $value }}
   {{- end }}
 {{- end }}
 {{- return $styleClass }}

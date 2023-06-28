@@ -15,16 +15,25 @@
     "shallow" "shallow"
     "narrow" "narrow"
   )
-  "logo" (dict
+  "icon" (dict
+    "false" false
+    "true" true
+  )
+  "text" (dict
+    "false" false
+    "true" true
+  )
+  "qrcode" (dict
     "false" false
     "true" true
   )
 ) -}}
 
 {{- $styleClass := partial "vitae/_functions/style-class" (dict
+  "Template" $template
   "Style" $style
   "ValidStyles" $validStyles
-  ) -}}
+) -}}
 
 {{- $linkIcon := $style.icon }}
 {{- $linkText := $style.text }}
