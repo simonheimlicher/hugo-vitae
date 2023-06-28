@@ -1,20 +1,15 @@
 {{- $page := . }}
 {{- $pp := dict }}
-{{- $template := "partials/vitae/main" }}
 {{- if reflect.IsMap . }}
-{{- $page = .Page }}
-{{- $pp = . }}
+  {{- $page = .Page }}
+  {{- $pp = . }}
 {{- end }}
-{{- /* Restore context as if "." had been passed */ -}}
-{{- with $page }}
-{{- $page = . }}
-{{- $s := site.Params }}
-{{- $p := .Params }}
+{{- $template := "vitae/main/index" }}
 
 {{/* {{ partial "html-comment" (printf "[%s]: PartialParams:%v" $template $pp) }} */}}
 
-{{- $type := default (default "vitae" .Type) ($page.Param "Type") }}
-{{- $layout := default (default "profile" .Layout) ($page.Param "Layout") }}
+{{- $type := default (default "vitae" $page.Type) ($page.Param "Type") }}
+{{- $layout := default (default "profile" $page.Layout) ($page.Param "Layout") }}
 {{- $media := default "screen" ($page.Param "Media") }}
 {{- $printPreview := default false ($page.Param "PrintPreview") }}
 {{- $printView := default false ($page.Param "PrintView") }}
@@ -28,12 +23,12 @@
 
 {{- $vitaeData := dict }}
 {{- $dataRoot := "data" }}
-{{- $vitaeDataRoot := default "vitae" $p.VitaeDataRoot }}
-{{- $bundleDataPath := (path.Join $dataRoot $vitaeDataRoot (printf "%s.*" site.Language.Lang) ) }}
+{{- $vitaeDataRoot := default "vitae" ($page.Param "VitaeDataRoot") }}
+{{- $bundleDataPath := (path.Join $dataRoot $vitaeDataRoot (printf "vitae.%s.*" site.Language.Lang) ) }}
 
 {{ partial "html-comment" (printf "[%s]: Looking for data in page bundle %s at %v"
     $template $page $bundleDataPath) -}}
-{{- $vitaeDataResource := partial "claris/_functions/resources" (dict "Page" $page "resource" $bundleDataPath) }}
+{{- $vitaeDataResource := partial "vitae/_functions/resources" (dict "Page" $page "resource" $bundleDataPath) }}
 
 {{- with $vitaeDataResource }}
   {{/* {{ warnf "%s[%s]: Found resource matching %s in page bundle or in parent page bundle"
@@ -85,7 +80,7 @@
 {{- $paginationPolicyAttr := "data-pagination-policy" }}
 
 {{- $pp = merge (dict
-    "Page" .
+    "Page" $page
     "Media" $media
     "Type" $type
     "Layout" $layout
@@ -118,4 +113,4 @@
 </div>
 {{- end }}
 {{ partial "html-comment" (printf "END   '%s'" $template) }}
-{{- end }}
+
