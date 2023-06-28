@@ -37,7 +37,11 @@
               {{- $placeholderID = delimit $fieldContentParts "-" }}
             {{- end }}
           {{- else }}
-            {{- $fieldData = default $fieldContent (T $fieldContent) }}
+            {{- $fieldData = $fieldContent }}
+            {{/* Only translate $fieldContent if it contains letters */}}
+            {{- with and (findRE `[a-z]|[A-Z]` $fieldContent ) (T $fieldContent) }}
+              {{- $fieldContent = . }}
+            {{- end }}
           {{- end }}
           <span{{ with $placeholderID }} data-page-placeholder="{{ . }}"{{ end }} class="{{ $classPrefix }}_text field_{{ $fieldName }}">
             {{- with $fieldData }}
