@@ -346,12 +346,18 @@ const renderPrintPreview = function (conf, reset = false) {
 
 // This function must only be called once
 const init = function (reset) {
+  const previewTargetElement = document.querySelector('#printPreviewTarget');
+  // If there is no previewTargetElement, this means that this page does
+  // not render a print view
+  if (!previewTargetElement) {
+    return;
+  }
   let conf = {
     outermostContainer: document.querySelector('#vitaeContainer'),
     originalContainer: document.querySelector("#contentContainer"),
     previewContainer: document.querySelector('#printPreviewContainer'),
 
-    previewTargetElement: document.querySelector('#printPreviewTarget'),
+    previewTargetElement: previewTargetElement,
 
     printControl: document.querySelector('#printPreviewNav'),
     previewButton: document.querySelector('#printPreviewToggle'),
