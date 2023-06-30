@@ -28,14 +28,10 @@
 
 {{ partial "html-comment" (printf "[%s]: Looking for data in page bundle %s at %v"
     $template $page $bundleDataPath) -}}
-{{- $vitaeDataResource := partial "vitae/_functions/resources" (dict "Page" $page "resource" $bundleDataPath) }}
+{{/* {{- $vitaeDataResource := partial "vitae/_functions/resources" (dict "Page" $page "resource" $bundleDataPath) }} */}}
+{{- $vitaeData = partial "vitae/_functions/resources-merged" (dict "Page" $page "resource" $bundleDataPath) }}
 
-{{- with $vitaeDataResource }}
-  {{/* {{ warnf "%s[%s]: Found resource matching %s in page bundle or in parent page bundle"
-      $page $template $bundleDataPath }} */}}
-  {{ $vitaeData = . | transform.Unmarshal }}
-  {{/* {{ warnf "%s[%s]: vitaeData.features.about: %s"  $page $template ($vitaeData.features.about | jsonify (dict "indent" "  ")) }} */}}
-{{- else }}
+{{- if not $vitaeData }}
   {{/* {{ warnf "%s[%s]: No resource matching %s found in page bundle or in parent page bundle"  $page $template $bundleDataPath }} */}}
   {{- $vitaeData = index site.Data $vitaeDataRoot }}
   {{- if $vitaeData }}
