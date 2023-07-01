@@ -224,7 +224,7 @@ vitae:
             container: section
             components:
             - component: awards
-              details: false
+              details: true
               screen: true
               print: true
               style:

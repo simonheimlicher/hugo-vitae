@@ -27,6 +27,8 @@
 
 {{- $optInline := dict "display" "inline" }}
 
+{{- $detailSeparatorStr := " · " }}
+
 {{- $awardCollection := (index .Data $collection) }}
 {{- with $awardCollection }}
   {{- $awardList := $awardCollection }}
@@ -45,30 +47,36 @@
         {{- with $logoImage }}
           {{- partial "responsive-image" (merge $logoImageParams (dict "resource" .resource)) }}
         {{- end }}
-        <h3 class="{{- $classPrefix }}_title">{{- .title }}</h3>
+        <h3 class="{{- $classPrefix }}_title">{{- page.RenderString $optInline .title }}</h3>
       </div>
       {{- with .organization }}
       <div class="{{- $classPrefix }}_organization">
-        <span class="{{- $classPrefix }}_organization_name">{{- .name }}</span>
+        <span class="{{- $classPrefix }}_organization_name">{{ page.RenderString $optInline .name }}</span>
         {{- with .description }}
-        <span class="{{- $classPrefix }}_organization_description">({{- . }})</span>
+        <span class="{{- $classPrefix }}_organization_description">({{ page.RenderString $optInline . }})</span>
         {{- end }}
       </div>
       {{- end }}
       {{- if $component.details }}
-        {{- $detailFields := slice "colleagues" "details" }}
+        {{- $detailFields := slice "subtitle" "colleagues" "details" }}
         <div class="{{- $classPrefix }}_details">
+          {{- $i := 0 }}
           {{- range $k := $detailFields }}
-          <span class="{{ $classPrefix }}_{{ $k }}">
-            {{- $v := (index $award $k) }}
-            {{- if reflect.IsSlice $v }}
-              {{- range $vv := $v }}
-                {{- $page.RenderString $optInline $vv -}}
+            {{- with $v := (index $award $k) }}
+              {{- with and (gt $i 0) $detailSeparatorStr }}
+                {{ page.RenderString . | safeHTML }}
               {{- end }}
-            {{- else }}
-              {{- $page.RenderString $optInline $v -}}
+              <span class="{{ $classPrefix }}_{{ $k }}">
+                {{- if reflect.IsSlice $v }}
+                  {{- range $vv := $v }}
+                    {{- $page.RenderString $optInline $vv -}}
+                  {{- end }}
+                {{- else }}
+                  {{- $page.RenderString $optInline $v -}}
+                {{- end }}
+              </span>
+              {{- $i = add $i 1 }}
             {{- end }}
-          </span>
           {{- end }}
         </div>
       {{- end }}
