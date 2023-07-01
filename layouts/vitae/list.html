@@ -6,9 +6,8 @@
   {{/* {{- warnf $templateMeta -}} */}}
   {{ partial "html-comment" $templateMeta }}
 
-  {{- $mainClass := "main vitae" }}
   {{- $partial := "vitae/main/index" }}
-    {{ partial "html-comment" (printf "Calling partial '%s'" $partial) }}
-    {{- partial $partial . }}
+  {{ partial "html-comment" (printf "Calling partial '%s'" $partial) }}
+  {{- partial $partial . }}
   {{ partial "html-comment" (printf "END   define main '%s'" $template) }}
 {{- end }}

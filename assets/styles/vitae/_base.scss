@@ -115,11 +115,6 @@ $font-size-scale-factor: math.pow(2.0, math.div(1, 5) );
 }
 
 .vitae {
-  .layout-letter {
-    .view-print {
-      --print-font-scale-factor: 1.1;
-    }
-  }
   h1,
   h2,
   h3,

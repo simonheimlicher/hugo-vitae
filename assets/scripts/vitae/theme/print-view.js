@@ -352,6 +352,7 @@ const init = function (reset) {
   if (!previewTargetElement) {
     return;
   }
+
   let conf = {
     outermostContainer: document.querySelector('#vitaeContainer'),
     originalContainer: document.querySelector("#contentContainer"),
@@ -432,6 +433,7 @@ const init = function (reset) {
   if (conf['printButton']) {
     conf['printButton'].addEventListener('click', _e => window.print());
   }
+
   // console.log("pagination_preview.js: Found required DOM elements:"
   //     + " conf['outermostContainer'] = " + (typeof conf['outermostContainer'] === "undefined" ? undefined : conf['outermostContainer'])
   //     + " conf['originalContainer'] = " + (typeof conf['originalContainer'] === "undefined" ? undefined : conf['originalContainer'])

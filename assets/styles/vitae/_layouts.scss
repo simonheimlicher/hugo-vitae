@@ -39,40 +39,6 @@ $screen-pad-h: 1rem;
 $screen-pad-v: 1rem;
 
 .vitae {
-  @media screen {
-    --page_scale-factor: 1.0;
-  }
-
-  --font-size-dimension: 1pt;
-  --root-font-size-number: 12;
-  // Target 9pt size of body font on paper
-  --body-font-size-number: 9;
-  // 1:1 scaling
-  --print-font-scale-factor: 1.0;
-
-  --page_width: #{$page-width};
-  --page_height: #{$page-height};
-  --page_scale-factor: 1;
-
-  // font-size: var(--print-font-size)
-  // font-size: var(--root-font-size)
-  // font-size: calc(var(--font-size-dimension) * var(--root-font-size-number))
-  // font-size: calc(100% / var(--root-scale-factor))
-
-  --page_margin_base_h: #{$page-mar-h};
-  --page_margin_base_v: #{$page-mar-v};
-  --page_margin_ratio-top-bottom: #{$page-mar-ratio-top-bottom};
-
-  --column-padding-h: #{$column-pad-h};
-  --column-padding-v: #{$column-pad-v};
-
-  --gap-h: #{$column-pad-h};
-  --gap-v: #{$column-pad-v};
-
-  --column-padding-screen-h: #{$screen-pad-h};
-  --column-padding-screen-v: #{$screen-pad-v};
-}
-.vitae {
   --page_scale-factor: 1.0;
 
   --page_width: calc(#{$page-width} * var(--page_scale-factor));
@@ -107,15 +73,13 @@ $screen-pad-v: 1rem;
       }
     }
   }
-  .view-print {
-    --font-size-normal: calc(var(--print-font-scale-factor) * var(--font-size-dimension) * var(--body-font-size-number) * var(--page_scale-factor));
-  }
 }
 @media screen {
   .main.vitae {
     .view-print {
       background: var(--neutral-theme-haze);
       padding-bottom: 0;
+      --page_scale-factor: 1.25;
     }
   }
   .vitae {

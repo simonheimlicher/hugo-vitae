@@ -158,6 +158,106 @@
         }
       }
     }
+    // Various range sliders: https://freefrontend.com/css-range-sliders/
+    // Source: https://codepen.io/bgebelein/pen/wvYeapy
+    .print-preview_scale {
+      &_wrapper {
+        position: relative;
+        // height: 20rem;
+        // width: 3rem;
+        width: 25em;
+        height: 1.25em;
+        display: flex;
+        justify-content: center;
+
+        &::before,
+        &::after {
+          display: block;
+          position: absolute;
+          z-index: 99;
+          // color: #fff;
+          color: var(--text-color-faint);
+          background-color: var(--bg);
+          border: 0.05em solid var(--xxhaze);
+          // width: 100%;
+          width: auto;
+          height: auto;
+          text-align: center;
+          font-size: 0.7em;
+          line-height: 1;
+          padding: 0.3em;
+          pointer-events: none;
+        }
+
+        &::before {
+          content: "50%";
+          left: 0;
+        }
+
+        &::after {
+          content: "200%";
+          right: 0;
+        }
+      }
+      &_value {
+        display: block;
+        position: absolute;
+        left: 0;
+        top: 0;
+        z-index: 99;
+        padding: 0.3em;
+        background-color: var(--bg);
+        border: 0.05em solid var(--xxhaze);
+        text-align: center;
+        font-size: 0.7em;
+        line-height: 1;
+        width: 4em;
+      }
+    }
+
+    input[type="range"] {
+      --RGB_slider_bg: var(--RGB_theme);
+      --slider_text: var(--text);
+      -webkit-appearance: none;
+      appearance: none;
+      // background-color: rgba(#fff, .2);
+      background-color: var(--RGB_slider_bg);
+      position: absolute;
+      // top: 50%;
+      // left: 50%;
+      top: 0;
+      left: 5em;
+      margin: 0;
+      padding: 0;
+      width: 20em;
+      // height: 3.5rem;
+      height: 1.5rem;
+      // transform: translate(-50%, -50%) rotate(-90deg);
+      // border-radius: 1rem;
+      overflow: hidden;
+      // cursor: row-resize;
+      cursor: col-resize;
+
+      &[step]{
+        background-color: transparent;
+        // background-image: repeating-linear-gradient(to right, rgba(#fff, .2), rgba(#fff, .2) calc(12.5% - 1px), #05051a 12.5%);
+        background-image: repeating-linear-gradient(to right, rgba(var(--RGB_slider_bg), .2), rgba(var(--RGB_slider_bg), .2) calc(12.5% - 2px), var(--slider_text) 12.5%);
+      }
+
+      &::-webkit-slider-thumb {
+        -webkit-appearance: none;
+        width: 0;
+        // box-shadow: -20rem 0 0 20rem rgba(#fff, 0.2);
+        box-shadow: -20rem 0 0 20rem rgba(var(--RGB_slider_bg), 0.2);
+      }
+
+      &::-moz-range-thumb {
+        border: none;
+        width: 0;
+        // box-shadow: -20rem 0 0 20rem rgba(#fff, 0.2);
+        box-shadow: -20rem 0 0 20rem rgba(var(--RGB_slider_bg), 0.2);
+      }
+    }
   }
 }
 svg.qrcode-svg {
@@ -637,7 +737,7 @@ html[data-mode="dim"] {
       }
     }
     &.stage_meta, &.stage_header .stage_meta {
-      // background: red;
+      // background: var(--RGB_slider_bg);
       font-size: calc(var(--font-size_stage_header_meta));
       .stage_details {
         font-size: var(--font-size-normal);
@@ -904,7 +1004,7 @@ html[data-mode="dim"] {
 
       &:not(.style_logo_left) {
         &.organization_header {
-          // --tl-col_timeline_color: red;
+          // --tl-col_timeline_color: var(--RGB_slider_bg);
           @include timeline_column_header(
             null,
             null,
@@ -985,7 +1085,7 @@ html[data-mode="dim"] {
         &.style_logo_left {
           &.stage_header_period {
             position: relative;
-            // --tl-col_timeline_color: red;
+            // --tl-col_timeline_color: var(--RGB_slider_bg);
             @include timeline_column_header_logo(
               0px,
               null,
@@ -1135,7 +1235,7 @@ html[data-mode="dim"] {
         }
       }
       &.stage_meta, &.stage_header .stage_meta {
-        // background: red;
+        // background: var(--RGB_slider_bg);
         font-size: calc(var(--font-size_stage_header_meta));
         .stage_details {
           font-size: var(--font-size-normal);
