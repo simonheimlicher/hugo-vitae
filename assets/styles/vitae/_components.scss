@@ -312,9 +312,7 @@ html[data-mode="dim"] {
   }
 };
 
-
 .vitae .component {
-
   /* ----- Component HEADER ------ */
   &_header {
     font-size: var(--font-size-normal);
@@ -343,7 +341,6 @@ html[data-mode="dim"] {
     .portrait {
       &_figure {
         z-index: 1;
-        @include full-bleed_page(top, both);
         grid-row: 1 / span 3;
         grid-column: 1 / span all;
       }
@@ -357,6 +354,11 @@ html[data-mode="dim"] {
         object-fit: cover;
         object-position: center center;
         border-radius: 0;
+      }
+    }
+    @at-root {
+      .vitae .view-print .component_header .portrait_figure {
+        @include full-bleed_page(top, both);
       }
     }
 
@@ -497,7 +499,6 @@ html[data-mode="dim"] {
     --font-weight-heading-organization: var(--font-weight-strong);
     --font-size-heading-role: var(--font-size-larger-2);
     --font-weight-heading-role: var(--font-weight-strong);
-    --font-center-offset-heading-role: 0.5;
     --line-height: 1.5;
     --line-height-heading: 1.2;
 
@@ -509,7 +510,7 @@ html[data-mode="dim"] {
     --inline-list-item-separation: 2ch;
     --inline-list-sep-width: var(--inline-list-item-separation) / 3.0;
 
-    --organization_logo_width: 24pt;
+    --organization_logo_width: calc(2 * var(--rem));
 
     --padding_organization_between: var(--inner_padding_4-12);
     --padding_role_between: var(--inner_padding_4-8);
@@ -809,15 +810,15 @@ html[data-mode="dim"] {
 
       --tl-col_main-column_width: calc(var(--page_width) - 2 * var(--page-margin-h) - var(--tl-col_timeline-column_width) - var(--tl-col_main_separator-column_width));
 
-      --tl-col_stage_logo_width: 18pt;
-      --tl-col_stage_logo_height: 18pt;
+      --tl-col_stage_logo_width: var(--organization_logo_width);
+      --tl-col_stage_logo_height: var(--organization_logo_width);
 
       // FIXME: In Chrome, the alignment of timeline marker and line
       // gets out of control when the width of the timeline is less than
       // 3pt
-      --tl-col_timeline_width: 3pt;
+      --tl-col_timeline_width: calc(0.25 * var(--rem));
       --tl-col_timeline_color: var(--neutral-haze);
-      --tl-col_stage-marker_width: 9pt;
+      --tl-col_stage-marker_width: calc(0.75 * var(--rem));
       --tl-col_stage-marker_height: var(--tl-col_stage-marker_width);
       --tl-col_stage-marker_background: var(--neutral-haze);
 
@@ -1528,7 +1529,6 @@ html[data-mode="dim"] {
         flex-direction: column;
         row-gap: var(--inner_margin_4-2);
         margin-top: var(--inner_margin_4-2);
-        // @include font-size-scale(0, -1);
         .award {
           &_header {
             display: flex;
@@ -1617,7 +1617,6 @@ html[data-mode="dim"] {
       &_container {
         display: flex;
         flex-direction: column;
-        // @include font-size-scale(0, -1);
         .link {
           &_item {
             width: max-content;
@@ -1630,7 +1629,7 @@ html[data-mode="dim"] {
           &_icon {
             .icon {
               margin-right: var(--inner_margin_4-1);
-              width: 12pt;
+              width: calc(1.2 * var(--rem));;
             }
           }
           &_text {
@@ -1643,7 +1642,7 @@ html[data-mode="dim"] {
               display: flex;
               justify-content: flex-end;
               svg {
-                width: 30pt;
+                width: calc(3 * var(--rem));;
                 height: auto;
                 min-width: unset;
                 max-width: unset;
@@ -1717,5 +1716,11 @@ html[data-mode="dim"] {
         border-radius: 0.125rem;
       }
     }
+  }
+}
+
+.knobsIframe {
+  @media print {
+    display: none;
   }
 }

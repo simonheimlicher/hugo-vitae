@@ -41,24 +41,28 @@ $screen-pad-v: 1rem;
 .vitae {
   --page_scale-factor: 1.0;
 
-  --page_width: calc(#{$page-width} * var(--page_scale-factor));
-  --page_height: calc(#{$page-height} * var(--page_scale-factor));
+  --page_width: #{$page-width};
+  --page_height: #{$page-height};
 
   --page_margin_base_left: #{$page-mar-h};
   --page_margin_base_right: #{$page-mar-h};
   --page_margin_base_top: #{$page-mar-top};
   --page_margin_base_bottom: #{$page-mar-bottom};
 
-  --page_margin_left: calc(var(--page_margin_base_left) * var(--page_scale-factor));
-  --page_margin_right: calc(var(--page_margin_base_right) * var(--page_scale-factor));
-  --page_margin_top: calc(var(--page_margin_base_top) * var(--page_scale-factor));
-  --page_margin_bottom: calc(var(--page_margin_base_bottom) * var(--page_scale-factor));
+  --page_margin_left: var(--page_margin_base_left);
+  --page_margin_right: var(--page_margin_base_right);
+  --page_margin_top: var(--page_margin_base_top);
+  --page_margin_bottom: var(--page_margin_base_bottom);
 
-  --column-padding-h: calc(#{$column-pad-h} * var(--page_scale-factor));
-  --column-padding-v: calc(#{$column-pad-v} * var(--page_scale-factor));
+  @media screen {
+    --page_width: calc(#{$page-width} * var(--page_scale-factor));
+    --page_height: calc(#{$page-height} * var(--page_scale-factor));
 
-  --gap-h: #{$column-pad-h} * var(--page_scale-factor);
-  --gap-v: #{$column-pad-v} * var(--page_scale-factor);
+    --page_margin_left: calc(var(--page_margin_base_left) * var(--page_scale-factor));
+    --page_margin_right: calc(var(--page_margin_base_right) * var(--page_scale-factor));
+    --page_margin_top: calc(var(--page_margin_base_top) * var(--page_scale-factor));
+    --page_margin_bottom: calc(var(--page_margin_base_bottom) * var(--page_scale-factor));
+  }
 
   #printPreviewContainer {
     display: none;
@@ -79,15 +83,10 @@ $screen-pad-v: 1rem;
     .view-print {
       background: var(--neutral-theme-haze);
       padding-bottom: 0;
-      --page_scale-factor: 1.25;
     }
   }
   .vitae {
-    --screen-page-sep: 1.5rem;
 
-    .main-column {
-      background: var(--bg);
-    }
     .vitae_inner {
       margin: 0 auto;
     }
@@ -104,6 +103,7 @@ $screen-pad-v: 1rem;
     }
     .view-print {
       .pagination-section {
+        --screen-page-sep: 1.5rem;
         display: flex;
         flex-wrap: wrap;
         flex-direction: row;
@@ -215,27 +215,37 @@ $screen-pad-v: 1rem;
 
   margin: $margin_top $margin_right $margin_bottom $margin_left;
 }
-.vitae {
-  --row-gap: calc(2.0 * var(--column-padding-v));
-  --column-gap: calc(2.0 * var(--column-padding-h));
-  --column-padding-left: calc(var(--column-padding-h));
-  --column-padding-right: calc(var(--column-padding-h));
 
-  --aside-width: calc(var(--page_width) / 4);
-}
 .vitae {
+  --rem_screen: 1rem;
+  --em_screen: 1rem;
+
+  --rem_print: calc(10pt * var(--page_scale-factor));
+  --em_print: calc(10pt * var(--page_scale-factor));
+
   .view-screen {
-    @include font-size-scale(1rem);
-    // @include inner_margin_padding(1.5rem, 1rem);
+    --rem: var(--rem_screen);
+    --em: var(--em_screen);
+    @include font-size-scale(calc(var(--em)));
+    @include inner_margin_padding(calc(1.8 * var(--rem)), calc(1.2 * var(--rem)));
   }
+
   .view-print {
-    @include font-size-scale(10pt);
-    @include inner_margin_padding(18pt, 12pt);
+    --rem: var(--rem_print);
+    --em: var(--em_print);
+    @media screen {
+      --rem: calc(var(--rem_print) * var(--page_scale-factor));
+      --em: calc(var(--em_print) * var(--page_scale-factor));
+    }
+    @include font-size-scale(calc(var(--em)));
+    @include inner_margin_padding(calc(1.8 * var(--rem)), calc(1.2 * var(--rem)));
+  }
 
-    @include link-lvhfa-reset;
+  .view-print {
+      @include link-lvhfa-reset;
 
-    --line-width_separator: 0.25pt;
-    --line-width_separator_heading: 0.5pt;
+    --line-width_separator: calc(0.025 * var(--rem));;
+    --line-width_separator_heading: calc(0.05 * var(--rem));;
 
     --border-color: var(--text);
     --border-color-faint: var(--text-color-faint);
@@ -252,22 +262,11 @@ $screen-pad-v: 1rem;
         --footer_margin_bottom: calc(var(--page_margin_base_bottom) / 2 * var(--page_scale-factor));
 
         --page_margin_bottom: calc(0.5 * var(--page_margin_base_bottom) * var(--page_scale-factor));
-        // padding-bottom: var(--page_margin_bottom);
       }
       .footer_name-page-number {
-        // position: absolute;
-        // bottom: var(--footer_margin_bottom);
-        // left: var(--footer_margin_left);
-        // right: var(--footer_margin_right);
-        // margin: 0;
-        // padding: 0;
-        // margin-top: var(--inner_padding_4-2);
-        // padding-top: var(--inner_padding_4-2);
-
         margin: var(--inner_padding_4-6) 0 0 0;
         padding: var(--inner_padding_4-1) 0 0 0;
         border-top: calc(var(--line-width_separator)) solid var(--border-color-faint);
-        // background-color: aqua;
         display: flex;
         flex-direction: column;
         align-items: baseline;
@@ -292,19 +291,27 @@ $screen-pad-v: 1rem;
         height: 100%;
       }
     }
-    .main-column {
-      --border-color-faint: var(--theme-xxhaze);
-    }
-    .header,
-    .main-header,
-    .aside-primary {
-      --border-color-faint: var(--theme-xxhaze);
-    }
     .pagination-page {
       position: relative;
 
       /* ----- Layout RESUME ------ */
       &.main-aside-primary {
+        --row-gap: calc(2.0 * var(--column-padding-v));
+        --column-gap: calc(2.0 * var(--column-padding-h));
+        --column-padding-left: calc(var(--column-padding-h));
+        --column-padding-right: calc(var(--column-padding-h));
+
+        --aside-width: calc(var(--page_width) / 4);
+
+        .main-column {
+          background: var(--bg);
+          --border-color-faint: var(--theme-xxhaze);
+        }
+        .header,
+        .main-header,
+        .aside-primary {
+          --border-color-faint: var(--theme-xxhaze);
+        }
         &::before {
           content: "";
           position: absolute;
@@ -534,8 +541,8 @@ $screen-pad-v: 1rem;
 .vitae,
 .vitae[data-print-preview-status="done"] {
   &.layout-letter {
-    --font-size-heading-organization: 24pt;
-    --organization-logo-width: 48px;
+    --font-size-heading-organization: calc(2.5 * var(--rem));;
+    --organization-logo-width: calc(3 * var(--rem));;
     .view-print {
       .pagination-page.main-aside-primary {
         grid-template-rows: minmax(min-content, max-content) 1fr;

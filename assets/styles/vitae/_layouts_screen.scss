@@ -8,7 +8,6 @@
   .vitae {
     &.layout-resume {
       .view-screen {
-        // font-size: calc(var(--font-size-normal))
         --column-padding-h: var(--column-padding-screen-h);
         --column-padding-v: var(--column-padding-screen-v);
         --gap-h: var(--column-padding-screen-v);
@@ -367,8 +366,6 @@
   .vitae {
     &.layout-resume {
       .view-screen {
-        // --column-padding-v: calc(3 * var(--column-padding-screen-v))
-        // --column-padding-h: calc(3 * var(--column-padding-screen-h))
         .pagination-page.main-aside-primary {
           .header {
             padding-left: 0;

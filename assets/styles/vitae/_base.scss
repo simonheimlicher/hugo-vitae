@@ -11,7 +11,6 @@ $vitae-screenViewWidthWideAsideMin: 18rem;
 $vitae-screenViewWidthWideAsideMax: 24rem;
 $vitae-screenViewWidthAsideMin: 16rem;
 
-
 // Horizontal breakpoints
 // $screenViewBreakpointWidthWide: 84rem
 // $screenViewBreakpointWidthTwoColumn: 61rem
@@ -25,8 +24,7 @@ $screenViewBreakpointHeightShallow: 42rem;
 
 $vitae-two-column-grid-column-gap: 1rem;
 
-$font-size-scale-factor: math.pow(2.0, math.div(1, 4) );
-
+// $font-size-scale-factor: math.pow(2.0, math.div(1, 4) );
 $font-size-scale-factor: math.pow(2.0, math.div(1, 5) );
 
 .vitae {

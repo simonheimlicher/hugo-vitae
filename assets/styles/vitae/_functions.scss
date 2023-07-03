@@ -15,7 +15,7 @@
   $larger-factor-idx-max: 6;
 
   @if ($font-size != 0) {
-    --font-size-base: calc(var(--page_scale-factor) * #{$font-size});
+    --font-size-base: #{$font-size};
   }
 
   --font-size-normal: calc(#{round-dec($font-size-factor-normal * math.pow($font-size-scale-factor, $shift), $dec-digits)} * var(--font-size-base));

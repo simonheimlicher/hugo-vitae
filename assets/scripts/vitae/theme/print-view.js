@@ -434,6 +434,20 @@ const init = function (reset) {
     conf['printButton'].addEventListener('click', _e => window.print());
   }
 
+  window.vitae = {
+    'printView': {
+      'togglePreview': () => {
+        togglePreview(conf);
+      },
+      'renderPrintPreview': () => {
+        renderPrintPreview(conf)
+      },
+      'transferOverflow': () => {
+        transferOverflow(conf)
+      },
+    }
+  };
+
   // console.log("pagination_preview.js: Found required DOM elements:"
   //     + " conf['outermostContainer'] = " + (typeof conf['outermostContainer'] === "undefined" ? undefined : conf['outermostContainer'])
   //     + " conf['originalContainer'] = " + (typeof conf['originalContainer'] === "undefined" ? undefined : conf['originalContainer'])

@@ -4,45 +4,6 @@ $inline-list-item-separation: 2ch;
 $inline-list-sep-width: math.div($inline-list-item-separation, 3.0);
 
 .vitae {
-  --font-size-heading-organization: var(--font-size-larger-1);
-  --font-weight-heading-organization: var(--font-weight-strong);
-  --font-size-heading-role: var(--font-size-larger-1);
-  --font-weight-heading-role: var(--font-weight-strong);
-  --font-center-offset-heading-role: 0.5;
-  --line-height: 1.5;
-  --line-height-heading: 1.2;
-
-  --section-title-sep-vert: 0.5rem;
-  --section-title_first-section_sep-vert: var(--section-title-sep-vert);
-
-  --inline-list-item-separation: 2ch;
-  --inline-list-sep-width: var(--inline-list-item-separation) / 3.0;
-
-  --organization-logo-width: 2rem;
-  --organization-logo-column-padding-right: 0.75rem;
-  --organization-logo-column-width: var(--organization-logo-width) + var(--organization-logo-column-padding-right);
-
-  --tl-marker-border-radius: 50%;
-  --tl-marker-pad-v: 0.25rem;
-  --tl-marker-width: 0.5rem;
-  --tl-marker-height: var(--tl-marker-width);
-  --tl-item-pad-v: 0.25rem;
-  --tl-line-width: 2px;
-  --tl-offset-left: (-1 * var(--organization-logo-width) / 2 - var(--organization-logo-column-padding-right));
-
-  --stage-org-sep-vert: 1.0rem;
-  --stage-org-header-mar-v: 0.125rem;
-  --stage-role-sep-vert: 1.0rem;
-  --stage-org-role-sep-vert: 0.5rem;
-  --stage-timeline-width: var(--organization-logo-column-width);
-
-  // FIXME: DEBUG
-  // --tl-marker-border-radius: 0;
-  // --tl-marker-width: 20rem;
-  // --tl-marker-height: 1px;
-  // --tl-item-pad-v: 3rem;
-  // --stage-org-role-sep-vert: 7rem;
-
   h1,
   h2,
   h3,
@@ -77,6 +38,44 @@ $inline-list-sep-width: math.div($inline-list-item-separation, 3.0);
 .vitae {
   .section-stages {
     position: relative;
+
+    --font-size-heading-organization: var(--font-size-larger-1);
+    --font-weight-heading-organization: var(--font-weight-strong);
+    --font-size-heading-role: var(--font-size-larger-1);
+    --font-weight-heading-role: var(--font-weight-strong);
+    --line-height: 1.5;
+    --line-height-heading: 1.2;
+
+    --section-title-sep-vert: 0.5rem;
+    --section-title_first-section_sep-vert: var(--section-title-sep-vert);
+
+    --inline-list-item-separation: 2ch;
+    --inline-list-sep-width: var(--inline-list-item-separation) / 3.0;
+
+    --organization-logo-width: 2rem;
+    --organization-logo-column-padding-right: 0.75rem;
+    --organization-logo-column-width: var(--organization-logo-width) + var(--organization-logo-column-padding-right);
+
+    --tl-marker-border-radius: 50%;
+    --tl-marker-pad-v: 0.25rem;
+    --tl-marker-width: 0.5rem;
+    --tl-marker-height: var(--tl-marker-width);
+    --tl-item-pad-v: 0.25rem;
+    --tl-line-width: 2px;
+    --tl-offset-left: (-1 * var(--organization-logo-width) / 2 - var(--organization-logo-column-padding-right));
+
+    --stage-org-sep-vert: 1.0rem;
+    --stage-org-header-mar-v: 0.125rem;
+    --stage-role-sep-vert: 1.0rem;
+    --stage-org-role-sep-vert: 0.5rem;
+    --stage-timeline-width: var(--organization-logo-column-width);
+
+    // FIXME: DEBUG
+    // --tl-marker-border-radius: 0;
+    // --tl-marker-width: 20rem;
+    // --tl-marker-height: 1px;
+    // --tl-item-pad-v: 3rem;
+    // --stage-org-role-sep-vert: 7rem;
 
     &.organization-header {
       width: 100%;
