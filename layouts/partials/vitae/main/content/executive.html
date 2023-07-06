@@ -16,98 +16,104 @@ PaginationPage: a printed page that is part of a Part
   When rendering the print preview with `print-view.js`,
   this DOM node is cloned and the content is distributed across as many
   clones as required -->
-  <div class="{{ $pp.PartClass}}">
-    <div class="{{ printf "template_%s" $part.template }} {{ $pp.PaginationPageClass}}{{ with $vitaeParams.footer }} footer_{{ .template }}{{ end }}">
-      {{- range $slotIndex, $slot := $part.slots }}
-        {{/* {{- partial "html-comment" (printf "[%s]: slot[%T] name=%s:\n%v"
-            $template $slot $slot.slot (jsonify (dict "indent" "  ") $slot) ) }} */}}
-        <div class="{{ printf "slot_%s" $slot.slot }} {{ $pp.PaginationContainerClass }}"
-        {{- $paginationPolicy := default "break" $part.pagination_policy }}
-        {{ printf `%s="%d"` $pp.PaginationOrderAttr 9 | safeHTMLAttr }}
-        {{ printf `%s="%s"` $pp.PaginationPolicyAttr $paginationPolicy | safeHTMLAttr -}}
-        >
-          {{- range $sectionIndex, $section := where $slot.sections "enabled" "ne" false }}
-            {{- $sectionName := $section.section }}
-            {{- $childClass := default "" .child_class }}
-            {{- $sectionContainer := default "" .container }}
-            {{- if $sectionContainer }}
-              {{ printf `<%s class="section_%s section">` $sectionContainer $sectionName | safeHTML }}
-            {{- else }}
-              {{- $childClass = trim (printf "%v section_%s" $childClass $sectionName) " " }}
+  {{- $partClassList := (slice
+      (printf "template_%s" $part.template)
+      (printf "%s%d" $pp.PartClassPrefix $partIndex)
+      $pp.PaginationPageClass
+    ) -}}
+  {{- with $vitaeParams.footer }}
+    {{- $partClassList = append (printf "footer_%s" .template) $partClassList }}
+  {{- end }}
+  <div class="{{ delimit $partClassList ` `}}">
+    {{- range $slotIndex, $slot := $part.slots }}
+      {{/* {{- partial "html-comment" (printf "[%s]: slot[%T] name=%s:\n%v"
+          $template $slot $slot.slot (jsonify (dict "indent" "  ") $slot) ) }} */}}
+      <div class="{{ printf "slot_%s" $slot.slot }} {{ $pp.PaginationContainerClass }}"
+      {{- $paginationPolicy := default "break" $part.pagination_policy }}
+      {{ printf `%s="%d"` $pp.PaginationOrderAttr 9 | safeHTMLAttr }}
+      {{ printf `%s="%s"` $pp.PaginationPolicyAttr $paginationPolicy | safeHTMLAttr -}}
+      >
+        {{- range $sectionIndex, $section := where $slot.sections "enabled" "ne" false }}
+          {{- $sectionName := $section.section }}
+          {{- $childClass := default "" .child_class }}
+          {{- $sectionContainer := default "" .container }}
+          {{- if $sectionContainer }}
+            {{ printf `<%s class="section_%s section">` $sectionContainer $sectionName | safeHTML }}
+          {{- else }}
+            {{- $childClass = trim (printf "%v section_%s" $childClass $sectionName) " " }}
+          {{- end }}
+          {{- $headingLevel := default 2 $section.level }}
+          {{- $sectionTitle := $section.title | default $sectionName -}}
+          {{- with $section.title }}
+            {{- $sectionTitle := (cond (gt (len (T $sectionTitle)) 0) (T $sectionTitle) $sectionTitle) | strings.FirstUpper }}
+            <h{{ $headingLevel }} class="section-title_{{ $sectionName }} section-title {{ $childClass }}">{{ $sectionTitle }}</h{{ $headingLevel }}>
+            {{- $headingLevel = (add $headingLevel 1) }}
+          {{- end }}
+          {{- range $componentIndex, $component := $section.components }}
+            {{- $componentName := $component.component }}
+            {{- $componentPartial := printf "vitae/_components/%s" $componentName }}
+            {{- $componentContainer := default "" .container }}
+            {{- if $componentContainer }}
+              {{- printf `<%s class="component-container_%s component-container">` $componentContainer $componentName | safeHTML }}
             {{- end }}
-            {{- $headingLevel := default 2 $section.level }}
-            {{- $sectionTitle := $section.title | default $sectionName -}}
-            {{- with $section.title }}
-              {{- $sectionTitle := (cond (gt (len (T $sectionTitle)) 0) (T $sectionTitle) $sectionTitle) | strings.FirstUpper }}
-              <h{{ $headingLevel }} class="section-title_{{ $sectionName }} section-title {{ $childClass }}">{{ $sectionTitle }}</h{{ $headingLevel }}>
+            {{- $componentTitle := $component.title | default $componentName -}}
+            {{- with $component.title }}
+              {{- $componentTitle := (cond (gt (len (T $componentTitle)) 0) (T $componentTitle) $componentTitle) | strings.FirstUpper }}
+              <h{{ $headingLevel }} class="component-title_{{ $componentName }} component-title {{ $childClass }}">{{ $componentTitle }}</h{{ $headingLevel }}>
               {{- $headingLevel = (add $headingLevel 1) }}
             {{- end }}
-            {{- range $componentIndex, $component := $section.components }}
-              {{- $componentName := $component.component }}
-              {{- $componentPartial := printf "vitae/_components/%s" $componentName }}
-              {{- $componentContainer := default "" .container }}
-              {{- if $componentContainer }}
-                {{- printf `<%s class="component-container_%s component-container">` $componentContainer $componentName | safeHTML }}
-              {{- end }}
-              {{- $componentTitle := $component.title | default $componentName -}}
-              {{- with $component.title }}
-                {{- $componentTitle := (cond (gt (len (T $componentTitle)) 0) (T $componentTitle) $componentTitle) | strings.FirstUpper }}
-                <h{{ $headingLevel }} class="component-title_{{ $componentName }} component-title {{ $childClass }}">{{ $componentTitle }}</h{{ $headingLevel }}>
-                {{- $headingLevel = (add $headingLevel 1) }}
-              {{- end }}
-              {{- $componentStyle := $component.style | default false }}
-              {{- partial $componentPartial (dict
-                "Page" $page
-                "Config" $vitaeParams
-                "PageIndex" $partIndex
-                "Component" $component
-                "Style" $componentStyle
-                "Index" $componentIndex
-                "ChildClass" $childClass
-                "Container" false
-                "Data" $vitaeData
-              ) -}}
-              {{- with $componentContainer }}
-                {{ printf "</%s>" . | safeHTML }}
-              {{- end }}
-            {{- end }}
-            {{- with $sectionContainer }}
+            {{- $componentStyle := $component.style | default false }}
+            {{- partial $componentPartial (dict
+              "Page" $page
+              "Config" $vitaeParams
+              "PageIndex" $partIndex
+              "Component" $component
+              "Style" $componentStyle
+              "Index" $componentIndex
+              "ChildClass" $childClass
+              "Container" false
+              "Data" $vitaeData
+            ) -}}
+            {{- with $componentContainer }}
               {{ printf "</%s>" . | safeHTML }}
             {{- end }}
           {{- end }}
-        </div>
-      {{- end }}
-      {{- with $vitaeParams.footer }}
-        {{- $footerContainer := default "footer" .container }}
-        {{- if $footerContainer }}
-          {{ printf `<%s class="slot_footer footer_%s">` $footerContainer .template | safeHTML }}
-        {{- end }}
-        {{- range $componentIndex, $component := .components }}
-          {{- $componentName := $component.component }}
-          {{- $childClass := default "" .child_class }}
-          {{- $componentPartial := printf "vitae/_components/%s" $componentName }}
-          {{- $componentContainer := default "" .container }}
-          {{- if $componentContainer }}
-            {{- printf `<%s class="component-container_%s component-container">` $componentContainer $componentName | safeHTML }}
+          {{- with $sectionContainer }}
+            {{ printf "</%s>" . | safeHTML }}
           {{- end }}
-          {{- $componentStyle := $component.style | default false }}
-          {{- partial $componentPartial (dict
-            "Page" $page
-            "Config" $vitaeParams
-            "PageIndex" $partIndex
-            "Component" $component
-            "Style" $componentStyle
-            "Index" $componentIndex
-            "ChildClass" $childClass
-            "Container" false
-            "Data" $vitaeData
-          ) -}}
         {{- end }}
-        {{- with $footerContainer }}
-          {{ printf "</%s>" . | safeHTML }}
-        {{- end }}
+      </div>
+    {{- end }}
+    {{- with $vitaeParams.footer }}
+      {{- $footerContainer := default "footer" .container }}
+      {{- if $footerContainer }}
+        {{ printf `<%s class="slot_footer footer_%s">` $footerContainer .template | safeHTML }}
       {{- end }}
-    </div>
+      {{- range $componentIndex, $component := .components }}
+        {{- $componentName := $component.component }}
+        {{- $childClass := default "" .child_class }}
+        {{- $componentPartial := printf "vitae/_components/%s" $componentName }}
+        {{- $componentContainer := default "" .container }}
+        {{- if $componentContainer }}
+          {{- printf `<%s class="component-container_%s component-container">` $componentContainer $componentName | safeHTML }}
+        {{- end }}
+        {{- $componentStyle := $component.style | default false }}
+        {{- partial $componentPartial (dict
+          "Page" $page
+          "Config" $vitaeParams
+          "PageIndex" $partIndex
+          "Component" $component
+          "Style" $componentStyle
+          "Index" $componentIndex
+          "ChildClass" $childClass
+          "Container" false
+          "Data" $vitaeData
+        ) -}}
+      {{- end }}
+      {{- with $footerContainer }}
+        {{ printf "</%s>" . | safeHTML }}
+      {{- end }}
+    {{- end }}
   </div>
 {{- end }}
 {{ partial "html-comment" (printf "END   '%s'" $template) }}

@@ -13,6 +13,7 @@
 {{- $media := default "screen" ($page.Param "Media") }}
 {{- $printPreview := default false ($page.Param "PrintPreview") }}
 {{- $printView := default false ($page.Param "PrintView") }}
+{{- $printControl := default false ($page.Param "PrintControl") }}
 
 {{- $vitaeParamRoot := default "vitae" ($page.Param "VitaeRoot") }}
 {{- $vitaeKey := default $layout ($page.Param "VitaeKey") }}
@@ -65,11 +66,12 @@
 
 {{- $mainContentPrefix := "main/content" }}
 {{- $containerClass := "vitae" }}
-{{- $originalInnerClass := "vitae_inner"  }}
+{{- $originalInnerClass := "vitae_inner vitae_lightbox"  }}
 {{- with $layout }}{{ $containerClass = printf "%s layout-%s" $containerClass $layout }}
 {{- end }}
 
-{{- $paginationSectionClass := "pagination-section" }}
+{{- $partClass := "part" }}
+{{- $partClassPrefix := "part-" }}
 {{- $paginationPageClass := "pagination-page" }}
 {{- $paginationContainerClass := "pagination-container" }}
 {{- $paginationOrderAttr := "data-pagination-order" }}
@@ -82,9 +84,11 @@
     "Layout" $layout
     "PrintPreview" $printPreview
     "PrintView" $printView
+    "PrintControl" $printControl
     "VitaeParams" $vitaeParams
     "VitaeData" $vitaeData
-    "PartClass" $paginationSectionClass
+    "PartClass" $partClass
+    "PartClassPrefix" $partClassPrefix
     "PaginationPageClass" $paginationPageClass
     "PaginationContainerClass" $paginationContainerClass
     "PaginationOrderAttr" $paginationOrderAttr
@@ -93,11 +97,11 @@
     "OriginalInnerClass" $originalInnerClass
     ) $pp }}
 
-{{ partial "html-comment" (printf "[%s]: BEGIN [layout=%v media=%v printPreview=%v printView=%v"
-    $template $pp.Layout $pp.Media $pp.PrintPreview $pp.PrintView) }}
+{{ partial "html-comment" (printf "[%s]: BEGIN [layout=%v media=%v printPreview=%v printView=%v printControl=%v"
+    $template $pp.Layout $pp.Media $pp.PrintPreview $pp.PrintView $pp.PrintControl) }}
 
 <div id="vitaeContainer" class="{{ $containerClass }}" {{ $printViewVisibleAttr | safeHTMLAttr }}>
-  {{- if (or $pp.PrintPreview $pp.PrintView) }}
+  {{- if (or $pp.PrintPreview $pp.PrintView $pp.PrintControl) }}
     {{- partial "vitae/print-preview" (merge $pp (dict "ContainerClass" "view-print")) }}
   {{- end }}
   <div id="originalContainer" class="view-{{ cond $pp.PrintPreview "print" "screen" }}">

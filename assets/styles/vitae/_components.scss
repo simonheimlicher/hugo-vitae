@@ -512,7 +512,7 @@ html[data-mode="dim"] {
 
     --organization_logo_width: calc(2 * var(--rem));
 
-    --padding_organization_between: var(--inner_padding_4-12);
+    --padding_organization_between: var(--inner_padding_4-8);
     --padding_role_between: var(--inner_padding_4-8);
     --padding_role_first: var(--inner_padding_4-4);
     --padding_stage_meta: var(--inner_padding_4-0);
@@ -787,7 +787,7 @@ html[data-mode="dim"] {
         display: inline-block;
         & + .stage_meta {
           &::before {
-            content: " · ";
+            content: "· ";
           }
         }
       }
@@ -800,7 +800,7 @@ html[data-mode="dim"] {
     // First column is dedicated to timeline to facilitate scanning by year
     &.style_timeline_column {
 
-      --grid_separator-column_width: var(--inner_margin_4-2);
+      --grid_separator-column_width: var(--inner_margin_4-4);
 
       --grid_period-column_width: 10em;
       --tl-col_period_separator-column_width: 2 * var(--grid_separator-column_width);
@@ -1575,7 +1575,7 @@ html[data-mode="dim"] {
       }
       &_level {
         grid-column: 2;
-        @include upper-caps;
+        @include lower-caps;
         font-size: var(--font-size-smaller-1);
         &_bar {
           position: relative;
@@ -1617,6 +1617,7 @@ html[data-mode="dim"] {
       &_container {
         display: flex;
         flex-direction: column;
+        row-gap: var(--inner_margin_4-2);
         .link {
           &_item {
             width: max-content;
@@ -1717,6 +1718,13 @@ html[data-mode="dim"] {
       }
     }
   }
+}
+
+.vitae .qrcode-svg {
+  min-width: unset;
+  width: unset;
+  max-width: unset;
+  height: auto;
 }
 
 .knobsIframe {

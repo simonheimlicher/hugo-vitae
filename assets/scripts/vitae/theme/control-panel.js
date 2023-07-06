@@ -30,36 +30,123 @@ const controlPanelSettings = {
       // onChange: console.log  // javascript callback on every "input" event
     },
     {
-      cssVar: ['rem_print', 'pt'], // prefix unit with '-' makes it only a part of the title but not of the variable
-      label: 'Base unit',
-      labelTitle: 'Adjust base unit',
+      cssVar: ['inner_margin_scale-factor', '-%'],
+      label: 'Inner margins',
+      labelTitle: 'Adjust inner margins',
       type: 'range',
-      // value: 10, // try to get the value using getComputedStyle and getPropertyValue
-      min: 7,
-      max: 12,
-      step: 0.1,
+      // value: 1, // try to get the value using getComputedStyle and getPropertyValue
+      min: 0.25,
+      max: 4,
+      step: 0.01,
       // onChange: () => {
-      //   console.log('window.vitae=', window.viae);
       //   if (window.vitae) {
-      //     console.log('rem_print changed. Rendering print preview');
+      //     console.log('inner_margin_base changed. Calling renderPrintPreview');
       //     window.vitae.printView.renderPrintPreview();
       //   }
       //   else {
-      //     console.log('rem_print changed but window.vitae=', window.viae);
+      //     console.log('inner_margin_base changed but window.vitae=', window.viae);
       //   }
       // },
     },
     {
-      cssVar: ['em_print', 'pt'], // prefix unit with '-' makes it only a part of the title but not of the variable
+      cssVar: ['inner_padding_scale-factor', '-%'],
+      label: 'Inner padding',
+      labelTitle: 'Adjust inner padding',
+      type: 'range',
+      // value: 1, // try to get the value using getComputedStyle and getPropertyValue
+      min: 0.25,
+      max: 4,
+      step: 0.01,
+      // onChange: () => {
+      //   if (window.vitae) {
+      //     console.log('inner_margin_base changed. Calling renderPrintPreview');
+      //     window.vitae.printView.renderPrintPreview();
+      //   }
+      //   else {
+      //     console.log('inner_margin_base changed but window.vitae=', window.viae);
+      //   }
+      // },
+    },
+    {
+      cssVar: ['line_width_scale-factor', ''],
+      label: 'Line width',
+      labelTitle: 'Adjust line width',
+      type: 'range',
+      // value: 1, // try to get the value using getComputedStyle and getPropertyValue
+      min: 0.25,
+      max: 4,
+      step: 0.01,
+      // onChange: () => {
+      //   if (window.vitae) {
+      //     console.log('line_width_base changed. Calling renderPrintPreview');
+      //     window.vitae.printView.renderPrintPreview();
+      //   }
+      //   else {
+      //     console.log('line_width_base changed but window.vitae=', window.viae);
+      //   }
+      // },
+    },
+    {
+      cssVar: ['em_print', 'pt'],
       label: 'Font size',
       labelTitle: 'Adjust base font size',
       type: 'range',
-      // value: 10, // try to get the value using getComputedStyle and getPropertyValue
+      // Getting the value using getComputedStyle and getPropertyValue does not work in Safari
+      value: 10,
       min: 7,
       max: 12,
       step: 0.1,
       // onChange: console.log,
-      onChange: (e, knobData) => console.log(e, knobData, knobData.value),
+      // onChange: (e, knobData) => console.log(e, knobData, knobData.value),
+      // onChange: () => {
+      //   if (window.vitae) {
+      //     console.log('em_print changed. Calling renderPrintPreview');
+      //     window.vitae.printView.renderPrintPreview();
+      //   }
+      //   else {
+      //     console.log('em_print changed but window.vitae=', window.viae);
+      //   }
+      // }
+  },
+    {
+      cssVar: ['page_margin_base_top', 'mm'],
+      label: 'Page margin top',
+      labelTitle: 'Adjust top page margin',
+      type: 'range',
+      min: 0,
+      value: 15,
+      max: 100,
+      step: 0.5,
+    },
+    {
+      cssVar: ['page_margin_base_bottom', 'mm'],
+      label: 'Page margin bottom',
+      labelTitle: 'Adjust bottom page margin',
+      type: 'range',
+      min: 0,
+      value: 15,
+      max: 100,
+      step: 0.5,
+    },
+    {
+      cssVar: ['page_margin_base_left', 'mm'],
+      label: 'Page margin left',
+      labelTitle: 'Adjust left page margin',
+      type: 'range',
+      min: 0,
+      value: 15,
+      max: 100,
+      step: 0.5,
+    },
+    {
+      cssVar: ['page_margin_base_right', 'mm'],
+      label: 'Page margin right',
+      labelTitle: 'Adjust right page margin',
+      type: 'range',
+      min: 0,
+      value: 15,
+      max: 100,
+      step: 0.5,
     },
     /*
     {

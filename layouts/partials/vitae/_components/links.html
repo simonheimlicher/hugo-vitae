@@ -72,12 +72,15 @@
         </div>
         {{- end }}
         {{- if $qrCode }}
-          <a href="{{ $e.url }}" title="QR code to connect via {{ $e.title }}" class="{{ $classPrefix }}_qrcode qrcode-link">
-            {{ partial "qrcode-svg" (dict "Content" $e.url) }}
-          </a>
-        {{- end -}}
+          <div class="{{ $classPrefix }}_qrcode qrcode-link">
+            {{ partial "qrcode-svg" (dict
+              "LinkTitle" (printf "QR code to connect via %v" $e.title)
+              "Content" $e.url)
+            -}}
+          </div>
+        {{- end }}
       </div>
-    {{- end -}}
+    {{- end }}
   {{- end }}
   </div>
 {{- end }}

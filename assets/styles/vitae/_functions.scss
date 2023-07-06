@@ -50,11 +50,9 @@
 }
 
 @mixin inner_margin_padding($margin_base, $padding_base, $denominator: 4) {
-  --inner_margin_base: #{$margin_base};
-  --inner_padding_base: #{$padding_base};
   @for $numerator from 0 to (3 * $denominator + 1) {
-    --inner_margin_#{$denominator}-#{$numerator}: calc(#{math.div($numerator, $denominator)} * var(--inner_margin_base));
-    --inner_padding_#{$denominator}-#{$numerator}: calc(#{math.div($numerator, $denominator)} * var(--inner_padding_base));
+    --inner_margin_#{$denominator}-#{$numerator}: calc(#{math.div($numerator, $denominator)} * #{$margin_base});
+    --inner_padding_#{$denominator}-#{$numerator}: calc(#{math.div($numerator, $denominator)} * #{$padding_base});
   }
 }
 

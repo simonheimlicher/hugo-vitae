@@ -24,13 +24,14 @@ $page-height: 296.8625mm;
 $page-width: 210.0791667mm;
 
 // Page margins
-$page-mar-h: 10mm;
+$page-mar-h: 15mm;
+$page-mar-v: $page-mar-h;
+// $page-mar-v: math.div($page-mar-h * $page-height, $page-width);
 
 $page-mar-ratio-top-bottom: math.div(1, 1);
-$page-mar-top: math.div( math.round(10 * math.div($page-mar-ratio-top-bottom, (1 + $page-mar-ratio-top-bottom) ) * $page-mar-h * 2), 10);
-$page-mar-bottom: math.div( math.round(10 * math.div(1, (1 + $page-mar-ratio-top-bottom) ) * $page-mar-h * 2), 10);
+$page-mar-top: math.div( math.round(10 * math.div($page-mar-ratio-top-bottom, (1 + $page-mar-ratio-top-bottom) ) * $page-mar-v * 2), 10);
+$page-mar-bottom: math.div( math.round(10 * math.div(1, (1 + $page-mar-ratio-top-bottom) ) * $page-mar-v * 2), 10);
 
-$page-mar-v: math.div($page-mar-h * $page-height, $page-width);
 
 $column-pad-h: math.div($page-mar-h, 2);
 $column-pad-v: math.div($page-mar-h, 4);
@@ -40,6 +41,9 @@ $screen-pad-v: 1rem;
 
 .vitae {
   --page_scale-factor: 1.0;
+  --inner_margin_scale-factor: 1;
+  --inner_padding_scale-factor: 1;
+  --line_width_scale-factor: 1;
 
   --page_width: #{$page-width};
   --page_height: #{$page-height};
@@ -67,7 +71,7 @@ $screen-pad-v: 1rem;
   #printPreviewContainer {
     display: none;
   }
-  #vitaeContainer {
+  &#vitaeContainer {
     &[data-print-preview-visible='true'] {
       #originalContainer {
         display: none;
@@ -79,14 +83,7 @@ $screen-pad-v: 1rem;
   }
 }
 @media screen {
-  .main.vitae {
-    .view-print {
-      background: var(--neutral-theme-haze);
-      padding-bottom: 0;
-    }
-  }
   .vitae {
-
     .vitae_inner {
       margin: 0 auto;
     }
@@ -102,8 +99,8 @@ $screen-pad-v: 1rem;
       overflow: auto;
     }
     .view-print {
-      .pagination-section {
-        --screen-page-sep: 1.5rem;
+      .vitae_lightbox {
+        --screen-page-sep: calc(1.5 * var(--rem));
         display: flex;
         flex-wrap: wrap;
         flex-direction: row;
@@ -111,9 +108,6 @@ $screen-pad-v: 1rem;
         min-width: min-content;
         padding: var(--screen-page-sep);
         gap: var(--screen-page-sep);
-        & + .pagination-section {
-          padding-top: 0;
-        }
       }
       .pagination-page {
         position: relative;
@@ -192,6 +186,7 @@ $screen-pad-v: 1rem;
 
   margin: $margin_top $margin_right $margin_bottom $margin_left;
 }
+
 @mixin full-bleed_page($vertical: none, $horizontal: none) {
   $margin_top: 0;
   $margin_right: 0;
@@ -217,28 +212,46 @@ $screen-pad-v: 1rem;
 }
 
 .vitae {
-  --rem_screen: 1rem;
-  --em_screen: 1rem;
-
-  --rem_print: calc(10pt * var(--page_scale-factor));
-  --em_print: calc(10pt * var(--page_scale-factor));
-
   .view-screen {
-    --rem: var(--rem_screen);
-    --em: var(--em_screen);
-    @include font-size-scale(calc(var(--em)));
-    @include inner_margin_padding(calc(1.8 * var(--rem)), calc(1.2 * var(--rem)));
+    --rem_base: 1rem;
+    --em_base: 1rem;
+    --rem: var(--rem_base);
+    --em: var(--em_base);
+    @include font-size-scale(var(--em));
+    --inner_margin_base: calc(1.8 * var(--rem));
+    --inner_padding_base: calc(1.2 * var(--rem));
+
+    --inner_margin: var(--inner_margin_base);
+    --inner_padding: var(--inner_padding_base);
+
+    @include inner_margin_padding(var(--inner_margin), var(--inner_padding));
   }
 
   .view-print {
-    --rem: var(--rem_print);
-    --em: var(--em_print);
+    --rem_base: 10pt;
+    --em_base: 10pt;
+
+    --rem: var(--rem_base);
+    --em: var(--em_base);
+
     @media screen {
-      --rem: calc(var(--rem_print) * var(--page_scale-factor));
-      --em: calc(var(--em_print) * var(--page_scale-factor));
+      --rem: calc(var(--rem_base) * var(--page_scale-factor));
+      --em: calc(var(--em_base) * var(--page_scale-factor));
     }
-    @include font-size-scale(calc(var(--em)));
-    @include inner_margin_padding(calc(1.8 * var(--rem)), calc(1.2 * var(--rem)));
+    @include font-size-scale(var(--em));
+
+    --inner_margin_base: calc(1.8 * var(--rem));
+    --inner_padding_base: calc(1.2 * var(--rem));
+
+    --inner_margin: var(--inner_margin_base);
+    --inner_padding: var(--inner_padding_base);
+
+    @include inner_margin_padding(var(--inner_margin), var(--inner_padding));
+    @media screen {
+      --inner_margin: calc(var(--inner_margin_base) * var(--inner_margin_scale-factor));
+      --inner_padding: calc(var(--inner_padding_base) * var(--inner_padding_scale-factor));
+    }
+    @include inner_margin_padding(var(--inner_margin), var(--inner_padding));
   }
 
   .view-print {
@@ -293,6 +306,7 @@ $screen-pad-v: 1rem;
     }
     .pagination-page {
       position: relative;
+      margin-bottom: auto;
 
       /* ----- Layout RESUME ------ */
       &.main-aside-primary {
