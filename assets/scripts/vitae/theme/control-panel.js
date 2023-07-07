@@ -87,7 +87,7 @@ const controlPanelSettings = {
       // },
     },
     {
-      cssVar: ['em_print', 'pt'],
+      cssVar: ['em_base', 'pt'],
       label: 'Font size',
       labelTitle: 'Adjust base font size',
       type: 'range',
@@ -100,11 +100,11 @@ const controlPanelSettings = {
       // onChange: (e, knobData) => console.log(e, knobData, knobData.value),
       // onChange: () => {
       //   if (window.vitae) {
-      //     console.log('em_print changed. Calling renderPrintPreview');
+      //     console.log('em_base changed. Calling renderPrintPreview');
       //     window.vitae.printView.renderPrintPreview();
       //   }
       //   else {
-      //     console.log('em_print changed but window.vitae=', window.viae);
+      //     console.log('em_base changed but window.vitae=', window.viae);
       //   }
       // }
   },

@@ -83,7 +83,7 @@ $font-size-scale-factor: math.pow(2.0, math.div(1, 5) );
   font-weight: var(--font-weight);
   font-variant-ligatures: var(--font-variant-ligatures);
   font-variant-numeric: var(--font-variant-numeric);
-  font-size: var(--font-size-normal);
+  font-size: var(--font-size-base);
   color: var(--text);
   line-height: var(--line-height);
 

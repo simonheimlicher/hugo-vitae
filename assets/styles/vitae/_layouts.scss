@@ -40,6 +40,8 @@ $screen-pad-h: 1rem;
 $screen-pad-v: 1rem;
 
 .vitae {
+  --rem_base: 1rem;
+  --em_base: 1rem;
   --page_scale-factor: 1.0;
   --inner_margin_scale-factor: 1;
   --inner_padding_scale-factor: 1;
@@ -228,8 +230,8 @@ $screen-pad-v: 1rem;
   }
 
   .view-print {
-    --rem_base: 10pt;
-    --em_base: 10pt;
+    // --rem_base: 10pt;
+    // --em_base: 10pt;
 
     --rem: var(--rem_base);
     --em: var(--em_base);

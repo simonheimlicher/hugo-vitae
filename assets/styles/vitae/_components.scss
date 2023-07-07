@@ -794,9 +794,9 @@ html[data-mode="dim"] {
      */
 
      &.style_layout_shallow {
-      --padding_organization_between: var(--inner_padding_4-6);
+      --padding_organization_between: var(--inner_padding_4-7);
       --padding_role_first: var(--inner_padding_4-2);
-      --padding_role_between: var(--inner_padding_4-4);
+      --padding_role_between: var(--inner_padding_4-5);
       --padding_stage_meta: 0px;
       .stage {
         &_main {
@@ -842,7 +842,7 @@ html[data-mode="dim"] {
       // --font-weight-heading-role: var(--font-weight);
       --padding_organization_between: var(--inner_padding_4-3);
       --padding_role_first: var(--inner_padding_4-0);
-      --padding_role_between: var(--inner_padding_4-2);
+      --padding_role_between: var(--inner_padding_4-1);
     }
 
     /*
