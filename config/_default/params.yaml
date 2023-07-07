@@ -83,16 +83,16 @@ vitae:
                 results: false
                 responsibilities: false
                 achievements: false
-          # - section: award-selection
-          #   title: section-awards
-          #   container: section
-          #   components:
-          #   - component: awards
-          #     details: false
-          #     screen: true
-          #     print: true
-          #     style:
-          #       logo: false
+          - section: award-selection
+            title: section-awards
+            container: section
+            components:
+            - component: awards
+              details: false
+              screen: true
+              print: true
+              style:
+                logo: false
           # - section: language-skills
           #   title: section-language-skills
           #   container: section
@@ -103,13 +103,19 @@ vitae:
           #     filter_value: language
           #     details: false
           #     level_bar: true
-          # - section: connect
-          #   title: section-connect
-          #   container: section
-          #   components:
-          #   - component: links
-          #     screen: true
-          #     print: true
+          - section: connect
+            title: section-connect
+            container: section
+            components:
+            - component: links
+              screen: true
+              print: true
+              style:
+                layout: shallow
+                # layout: narrow
+                icon: true
+                text: true
+                qrcode: true
 
           - section: key-achievements
             title: section-key-achievements
@@ -145,6 +151,7 @@ vitae:
               style:
                 timeline: column
                 logo: left
+                layout: shallow
                 # timeline: dot-dash
               organization:
                 period: true
@@ -162,43 +169,84 @@ vitae:
                 skills: false
                 responsibilities: false
                 achievements: false
+          - section: education-languages
+            # container: div
+            sections:
+            - section: education
+              # enabled: false
+              title: section-education
+              container: section
+              components:
+              - component: stages
+                collection: stages
+                filter_by: type
+                filter_value: education
+                style:
+                  # layout: compact
+                  layout: narrow
+                  heading: larger-1
+                  # heading: normal
+                  # logo: false
+                # organization:
+                #   period: true
+                #   duration: true
+                #   details: true
+                role:
+                  period: false
+                  duration: false
+                  details: true
+                  description: true
+            - section: language-skills
+              title: section-language-skills
+              container: section
+              components:
+              - component: skills
+                collection: skills
+                filter_by: type
+                filter_value: language
+                details: true
+                level_bar: false
 
       # Appendix
       - template: appendix
+        enabled: false
         pagination_policy: first
         slots:
         - slot: main
           sections:
-          - section: education
-            # enabled: false
-            title: section-education
-            container: section
-            components:
-            - component: stages
-              collection: stages
-              filter_by: type
-              filter_value: education
-              style:
-                timeline: column
-                logo: left
-              # organization:
-              #   period: true
-              #   duration: true
-              #   details: true
-              role:
-                period: true
-                duration: false
-                details: true
-                description: true
+          # - section: education
+          #   # enabled: false
+          #   title: section-education
+          #   container: section
+          #   components:
+          #   - component: stages
+          #     collection: stages
+          #     filter_by: type
+          #     filter_value: education
+          #     style:
+          #       layout: compact
+          #       heading: larger-1
+          #       # heading: normal
+          #       # logo: false
+          #     # organization:
+          #     #   period: true
+          #     #   duration: true
+          #     #   details: true
+          #     role:
+          #       period: false
+          #       duration: false
+          #       details: true
+          #       description: true
           # - section: language-skills
           #   title: section-language-skills
+          #   container: section
           #   components:
           #   - component: skills
           #     collection: skills
           #     filter_by: type
           #     filter_value: language
-          #     details: false
-          #     level_bar: true
+          #     details: true
+          #     level_bar: false
           - section: patent-selection
             title: section-patents
             container: section
@@ -219,47 +267,35 @@ vitae:
               filter_value: publication
               screen: true
               print: true
-          - section: award-selection
-            title: section-awards
-            container: section
-            components:
-            - component: awards
-              details: true
-              screen: true
-              print: true
-              style:
-                logo: false
-          - section: language-skills
-            title: section-language-skills
-            container: section
-            components:
-            - component: skills
-              collection: skills
-              filter_by: type
-              filter_value: language
-              details: true
-              level_bar: true
-        # - slot: footer
-        #   sections:
-          - section: interests
-            title: section-interests
-            container: section
-            components:
-            - component: panels
-              collection: interests
-          - section: connect
-            title: section-connect
-            container: section
-            components:
-            - component: links
-              screen: true
-              print: true
-              style:
-                # layout: shallow
-                layout: narrow
-                icon: true
-                text: true
-                qrcode: true
+          # - section: award-selection
+          #   title: section-awards
+          #   container: section
+          #   components:
+          #   - component: awards
+          #     details: true
+          #     screen: true
+          #     print: true
+          #     style:
+          #       logo: false
+          # - section: interests
+          #   title: section-interests
+          #   container: section
+          #   components:
+          #   - component: panels
+          #     collection: interests
+          # - section: connect
+          #   title: section-connect
+          #   container: section
+          #   components:
+          #   - component: links
+          #     screen: true
+          #     print: true
+          #     style:
+          #       # layout: shallow
+          #       layout: narrow
+          #       icon: true
+          #       text: true
+          #       qrcode: true
 
     # Footer to be repeated on every printed page
     footer:
@@ -278,7 +314,7 @@ vitae:
                 content: "{personal.name}"
                 align: start
               - field: content-type
-                content: Resume
+                content: CV
                 align: center
               - field: page-number
                 content: "{page-number}"

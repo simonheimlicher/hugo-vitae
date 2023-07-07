@@ -138,23 +138,29 @@
   }
 }
 
-@mixin lower-caps($spacing: 0.05ch) {
+@mixin lower-caps($spacing: var(--letter-spacing_caps_lower)) {
   font-weight: var(--font-weight-caps);
   font-variant: all-small-caps;
-  letter-spacing: $spacing;
+  @if ($spacing != 0) {
+    letter-spacing: $spacing;
+  }
   text-transform: lowercase;
 }
 
-@mixin upper-caps($spacing: 0.05ch) {
+@mixin upper-caps($spacing: var(--letter-spacing_caps_upper)) {
   font-weight: var(--font-weight-caps);
   font-variant: small-caps;
-  letter-spacing: $spacing;
+  @if ($spacing != 0) {
+    letter-spacing: $spacing;
+  }
   text-transform: uppercase;
 }
 
-@mixin upper-caps-strong($spacing: 0.05ch) {
+@mixin upper-caps-strong($spacing: var(--letter-spacing_caps_upper_strong)) {
   font-weight: var(--font-weight-caps-strong);
   font-variant: small-caps;
-  letter-spacing: $spacing;
+  @if ($spacing != 0) {
+    letter-spacing: $spacing;
+  }
   text-transform: uppercase;
 }

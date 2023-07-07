@@ -48,7 +48,10 @@ $font-size-scale-factor: math.pow(2.0, math.div(1, 5) );
   --font-weight-em: var(--font-weight);
   --font-weight-heading: var(--font-weight-strong);
   --font-weight-caps: var(--font-weight);
+  --letter-spacing_caps_lower: 0;
+  --letter-spacing_caps_upper: 0;
   --font-weight-caps-strong: var(--font-weight-strong);
+  --letter-spacing_caps_upper_strong: 0;
 
   --font-style: regular;
 
@@ -102,7 +105,8 @@ $font-size-scale-factor: math.pow(2.0, math.div(1, 5) );
   // word-break: break-word
 
   // Adds a hyphen where the word breaks, if supported
-  hyphens: auto;
+  // FIXME: Disable hyphenation as Applicant Tracking Systems (ATS) cannot deal with that
+  hyphens: manual;
 
   // FIXME: Include proper list style within .vitae container
   @include list-style_indented(0rem, var(--list-style_indent));

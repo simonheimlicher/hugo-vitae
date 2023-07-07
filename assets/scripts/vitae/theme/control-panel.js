@@ -9,7 +9,7 @@ const controlPanelSettings = {
   live: true,
 
   // 0 - starts as hidden, 1 - starts as visible, 2 - always visible
-  visible: 1,
+  visible: 0,
 
   CSSVarTarget: document.querySelector('#vitaeContainer'),
 

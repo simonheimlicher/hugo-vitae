@@ -33,55 +33,14 @@ PaginationPage: a printed page that is part of a Part
       {{ printf `%s="%d"` $pp.PaginationOrderAttr 9 | safeHTMLAttr }}
       {{ printf `%s="%s"` $pp.PaginationPolicyAttr $paginationPolicy | safeHTMLAttr -}}
       >
-        {{- range $sectionIndex, $section := where $slot.sections "enabled" "ne" false }}
-          {{- $sectionName := $section.section }}
-          {{- $childClass := default "" .child_class }}
-          {{- $sectionContainer := default "" .container }}
-          {{- if $sectionContainer }}
-            {{ printf `<%s class="section_%s section">` $sectionContainer $sectionName | safeHTML }}
-          {{- else }}
-            {{- $childClass = trim (printf "%v section_%s" $childClass $sectionName) " " }}
-          {{- end }}
-          {{- $headingLevel := default 2 $section.level }}
-          {{- $sectionTitle := $section.title | default $sectionName -}}
-          {{- with $section.title }}
-            {{- $sectionTitle := (cond (gt (len (T $sectionTitle)) 0) (T $sectionTitle) $sectionTitle) | strings.FirstUpper }}
-            <h{{ $headingLevel }} class="section-title_{{ $sectionName }} section-title {{ $childClass }}">{{ $sectionTitle }}</h{{ $headingLevel }}>
-            {{- $headingLevel = (add $headingLevel 1) }}
-          {{- end }}
-          {{- range $componentIndex, $component := $section.components }}
-            {{- $componentName := $component.component }}
-            {{- $componentPartial := printf "vitae/_components/%s" $componentName }}
-            {{- $componentContainer := default "" .container }}
-            {{- if $componentContainer }}
-              {{- printf `<%s class="component-container_%s component-container">` $componentContainer $componentName | safeHTML }}
-            {{- end }}
-            {{- $componentTitle := $component.title | default $componentName -}}
-            {{- with $component.title }}
-              {{- $componentTitle := (cond (gt (len (T $componentTitle)) 0) (T $componentTitle) $componentTitle) | strings.FirstUpper }}
-              <h{{ $headingLevel }} class="component-title_{{ $componentName }} component-title {{ $childClass }}">{{ $componentTitle }}</h{{ $headingLevel }}>
-              {{- $headingLevel = (add $headingLevel 1) }}
-            {{- end }}
-            {{- $componentStyle := $component.style | default false }}
-            {{- partial $componentPartial (dict
-              "Page" $page
-              "Config" $vitaeParams
-              "PageIndex" $partIndex
-              "Component" $component
-              "Style" $componentStyle
-              "Index" $componentIndex
-              "ChildClass" $childClass
-              "Container" false
-              "Data" $vitaeData
-            ) -}}
-            {{- with $componentContainer }}
-              {{ printf "</%s>" . | safeHTML }}
-            {{- end }}
-          {{- end }}
-          {{- with $sectionContainer }}
-            {{ printf "</%s>" . | safeHTML }}
-          {{- end }}
-        {{- end }}
+        {{- $childClass := default "" .child_class }}
+        {{- partial "vitae/_components/index" (dict
+          "Page" $page
+          "Config" $vitaeParams
+          "ChildClass" $childClass
+          "Data" $vitaeData
+          "Sections" $slot.sections
+        ) -}}
       </div>
     {{- end }}
     {{- with $vitaeParams.footer }}
@@ -101,7 +60,6 @@ PaginationPage: a printed page that is part of a Part
         {{- partial $componentPartial (dict
           "Page" $page
           "Config" $vitaeParams
-          "PageIndex" $partIndex
           "Component" $component
           "Style" $componentStyle
           "Index" $componentIndex

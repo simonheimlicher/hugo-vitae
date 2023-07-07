@@ -297,6 +297,27 @@ $screen-pad-v: 1rem;
           padding-top: 0;
         }
       }
+      h1, h2, h3, h4, h5, h6 {
+        &.feature-first {
+          padding-top: 0;
+          @include flush-top-heading;
+        }
+      }
+      .feature-first {
+        padding-top: 0;
+        h1, h2, h3, h4, h5, h6 {
+          &:first-of-type {
+            padding-top: 0;
+            @include flush-top-heading;
+          }
+        }
+        & > p:first-of-type,
+        & > li:first-of-type,
+        & > dl:first-of-type {
+          padding-top: 0;
+          @include flush-top;
+        }
+      }
     }
     .print-preview_overflow {
       .pagination-container[data-pagination-policy="break"] {

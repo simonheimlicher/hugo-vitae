@@ -3,37 +3,6 @@
 $inline-list-item-separation: 2ch;
 $inline-list-sep-width: math.div($inline-list-item-separation, 3.0);
 
-.vitae {
-  h1,
-  h2,
-  h3,
-  h4,
-  h5,
-  h6 {
-    margin-bottom: 0;
-  }
-  .section-title {
-    position: relative;
-    font-family: var(--font-section-title);
-    @include upper-caps-strong
-  }
-  .section:first-child .section-title {
-    margin-top: var(--section-title_first-section_sep-vert);
-  }
-  .section-title ~ .section-title {
-    margin-top: calc(var(--section-title-sep-vert));
-    &::before {
-      position: absolute;
-      content: "";
-      top: 0;
-      height: 0;
-      left: 0;
-      right: 0;
-      border-top: calc(var(--line-width_separator_heading)) solid var(--border-color-faint);
-    }
-  }
-}
-
 /* ----- Feature STAGES ------ */
 .vitae {
   .section-stages {
@@ -45,9 +14,6 @@ $inline-list-sep-width: math.div($inline-list-item-separation, 3.0);
     --font-weight-heading-role: var(--font-weight-strong);
     --line-height: 1.5;
     --line-height-heading: 1.2;
-
-    --section-title-sep-vert: 0.5rem;
-    --section-title_first-section_sep-vert: var(--section-title-sep-vert);
 
     --inline-list-item-separation: 2ch;
     --inline-list-sep-width: var(--inline-list-item-separation) / 3.0;

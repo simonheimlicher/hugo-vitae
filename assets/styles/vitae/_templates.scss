@@ -20,12 +20,12 @@
   &_front-page {
     --num_columns: 12;
     --main_column: 1;
-    --main_column_width: 7;
+    --main_column_width: 9;
     --aside_column: calc(var(--main_column) + var(--main_column_width));
     --aside_column_width: calc(var(--num_columns) - var(--main_column_width));
 
     .slot_header {
-      margin-bottom: var(--inner_margin_4-6);
+      margin-bottom: var(--inner_margin_4-4);
     }
 
     .slot_main {
@@ -42,29 +42,30 @@
           // grid-area: span 1 / span 12;
         }
         &_career-summary {
-          // grid-column: 1 / span var(--main_column_width);
-          grid-column: 1 / span var(--num_columns);
-          grid-row: 2 / span 2;
+          grid-column: 1 / span var(--main_column_width);
+          // grid-column: 1 / span var(--num_columns);
+          grid-row: 2;
           // grid-area: span 2 / span 12;
         }
         &_award-selection {
           grid-column: var(--aside_column) / span var(--aside_column_width);
-          grid-row: 4;
+          grid-row: 2;
           // grid-area: span 1 / span var(--aside_column_width);
+        }
+        &_key-achievements {
+          grid-column: 1 / span var(--num_columns);
+          // grid-column: 1 / span var(--main_column_width);
+          grid-row: 3;
+        }
+        &_connect {
+          // grid-column: var(--aside_column) / span var(--aside_column_width);
+          grid-column: 1 / span var(--num_columns);
+          grid-row: 4;
         }
         &_language-skills {
           grid-column: var(--aside_column) / span var(--aside_column_width);
           grid-row: 4;
           // grid-area: span 1 / span var(--aside_column_width);
-        }
-        &_connect {
-          grid-column: var(--aside_column) / span var(--aside_column_width);
-          grid-row: 5;
-        }
-        &_key-achievements {
-          grid-column: 1 / span var(--num_columns);
-          // grid-column: 1 / span var(--main_column_width);
-          grid-row: 4 / span 2;
         }
       }
     }
@@ -94,6 +95,21 @@
           }
         }
       }
+      .section-panel {
+        margin-top: var(--inner_margin_4-4);
+        display: grid;
+        // gap: var(--inner_margin_4-1) var(--inner_margin_4-2);
+        gap: var(--inner_margin_4-4) var(--inner_margin_4-4);
+        grid-template-columns: repeat(var(--num_columns), 1fr);
+        align-items: start;
+        grid-auto-flow: dense row;
+        .section_education {
+          grid-column: 1 / span var(--main_column_width);
+        }
+        .section_language-skills {
+          grid-column: var(--aside_column) / span var(--aside_column_width);
+        }
+      }
     }
   }
 
@@ -117,7 +133,13 @@
         //   grid-column: 1 / span var(--num_columns);
         // }
         &_education {
-          grid-column: 1 / span var(--num_columns);
+          // grid-column: 1 / span var(--num_columns);
+          grid-column: var(--main_column) / span var(--main_column_width);
+        }
+        &_language-skills {
+          grid-column: var(--aside_column) / span var(--aside_column_width);
+          // grid-row: 4;
+          // grid-area: span 1 / span var(--aside_column_width);
         }
         &_publication-selection {
           grid-column: var(--main_column) / span var(--main_column_width);
@@ -127,11 +149,7 @@
         }
         &_award-selection {
           grid-column: var(--main_column) / span var(--main_column_width);
-          // grid-row: 4;
-          // grid-area: span 1 / span var(--aside_column_width);
-        }
-        &_language-skills {
-          grid-column: var(--aside_column) / span var(--aside_column_width);
+          grid-row: 3 / span 2
           // grid-row: 4;
           // grid-area: span 1 / span var(--aside_column_width);
         }

@@ -312,6 +312,34 @@ html[data-mode="dim"] {
   }
 };
 
+.vitae {
+  .view-print {
+    --section-title_margin_bottom: var(--inner_margin_4-3);
+    --section-title_padding_bottom: 0;
+    --section-title_margin_bottom_between: var(--inner_margin_4-3);
+  }
+
+  .section-title {
+    position: relative;
+    font-family: var(--font-section-title);
+    @include upper-caps-strong;
+    margin: 0 0 var(--section-title_margin_bottom) 0;
+    padding: 0 0 var(--section-title_padding_bottom) 0;
+  }
+  .section-title ~ .section-title {
+    margin-top: calc(var(--section-title_margin_bottom_between));
+    &::before {
+      position: absolute;
+      content: "";
+      top: 0;
+      height: 0;
+      left: 0;
+      right: 0;
+      border-top: calc(var(--line-width_separator_heading)) solid var(--border-color-faint);
+    }
+  }
+}
+
 .vitae .component {
   /* ----- Component HEADER ------ */
   &_header {
@@ -413,9 +441,9 @@ html[data-mode="dim"] {
       }
     }
     &.panels {
-      &_content {
-        margin-top: var(--inner_margin_4-2);
-      }
+      // &_content {
+      //   margin-top: var(--inner_margin_4-2);
+      // }
       &_cards {
         display: grid;
         gap: var(--inner_margin_4-1) var(--inner_margin_4-4)
@@ -423,7 +451,7 @@ html[data-mode="dim"] {
     }
     .panel {
       &_title {
-        padding-bottom: 0;
+        padding-top: 0;
         margin: 0;
       }
       // .card {
@@ -499,7 +527,7 @@ html[data-mode="dim"] {
     --font-weight-heading-organization: var(--font-weight-strong);
     --font-size-heading-role: var(--font-size-larger-2);
     --font-weight-heading-role: var(--font-weight-strong);
-    --line-height: 1.5;
+    --line-height: 1.4;
     --line-height-heading: 1.2;
 
     --font-size_stage_header: var(--font-size-larger-1);
@@ -512,8 +540,8 @@ html[data-mode="dim"] {
 
     --organization_logo_width: calc(2 * var(--rem));
 
-    --padding_organization_between: var(--inner_padding_4-8);
-    --padding_role_between: var(--inner_padding_4-8);
+    --padding_organization_between: var(--inner_padding_4-6);
+    --padding_role_between: var(--inner_padding_4-6);
     --padding_role_first: var(--inner_padding_4-4);
     --padding_stage_meta: var(--inner_padding_4-0);
 
@@ -634,9 +662,9 @@ html[data-mode="dim"] {
     }
 
     // Header for organizations
-    &.organization_header {
-      margin-top: var(--inner_margin_4-2);
-    }
+    // &.organization_header {
+    //   margin-top: var(--inner_margin_4-2);
+    // }
     &.component_stages + .organization_header {
       margin-top: 0;
     }
@@ -765,6 +793,22 @@ html[data-mode="dim"] {
       --font-size_date_period: var(--font-size-normal);
         // --font-weight-heading-organization: var(--font-weight);
       // --font-weight-heading-role: var(--font-weight);
+    }
+
+    /*
+     * Layout style NARROW
+     */
+
+     &.style_layout_narrow {
+      // --padding_organization_between: var(--inner_padding_4-3);
+      // --padding_role_first: var(--inner_padding_4-0);
+      // --padding_role_between: var(--inner_padding_4-2);
+      // --padding_stage_meta: 0px;
+      .stage {
+        &_main, &_meta, &_content {
+          grid-column: 1 / span all;
+        }
+      }
     }
 
     /*
@@ -1528,7 +1572,7 @@ html[data-mode="dim"] {
         display: flex;
         flex-direction: column;
         row-gap: var(--inner_margin_4-2);
-        margin-top: var(--inner_margin_4-2);
+        // margin-top: var(--inner_margin_4-2);
         .award {
           &_header {
             display: flex;
@@ -1561,11 +1605,11 @@ html[data-mode="dim"] {
    * Component SKILLS
    */
    &_skills {
-    .skill {
+    &.skill {
       &_container {
         display: grid;
         gap: var(--inner_padding_4-2) var(--inner_padding_4-2);
-        margin-top: var(--inner_margin_4-2);
+        // margin-top: var(--inner_margin_4-2);
         font-size: var(--font-size-normal);
       }
       &_name {
@@ -1654,6 +1698,11 @@ html[data-mode="dim"] {
           &_title {
             font-weight: var(--font-weight-strong);
           }
+        }
+        &.style_layout_shallow {
+          flex-direction: row;
+          column-gap: var(--inner_margin_4-4);
+          justify-content: space-between;
         }
       }
     }

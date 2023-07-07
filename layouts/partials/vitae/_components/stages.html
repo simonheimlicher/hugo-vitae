@@ -121,8 +121,6 @@
       {{- $timelineOrgClass = "org_first" }}
     {{- else if (eq $orgIdx (sub $numOrgs 1 ) ) }}
       {{- $timelineOrgClass = "org_last" }}
-    {{- else }}
-      {{- $timelineOrgClass = printf "org_within timeline_org_%d_of_%d" $orgIdx $numOrgs }}
     {{- end }}
 
     {{- $inlinePartialParams := (dict "Style" $style "Component" $component "HeadingLevel" $headingLevel) }}
@@ -252,7 +250,7 @@
         {{- $roleClass = "role_within" }}
       {{- end }}
 
-      {{- $topLevelClass = strings.TrimLeft " " (delimit (slice $roleClass $roleClass $timelineOrgClass $styleClass $componentClass $childClass) " ") }}
+      {{- $topLevelClass = strings.TrimLeft " " (delimit (slice $roleClass $timelineOrgClass $styleClass $componentClass $childClass) " ") }}
 
       {{- if $stagePeriodInHeader }}
       <div class="{{ delimit (append $topLevelClass $roleHeaderClassList) ` ` }}">
@@ -486,13 +484,7 @@
           {{- end }}
           {{- $roleAchievementsClass := "role_achievements" }}
           {{- with $topLevelClass }} {{ $roleAchievementsClass = printf "%s %s" $roleAchievementsClass . }}{{ end }}
-          {{- if $partialOutput }}
-            {{- partial "vitae/role-achievements" (dict "Page" $page "ChildClass" $roleAchievementsClass "PartialOutput" true "Data" .) $page . }}
-          {{- else }}
-            <div class="role_achievements{{ with $topLevelClass }} {{ . }}{{ end }}">
-              {{- partial "vitae/role-achievements" (dict "Page" $page "Data" .) $page . }}
-            </div>
-          {{- end }}
+          {{- partial "vitae/role-achievements" (dict "Page" $page "ChildClass" $roleAchievementsClass "PartialOutput" true "Data" .) $page . }}
         {{- end }}
       {{- end }}
     {{- end }}

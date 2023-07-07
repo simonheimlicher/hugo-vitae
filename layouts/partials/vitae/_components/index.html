@@ -1,0 +1,114 @@
+{{- $page := .Page -}}
+{{- $headingLevel := default 3 .HeadingLevel }}
+{{- $vitaeParams := .Config }}
+{{- $vitaeData := .Data }}
+{{- $sections := .Sections }}
+{{- $childClass := default "" .ChildClass }}
+{{- $style := default dict .Style }}
+{{- $template := "vitae/_components/index" }}
+
+{{- $debug := false }}
+{{- /* {{- $debug = page.Scratch.Get "clarisdebug" }} */ -}}
+{{- $debug = or $debug (not (not (findRE `^/([^/]+-demo/)?preview` $page.RelPermalink) ) ) -}}
+
+{{- $validStyles := (dict
+  "layout" (dict
+    "shallow" "shallow"
+    "narrow" "narrow"
+    "compact" (slice "shallow" "narrow")
+  )
+  "timeline" (dict
+    "false" false
+    "true" "column"
+    "column" "column"
+    "dot-dash" "dot-dash"
+  )
+  "heading" (dict
+    "normal" "normal"
+    "larger-1" "larger-1"
+    "smaller-1" "smaller-1"
+  )
+  "logo" (dict
+    "false" false
+    "true" "left"
+    "left" "left"
+  )
+) -}}
+
+{{- $styleClass := partial "vitae/_functions/style-class" (dict
+  "Template" $template
+  "Style" $style
+  "ValidStyles" $validStyles
+  ) -}}
+
+{{- $renderOptInline := dict "display" "inline" }}
+{{- $renderOptBlock := dict "display" "block" }}
+
+
+{{- range $sectionIndex, $section := where $sections "enabled" "ne" false }}
+  {{- $sectionName := $section.section }}
+  {{- $childClass := default "" .child_class }}
+  {{- $sectionContainer := default "" .container }}
+  {{- if $sectionContainer }}
+    {{ printf `<%s class="section_%s section">` $sectionContainer $sectionName | safeHTML }}
+  {{- else }}
+    {{- $childClass = trim (printf "%v section_%s" $childClass $sectionName) " " }}
+  {{- end }}
+  {{- $headingLevel := default 2 $section.level }}
+  {{- $sectionTitle := $section.title | default $sectionName -}}
+  {{- with $section.title }}
+    {{- $sectionTitle := (cond (gt (len (T $sectionTitle)) 0) (T $sectionTitle) $sectionTitle) | strings.FirstUpper }}
+    <h{{ $headingLevel }} class="section-title_{{ $sectionName }} section-title {{ $childClass }}">{{ $sectionTitle }}</h{{ $headingLevel }}>
+    {{- $headingLevel = (add $headingLevel 1) }}
+  {{- end }}
+  {{- range $componentIndex, $component := $section.components }}
+    {{- $componentName := $component.component }}
+    {{- $componentPartial := printf "vitae/_components/%s" $componentName }}
+    {{- $componentContainer := default "" .container }}
+    {{- if $componentContainer }}
+      {{- printf `<%s class="component-container_%s component-container">` $componentContainer $componentName | safeHTML }}
+    {{- end }}
+    {{- $componentTitle := $component.title | default $componentName -}}
+    {{- with $component.title }}
+      {{- $componentTitle := (cond (gt (len (T $componentTitle)) 0) (T $componentTitle) $componentTitle) | strings.FirstUpper }}
+      <h{{ $headingLevel }} class="component-title_{{ $componentName }} component-title {{ $childClass }}">{{ $componentTitle }}</h{{ $headingLevel }}>
+      {{- $headingLevel = (add $headingLevel 1) }}
+    {{- end }}
+    {{- $componentStyle := $component.style | default false }}
+    {{- partial $componentPartial (dict
+      "Page" $page
+      "Config" $vitaeParams
+      "Component" $component
+      "Style" $componentStyle
+      "Index" $componentIndex
+      "ChildClass" $childClass
+      "Container" false
+      "Data" $vitaeData
+    ) -}}
+    {{- with $componentContainer }}
+      {{ printf "</%s>" . | safeHTML }}
+    {{- end }}
+  {{- end }}
+  {{- with $section.sections }}
+    {{- if $debug }}
+      {{- warnf "%s[%s]: Calling %s with Sections:\n%v" $page $template $template
+        (jsonify (dict "indent" "  ") .) -}}
+      {{- end }}
+    {{- $panelClass := (slice "section-panel") }}
+    {{- with $section.panel_class }}
+      {{- $panelClass = append "section-panel" $panelClass }}
+    {{- end }}
+    <div class="{{ delimit $panelClass " " }}">
+      {{- partial "vitae/_components/index" (dict
+        "Page" $page
+        "Config" $vitaeParams
+        "ChildClass" $childClass
+        "Data" $vitaeData
+        "Sections" .
+      ) -}}
+    </div>
+  {{- end }}
+  {{- with $sectionContainer }}
+    {{ printf "</%s>" . | safeHTML }}
+  {{- end }}
+{{- end }}
