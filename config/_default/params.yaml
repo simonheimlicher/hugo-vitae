@@ -17,6 +17,8 @@ vitae:
       - template: front-page
         # enabled: false
         pagination_policy: first
+        footer:
+          enabled: false
         slots:
         - slot: header
           sections:

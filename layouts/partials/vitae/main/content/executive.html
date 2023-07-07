@@ -21,8 +21,12 @@ PaginationPage: a printed page that is part of a Part
       (printf "%s%d" $pp.PartClassPrefix $partIndex)
       $pp.PaginationPageClass
     ) -}}
+  {{- $footer := false }}
   {{- with $vitaeParams.footer }}
-    {{- $partClassList = append (printf "footer_%s" .template) $partClassList }}
+    {{- if default true $part.footer.enabled }}
+      {{- $footer = . }}
+      {{- $partClassList = append (printf "footer_%s" .template) $partClassList }}
+    {{- end }}
   {{- end }}
   <div class="{{ delimit $partClassList ` `}}">
     {{- range $slotIndex, $slot := $part.slots }}
@@ -43,7 +47,7 @@ PaginationPage: a printed page that is part of a Part
         ) -}}
       </div>
     {{- end }}
-    {{- with $vitaeParams.footer }}
+    {{- with $footer }}
       {{- $footerContainer := default "footer" .container }}
       {{- if $footerContainer }}
         {{ printf `<%s class="slot_footer footer_%s">` $footerContainer .template | safeHTML }}

@@ -267,11 +267,11 @@ $screen-pad-v: 1rem;
 
     .pagination-page {
       padding: var(--page_margin_top) var(--page_margin_right) var(--page_margin_bottom) var(--page_margin_left);
-      &.footer_name-page-number {
-        display: flex;
-        flex-direction: column;
-        justify-content: space-between;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
 
+      &.footer_name-page-number {
         --footer_margin_left: calc( var(--page_margin_base_left) * var(--page_scale-factor));
         --footer_margin_right: calc( var(--page_margin_base_right) * var(--page_scale-factor));
         --footer_margin_bottom: calc(var(--page_margin_base_bottom) / 2 * var(--page_scale-factor));
