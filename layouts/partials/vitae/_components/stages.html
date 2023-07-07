@@ -113,7 +113,7 @@
     {{- $firstRole := index $roleList 0 }}
     {{- $roleHasDetails := false }}
     {{ with $firstRole }}
-      {{- $roleHasDetails = or .details .summary .description .responsibilities_achievements .star .results .responsibilities .achievements }}
+      {{- $roleHasDetails = or .details .summary .description .responsibilities_achievements .star .results .responsibilities }}
     {{- end }}
     {{- if $singleOrg }}
       {{- $timelineOrgClass = "org_single" }}
@@ -394,97 +394,6 @@
               </div>
             {{- end }}
           {{- end }}
-        {{- end }}
-      {{- end }}
-
-      {{- if default true $component.role.star }}
-        {{- with $role.star }}
-          {{- $starHeaderKeys := (slice "task" "situation") }}
-          {{- $starMainKeys := (slice "result" "action") }}
-          {{- range $starRecordIndex, $starRecord := . }}
-            {{- with $containerClass }}
-              <div class="{{ $containerClass }} {{ $topLevelClass }}">
-                <div class="stage_timeline">
-                </div>
-            {{- end }}
-            <div class="role_star_container stage_main{{ with (and (not $containerClass) $topLevelClass) }} {{ . }}{{ end }}">
-              <div class="role_star_header">
-                {{- if and $roleStarHeading (eq $starRecordIndex 0) }}
-                  {{ partial $roleStarHeading (merge $roleStarHeadingParams (dict "Section" "responsibilities") ) }}
-                {{- end }}
-                <h{{ add $headingLevel 2 }} class="role_star_title">
-                  {{- default $starRecord.title (T $starRecord.title) -}}
-                </h{{ add $headingLevel 2 }}>
-                {{/* <pre>{{ jsonify (dict "indent" "  ") . }}</pre> */}}
-                {{- range $key := $starHeaderKeys }}
-                  {{- with index $starRecord $key }}
-                    <div class="role_star_{{ $key }} role_star">
-                      {{- partial "render_string_slice" . }}
-                    </div>
-                  {{- end }}
-                {{- end }}
-              </div>
-              <div class="role_star_main">
-                {{- if and $roleStarHeading (eq $starRecordIndex 0) }}
-                  {{ partial $roleStarHeading (merge $roleStarHeadingParams (dict "Section" "achievements") ) }}
-                {{- end }}
-                {{- range $key := $starMainKeys }}
-                  {{- with index $starRecord $key }}
-                    <div class="role_star_{{ $key }} role_star">
-                      {{- partial "render_string_slice" . }}
-                    </div>
-                  {{- end }}
-                {{- end }}
-              </div>
-            </div>
-            {{- with $containerClass }}
-              </div>
-            {{- end }}
-          {{- end }}
-        {{- end }}
-      {{- end }}
-
-      {{- if default true $component.role.responsibilities }}
-        {{- with $role.responsibilities }}
-          {{- if $roleSectionSeparator }}
-            {{- partial $roleSectionSeparator (merge $inlinePartialParams (dict
-                "Section" "responsibilities"
-                "TopLevelClass" $topLevelClass
-            ) ) }}
-          {{- end }}
-          {{- if reflect.IsSlice . }}
-            {{- range . }}
-              {{- if reflect.IsMap . }}
-                {{- range $skill, $responsibility := . }}
-                  <div class="role_responsibilities {{ with $topLevelClass }} {{ . }}{{ end }}">
-                    <div class="skill">{{ page.RenderString $skill }}</div>
-                    <div class="responsibility">{{ page.RenderString $responsibility }}</div>
-                  </div>
-                {{- end }}
-              {{- else }}
-                <div class="role_responsibilities{{ with $topLevelClass }} {{ . }}{{ end }}">
-                  {{ page.RenderString . }}
-                </div>
-              {{- end }}
-            {{- end }}
-          {{- else }}
-            <div class="role_responsibilities{{ with $topLevelClass }} {{ . }}{{ end }}">
-              {{ page.RenderString . }}
-            </div>
-          {{- end }}
-        {{- end }}
-      {{- end }}
-      {{- with $role.achievements }}
-        {{- if default true $component.role.achievements }}
-          {{- if $roleSectionSeparator }}
-            {{- partial $roleSectionSeparator (merge $inlinePartialParams (dict
-                "Section" "achievements"
-                "TopLevelClass" $topLevelClass
-            ) ) }}
-          {{- end }}
-          {{- $roleAchievementsClass := "role_achievements" }}
-          {{- with $topLevelClass }} {{ $roleAchievementsClass = printf "%s %s" $roleAchievementsClass . }}{{ end }}
-          {{- partial "vitae/role-achievements" (dict "Page" $page "ChildClass" $roleAchievementsClass "PartialOutput" true "Data" .) $page . }}
         {{- end }}
       {{- end }}
     {{- end }}

@@ -449,30 +449,14 @@ $screen-pad-v: 1rem;
   &.layout-executive .view-print .pagination-page {
     // .pagination-container[data-pagination-policy="break"] {
     .pagination-container {
-      // display: flex;
-      // flex-direction: column;
-      // flex-wrap: nowrap;
-      // justify-content: space-between;
       &.slot_main {
         height: 100%;
         & > * {
           flex: 0 1 auto;
         }
       }
-      // & > * {
-      //   flex: 0 1 auto;
-      // }
-      // & > .timeline {
-      //   flex: 0.5 1 auto;
-      // }
-      // .organization-header {
-      //   flex: 0.25 0 auto;
-      // }
-      // .role_header {
-      //   flex: 1 0 auto;
-      // }
       .stage_header {
-        flex: 1 0 auto;
+        flex: 0.25 0 auto;
       }
       .stage_header:has( + .stage_header) {
         flex: 0.25 0 auto;

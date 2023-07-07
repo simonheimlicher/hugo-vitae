@@ -774,28 +774,6 @@ html[data-mode="dim"] {
     }
 
     /*
-     * Heading style LARGER-1
-     */
-
-    // First column is dedicated to timeline to facilitate scanning by year
-    &.style_heading_larger-1 {
-      --font-size-heading-organization: var(--font-size-larger-1);
-      // --font-weight-heading-organization: var(--font-weight);
-      --font-size-heading-role: var(--font-size-larger-1);
-      --font-weight-heading-role: var(--font-weight);
-    }
-    &.style_heading_normal {
-      --font-size-heading-organization: var(--font-size-normal);
-      // --font-weight-heading-organization: var(--font-weight);
-      --font-size-heading-role: var(--font-size-normal);
-      --font-weight-heading-role: var(--font-weight);
-      --font-size_stage_header: var(--font-size-normal);
-      --font-size_date_period: var(--font-size-normal);
-        // --font-weight-heading-organization: var(--font-weight);
-      // --font-weight-heading-role: var(--font-weight);
-    }
-
-    /*
      * Layout style NARROW
      */
 
@@ -816,9 +794,9 @@ html[data-mode="dim"] {
      */
 
      &.style_layout_shallow {
-      --padding_organization_between: var(--inner_padding_4-3);
-      --padding_role_first: var(--inner_padding_4-0);
-      --padding_role_between: var(--inner_padding_4-2);
+      --padding_organization_between: var(--inner_padding_4-6);
+      --padding_role_first: var(--inner_padding_4-2);
+      --padding_role_between: var(--inner_padding_4-4);
       --padding_stage_meta: 0px;
       .stage {
         &_main {
@@ -835,6 +813,36 @@ html[data-mode="dim"] {
           }
         }
       }
+    }
+
+    /*
+     * Heading style LARGER-1
+     */
+
+    // First column is dedicated to timeline to facilitate scanning by year
+    &.style_heading_larger-1 {
+      --font-size-heading-organization: var(--font-size-larger-1);
+      // --font-weight-heading-organization: var(--font-weight);
+      --font-size-heading-role: var(--font-size-larger-1);
+      --font-weight-heading-role: var(--font-weight);
+    }
+
+    /*
+     * Heading style NORMAL
+     */
+
+     &.style_heading_normal {
+      --font-size-heading-organization: var(--font-size-normal);
+      // --font-weight-heading-organization: var(--font-weight);
+      --font-size-heading-role: var(--font-size-normal);
+      --font-weight-heading-role: var(--font-weight);
+      --font-size_stage_header: var(--font-size-normal);
+      --font-size_date_period: var(--font-size-normal);
+        // --font-weight-heading-organization: var(--font-weight);
+      // --font-weight-heading-role: var(--font-weight);
+      --padding_organization_between: var(--inner_padding_4-3);
+      --padding_role_first: var(--inner_padding_4-0);
+      --padding_role_between: var(--inner_padding_4-2);
     }
 
     /*
@@ -1566,7 +1574,6 @@ html[data-mode="dim"] {
    * Component AWARDS
    */
   &_awards {
-
     &.award {
       &_container {
         display: flex;
@@ -1608,10 +1615,12 @@ html[data-mode="dim"] {
     &.skill {
       &_container {
         display: grid;
-        gap: var(--inner_padding_4-2) var(--inner_padding_4-2);
-        // margin-top: var(--inner_margin_4-2);
+        gap: 0 var(--inner_padding_4-2);
+        align-items: baseline;
         font-size: var(--font-size-normal);
       }
+    }
+    .skill {
       &_name {
         grid-column: 1;
         grid-row: auto / span 2;
@@ -1639,11 +1648,12 @@ html[data-mode="dim"] {
       }
       &_certificates {
         font-size: var(--font-size-smaller-1);
+        grid-column: 2;
         &_item ~ .skill_certificates {
           &::before {
             content: '•';
             display: inline-block;
-            margin-right: var(--inline-list-item-separation) / 3.0 - 0.5ch;
+            margin-right: calc(var(--inline-list-item-separation) / 3.0 - 0.5ch);
             width: var(--inline-list-sep-width);
             text-align: center;
           }
@@ -1703,6 +1713,51 @@ html[data-mode="dim"] {
           flex-direction: row;
           column-gap: var(--inner_margin_4-4);
           justify-content: space-between;
+        }
+      }
+    }
+  }
+
+  /*
+   * Component PUBLICATIONS
+   */
+  &_publications {
+    --publication-sep-vert: 0.5rem;
+    --font-size-publications: var(--font-size-smaller-1);
+    font-size: calc(var(--font-size-publications));
+    .publication {
+      &_item {
+        position: relative;
+        & + .publication_item {
+          margin-top: var(--publication-sep-vert);
+          &::before {
+            border-top: calc(var(--line-width_separator)) solid var(--border-color-faint);            top: calc(var(--publication-sep-vert) / -2);
+            content: "";
+            height: 0;
+            position: absolute;
+            // left: calc( var(--column-padding-left) / -2)
+            // right: calc( var(--column-padding-right) / -2)
+            left: 0;
+            right: 0;
+          }
+        }
+      }
+    }
+    .publication {
+      &_authors {
+        break-after: avoid;
+      }
+      &_title {
+        break-after: avoid;
+        font-weight: var(--font-weight-strong);
+      }
+      &_date,
+      &_timeline {
+        color: var(--text-color-faint);
+      }
+      &_date {
+        &_published {
+          font-variant-caps: all-small-caps;
         }
       }
     }
