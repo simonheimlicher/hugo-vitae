@@ -13,7 +13,8 @@
   "layout" (dict
     "shallow" "shallow"
     "narrow" "narrow"
-    "compact" (slice "shallow" "narrow")
+    "inline" "inline"
+    "compact" (slice "shallow" "narrow" "inline")
   )
   "timeline" (dict
     "false" false
@@ -31,9 +32,19 @@
     "true" "left"
     "left" "left"
   )
+  "label" (dict
+    "unit" (dict
+      "true" true
+      "false" false
+    )
+    "function" (dict
+      "true" true
+      "false" false
+    )
+  )
 ) -}}
 
-{{- $styleClass := partial "vitae/_functions/style-class" (dict
+{{- $styleClassList := partial "vitae/_functions/style-class" (dict
   "Template" $template
   "Style" $style
   "ValidStyles" $validStyles
@@ -61,8 +72,20 @@
 {{- end }}
 
 {{- $stagePeriodInHeader := true }}
-{{- $organizationMetaInHeader := in (slice "compact" "shallow") $style.layout }}
-{{- $roleMetaInHeader := in (slice "compact" "shallow") $style.layout }}
+
+{{- $inlineHeader := false }}
+{{- with $style.layout }}
+  {{- $inlineLayoutStyles := (slice "inline" "shallow" "compact") }}
+  {{- if reflect.IsSlice . }}
+    {{/* {{- warnf "%s[%s]: intersect style.layout=%v with inlineLayoutStyles=%v = %v"
+        $page $template . $inlineLayoutStyles (intersect $inlineLayoutStyles .) }} */}}
+    {{- $inlineHeader = gt (len (intersect $inlineLayoutStyles .) ) 0 }}
+  {{- else }}
+    {{- $inlineHeader = in $inlineLayoutStyles . }}
+  {{- end }}
+{{- end }}
+{{- $organizationMetaInHeader := $inlineHeader }}
+{{- $roleMetaInHeader := $inlineHeader }}
 
 
 {{- $filterField := default "type" $component.filter_by -}}
@@ -113,7 +136,7 @@
     {{- $firstRole := index $roleList 0 }}
     {{- $roleHasDetails := false }}
     {{ with $firstRole }}
-      {{- $roleHasDetails = or .details .summary .description .responsibilities_achievements .star .results .responsibilities }}
+      {{- $roleHasDetails = or .details .summary .description .achievements .star .results .responsibilities_deprecated }}
     {{- end }}
     {{- if $singleOrg }}
       {{- $timelineOrgClass = "org_single" }}
@@ -125,7 +148,7 @@
 
     {{- $inlinePartialParams := (dict "Style" $style "Component" $component "HeadingLevel" $headingLevel) }}
 
-    {{- $topLevelClass := strings.TrimLeft " " (delimit (slice $orgClass $timelineOrgClass $styleClass $componentClass $childClass) " ") }}
+    {{- $topLevelClass := strings.TrimLeft " " (delimit (append $styleClassList (slice $orgClass $timelineOrgClass $componentClass $childClass)) " ") }}
 
     {{- $logoImageResource := false }}
     {{- if eq "left" $style.logo }}
@@ -137,6 +160,9 @@
         {{- warnf "%s[%s]: organization=%s: logo '%s' not found"
             $page $template $org.organization $imgAssetID }}
       {{- end }}
+    {{- else }}
+      {{- warnf "%s[%s]: style.logo=%v"
+          $page $template $style.logo }}
     {{- end }}
 
     {{- $stageHeaderClassPrefix := "stage_header" }}
@@ -250,7 +276,7 @@
         {{- $roleClass = "role_within" }}
       {{- end }}
 
-      {{- $topLevelClass = strings.TrimLeft " " (delimit (slice $roleClass $timelineOrgClass $styleClass $componentClass $childClass) " ") }}
+      {{- $topLevelClass = strings.TrimLeft " " (delimit (append $styleClassList (slice $roleClass $timelineOrgClass $componentClass $childClass)) " ") }}
 
       {{- if $stagePeriodInHeader }}
       <div class="{{ delimit (append $topLevelClass $roleHeaderClassList) ` ` }}">
@@ -305,7 +331,7 @@
       </div>
 
       {{- if and (not $timelineForSingleRole) (ge $roleIdx (sub $numRoles 1) ) }}
-        {{- $topLevelClass = strings.TrimLeft " " (delimit (slice $roleClass $styleClass $componentClass $childClass) " ") }}
+        {{- $topLevelClass = strings.TrimLeft " " (delimit (append $styleClassList (slice $roleClass $componentClass $childClass)) " ") }}
       {{- end }}
 
       {{- if not $roleMetaInHeader }}
@@ -357,8 +383,8 @@
         {{- end }}
       {{- end }}
 
-      {{- if default true $component.role.responsibilities_achievements }}
-        {{- with $role.responsibilities_achievements }}
+      {{- if default true $component.role.achievements }}
+        {{- with $role.achievements }}
           {{- $roleStarHeadingParams := (dict "HeadingLevel" $headingLevel) }}
           {{- range $starRecordIndex, $starRecord := . }}
             {{- with $containerClass }}
@@ -368,13 +394,13 @@
             {{- end }}
             <div class="role_star_header stage_header{{ with (and (not $containerClass) $topLevelClass) }} {{ . }}{{ end }}">
               {{- if and $roleStarHeading (eq $starRecordIndex 0) }}
-                {{ partial $roleStarHeading (merge $roleStarHeadingParams (dict "Section" "responsibilities") ) }}
+                {{ partial $roleStarHeading (merge $roleStarHeadingParams (dict "Section" "responsibilities_deprecated") ) }}
               {{- end }}
               <h{{ add $headingLevel 2 }} class="role_star_title">
-                {{- $starRecord.title -}}
+                {{-  page.RenderString $starRecord.title -}}
               </h{{ add $headingLevel 2 }}>
               {{/* <pre>{{ jsonify (dict "indent" "  ") . }}</pre> */}}
-              {{- with $starRecord.responsibilities }}
+              {{- with $starRecord.responsibilities_deprecated }}
                 <div class="role_star_responsibilities role_star">
                   {{- partial "render_string_slice" . }}
                 </div>
@@ -382,10 +408,10 @@
             </div>
             <div class="role_star_main stage_main{{ with (and (not $containerClass) $topLevelClass) }} {{ . }}{{ end }}">
               {{- if and $roleStarHeading (eq $starRecordIndex 0) }}
-                {{ partial $roleStarHeading (merge $roleStarHeadingParams (dict "Section" "achievements") ) }}
+                {{ partial $roleStarHeading (merge $roleStarHeadingParams (dict "Section" "content") ) }}
               {{- end }}
-              {{- with $starRecord.achievements }}
-                <div class="role_star_achievements role_star">
+              {{- with $starRecord.content }}
+                <div class="role_star_achievements_deprecated role_star">
                   {{- partial "render_string_slice" . }}
                 </div>
               {{- end }}
@@ -484,7 +510,8 @@
           {{- if $metaConfig.function }}
             {{- with $stageFunction := $stage.function }}
               {{ with and $style.label.function (default "function" (T "stage_function_label") ) }}
-                {{- $stageFunctionMarkup = printf `<span class="stage_function_label">%s:</span> <span class="stage_function">%s</span>` (strings.FirstUpper . ) $stageFunction }}
+                {{- $stageFunctionMarkup = printf `<span class="stage_function_label">%s:</span> <span class="stage_function">%s</span>`
+                    (strings.FirstUpper . ) $stageFunction }}
               {{- else }}
                 {{- $stageFunctionMarkup = printf `<span class="stage_function">%s</span>` (strings.FirstUpper . ) }}
               {{- end }}
@@ -502,7 +529,7 @@
             {{- if or (eq $stage $org) (not (default true $org.unit) ) (ne $stage.unit $org.unit) }}
               {{- with $stage.unit }}
                 {{- if reflect.IsSlice . }}
-                  {{- $unitLimit := cond (eq (printf "%T" $metaConfig.unit) "int") (int $metaConfig.unit) 99 }}
+                  {{- $unitLimit := cond (eq (printf "%T" $metaConfig.unit.limit) "int") (int $metaConfig.unit.limit) 99 }}
                   {{- if $debug }}
                     {{- if (gt $unitLimit (len .)) }}
                       {{- warnf "%s[%s]: metaConfig.unit=%v[%T]: only showing %d of %d organizational units"
@@ -516,8 +543,10 @@
                           {{- $stageUnitMarkup = printf `%s%s` $stageUnitMarkup $unitSeparatorStr }}
                         {{- end }}
                         {{- $stageUnitMarkup = printf `%s<span class="stage_unit">%s</span>` $stageUnitMarkup . }}
-                        {{ with default $unitType (T (printf "stage_unit_label_%s" $unitType) ) }}
-                          {{- $stageUnitMarkup = printf `%s <span class="stage_unit_label">%s</span>` $stageUnitMarkup . }}
+                        {{- if $metaConfig.unit.type }}
+                          {{ with default $unitType (T (printf "stage_unit_type_%s" $unitType) ) }}
+                            {{- $stageUnitMarkup = printf `%s <span class="stage_unit_label">%s</span>` $stageUnitMarkup . }}
+                          {{- end }}
                         {{- end }}
                       {{- end }}
                     {{- else }}
@@ -534,8 +563,10 @@
                         {{- $stageUnitMarkup = printf `%s%s` $stageUnitMarkup $unitSeparatorStr }}
                       {{- end }}
                       {{- $stageUnitMarkup = printf `%s<span class="stage_unit">%s</span>` $stageUnitMarkup . }}
-                      {{ with default $unitType (T (printf "stage_unit_label_%s" $unitType) ) }}
-                        {{- $stageUnitMarkup = printf `%s <span class="stage_unit_label">%s</span>` $stageUnitMarkup . }}
+                      {{- if $metaConfig.unit.type }}
+                        {{ with default $unitType (T (printf "stage_unit_type_%s" $unitType) ) }}
+                          {{- $stageUnitMarkup = printf `%s <span class="stage_unit_label">%s</span>` $stageUnitMarkup . }}
+                        {{- end }}
                       {{- end }}
                     {{- end }}
                   {{- else }}
@@ -549,12 +580,13 @@
 
               {{- with $stageUnitMarkup }}
                 {{- if $stageFunctionMarkup }}
-                  {{- with and $style.label.unit (default "unit" (T "unit") ) }}
-                    {{- $functionUnitLocationMarkup = printf `%s%s<span class="stage_unit_prefix">%s:</span>` $functionUnitLocationMarkup }}
-                  {{- end }}
                   {{- $functionUnitLocationMarkup = printf `%s%s` $functionUnitLocationMarkup $stageMetaSeparatorStr }}
                 {{- end }}
-                {{- $functionUnitLocationMarkup = printf `%s%s` $functionUnitLocationMarkup (. | strings.FirstUpper) }}
+                {{- with and $style.label.unit (default "unit" (T "unit") ) }}
+                  {{- $functionUnitLocationMarkup = printf `%s<span class="stage_unit_label">%s:</span> `
+                      $functionUnitLocationMarkup (strings.FirstUpper . ) }}
+                {{- end }}
+                {{- $functionUnitLocationMarkup = printf `%s%s` $functionUnitLocationMarkup (strings.FirstUpper . ) }}
               {{- end }}
             {{- end }}
           {{- end }}

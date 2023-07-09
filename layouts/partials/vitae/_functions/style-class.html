@@ -1,35 +1,106 @@
-{{- $styleClass := "" }}
+{{- $styleClassList := "" }}
 {{- $template := "vitae/_functions/style-class" }}
 
+{{- $debug := false }}
+{{/* {{- $debug = or $debug (not (not (findRE `^/([^/]+-demo/)?$` page.RelPermalink) ) ) -}} */}}
+
 {{- $callingTemplate := .Template }}
-{{- $style := .Style }}
 {{- $validStyles := .ValidStyles }}
+{{- $styleClassList := default slice .StyleClass }}
+{{- $styleClassPrefix := default "style" .StyleClassPrefix }}
 
-{{- $styleClassPrefix := "style" }}
+{{- $paramValueParsePartial := "parse-param-value" }}
 
-{{- range $key, $value := $style }}
-  {{- with $validValues := index $validStyles $key }}
-    {{- with index $validValues (string $value) }}
-      {{- if reflect.IsSlice . }}
-        {{- range . }}
-          {{- $styleClass = trim (printf "%s %s_%s_%v" $styleClass $styleClassPrefix $key .) " " }}
+{{- with $style := .Style }}
+  {{- range $key, $paramValue := . }}
+    {{- if reflect.IsMap $paramValue }}
+      {{- $styleClassSub := partial $template (dict
+        "Template" $callingTemplate
+        "Style" $paramValue
+        "ValidStyles" (index $validStyles $key)
+        "StyleClassPrefix" (printf "%s_%s" $styleClassPrefix $key)
+      ) }}
+    {{- if $debug }}
+      {{- warnf "%s[%s --> %s]: key=%v: Adding %v from sub validStyles=:\n%v"
+          page $callingTemplate $template $key $styleClassSub
+          (jsonify (dict "indent" "  ") (index $validStyles $key)) }}
+    {{- end }}
+    {{- $styleClassList = append $styleClassSub $styleClassList }}
+    {{- else }}
+      {{- with $validValuesForKey := index $validStyles $key }}
+        {{- $parsePartialParams := (dict
+          "Template" $callingTemplate
+          "StyleClassPrefix" $styleClassPrefix
+          "Key" $key
+          "ParamValue" $paramValue
+          "ValidValuesForKey" $validValuesForKey
+        ) -}}
+        {{- if reflect.IsSlice $paramValue }}
+          {{- range $paramValue }}
+            {{- $parsePartialParams = merge $parsePartialParams (dict
+              "ParamValue" . ) }}
+            {{- $styleClassSub := partial $paramValueParsePartial $parsePartialParams -}}
+            {{- if $debug }}
+              {{- warnf "%s[%s --> %s]: key=%v: Adding %v from paramValue=%v with parsePartialParams:\n%v"
+                  page $callingTemplate $template $key $styleClassSub $paramValue
+                  (jsonify (dict "indent" "  ") $parsePartialParams) }}
+            {{- end }}
+            {{- $styleClassList = append $styleClassSub $styleClassList }}
+          {{- end }}
+        {{- else }}
+          {{- $styleClassSub := partial $paramValueParsePartial $parsePartialParams -}}
+          {{- $styleClassList = append $styleClassSub $styleClassList }}
+          {{- if $debug }}
+            {{- warnf "%s[%s --> %s]: key=%v: Adding %v from paramValue=%v with parsePartialParams:\n%v"
+                page $callingTemplate $template $key $styleClassSub $paramValue
+                  (jsonify (dict "indent" "  ") $parsePartialParams) }}
+          {{- end }}
         {{- end }}
       {{- else }}
-        {{- $styleClass = trim (printf "%s %s_%s_%v" $styleClass $styleClassPrefix $key .) " " }}
+        {{- warnf `%s[%s --> %s]: Invalid style key='%v' with value='%v'` page $callingTemplate $template $key $paramValue }}
       {{- end }}
-    {{- else }}
-      {{- $validValuesList := slice }}
-      {{- range $validKey, $validValue := $validValues }}
-        {{- if and ($validValue) (not (in $validValuesList $validValue) ) }}
-          {{- $validValuesList = slice $validValue | append $validValuesList }}
-        {{- end }}
-      {{- end }}
-      {{- warnf `%s[%s --> %s]: Valid style key='%v' has invalid value='%v'. Valid values: '%v'`
-          page $callingTemplate $template $key $value
-          (delimit (sort $validValuesList) "', '") }}
     {{- end }}
-  {{- else }}
-    {{- warnf `%s[%s --> %s]: Invalid style key='%v' with value='%v'` page $callingTemplate $template $key $value }}
   {{- end }}
 {{- end }}
-{{- return $styleClass }}
+{{- return $styleClassList }}
+
+{{- define "partials/parse-param-value.html" }}
+  {{- $template := "vitae/_functions/style-class/parse-param-value" }}
+  {{- $callingTemplate := .Template }}
+  {{- $styleClassList := default slice .StyleClass }}
+  {{- $styleClassPrefix := default "style" .StyleClassPrefix }}
+  {{- $key := .Key }}
+  {{- $paramValue := .ParamValue }}
+  {{- $validValuesForKey := .ValidValuesForKey }}
+
+  {{- $debug := false }}
+
+  {{/* To index the validation map $validValuesForKey, we need to use the string representation of candidate value $paramValue */}}
+  {{- $paramValueStr := string $paramValue }}
+  {{- $validParamValue := index $validValuesForKey $paramValueStr }}
+  {{- if eq (printf "%T" $validParamValue) "<nil>" }}
+    {{- $validParamValueList := slice }}
+    {{- range $validParamValue, $resultingValue := $validValuesForKey }}
+      {{- if not (in $validValuesForKey $validParamValue) }}
+        {{- $validParamValueList = append $validParamValue $validParamValueList }}
+      {{- end }}
+    {{- end }}
+    {{- warnf "%s[%s --> %s]: Valid style key='%v' has invalid value=%v[%T]. Valid values: '%v'"
+        page $callingTemplate $template $key $paramValue $paramValue
+        (delimit (sort $validParamValueList) "', '") }}
+  {{- else }}
+    {{- if or $debug (reflect.IsSlice $validParamValue) }}
+      {{- warnf "%s[%s --> %s]: key=%v: paramValue=%v[%T] vs. validParamValue=%v[%T] from $validValuesForKey:\n%v"
+          page $callingTemplate $template $key $paramValueStr $paramValue $validParamValue $validParamValue
+          (jsonify (dict "indent" "  ") $validValuesForKey ) }}
+    {{- end }}
+    {{- if reflect.IsSlice $validParamValue }}
+      {{- range $validParamValue }}
+        {{- $styleClassList = append (printf "%s_%s_%v" $styleClassPrefix $key .) $styleClassList }}
+      {{- end }}
+    {{- else }}
+      {{- $styleClassList = append (printf "%s_%s_%v" $styleClassPrefix $key $validParamValue) $styleClassList }}
+    {{- end }}
+  {{- end }}
+  {{- return $styleClassList }}
+{{- end }}

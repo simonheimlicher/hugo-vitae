@@ -22,6 +22,9 @@
 {{- end }}
 {{- $vitaeParams := $page.Param $vitaeParamRoot }}
 
+{{- $vitaeStyle := $vitaeParams.style }}
+{{/* {{- warnf "%s[%s]: %v" $page $template (jsonify (dict "indent" "  ") $vitaeStyle) }} */}}
+
 {{- $vitaeData := dict }}
 {{- $dataRoot := "data" }}
 {{- $vitaeDataRoot := default "vitae" ($page.Param "VitaeDataRoot") }}
@@ -87,6 +90,7 @@
     "PrintControl" $printControl
     "VitaeParams" $vitaeParams
     "VitaeData" $vitaeData
+    "VitaeStyle" $vitaeStyle
     "PartClass" $partClass
     "PartClassPrefix" $partClassPrefix
     "PaginationPageClass" $paginationPageClass
@@ -97,8 +101,9 @@
     "OriginalInnerClass" $originalInnerClass
     ) $pp }}
 
-{{ partial "html-comment" (printf "[%s]: BEGIN [layout=%v media=%v printPreview=%v printView=%v printControl=%v"
-    $template $pp.Layout $pp.Media $pp.PrintPreview $pp.PrintView $pp.PrintControl) }}
+{{ partial "html-comment" (printf "[%s]: BEGIN [layout=%v media=%v printPreview=%v printView=%v printControl=%v style:\n"
+    $template $pp.Layout $pp.Media $pp.PrintPreview $pp.PrintView $pp.PrintControl)
+    (jsonify (dict "indent" "  ") $vitaeStyle) -}}
 
 <div id="vitaeContainer" class="{{ $containerClass }}" {{ $printViewVisibleAttr | safeHTMLAttr }}>
   {{- if (or $pp.PrintPreview $pp.PrintView $pp.PrintControl) }}

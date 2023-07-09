@@ -32,7 +32,7 @@ PaginationPage: a printed page that is part of a Part
   this DOM node is cloned and the content is distributed across as many
   clones as required -->
   <div class="{{ $pp.PaginationPageClass}} {{ $layoutClass }}">
-    <header class="header header-about {{ $pp.PaginationContainerClass }}"
+    <header class="header header_about {{ $pp.PaginationContainerClass }}"
     {{ printf " %s=\"%d\"" $pp.PaginationOrderAttr 999 | safeHTMLAttr }}
     {{ printf " %s=\"%s\"" $pp.PaginationPolicyAttr "first" | safeHTMLAttr -}}
     >

@@ -29,7 +29,7 @@
   )
 ) -}}
 
-{{- $styleClass := partial "vitae/_functions/style-class" (dict
+{{- $styleClassList := partial "vitae/_functions/style-class" (dict
   "Template" $template
   "Style" $style
   "ValidStyles" $validStyles
@@ -39,7 +39,7 @@
 {{- $linkText := $style.text }}
 {{- $qrCodes := $style.qrcode }}
 
-{{- $topLevelClass := delimit (slice $styleClass $componentClass $childClass) " " }}
+{{- $topLevelClass := delimit (append (slice $componentClass $childClass) $styleClassList) " " }}
 
 {{- $classPrefix := printf "link" }}
 

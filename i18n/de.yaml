@@ -46,10 +46,6 @@ publication_link_further-info:
   other: Weitere Infos zu
 private-data-requires-javascript:
   other: 'Persönlich: Zugriff erfordert JavaScript'
-section-title_responsibilities:
-  other: Hauptverantwortlichkeiten
-section-title_achievements:
-  other: Ausgewählte Erfolge
 section-awards:
   other: Auszeichnungen
 section-career-summary:
@@ -58,13 +54,13 @@ section-personal-profile:
   other: Persönliches Profil
 stage_function_label:
   other: Funktion
-stage_unit_label_division:
+stage_unit_type_division:
   other: Bereich
-stage_unit_label_department:
+stage_unit_type_department:
   other: Abteilung
-stage_unit_label_team:
+stage_unit_type_team:
   other: Team
-stage_unit_label_business_area:
+stage_unit_type_business_area:
   other: Business Area
 fragment_citizenship_postfix:
   other: Bürger

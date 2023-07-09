@@ -227,6 +227,11 @@ $screen-pad-v: 1rem;
     --inner_padding: var(--inner_padding_base);
 
     @include inner_margin_padding(var(--inner_margin), var(--inner_padding));
+
+    --list-style_margin: var(--inner_margin_4-0);
+    --list-style_padding: var(--inner_padding_4-1);
+    --list-style_indent: 0;
+    @include list-style_indented(var(--list-style_margin), var(--list-style_padding), var(--list-style_indent));
   }
 
   .view-print {
@@ -254,6 +259,10 @@ $screen-pad-v: 1rem;
       --inner_padding: calc(var(--inner_padding_base) * var(--inner_padding_scale-factor));
     }
     @include inner_margin_padding(var(--inner_margin), var(--inner_padding));
+    --list-style_margin: var(--inner_margin_4-0);
+    --list-style_padding: var(--inner_padding_4-1);
+    --list-style_indent: 0;
+    @include list-style_indented(var(--list-style_margin), var(--list-style_padding), var(--list-style_indent));
   }
 
   .view-print {
@@ -457,8 +466,9 @@ $screen-pad-v: 1rem;
           flex: 0 1 auto;
         }
       }
+      // FIXME: Do not allow flex of stage_header to avoid issues with timeline
       .stage_header {
-        flex: 0.25 0 auto;
+        flex: 0 0 auto;
       }
       .stage_header:has( + .stage_header) {
         flex: 0.25 0 auto;

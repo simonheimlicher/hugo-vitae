@@ -29,8 +29,8 @@ $font-size-scale-factor: math.pow(2.0, math.div(1, 5) );
 
 .vitae {
   --font-size-base: 100%;
-  --line-height: 1.5;
-  --line-height-heading: 1.1;
+  --line-height: 1.4;
+  --line-height-heading: 1.4;
   --font-size-label: var(--font-size-normal);
   --line-height-label: var(--line-height-heading);
 
@@ -65,9 +65,6 @@ $font-size-scale-factor: math.pow(2.0, math.div(1, 5) );
   --heading-padding-bottom: 0.125em;
   --heading-margin-top: 0;
   --heading-margin-bottom: 0;
-
-  // --list-style_indent: 1em
-  --list-style_indent: 0;
 
   // FIXME: Override --choice-bg to change the background color of main.main_claris
   --choice-bg: var(--haze);
@@ -107,13 +104,6 @@ $font-size-scale-factor: math.pow(2.0, math.div(1, 5) );
   // Adds a hyphen where the word breaks, if supported
   // FIXME: Disable hyphenation as Applicant Tracking Systems (ATS) cannot deal with that
   hyphens: manual;
-
-  // FIXME: Include proper list style within .vitae container
-  @include list-style_indented(0rem, var(--list-style_indent));
-
-  // Set bottom padding to 0 to avoid padding with different background color
-  // Yet still account for safe area (e.g. notch on iPhones)
-  padding-bottom: calc(min(0px, env(safe-area-inset-bottom, 0px)));
 }
 
 .vitae {
@@ -199,9 +189,9 @@ ul {
   -webkit-padding-start: 0;
   -moz-padding-start: 0;
 }
-em {
-  font-weight: var(--font-weight-em);
-}
+// em {
+//   font-weight: var(--font-weight-em);
+// }
 b,
 strong {
   font-weight: var(--font-weight-strong);

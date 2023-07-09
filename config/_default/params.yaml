@@ -11,6 +11,9 @@ vitae:
       screen: true
       print: true
 
+    style:
+      layout: inline
+
     parts:
 
       # Front page
@@ -57,20 +60,18 @@ vitae:
               filter_value: professional
               links: false
               date_format: 2006
-              unit: 1
-              style:
-                # timeline: shallow
-                # timeline: column
-                # timeline: dot-dash
-                layout: compact
-                # heading: larger-1
-                heading: normal
-                # logo: false
-                # logo: left
+              unit:
+                limit: 1
+                type: false
               function: false
-              label:
-                function: false
-                unit: false
+              style:
+                layout:
+                  - shallow
+                  - inline
+                heading: larger-1
+                label:
+                  function: false
+                  unit: false
               organization:
                 period: true
                 details: false
@@ -79,11 +80,7 @@ vitae:
                 details: false
                 summary: false
                 description: false
-                responsibilities_achievements: false
-                star: false
                 skills: false
-                results: false
-                responsibilities: false
                 achievements: false
           - section: award-selection
             title: section-awards
@@ -95,6 +92,7 @@ vitae:
               print: true
               style:
                 logo: false
+                heading: larger-1
           # - section: language-skills
           #   title: section-language-skills
           #   container: section
@@ -105,6 +103,15 @@ vitae:
           #     filter_value: language
           #     details: false
           #     level_bar: true
+          - section: key-achievements
+            title: section-key-achievements
+            container: section
+            components:
+            - component: panels
+              collection: achievements
+              style:
+                # font-size: larger-1
+                layout: inline
           - section: connect
             title: section-connect
             container: section
@@ -114,27 +121,10 @@ vitae:
               print: true
               style:
                 layout: shallow
-                # layout: narrow
                 icon: true
                 text: true
                 qrcode: true
 
-          - section: key-achievements
-            title: section-key-achievements
-            container: section
-            components:
-            - component: panels
-              collection: achievements
-              # style:
-              #   font-size: larger-1
-        # - slot: footer
-        #   sections:
-        #   - section: connect
-        #     title: section-connect
-        #     components:
-        #     - component: links
-        #       screen: true
-        #       print: true
 
       # Career timeline
       - template: career-timeline
@@ -150,11 +140,16 @@ vitae:
               collection: stages
               filter_by: type
               filter_value: professional
+              unit:
+                limit: 1
+                type: false
               style:
                 timeline: column
+                layout: inline
                 logo: left
-                layout: shallow
-                # timeline: dot-dash
+                label:
+                  unit: false
+                  function: false
               organization:
                 period: true
                 # duration: true
@@ -166,11 +161,8 @@ vitae:
                 details: true
                 summary: false
                 description: false
-                responsibilities_achievements: true
-                star: false
                 skills: false
-                responsibilities: false
-                achievements: false
+                achievements: true
           - section: education-languages
             # container: div
             sections:
@@ -185,7 +177,8 @@ vitae:
                 filter_value: education
                 style:
                   # layout: compact
-                  layout: narrow
+                  # layout: narrow
+                  layout: inline
                   heading: larger-1
                   # heading: normal
                   # logo: false
@@ -358,7 +351,7 @@ vitae:
             organization_duration: true
             role_duration: true
             timeline_for_single_role: true
-            responsibilities: true
+            responsibilities_deprecated: true
             results: true
             headings: true
             skills: false

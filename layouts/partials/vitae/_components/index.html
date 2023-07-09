@@ -2,6 +2,7 @@
 {{- $headingLevel := default 3 .HeadingLevel }}
 {{- $vitaeParams := .Config }}
 {{- $vitaeData := .Data }}
+{{- $vitaeStyle := .Style }}
 {{- $sections := .Sections }}
 {{- $childClass := default "" .ChildClass }}
 {{- $style := default dict .Style }}
@@ -9,41 +10,9 @@
 
 {{- $debug := false }}
 {{- /* {{- $debug = page.Scratch.Get "clarisdebug" }} */ -}}
-{{- $debug = or $debug (not (not (findRE `^/([^/]+-demo/)?preview` $page.RelPermalink) ) ) -}}
+{{/* {{- $debug = or $debug (not (not (findRE `^/([^/]+-demo/)?preview` $page.RelPermalink) ) ) -}} */}}
 
-{{- $validStyles := (dict
-  "layout" (dict
-    "shallow" "shallow"
-    "narrow" "narrow"
-    "compact" (slice "shallow" "narrow")
-  )
-  "timeline" (dict
-    "false" false
-    "true" "column"
-    "column" "column"
-    "dot-dash" "dot-dash"
-  )
-  "heading" (dict
-    "normal" "normal"
-    "larger-1" "larger-1"
-    "smaller-1" "smaller-1"
-  )
-  "logo" (dict
-    "false" false
-    "true" "left"
-    "left" "left"
-  )
-) -}}
-
-{{- $styleClass := partial "vitae/_functions/style-class" (dict
-  "Template" $template
-  "Style" $style
-  "ValidStyles" $validStyles
-  ) -}}
-
-{{- $renderOptInline := dict "display" "inline" }}
-{{- $renderOptBlock := dict "display" "block" }}
-
+{{- warnf "%s[%s]: %v" $page $template (jsonify (dict "indent" "  ") $vitaeStyle ) }}
 
 {{- range $sectionIndex, $section := where $sections "enabled" "ne" false }}
   {{- $sectionName := $section.section }}
@@ -74,7 +43,12 @@
       <h{{ $headingLevel }} class="component-title_{{ $componentName }} component-title {{ $childClass }}">{{ $componentTitle }}</h{{ $headingLevel }}>
       {{- $headingLevel = (add $headingLevel 1) }}
     {{- end }}
-    {{- $componentStyle := $component.style | default false }}
+
+    {{- $componentStyle := $vitaeStyle }}
+    {{- with $component.style }}
+      {{- $componentStyle = merge $vitaeStyle . }}
+    {{- end }}
+
     {{- partial $componentPartial (dict
       "Page" $page
       "Config" $vitaeParams

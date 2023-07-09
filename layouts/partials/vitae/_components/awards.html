@@ -7,20 +7,39 @@
 
 {{- $collection := default .Component.component .Component.collection }}
 
-{{- $style := (dict "logo" "left") }}
-{{- $styleClass := "" }}
-{{- with .Style }}
-  {{- if reflect.IsMap . }}
-    {{- $style = . }}
-  {{- end }}
-{{- end }}
-{{- range $key, $value := $style }}
-  {{- if . }}
-    {{- $styleClass = trim (printf "%s %s_%v" $styleClass $key .) " " }}
-  {{- end }}
-{{- end }}
+{{- $style := default dict .Style }}
+{{- $validStyles := (dict
+  "layout" (dict
+    "shallow" "shallow"
+    "narrow" "narrow"
+    "inline" "inline"
+    "compact" (slice "shallow" "narrow" "inline")
+  )
+  "timeline" (dict
+    "false" false
+    "true" "column"
+    "column" "column"
+    "dot-dash" "dot-dash"
+  )
+  "heading" (dict
+    "normal" "normal"
+    "larger-1" "larger-1"
+    "smaller-1" "smaller-1"
+  )
+  "logo" (dict
+    "false" false
+    "true" "left"
+    "left" "left"
+  )
+) -}}
 
-{{- $topLevelClass := delimit (slice $styleClass $componentClass $childClass) " " }}
+{{- $styleClassList := partial "vitae/_functions/style-class" (dict
+  "Template" $template
+  "Style" $style
+  "ValidStyles" $validStyles
+  ) -}}
+
+{{- $topLevelClass := delimit (append (slice $componentClass $childClass) $styleClassList) " " }}
 
 {{- $filterField := default "" $component.filter_by -}}
 {{- $filterMatch := default "" $component.filter_value -}}

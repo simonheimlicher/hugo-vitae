@@ -17,6 +17,8 @@ const controlPanelSettings = {
   // Store key/ value per knob, where key is the knob's label.
   persist: true,
 
+  standalone: false,
+
   knobs: [
     {
       cssVar: ['page_scale-factor', '-%'], // prefix unit with '-' makes it only a part of the title but not of the variable
@@ -178,7 +180,14 @@ const controlPanelSettings = {
 };
 
 const initializeControlPanel = (conf) => {
-  new Knobs(controlPanelSettings);
+  if (true) {
+    const controlPanel = new Knobs(controlPanelSettings);
+  }
+  else {
+    controlPanelSettings.standalone = true;
+    const controlPanel = new Knobs(controlPanelSettings);
+    document.getElementsByName('body').append(controlPanel.knobs.DOM.scope);
+  }
 }
 
 document.addEventListener("DOMContentLoaded", _e => initializeControlPanel());

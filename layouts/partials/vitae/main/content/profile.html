@@ -17,7 +17,7 @@
 {{- $vitaeData := $vp.VitaeData }}
 
 {{- $headerChildClass := "header-item" }}
-<header class="header header-about {{ $paginationContainerClass }}"
+<header class="header header_about {{ $paginationContainerClass }}"
 {{ printf " %s=\"%d\"" $paginationOrderAttr 999 | safeHTMLAttr }}
 {{ printf " %s=\"%s\"" $paginationPolicyAttr "first" | safeHTMLAttr -}}
 >

@@ -1,8 +1,8 @@
 skill:
-  one: Skill
-  other: Skills
+  one: skill
+  other: skills
 period-until-present:
-  other: Present
+  other: present
 period-duration-years:
   one: 1 year
   other: '{{ .Count }} years'
@@ -15,45 +15,41 @@ period-duration-days:
 grade-point-average:
   other: GPA
 section-experience:
-  other: Experience
+  other: professional experience
 section-education:
-  other: Education
+  other: education
 section-language-skills:
-  other: Languages
+  other: languages
 section-contact:
-  other: Contact
+  other: contact
 section-connect:
-  other: Connect
+  other: connect
 screen-view:
-  other: Website view
+  other: website view
 print-view:
-  other: Print view
+  other: print view
 share-link-page:
-  other: Share this page
+  other: share this page
 selflink-application:
-  other: View this application on your phone
+  other: view this application on your phone
 share-link-resume:
-  other: View this resume on your phone
+  other: view this resume on your phone
 application-for-position:
-  other: Application for position
+  other: application for position
 connect-on-linkedin:
-  other: Connect on LinkedIn
+  other: connect on LinkedIn
 section-patents:
-  other: Patents
+  other: patents
 section-publications:
-  other: Publications
+  other: publications
 publication_link_further-info:
-  other: Futher info on
+  other: futher info on
 private-data-requires-javascript:
   other: 'Private: access requires JavaScript'
-section-title_responsibilities:
-  other: Responsibilities
-section-title_achievements:
-  other: Key achievements
 section-awards:
-  other: Awards
+  other: honors & awards
 section-career-summary:
-  other: timeline
+  other: career summary
 section-personal-profile:
   other: profile
 section-key-achievements:
@@ -62,13 +58,13 @@ section-interests:
   other: personal interests
 stage_function_label:
   other: function
-stage_unit_label_division:
+stage_unit_type_division:
   other: division
-stage_unit_label_department:
+stage_unit_type_department:
   other: department
-stage_unit_label_team:
+stage_unit_type_team:
   other: team
-stage_unit_label_business_area:
+stage_unit_type_business_area:
   other: business area
 fragment_citizenship_prefix:
   other: citizen of

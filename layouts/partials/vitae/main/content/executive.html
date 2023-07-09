@@ -1,11 +1,44 @@
 {{- $pp := . }}
 {{- $page := .Page }}
-{{- $template := printf "vitae/main/content/executive)" }}
+{{- $templateName := "executive" }}
+{{- $template := printf "vitae/main/content/%s" $templateName }}
 
 {{ partial "html-comment" (printf "BEGIN '%s'" $template) }}
 
 {{- $vitaeParams := $pp.VitaeParams }}
 {{- $vitaeData := $pp.VitaeData }}
+
+{{- $vitaeStyle := default dict $pp.VitaeStyle }}
+{{- warnf "%s[%s]: vitaeStyle=%v" $page $template (jsonify (dict "indent" "  ") $vitaeStyle ) }}
+
+{{- $validStyles := (dict
+  "layout" (dict
+    "shallow" "shallow"
+    "narrow" "narrow"
+    "inline" "inline"
+    "compact" (slice "shallow" "narrow" "inline")
+  )
+  "timeline" (dict
+    "false" false
+    "true" "column"
+  )
+  "heading" (dict
+    "normal" "normal"
+    "larger-1" "larger-1"
+    "smaller-1" "smaller-1"
+  )
+  "logo" (dict
+    "false" false
+    "true" "left"
+    "left" "left"
+  )
+) -}}
+
+{{- $styleClassList := partial "vitae/_functions/style-class" (dict
+  "Template" $template
+  "Style" $vitaeStyle
+  "ValidStyles" $validStyles
+  ) -}}
 
 <!-- Pagination
 Part: an independent section of one or more printed pages
@@ -16,7 +49,7 @@ PaginationPage: a printed page that is part of a Part
   When rendering the print preview with `print-view.js`,
   this DOM node is cloned and the content is distributed across as many
   clones as required -->
-  {{- $partClassList := (slice
+  {{- $partClassList := append $styleClassList (slice
       (printf "template_%s" $part.template)
       (printf "%s%d" $pp.PartClassPrefix $partIndex)
       $pp.PaginationPageClass
@@ -41,6 +74,7 @@ PaginationPage: a printed page that is part of a Part
         {{- partial "vitae/_components/index" (dict
           "Page" $page
           "Config" $vitaeParams
+          "Style" $vitaeStyle
           "ChildClass" $childClass
           "Data" $vitaeData
           "Sections" $slot.sections
