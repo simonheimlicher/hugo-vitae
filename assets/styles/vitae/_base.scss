@@ -45,30 +45,37 @@ $font-size-scale-factor: math.pow(2.0, math.div(1, 5) );
 
   --font-weight: 400;
   --font-weight-strong: 600;
-  --font-weight-em: var(--font-weight);
   --font-weight-heading: var(--font-weight-strong);
-  --font-weight-caps: var(--font-weight);
+
+  --text-transform_caps_lower: lowercase;
+  --font-weight_caps: var(--font-weight);
+  --font-weight_caps_upper_strong: var(--font-weight-strong);
+
+  --font-variant_caps_lower: all-small-caps;
+  --font-variant_caps_upper: small-caps;
+
   --letter-spacing_caps_lower: 0;
   --letter-spacing_caps_upper: 0;
-  --font-weight-caps-strong: var(--font-weight-strong);
   --letter-spacing_caps_upper_strong: 0;
 
   --font-style: regular;
 
-  // FIXME: Disabled ligatures as application tracking systems (ATS) are not able to extract text from the PDF
-  // --font-variant-ligatures: discretionary-ligatures
-  // --font-variant-numeric: oldstyle-nums
-  --font-variant-ligatures: none;
-  --font-variant-numeric: normal;
+  --font-variant-ligatures: discretionary-ligatures;
+  --font-variant-numeric: oldstyle-nums;
 
   --heading-padding-top: 0.5em;
   --heading-padding-bottom: 0.125em;
   --heading-margin-top: 0;
   --heading-margin-bottom: 0;
 
+  // Adds a hyphen where the word breaks, if supported
+  // FIXME: Disable hyphenation as Applicant Tracking Systems (ATS) cannot deal with that
+  --hyphens: auto;
+
   // FIXME: Override --choice-bg to change the background color of main.main_claris
   --choice-bg: var(--haze);
 }
+
 .vitae {
   * {
     box-sizing: border-box;
@@ -102,8 +109,7 @@ $font-size-scale-factor: math.pow(2.0, math.div(1, 5) );
   // word-break: break-word
 
   // Adds a hyphen where the word breaks, if supported
-  // FIXME: Disable hyphenation as Applicant Tracking Systems (ATS) cannot deal with that
-  hyphens: manual;
+  hyphens: var(--hyphens);
 }
 
 .vitae {
@@ -139,63 +145,61 @@ $font-size-scale-factor: math.pow(2.0, math.div(1, 5) );
   h6 {
     font-size: var(--font-size-normal);
   }
-}
-header,
-section,
-article,
-aside {
-  clear: both;
-}
-img {
-  margin: 0;
-  padding: 0;
-  height: auto;
-  &:focus,
-  &:focus-within {
-    outline: none !important;
-    border: none !important;
+
+  header,
+  section,
+  article,
+  aside {
+    clear: both;
   }
-}
-a {
-  text-decoration: none;
-  color: inherit;
-  &:focus,
-  &:focus-within {
-    outline: none !important;
-  }
-  &:hover {
-    @media (any-hover: hover) {
-      color: var(--text-hover);
+  img {
+    margin: 0;
+    padding: 0;
+    height: auto;
+    &:focus,
+    &:focus-within {
+      outline: none !important;
+      border: none !important;
     }
   }
-  &:active {
-    color: var(--xaccent);
+  a {
+    text-decoration: none;
+    color: inherit;
+    &:focus,
+    &:focus-within {
+      outline: none !important;
+    }
+    &:hover {
+      @media (any-hover: hover) {
+        color: var(--text-hover);
+      }
+    }
+    &:active {
+      color: var(--xaccent);
+    }
+    &:focus {
+      outline: var(--accent);
+    }
+    // Avoid adding a hyphen where the word breaks
+    hyphens: none;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
   }
-  &:focus {
-    outline: var(--accent);
+  img,
+  svg {
+    max-width: 100%;
+    vertical-align: middle;
   }
-  // Avoid adding a hyphen where the word breaks
-  hyphens: none;
-  word-wrap: break-word;
-  overflow-wrap: break-word;
-}
-img,
-svg {
-  max-width: 100%;
-  vertical-align: middle;
-}
-ul {
-  list-style: none;
-  -webkit-padding-start: 0;
-  -moz-padding-start: 0;
-}
-// em {
-//   font-weight: var(--font-weight-em);
-// }
-b,
-strong {
-  font-weight: var(--font-weight-strong);
-}
-address {
-  font-style: var(--font-style);
+  ul {
+    list-style: none;
+    -webkit-padding-start: 0;
+    -moz-padding-start: 0;
+  }
+  b,
+  strong {
+    font-weight: var(--font-weight-strong);
+  }
+  address {
+    font-style: var(--font-style);
+  }
 }

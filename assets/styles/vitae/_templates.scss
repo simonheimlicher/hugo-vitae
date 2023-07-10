@@ -15,22 +15,48 @@
   }
 }
 
+.vitae.layout-executive .view-print {
+  .section-panel {
+    margin-top: var(--inner_margin_4-0);
+    display: grid;
+    // gap: var(--inner_margin_4-1) var(--inner_margin_4-2);
+    gap: var(--inner_margin_4-4) var(--inner_margin_4-4);
+    grid-template-columns: repeat(var(--num_columns), 1fr);
+    align-items: start;
+    grid-auto-flow: dense row;
+  }
+  .style_layout_inline {
+    --list-style_padding: 0;
+  }
+  .style_layout_inline {
+    .section-panel {
+      margin-top: 0;
+      // outline: 1px solid red;
+      display: flex;
+      flex-direction: column;
+      // gap: var(--inner_margin_4-1) var(--inner_margin_4-2);
+      gap: var(--inner_margin_4-1) 0;
+    }
+  }
+}
+
 .vitae.layout-executive .view-print .template {
   // Part front page
   &_front-page {
     --num_columns: 12;
     --main_column: 1;
-    --main_column_width: 9;
+    --main_column_width: 8;
     --aside_column: calc(var(--main_column) + var(--main_column_width));
     --aside_column_width: calc(var(--num_columns) - var(--main_column_width));
+    --front-page_header_height_fraction: 1 / 6;
 
     .slot_header {
-      margin-bottom: var(--inner_margin_4-4);
+      height: calc( var(--page_height) * var(--front-page_header_height_fraction) );
+      margin-bottom: var(--inner_margin_4-2);
     }
 
     .slot_main {
       display: grid;
-      // gap: var(--inner_margin_4-1) var(--inner_margin_4-2);
       gap: var(--inner_margin_4-4) var(--inner_margin_4-4);
       grid-template-columns: repeat(var(--num_columns), 1fr);
       align-items: start;
@@ -54,6 +80,10 @@
           // grid-row: 2;
           // grid-area: span 1 / span var(--aside_column_width);
         }
+        &_career-summary-awards {
+          grid-column: 1 / span var(--num_columns);
+          grid-row: 2;
+        }
         &_key-achievements {
           grid-column: 1 / span var(--num_columns);
           // grid-column: 1 / span var(--main_column_width);
@@ -68,6 +98,17 @@
           grid-column: var(--aside_column) / span var(--aside_column_width);
           grid-row: 4;
           // grid-area: span 1 / span var(--aside_column_width);
+        }
+      }
+      .section-panel_career-summary-awards {
+        grid-column: 1 / span var(--num_columns);
+        .section_career-summary {
+          grid-row: 1;
+          grid-column: 1 / span var(--main_column_width);
+        }
+        .section_award-selection {
+          grid-row: 1;
+          grid-column: var(--aside_column) / span var(--aside_column_width);
         }
       }
     }
@@ -107,30 +148,13 @@
           }
         }
       }
-      .section-panel {
-        margin-top: var(--inner_margin_4-4);
-        display: grid;
-        // gap: var(--inner_margin_4-1) var(--inner_margin_4-2);
-        gap: var(--inner_margin_4-4) var(--inner_margin_4-4);
-        grid-template-columns: repeat(var(--num_columns), 1fr);
-        align-items: start;
-        grid-auto-flow: dense row;
+      .section-panel_education-languages {
         .section_education {
           grid-column: 1 / span var(--main_column_width);
         }
         .section_language-skills {
           grid-column: var(--aside_column) / span var(--aside_column_width);
         }
-      }
-    }
-    &.style_layout_inline {
-      .section-panel {
-        margin-top: 0;
-        // outline: 1px solid red;
-        display: flex;
-        flex-direction: column;
-        // gap: var(--inner_margin_4-1) var(--inner_margin_4-2);
-        gap: var(--inner_margin_4-2) 0;
       }
     }
   }

@@ -12,7 +12,8 @@ vitae:
       print: true
 
     style:
-      layout: inline
+      # inline_separator: " · "
+      inline_separator: " • "
 
     parts:
 
@@ -48,61 +49,64 @@ vitae:
             components:
             - component: panels
               collection: profile
-              # style:
-              #   font-size: larger-1
-          - section: career-summary
-            title: section-career-summary
-            container: section
-            components:
-            - component: stages
-              collection: stages
-              filter_by: type
-              filter_value: professional
-              links: false
-              date_format: 2006
-              unit:
-                limit: 1
-                type: false
-              function: false
-              style:
-                layout:
-                  - shallow
-                  - inline
-                heading: larger-1
-                label:
-                  function: false
-                  unit: false
-              organization:
-                period: true
+          - section: career-summary-awards
+            # container: div
+            sections:
+            - section: career-summary
+              title: section-career-summary
+              container: section
+              components:
+              - component: stages
+                collection: stages
+                filter_by: type
+                filter_value: professional
+                links: false
+                date_format: 2006
+                unit:
+                  limit: 1
+                  type: false
+                function: false
+                style:
+                  layout:
+                    - shallow
+                    - inline
+                  heading: larger-1
+                  label:
+                    function: false
+                    unit: false
+                organization:
+                  period: true
+                  details: false
+                role:
+                  period: true
+                  details: false
+                  summary: false
+                  description: false
+                  skills: false
+                  achievements: false
+            - section: award-selection
+              title: section-awards
+              container: section
+              components:
+              - component: awards
                 details: false
-              role:
-                period: true
-                details: false
-                summary: false
-                description: false
-                skills: false
-                achievements: false
-          - section: award-selection
-            title: section-awards
-            container: section
-            components:
-            - component: awards
-              details: false
-              screen: true
-              print: true
-              style:
-                logo: false
-                heading: larger-1
-          # - section: language-skills
-          #   title: section-language-skills
-          #   container: section
-          #   components:
-          #   - component: skills
-          #     collection: skills
-          #     filter_by: type
-          #     filter_value: language
-          #     details: false
-          #     level_bar: true
+                screen: true
+                print: true
+                style:
+                  logo: false
+                  heading: larger-1
+                  # layout: narrow
+                  layout: inline
+            # - section: language-skills
+            #   title: section-language-skills
+            #   container: section
+            #   components:
+            #   - component: skills
+            #     collection: skills
+            #     filter_by: type
+            #     filter_value: language
+            #     details: false
+            #     level_bar: true
           - section: key-achievements
             title: section-key-achievements
             container: section
@@ -111,7 +115,7 @@ vitae:
               collection: achievements
               style:
                 # font-size: larger-1
-                layout: inline
+                # layout: inline
           - section: connect
             title: section-connect
             container: section
@@ -178,7 +182,10 @@ vitae:
                 style:
                   # layout: compact
                   # layout: narrow
-                  layout: inline
+                  layout:
+                    - shallow
+                    - inline
+                  # timeline: column
                   heading: larger-1
                   # heading: normal
                   # logo: false
@@ -295,31 +302,33 @@ vitae:
     # Footer to be repeated on every printed page
     footer:
       template: name-page-number
-      components:
-      - component: footer
-        # style:
-        #   font-size: normal
-        fragments:
-          - fragment: page-meta
-            fields:
-              # - field: content-type
-              #   content: Resume of
-              #   align: start
-              - field: name
-                content: "{personal.name}"
-                align: start
-              - field: content-type
-                content: CV
-                align: center
-              - field: page-number
-                content: "{page-number}"
-                align: end
-              - field: page-of-total
-                content: '|'
-                align: end
-              - field: total-pages
-                content: "{total-pages}"
-                align: end
+      sections:
+      - section: main
+        components:
+        - component: footer
+          # style:
+          #   font-size: normal
+          fragments:
+            - fragment: page-meta
+              fields:
+                # - field: content-type
+                #   content: Resume of
+                #   align: start
+                - field: name
+                  content: "{personal.name}"
+                  align: start
+                - field: content-type
+                  content: CV
+                  align: center
+                - field: page-number
+                  content: "{page-number}"
+                  align: end
+                - field: page-of-total
+                  content: '|'
+                  align: end
+                - field: total-pages
+                  content: "{total-pages}"
+                  align: end
 
 # ------ Template RESUME --------- #
   resume:

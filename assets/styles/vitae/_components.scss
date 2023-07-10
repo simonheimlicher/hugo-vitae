@@ -314,7 +314,7 @@ html[data-mode="dim"] {
 
 .vitae {
   .view-print {
-    --section-title_margin_bottom: var(--inner_margin_4-2);
+    --section-title_margin_bottom: var(--inner_margin_4-1);
     --section-title_padding_bottom: 0;
     --section-title_margin_bottom_between: var(--inner_margin_4-2);
     .style_layout_inline {
@@ -354,8 +354,8 @@ html[data-mode="dim"] {
       font-size: var(--font-size-larger-1);
     }
     display: grid;
-    grid-template-columns: 2fr 1fr 2fr;
-    grid-template-rows: minmax(0px, 1fr) 12fr minmax(0px, 1fr);
+    grid-template-columns: 2fr 3fr 2fr;
+    // grid-template-rows: minmax(0px, 1fr) 12fr minmax(0px, 1fr);
 
     &.portrait {
       &_overlay {
@@ -385,6 +385,7 @@ html[data-mode="dim"] {
         max-width: 100%;
         width: 100%;
         height: 100%;
+        height: calc( var(--page_height) * var(--front-page_header_height_fraction) + var(--page_margin_top) );
         object-fit: cover;
         object-position: center center;
         border-radius: 0;
@@ -398,11 +399,12 @@ html[data-mode="dim"] {
 
     .overlay {
       z-index: 2;
-      grid-row: 1 / span 2;
+      // grid-row: 1 / span 2;
+      grid-row: 1;
       grid-column: 2 / span 2;
       display: flex;
       flex-direction: column;
-      row-gap: 0.5em;
+      // row-gap: 0.5em;
 
       .headline {
         padding: 0;
@@ -428,6 +430,18 @@ html[data-mode="dim"] {
         @include upper-caps;
       }
     }
+    &.style_ats_true {
+      .portrait {
+        &_figure {
+          grid-column: 3;
+          margin: 0;
+        }
+
+        &_img {
+          height: calc( var(--page_height) * var(--front-page_header_height_fraction) );
+        }
+      }
+    }
   }
 
   /* ----- Component PANELS ------ */
@@ -440,7 +454,7 @@ html[data-mode="dim"] {
     &.panels {
       &_cards {
         display: grid;
-        gap: 0 var(--inner_margin_4-4)
+        gap: 0 var(--inner_margin_4-2)
       }
     }
     .panel {
@@ -469,8 +483,11 @@ html[data-mode="dim"] {
       flex-direction: column;
       .panel {
         &_title {
-          padding-bottom: 0;
+          padding: var(--inner_padding_4-1) 0 0 0;
           margin: 0;
+          &:first-of-type {
+            padding-top: 0;
+          }
         }
       }
     }
@@ -1527,21 +1544,13 @@ html[data-mode="dim"] {
     }
 
     /*
-     * Layout style SHALLOW
-     */
-
-     &.style_layout_shallow {
-      --padding_organization_between: var(--inner_padding_4-1);
-      --padding_role_first: var(--inner_padding_4-0);
-      --padding_role_between: var(--inner_padding_4-0);
-      --padding_stage_meta: 0;
-    }
-
-    /*
      * Layout style INLINE
      */
 
      &.style_layout_inline {
+      // @extend .style_layout_shallow;
+      --padding_organization_between: var(--inner_padding_4-3);
+      --padding_role_between: var(--inner_padding_4-3);
       .stage {
         &_main {
           flex-direction: row;
@@ -1551,12 +1560,23 @@ html[data-mode="dim"] {
       }
       .organization_title, .role_title {
         display: inline-block;
-        & + .stage_meta {
-          &::before {
-            content: "· ";
-          }
-        }
+        // & + .stage_meta {
+        //   &::before {
+        //     content: "· ";
+        //   }
+        // }
       }
+    }
+
+    /*
+     * Layout style SHALLOW
+     */
+
+     &.style_layout_shallow {
+      --padding_organization_between: var(--inner_padding_4-1);
+      --padding_role_first: var(--inner_padding_4-0);
+      --padding_role_between: var(--inner_padding_4-0);
+      --padding_stage_meta: 0;
     }
 
     /*
@@ -1626,6 +1646,17 @@ html[data-mode="dim"] {
         &.style_heading_larger-1 {
           font-size: var(--font-size-larger-1);
         }
+        &.style_layout_shallow {
+          flex-direction: row;
+          column-gap: var(--inner_margin_4-2);
+          .award {
+            &_item {
+              display: flex;
+              align-items: baseline;
+              column-gap: var(--inner_margin_4-1);
+            }
+          }
+        }
         &.style_layout_inline {
           font-size: var(--font-size-normal);
           row-gap: var(--inner_margin_4-0);
@@ -1651,6 +1682,16 @@ html[data-mode="dim"] {
         gap: 0 var(--inner_padding_4-2);
         align-items: baseline;
         font-size: var(--font-size-normal);
+        &.style_layout_inline {
+          display: flex;
+          flex-direction: column;
+          .skill_item {
+            display: flex;
+            flex-direction: row;
+            align-items: baseline;
+            gap: var(--inner_padding_4-2) var(--inner_padding_4-2);
+          }
+        }
       }
     }
     .skill {
@@ -1661,8 +1702,8 @@ html[data-mode="dim"] {
       }
       &_level {
         grid-column: 2;
-        @include lower-caps;
         font-size: var(--font-size-smaller-1);
+        @include lower-caps;
         &_bar {
           position: relative;
           display: flex;

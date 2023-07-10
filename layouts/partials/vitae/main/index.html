@@ -6,6 +6,19 @@
 {{- end }}
 {{- $template := "vitae/main/index" }}
 
+{{- $debug := false }}
+{{/* {{- $debug = or $debug (not (not (findRE `^/([^/]+-demo/)?preview-ats` $page.RelPermalink) ) ) -}} */}}
+
+{{- $validStyles := (dict
+  "ats" (dict
+    "true" true
+    "false" false
+  )
+  "inline_separator" (dict
+    "STRING" true
+  )
+) }}
+
 {{/* {{ partial "html-comment" (printf "[%s]: PartialParams:%v" $template $pp) }} */}}
 
 {{- $type := default (default "vitae" $page.Type) ($page.Param "Type") }}
@@ -20,10 +33,18 @@
 {{- with $vitaeKey }}
   {{- $vitaeParamRoot = printf "%s.%s" $vitaeParamRoot $vitaeKey }}
 {{- end }}
-{{- $vitaeParams := $page.Param $vitaeParamRoot }}
+{{- $vitaeParams := index site.Params (split $vitaeParamRoot ".") }}
+{{- with (index $page.Params (split $vitaeParamRoot ".") ) }}
+  {{- $vitaeParams = merge $vitaeParams . }}
+{{- end }}
 
 {{- $vitaeStyle := $vitaeParams.style }}
-{{/* {{- warnf "%s[%s]: %v" $page $template (jsonify (dict "indent" "  ") $vitaeStyle) }} */}}
+
+{{- if $debug }}
+  {{- warnf "%s[%s]:\nstyle=%v\nvalidStyles=%v" $page $template
+      (jsonify (dict "indent" "  ") $vitaeStyle)
+      (jsonify (dict "indent" "  ") $validStyles ) }}
+{{- end }}
 
 {{- $vitaeData := dict }}
 {{- $dataRoot := "data" }}
@@ -91,6 +112,7 @@
     "VitaeParams" $vitaeParams
     "VitaeData" $vitaeData
     "VitaeStyle" $vitaeStyle
+    "ValidStyles" $validStyles
     "PartClass" $partClass
     "PartClassPrefix" $partClassPrefix
     "PaginationPageClass" $paginationPageClass

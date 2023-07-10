@@ -2,15 +2,18 @@
 {{- $fragment := .Fragment }}
 {{- $config := .Config }}
 {{- $data := .Data }}
+{{- $style := .Style }}
 {{- $template := "partials/vitae/fragments/personal" }}
 {{- $outputFormat := default "HTML" (partial "claris/_functions/output-format" $page).Name }}
 {{- $media := cond (eq $outputFormat "print") "print" "screen" }}
 {{/* {{- warnf "%s[%s]: outputFormat:%s" $page $template $outputFormat }} */}}
 
 {{- $classPrefix := "fragment_personal" }}
-{{- $fragmentItemSeparatorStr := " · " }}
+
+{{- $inlineSeparatorStr := default " · " $style.inline_separator }}
 
 {{- $contactIcons := true }}
+{{- $inlineLayout := in (slice "inline") $style.layout }}
 
 {{- /* warnf "%s[%s]: .Fragment=%s .Config=%s .Data=%s" $page $template $fragment $config $data.features.date-of-birth */ -}}
 
@@ -34,6 +37,9 @@
           {{- if $contactIcons }}
             {{ partial "fa-icon" "solid/cake-candles" }}
           {{- end }}
+          {{- if $inlineLayout }}
+          <div class="fragment_item-text">
+          {{- end }}
           {{- with $field.title }}
             <span class="{{ $classPrefix }}_title">
               {{- default . (T .) }}
@@ -45,20 +51,18 @@
         {{- end -}}
       {{- else if eq $fieldName "citizenship" }}
         {{- with $country := $fieldData.country }}
-          {{- with $fragmentItemSeparatorStr }}
-            <span class="{{ $classPrefix }}_separator">
-              {{- safeHTML . }}
-            </span>
+          {{- with $inlineSeparatorStr }}
+            {{- safeHTML . -}}
           {{- end }}
           <span class="{{ $classPrefix }}_text">
             {{- with $field.title }}
               {{- with T (printf "%s_prefix" . ) }}
                 <span class="{{ $classPrefix }}_prefix">
-                  {{- . | strings.FirstUpper | page.RenderString }}
+                  {{- . | strings.FirstUpper | page.RenderString -}}
                 </span>
-              {{- end }}
+              {{ end }}
             {{- end }}
-              {{ page.RenderString . }}
+            {{- page.RenderString . -}}
             {{- with $field.title }}
               {{- with T (printf "%s_suffix" . ) }}
                 <span class="{{ $classPrefix }}_suffix">
@@ -70,6 +74,9 @@
         {{- end }}
       {{- end }}
     {{- end }}
+  {{- end }}
+  {{- if $inlineLayout }}
+  </div>
   {{- end }}
   </div>
 {{- end -}}

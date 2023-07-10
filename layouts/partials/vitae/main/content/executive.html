@@ -8,10 +8,12 @@
 {{- $vitaeParams := $pp.VitaeParams }}
 {{- $vitaeData := $pp.VitaeData }}
 
-{{- $vitaeStyle := default dict $pp.VitaeStyle }}
-{{- warnf "%s[%s]: vitaeStyle=%v" $page $template (jsonify (dict "indent" "  ") $vitaeStyle ) }}
+{{- $debug := false }}
+{{/* {{- $debug = or $debug (not (not (findRE `^/([^/]+-demo/)?preview-ats` $page.RelPermalink) ) ) -}} */}}
 
-{{- $validStyles := (dict
+{{- $vitaeStyle := default dict $pp.VitaeStyle }}
+
+{{- $validStyles := merge (default dict .ValidStyles) (dict
   "layout" (dict
     "shallow" "shallow"
     "narrow" "narrow"
@@ -40,6 +42,12 @@
   "ValidStyles" $validStyles
   ) -}}
 
+{{- if $debug }}
+  {{- warnf "%s[%s]:\nstyle=%v\nvalidStyles=%v" $page $template
+      (jsonify (dict "indent" "  ") $vitaeStyle)
+      (jsonify (dict "indent" "  ") $validStyles ) }}
+{{- end }}
+
 <!-- Pagination
 Part: an independent section of one or more printed pages
 PaginationPage: a printed page that is part of a Part
@@ -56,7 +64,7 @@ PaginationPage: a printed page that is part of a Part
     ) -}}
   {{- $footer := false }}
   {{- with $vitaeParams.footer }}
-    {{- if default true $part.footer.enabled }}
+    {{- if and (not (in (slice true) $vitaeStyle.ats)) (default true $part.footer.enabled) }}
       {{- $footer = . }}
       {{- $partClassList = append (printf "footer_%s" .template) $partClassList }}
     {{- end }}
@@ -75,6 +83,7 @@ PaginationPage: a printed page that is part of a Part
           "Page" $page
           "Config" $vitaeParams
           "Style" $vitaeStyle
+          "ValidStyles" $validStyles
           "ChildClass" $childClass
           "Data" $vitaeData
           "Sections" $slot.sections
@@ -86,26 +95,16 @@ PaginationPage: a printed page that is part of a Part
       {{- if $footerContainer }}
         {{ printf `<%s class="slot_footer footer_%s">` $footerContainer .template | safeHTML }}
       {{- end }}
-      {{- range $componentIndex, $component := .components }}
-        {{- $componentName := $component.component }}
-        {{- $childClass := default "" .child_class }}
-        {{- $componentPartial := printf "vitae/_components/%s" $componentName }}
-        {{- $componentContainer := default "" .container }}
-        {{- if $componentContainer }}
-          {{- printf `<%s class="component-container_%s component-container">` $componentContainer $componentName | safeHTML }}
-        {{- end }}
-        {{- $componentStyle := $component.style | default false }}
-        {{- partial $componentPartial (dict
-          "Page" $page
-          "Config" $vitaeParams
-          "Component" $component
-          "Style" $componentStyle
-          "Index" $componentIndex
-          "ChildClass" $childClass
-          "Container" false
-          "Data" $vitaeData
-        ) -}}
-      {{- end }}
+      {{- $childClass := default "" .child_class }}
+      {{- partial "vitae/_components/index" (dict
+        "Page" $page
+        "Config" $vitaeParams
+        "Style" $vitaeStyle
+        "ValidStyles" $validStyles
+        "ChildClass" $childClass
+        "Data" $vitaeData
+        "Sections" .sections
+      ) -}}
       {{- with $footerContainer }}
         {{ printf "</%s>" . | safeHTML }}
       {{- end }}

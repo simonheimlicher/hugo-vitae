@@ -3,25 +3,30 @@
 {{- $vitaeParams := .Config }}
 {{- $vitaeData := .Data }}
 {{- $vitaeStyle := .Style }}
+{{- $validStyles := default dict .ValidStyles }}
 {{- $sections := .Sections }}
 {{- $childClass := default "" .ChildClass }}
-{{- $style := default dict .Style }}
+
 {{- $template := "vitae/_components/index" }}
 
 {{- $debug := false }}
-{{- /* {{- $debug = page.Scratch.Get "clarisdebug" }} */ -}}
-{{/* {{- $debug = or $debug (not (not (findRE `^/([^/]+-demo/)?preview` $page.RelPermalink) ) ) -}} */}}
+{{/* {{- $debug = or $debug (not (not (findRE `^/([^/]+-demo/)?preview-ats` $page.RelPermalink) ) ) -}} */}}
 
-{{- warnf "%s[%s]: %v" $page $template (jsonify (dict "indent" "  ") $vitaeStyle ) }}
+{{- if $debug }}
+  {{- warnf "%s[%s]:\nstyle=%v\nvalidStyles=%v" $page $template
+      (jsonify (dict "indent" "  ") $vitaeStyle)
+      (jsonify (dict "indent" "  ") $validStyles ) }}
+{{- end }}
 
 {{- range $sectionIndex, $section := where $sections "enabled" "ne" false }}
   {{- $sectionName := $section.section }}
+  {{- $sectionClass := printf "section_%s" $sectionName }}
   {{- $childClass := default "" .child_class }}
   {{- $sectionContainer := default "" .container }}
   {{- if $sectionContainer }}
-    {{ printf `<%s class="section_%s section">` $sectionContainer $sectionName | safeHTML }}
+    {{ printf `<%s class="%s section">` $sectionContainer $sectionClass | safeHTML }}
   {{- else }}
-    {{- $childClass = trim (printf "%v section_%s" $childClass $sectionName) " " }}
+    {{- $childClass = trim (printf "%v %s" $childClass $sectionClass) " " }}
   {{- end }}
   {{- $headingLevel := default 2 $section.level }}
   {{- $sectionTitle := $section.title | default $sectionName -}}
@@ -54,6 +59,7 @@
       "Config" $vitaeParams
       "Component" $component
       "Style" $componentStyle
+      "ValidStyles" $validStyles
       "Index" $componentIndex
       "ChildClass" $childClass
       "Container" false
@@ -64,18 +70,20 @@
     {{- end }}
   {{- end }}
   {{- with $section.sections }}
-    {{- if $debug }}
+    {{- if and false $debug }}
       {{- warnf "%s[%s]: Calling %s with Sections:\n%v" $page $template $template
         (jsonify (dict "indent" "  ") .) -}}
       {{- end }}
-    {{- $panelClass := (slice "section-panel") }}
+    {{- $panelClass := (slice "section-panel" (printf "section-panel_%s" $sectionName) ) }}
     {{- with $section.panel_class }}
-      {{- $panelClass = append "section-panel" $panelClass }}
+      {{- $panelClass = append . $panelClass }}
     {{- end }}
     <div class="{{ delimit $panelClass " " }}">
       {{- partial "vitae/_components/index" (dict
         "Page" $page
         "Config" $vitaeParams
+        "Style" $vitaeStyle
+        "ValidStyles" $validStyles
         "ChildClass" $childClass
         "Data" $vitaeData
         "Sections" .

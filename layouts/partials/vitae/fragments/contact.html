@@ -15,13 +15,13 @@
 ) .AddressFields }}
 
 {{- $contactIcons := true }}
-{{/* {{- $separatorStr := " • " }} */}}
-{{- $separatorStr := "<br>" }}
+{{- $separatorStr := " • " }}
+{{/* {{- $separatorStr := "<br>" }} */}}
 
 {{- /* warnf "%s[%s]: .Fragment=%s .Config=%s .Data=%s" $page $template $fragment $config .Data.features.contact */ -}}
 {{- with (index .Data.features.contact $media) }}
   {{- with $config.title }}
-    <h2 class="contact_title section-title">{{- default . (T .) -}}</h2>
+    <h2 class="contact_title section_title">{{- default . (T .) -}}</h2>
   {{- end }}
   {{- with .phone -}}
     {{- $phoneURL := printf "tel:%s" (strings.TrimPrefix "tel:" . ) }}

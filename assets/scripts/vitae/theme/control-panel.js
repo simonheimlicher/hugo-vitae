@@ -116,7 +116,7 @@ const controlPanelSettings = {
       labelTitle: 'Adjust top page margin',
       type: 'range',
       min: 0,
-      value: 15,
+      value: 10,
       max: 100,
       step: 0.5,
     },

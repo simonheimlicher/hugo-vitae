@@ -10,7 +10,7 @@
 {{- $component := .Component }}
 
 {{- $style := default dict .Style }}
-{{- $validStyles := (dict
+{{- $validStyles := merge (default dict .ValidStyles) (dict
   "layout" (dict
     "shallow" "shallow"
     "narrow" "narrow"

@@ -8,18 +8,12 @@
 {{- $collection := default .Component.component .Component.collection }}
 
 {{- $style := default dict .Style }}
-{{- $validStyles := (dict
+{{- $validStyles := merge (default dict .ValidStyles) (dict
   "layout" (dict
     "shallow" "shallow"
     "narrow" "narrow"
     "inline" "inline"
     "compact" (slice "shallow" "narrow" "inline")
-  )
-  "timeline" (dict
-    "false" false
-    "true" "column"
-    "column" "column"
-    "dot-dash" "dot-dash"
   )
   "heading" (dict
     "normal" "normal"
@@ -46,7 +40,7 @@
 
 {{- $optInline := dict "display" "inline" }}
 
-{{- $detailSeparatorStr := " · " }}
+{{- $separatorStr := default "•" (index $style "inline_separator") }}
 
 {{- $awardCollection := (index .Data $collection) }}
 {{- with $awardCollection }}
@@ -82,7 +76,7 @@
           {{- $i := 0 }}
           {{- range $k := $detailFields }}
             {{- with $v := (index $award $k) }}
-              {{- with and (gt $i 0) $detailSeparatorStr }}
+              {{- with and (gt $i 0) $separatorStr }}
                 {{ page.RenderString . | safeHTML }}
               {{- end }}
               <span class="{{ $classPrefix }}_{{ $k }}">

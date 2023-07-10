@@ -8,8 +8,11 @@
 {{- $component := .Component }}
 {{- $config := .Config }}
 
+{{- $debug := false }}
+{{/* {{- $debug = or $debug (not (not (findRE `^/([^/]+-demo/)?preview-ats` $page.RelPermalink) ) ) -}} */}}
+
 {{- $style := default dict .Style }}
-{{- $validStyles := (dict
+{{- $validStyles := merge (default dict .ValidStyles) (dict
   "layout" (dict
     "shallow" "shallow"
     "narrow" "narrow"
@@ -48,12 +51,21 @@
   "Template" $template
   "Style" $style
   "ValidStyles" $validStyles
-  ) -}}
+) -}}
+
+{{- if $debug }}
+  {{- warnf "%s[%s]: styleClassList=%v from\nstyle=%v\nvalidStyles=%v"
+      $page $template $styleClassList
+      (jsonify (dict "indent" "  ") $style)
+      (jsonify (dict "indent" "  ") $validStyles ) }}
+{{- end }}
 
 {{- $renderOptInline := dict "display" "inline" }}
 {{- $renderOptBlock := dict "display" "block" }}
 
 {{- $dateFormat := default "Jan 2006" (string $component.date_format) }}
+
+{{- $inlineSeparatorStr := default " · " $style.inline_separator }}
 
 {{- $timelineBaseClass := "timeline" }}
 
@@ -160,9 +172,9 @@
         {{- warnf "%s[%s]: organization=%s: logo '%s' not found"
             $page $template $org.organization $imgAssetID }}
       {{- end }}
-    {{- else }}
+    {{/* {{- else }}
       {{- warnf "%s[%s]: style.logo=%v"
-          $page $template $style.logo }}
+          $page $template $style.logo }} */}}
     {{- end }}
 
     {{- $stageHeaderClassPrefix := "stage_header" }}
@@ -220,6 +232,7 @@
           {{- partial "stage_meta" (merge $inlinePartialParams (dict
             "Organization" $org
             "HomeCountry" $homeCountry
+            "Style" $style
             "Template" $template
           ) ) -}}
         {{- end }}
@@ -248,6 +261,7 @@
         "StageType" "organization"
         "HomeCountry" $homeCountry
         "TopLevelClass" $topLevelClass
+        "Style" $style
         "Template" $template
       ) ) -}}
     {{- end }}
@@ -324,6 +338,7 @@
             "Role" $role
             "StageType" "role"
             "HomeCountry" $homeCountry
+            "Style" $style
             "Template" $template
           ) ) -}}
         {{- end }}
@@ -341,6 +356,7 @@
           "StageType" "role"
           "HomeCountry" $homeCountry
           "TopLevelClass" $topLevelClass
+          "Style" $style
           "Template" $template
         ) ) -}}
       {{- end }}
@@ -472,6 +488,7 @@
   {{- $template := .Template }}
   {{- $debug := false }}
 
+  {{- $inlineSeparatorStr := default " · " $style.inline_separator }}
 
   {{- $metaConfig := (dict
     "function" (and $stage.function (default true (default $component.function $componentStageType.function)) )
@@ -501,7 +518,7 @@
 
         {{- if or $metaConfig.function $metaConfig.unit $metaConfig.location }}
           {{- $functionUnitLocationMarkup := "" }}
-          {{- $stageMetaSeparatorStr := " · " }}
+          {{- $stageMetaSeparatorStr := $inlineSeparatorStr }}
           {{- $unitSeparatorStr := ", " }}
           {{- $stageFunctionMarkup := "" }}
           {{- $stageUnitMarkup := "" }}
@@ -632,7 +649,10 @@
       {{- else }}
         <span class="{{ printf `%s_meta stage_meta` $stageType }}">
       {{- end }}
-      {{- $markup | safeHTML }}
+      {{- if in (slice "inline") $style.layout }}
+        {{- safeHTML $inlineSeparatorStr }}
+      {{- end }}
+      {{- safeHTML $markup }}
       {{- with $topLevelClass }}
           </div>
         </div>

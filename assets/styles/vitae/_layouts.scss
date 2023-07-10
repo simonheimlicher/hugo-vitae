@@ -25,8 +25,9 @@ $page-width: 210.0791667mm;
 
 // Page margins
 $page-mar-h: 15mm;
-$page-mar-v: $page-mar-h;
+// $page-mar-v: $page-mar-h;
 // $page-mar-v: math.div($page-mar-h * $page-height, $page-width);
+$page-mar-v: 10mm;
 
 $page-mar-ratio-top-bottom: math.div(1, 1);
 $page-mar-top: math.div( math.round(10 * math.div($page-mar-ratio-top-bottom, (1 + $page-mar-ratio-top-bottom) ) * $page-mar-v * 2), 10);
@@ -68,6 +69,35 @@ $screen-pad-v: 1rem;
     --page_margin_right: calc(var(--page_margin_base_right) * var(--page_scale-factor));
     --page_margin_top: calc(var(--page_margin_base_top) * var(--page_scale-factor));
     --page_margin_bottom: calc(var(--page_margin_base_bottom) * var(--page_scale-factor));
+  }
+
+  .view-print {
+    .style_ats_true {
+      // Disable ligatures as application tracking systems (ATS) are not able to extract text from the PDF
+      --font-variant-ligatures: none;
+      --font-variant-numeric: normal;
+
+      --font-size_caps_lower: var(--font-size-smaller-2);
+      --text-transform_caps_lower: uppercase;
+      --font-variant_caps_lower: normal;
+      --font-variant_caps_upper: normal;
+      // ATS often have trouble to recognize words when spacing is too wide
+      // --letter-spacing_caps_lower: 0.075em;
+      // --letter-spacing_caps_upper: 0.075em;
+      --letter-spacing_caps_lower: 0.025em;
+      --letter-spacing_caps_upper: 0.025em;
+      --letter-spacing_caps_upper_strong: 0.025em;
+
+      // Disable hyphenation as Applicant Tracking Systems (ATS) does not
+      // play well with words spanning multiple lines
+      --hyphens: manual;
+      font-variant-ligatures: var(--font-variant-ligatures);
+      font-variant-numeric: var(--font-variant-numeric);
+
+      // At discretion of browser
+      font-kerning: auto;
+      hyphens: var(--hyphens);
+    }
   }
 
   #printPreviewContainer {
@@ -470,17 +500,17 @@ $screen-pad-v: 1rem;
       .stage_header {
         flex: 0 0 auto;
       }
-      .stage_header:has( + .stage_header) {
-        flex: 0.25 0 auto;
-      }
+      // .stage_header:has( + .stage_header) {
+      //   flex: 0.25 0 auto;
+      // }
+      // .stage_header:has( + .stage_meta) {
+      //   flex: 0 0 auto;
+      // }
+      // .organization_header:has( + .role_header) {
+      //   flex: 0 0 auto;
+      // }
       .stage_meta, .stage_content {
-        flex: 0.5 0 auto;
-      }
-      .stage_header:has( + .stage_meta) {
-        flex: 0 0 auto;
-      }
-      .organization_header:has( + .role_header) {
-        flex: 0 0 auto;
+        flex: 0.5 0.5 auto;
       }
       .stage_content.feature-last {
         flex: 0;

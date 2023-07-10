@@ -6,12 +6,33 @@
 
 {{- $component := .Component }}
 
-{{- $layout := "screen" -}}
-{{- with $page.Layout -}}
-  {{- $layout = . -}}
-{{- end }}
+{{- $style := default dict .Style }}
+{{- $validStyles := merge (default dict .ValidStyles) (dict
+  "layout" (dict
+    "shallow" "shallow"
+    "narrow" "narrow"
+  )
+  "icon" (dict
+    "false" false
+    "true" true
+  )
+  "text" (dict
+    "false" false
+    "true" true
+  )
+  "qrcode" (dict
+    "false" false
+    "true" true
+  )
+) -}}
 
-{{- $topLevelClass := delimit (slice $componentClass $childClass) " " }}
+{{- $styleClassList := partial "vitae/_functions/style-class" (dict
+  "Template" $template
+  "Style" $style
+  "ValidStyles" $validStyles
+) -}}
+
+{{- $topLevelClass := delimit (append (slice $componentClass $childClass) $styleClassList) " " }}
 
 {{- $filterField := default "type" $component.filter_by -}}
 {{- $filterMatch := default "language" $component.filter_value -}}
@@ -25,35 +46,41 @@
   {{- $classPrefix := printf "%s skill" $filterMatch }}
   <div class="{{ $classPrefix }}_container {{ $topLevelClass }}">
   {{- range $skillIdx, $skill := $skillList }}
-    <div class="{{- $classPrefix }}_name">
-      {{- .name }}
-    </div>
-    {{- with .level }}
-    <div class="{{- $classPrefix }}_level">
-      <span class="{{- $classPrefix }}_level_description">{{- .description }}</span>
-      {{- if default true $component.level_bar }}
-        <div class="{{- $classPrefix }}_level_bar">
-          <span class="{{- $classPrefix }}_level_bar_tab" style="width: {{ .value }}%">&nbsp;</span>
-        </div>
-      {{- end }}
-    </div>
+    {{- if (in (slice "inline") $style.layout) }}
+    <div class="{{- $classPrefix }}_item">
     {{- end }}
-    {{- if default true $component.details }}
-      {{- $detailFields := slice "certificates" "details" }}
-      <div class="{{- $classPrefix }}_details">
-        {{- range $k := $detailFields }}
-        <span class="{{ $classPrefix }}_{{ $k }}">
-          {{- $v := (index $skill $k) }}
-          {{- if reflect.IsSlice $v }}
-            {{- range $vv := $v }}
-              {{- $page.RenderString $optInline $vv -}}
-            {{- end }}
-          {{- else }}
-            {{- $page.RenderString $optInline $v -}}
-          {{- end }}
-        </span>
+      <div class="{{- $classPrefix }}_name">
+        {{- .name }}
+      </div>
+      {{- with .level }}
+      <div class="{{- $classPrefix }}_level">
+        <span class="{{- $classPrefix }}_level_description">{{- .description }}</span>
+        {{- if default true $component.level_bar }}
+          <div class="{{- $classPrefix }}_level_bar">
+            <span class="{{- $classPrefix }}_level_bar_tab" style="width: {{ .value }}%">&nbsp;</span>
+          </div>
         {{- end }}
       </div>
+      {{- end }}
+      {{- if default true $component.details }}
+        {{- $detailFields := slice "certificates" "details" }}
+        <div class="{{- $classPrefix }}_details">
+          {{- range $k := $detailFields }}
+          <span class="{{ $classPrefix }}_{{ $k }}">
+            {{- $v := (index $skill $k) }}
+            {{- if reflect.IsSlice $v }}
+              {{- range $vv := $v }}
+                {{- $page.RenderString $optInline $vv -}}
+              {{- end }}
+            {{- else }}
+              {{- $page.RenderString $optInline $v -}}
+            {{- end }}
+          </span>
+          {{- end }}
+        </div>
+      {{- end }}
+    {{- if in (slice "inline") $style.layout }}
+    </div>
     {{- end }}
   {{- end }}
   </div>

@@ -130,7 +130,6 @@
   }
 }
 
-
 @mixin drop-shadow($dist: 3rem, $opacity: 0.2, $hover-opacity: 0.4) {
   box-shadow: 0 0 $dist rgba(0, 0, 0, $opacity);
   &:hover {
@@ -139,17 +138,19 @@
 }
 
 @mixin lower-caps($spacing: var(--letter-spacing_caps_lower)) {
-  font-weight: var(--font-weight-caps);
+  font-size: var(--font-size_caps_lower);
+  font-weight: var(--font-weight_caps);
   font-variant: all-small-caps;
+  font-variant: var(--font-variant_caps_lower);
   @if ($spacing != 0) {
     letter-spacing: $spacing;
   }
-  text-transform: lowercase;
+  text-transform: var(--text-transform_caps_lower);
 }
 
 @mixin upper-caps($spacing: var(--letter-spacing_caps_upper)) {
-  font-weight: var(--font-weight-caps);
-  font-variant: small-caps;
+  font-weight: var(--font-weight_caps);
+  font-variant: var(--font-variant_caps_upper);
   @if ($spacing != 0) {
     letter-spacing: $spacing;
   }
@@ -157,8 +158,8 @@
 }
 
 @mixin upper-caps-strong($spacing: var(--letter-spacing_caps_upper_strong)) {
-  font-weight: var(--font-weight-caps-strong);
-  font-variant: small-caps;
+  font-weight: var(--font-weight_caps_upper_strong);
+  font-variant: var(--font-variant_caps_upper);
   @if ($spacing != 0) {
     letter-spacing: $spacing;
   }

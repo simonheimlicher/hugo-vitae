@@ -13,21 +13,17 @@
 {{/* {{- $debug = or $debug (not (not (findRE `^/([^/]+-demo/)?leadership` $page.RelPermalink) ) ) -}} */}}
 {{/* {{- warnf "%s[%s]: media=%s .Component=%s .Config=%s" $page $template $component $config -}} */}}
 
-{{- $style := dict }}
-{{- $styleClass := "" }}
-{{- $styleClassPrefix := "style" }}
-{{- with .Style }}
-  {{- if reflect.IsMap . }}
-    {{- $style = . }}
-  {{- end }}
-{{- end }}
-{{- range $key, $value := $style }}
-  {{- if . }}
-    {{- $styleClass = trim (printf "%s %s_%s_%v" $styleClass $styleClassPrefix $key .) " " }}
-  {{- end }}
-{{- end }}
+{{- $style := default dict .Style }}
+{{- $validStyles := merge (default dict .ValidStyles) (dict
+) -}}
 
-{{- $topLevelClass := (slice $styleClass $componentClass $childClass) }}
+{{- $styleClassList := partial "vitae/_functions/style-class" (dict
+  "Template" $template
+  "Style" $style
+  "ValidStyles" $validStyles
+  ) -}}
+
+{{- $topLevelClass := (append (slice $componentClass $childClass) $styleClassList) }}
 
 {{- with .Data.features.about }}
   {{- with .portrait }}

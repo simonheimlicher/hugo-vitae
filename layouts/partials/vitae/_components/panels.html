@@ -6,7 +6,7 @@
 {{- $childClass := default "" .ChildClass }}
 
 {{- $style := default dict .Style }}
-{{- $validStyles := (dict
+{{- $validStyles := merge (default dict .ValidStyles) (dict
   "layout" (dict
     "shallow" "shallow"
     "narrow" "narrow"
@@ -55,7 +55,7 @@
       {{- partial "claris/_components/panels" (dict
           "Page" $page
           "HeadingLevel" $headingLevel
-          "ContainerClass" $topLevelClass
+          "ContainerClass" (delimit (slice "panels_cards" $topLevelClass) " ")
           "Nested" false
           "Panels" . )
         }}
