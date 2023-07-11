@@ -1,6 +1,6 @@
 {{- $page := .Page -}}
 {{- $headingLevel := default 3 .HeadingLevel }}
-{{- $vitaeParams := .Config }}
+{{- $vitaeTemplate := .Config }}
 {{- $vitaeData := .Data }}
 {{- $vitaeStyle := .Style }}
 {{- $validStyles := default dict .ValidStyles }}
@@ -10,7 +10,7 @@
 {{- $template := "vitae/_components/index" }}
 
 {{- $debug := false }}
-{{/* {{- $debug = or $debug (not (not (findRE `^/([^/]+-demo/)?preview-ats` $page.RelPermalink) ) ) -}} */}}
+{{/* {{- $debug = or $debug (not (not (findRE `^/([^/]+-demo/)?ats/preview` $page.RelPermalink) ) ) -}} */}}
 
 {{- if $debug }}
   {{- warnf "%s[%s]:\nstyle=%v\nvalidStyles=%v" $page $template
@@ -56,7 +56,7 @@
 
     {{- partial $componentPartial (dict
       "Page" $page
-      "Config" $vitaeParams
+      "Config" $vitaeTemplate
       "Component" $component
       "Style" $componentStyle
       "ValidStyles" $validStyles
@@ -81,7 +81,7 @@
     <div class="{{ delimit $panelClass " " }}">
       {{- partial "vitae/_components/index" (dict
         "Page" $page
-        "Config" $vitaeParams
+        "Config" $vitaeTemplate
         "Style" $vitaeStyle
         "ValidStyles" $validStyles
         "ChildClass" $childClass

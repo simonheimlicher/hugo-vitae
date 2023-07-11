@@ -10,10 +10,7 @@
 {{- $style := default dict .Style }}
 {{- $validStyles := merge (default dict .ValidStyles) (dict
   "layout" (dict
-    "shallow" "shallow"
-    "narrow" "narrow"
     "inline" "inline"
-    "compact" (slice "shallow" "narrow" "inline")
   )
   "heading" (dict
     "normal" "normal"
@@ -33,7 +30,7 @@
   "ValidStyles" $validStyles
   ) -}}
 
-{{- $topLevelClass := delimit (append (slice $componentClass $childClass) $styleClassList) " " }}
+{{- $topLevelClass := delimit (append $styleClassList (slice $componentClass $childClass) ) " " }}
 
 {{- $filterField := default "" $component.filter_by -}}
 {{- $filterMatch := default "" $component.filter_value -}}

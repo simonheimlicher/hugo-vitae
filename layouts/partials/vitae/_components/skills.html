@@ -32,7 +32,7 @@
   "ValidStyles" $validStyles
 ) -}}
 
-{{- $topLevelClass := delimit (append (slice $componentClass $childClass) $styleClassList) " " }}
+{{- $topLevelClass := delimit (append $styleClassList (slice $componentClass $childClass) ) " " }}
 
 {{- $filterField := default "type" $component.filter_by -}}
 {{- $filterMatch := default "language" $component.filter_value -}}

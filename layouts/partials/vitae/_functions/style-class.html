@@ -8,7 +8,7 @@
 {{- $styleClassPrefix := default "style" .StyleClassPrefix }}
 
 {{- $debug := false }}
-{{/* {{- $debug = or $debug (and (eq $callingTemplate "vitae/main/content/executive") (not (not (findRE `^/([^/]+-demo/)?preview-ats` page.RelPermalink) ) ) ) -}} */}}
+{{/* {{- $debug = or $debug (and (eq $callingTemplate "vitae/main/content/executive") (not (not (findRE `^/([^/]+-demo/)?ats/preview` page.RelPermalink) ) ) ) -}} */}}
 
 {{- $paramValueParsePartial := "parse-param-value" }}
 
@@ -86,7 +86,7 @@
   {{- $validValuesForKey := .ValidValuesForKey }}
 
   {{- $debug := false }}
-  {{/* {{- $debug = or $debug (not (not (findRE `^/([^/]+-demo/)?preview-ats` page.RelPermalink) ) ) -}} */}}
+  {{/* {{- $debug = or $debug (not (not (findRE `^/([^/]+-demo/)?ats/preview` page.RelPermalink) ) ) -}} */}}
 
   {{- $ignoreValues := (slice "STRING") }}
 

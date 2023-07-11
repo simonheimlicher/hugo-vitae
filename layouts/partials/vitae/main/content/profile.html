@@ -13,7 +13,7 @@
 {{- $paginationContainerClass := $vp.PaginationContainerClass }}
 {{- $paginationOrderAttr := $vp.PaginationOrderAttr }}
 {{- $paginationPolicyAttr := $vp.PaginationPolicyAttr }}
-{{- $vitaeParams := $vp.VitaeParams }}
+{{- $vitaeTemplate := $vp.VitaeParams }}
 {{- $vitaeData := $vp.VitaeData }}
 
 {{- $headerChildClass := "header-item" }}
@@ -24,13 +24,13 @@
   {{- if $vp.LoremipsumOnly }}
     {{- partial "loremipsum" (dict "Count" 1 "Class" $headerChildClass "Header" "<h2>main-column</h2>" "Prefix" "<strong>main-column</strong>") }}
   {{- else }}
-    {{- range $vitaePageIndex, $vitaePage := $vitaeParams.header }}
+    {{- range $vitaePageIndex, $vitaePage := $vitaeTemplate.header }}
       {{/* {{- warnf "%s[%s]: Render header %d" $page $template $vitaePageIndex -}} */}}
       {{- range $vitaeFeatureIndex, $vitaeFeature := $vitaePage.main }}
         {{ partial "vitae/sections/index" (dict
         "Page" $page
         "Feature" $vitaeFeature
-        "Config" $vitaeParams
+        "Config" $vitaeTemplate
         "PageIndex" $vitaePageIndex
         "FeatureIndex" $vitaeFeatureIndex
         "Container" false
@@ -58,13 +58,13 @@
   {{- if $vp.LoremipsumOnly }}
     {{- partial "loremipsum" (dict "Count" 25 "Class" $mainColumnChildClass "Header" "<h2>main-column</h2>" "Prefix" "<strong>main-column</strong>") }}
   {{- else }}
-    {{- range $vitaePageIndex, $vitaePage := $vitaeParams.pages }}
+    {{- range $vitaePageIndex, $vitaePage := $vitaeTemplate.pages }}
       {{- warnf "Render page %d %s" $vitaePageIndex $template -}}
       {{- range $vitaeFeatureIndex, $vitaeFeature := $vitaePage.main }}
         {{ partial "vitae/sections/index" (dict
         "Page" $page
         "Feature" $vitaeFeature
-        "Config" $vitaeParams
+        "Config" $vitaeTemplate
         "PageIndex" $vitaePageIndex
         "FeatureIndex" $vitaeFeatureIndex
         "Container" false
@@ -84,13 +84,13 @@
   {{- if $vp.LoremipsumOnly }}
     {{- partial "loremipsum" (dict "Count" 5 "Class" $asidePrimaryChildClass "Header" "<h3>aside-primary</h3>" "Prefix" "<strong>aside-primary</strong>") }}
   {{- else }}
-    {{- range $vitaePageIndex, $vitaePage := $vitaeParams.pages }}
+    {{- range $vitaePageIndex, $vitaePage := $vitaeTemplate.pages }}
       {{- with $vitaePage.primary -}}
         {{- range $vitaeFeatureIndex, $vitaeFeature := . }}
           {{ partial "vitae/sections/index" (dict
           "Page" $page
           "Feature" $vitaeFeature
-          "Config" $vitaeParams
+          "Config" $vitaeTemplate
           "PageIndex" $vitaePageIndex
           "FeatureIndex" $vitaeFeatureIndex
           "Container" "div"

@@ -296,7 +296,9 @@ $screen-pad-v: 1rem;
   }
 
   .view-print {
-      @include link-lvhfa-reset;
+    @include link-lvhfa-reset;
+
+    --column_gap: var(--inner_margin_4-3);
 
     --line-width_separator: calc(0.025 * var(--rem));;
     --line-width_separator_heading: calc(0.05 * var(--rem));;

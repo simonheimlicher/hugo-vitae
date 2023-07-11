@@ -32,14 +32,14 @@ PaginationPage: a printed page that is part of a Part
       {{- if $pp.LoremipsumOnly }}
         {{- partial "loremipsum" (dict "Count" 1 "Class" $headerChildClass "Header" "<h2>main-column</h2>" "Prefix" "<strong>main-column</strong>") }}
       {{- else }}
-        {{- range $vitaePageIndex, $vitaePage := $pp.VitaeParams.pages }}
+        {{- range $vitaePageIndex, $vitaePage := $pp.VitaeTemplate.pages }}
           {{- with $vitaePage.main -}}
             {{- /* warnf "%s[%s]: Render header %d: main=%v" $page $template $vitaePageIndex . */ -}}
             {{- range $vitaeFeatureIndex, $vitaeFeature := . }}
               {{ partial "vitae/sections/index" (dict
               "Page" $page
               "Feature" $vitaeFeature
-              "Config" $pp.VitaeParams
+              "Config" $pp.VitaeTemplate
               "HeadingLevel" 1
               "PageIndex" $vitaePageIndex
               "FeatureIndex" $vitaeFeatureIndex
@@ -90,14 +90,14 @@ PaginationPage: a printed page that is part of a Part
       {{- if $pp.LoremipsumOnly }}
         {{- partial "loremipsum" (dict "Count" 5 "Class" $asidePrimaryChildClass "Header" "<h3>aside-primary</h3>" "Prefix" "<strong>aside-primary</strong>") }}
       {{- else }}
-        {{- range $vitaePageIndex, $vitaePage := $pp.VitaeParams.header }}
+        {{- range $vitaePageIndex, $vitaePage := $pp.VitaeTemplate.header }}
           {{- with $vitaePage.main -}}
             {{- /* warnf "%s[%s]: Render aside-header %d: main=%v" $page $template $vitaePageIndex . */ -}}
             {{- range $vitaeFeatureIndex, $vitaeFeature := . }}
               {{ partial "vitae/sections/index" (dict
               "Page" $page
               "Feature" $vitaeFeature
-              "Config" $pp.VitaeParams
+              "Config" $pp.VitaeTemplate
               "HeadingLevel" 1
               "PageIndex" $vitaePageIndex
               "FeatureIndex" $vitaeFeatureIndex
@@ -112,14 +112,14 @@ PaginationPage: a printed page that is part of a Part
     {{ printf "%s=\"%d\"" $pp.PaginationOrderAttr 99 | safeHTMLAttr }}
     {{ printf "%s=\"%s\"" $pp.PaginationPolicyAttr "break" | safeHTMLAttr -}}
     >
-        {{- range $vitaePageIndex, $vitaePage := $pp.VitaeParams.pages }}
+        {{- range $vitaePageIndex, $vitaePage := $pp.VitaeTemplate.pages }}
           {{- with $vitaePage.primary -}}
             {{- /* warnf "%s[%s]: Render aside-primary %d: %v" $page $template $vitaePageIndex . */ -}}
             {{- range $vitaeFeatureIndex, $vitaeFeature := . }}
               {{ partial "vitae/sections/index" (dict
               "Page" $page
               "Feature" $vitaeFeature
-              "Config" $pp.VitaeParams
+              "Config" $pp.VitaeTemplate
               "HeadingLevel" 1
               "PageIndex" $vitaePageIndex
               "FeatureIndex" $vitaeFeatureIndex

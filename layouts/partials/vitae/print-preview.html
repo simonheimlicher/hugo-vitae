@@ -21,11 +21,6 @@
   {{- with .NavigationClass }}
     {{- $navigationClass = printf "%s %s" $navigationClass . }}
   {{- end }}
-  {{- with .PrintControl }}
-    {{- $printControl = . }}
-  {{- else }}
-    {{- $printControl = default $printControl ($page.Param "printControl") }}
-  {{- end }}
   {{- with .PDFDownloadURL }}
     {{- $pdfDownloadURL = . }}
   {{- else }}
@@ -37,17 +32,18 @@
 {{- $media := $pp.Media }}
 {{- $printPreview := $pp.PrintPreview }}
 {{- $printView := $pp.PrintView }}
+{{- $printControl := $pp.PrintControl }}
 
 {{- if (or $printControl $printPreview $printView) }}
   {{/* {{- warnf "%s[%s]: .Params=%v printPreview=%v printView=%v" $page $template $printPreview $printView -}} */}}
-  {{- if $printControl}}
-  {{- else if $printPreview }}
-    {{- $targetClass = printf "%s preview-%s" $targetClass "prepare" }}
-  {{- else if $printView }}
+  {{- if $printView }}
     {{- $targetClass = printf "%s preview-%s" $targetClass "render" }}
+  {{- else if $printPreview }}
+    {{- $targetClass = printf "%s preview-%s" $targetClass "visible" }}
   {{- end }}
 
-  {{/* {{- partial "html-comment" (printf "BEGIN partial '%s'" $template) }} */}}
+  {{- partial "html-comment" (printf "BEGIN partial '%s'\nprintView=%v printPreview=%v printControl=%v"
+    $template $printView $printPreview $printControl) }}
   {{- if or $printControl $pdfDownloadURL }}
   <nav id="printPreviewNav" class="{{- $navigationClass }}">
     {{- if $printControl }}

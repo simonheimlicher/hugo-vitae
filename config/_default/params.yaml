@@ -2,333 +2,439 @@ vitae:
 
 # ------ Template EXECUTIVE --------- #
   executive:
-    contact:
-      # title: section-contact
-      title: false
-      screen: true
-      print: true
-    links:
-      screen: true
-      print: true
+    variants:
+      default:
+        contact:
+          # title: section-contact
+          title: false
+          screen: true
+          print: true
+        links:
+          screen: true
+          print: true
 
-    style:
-      # inline_separator: " · "
-      inline_separator: " • "
+        style:
+          # inline_separator: " · "
+          inline_separator: " • "
 
-    parts:
+        parts:
 
-      # Front page
-      - template: front-page
-        # enabled: false
-        pagination_policy: first
-        footer:
-          enabled: false
-        slots:
-        - slot: header
-          sections:
-          - section: header
-            components:
-            - component: header
-              portrait: true
-              degrees: true
-              tagline: true
-              # style:
-              #   font-size: larger-1
-              fragments:
-              - fragment: contact
-              - fragment: personal
-                fields:
-                - field: date_of_birth
-                - field: citizenship
-                  title: fragment_citizenship
-        - slot: main
-          sections:
-          - section: personal-profile
-            title: section-personal-profile
-            container: section
-            components:
-            - component: panels
-              collection: profile
-          - section: career-summary-awards
-            # container: div
-            sections:
-            - section: career-summary
-              title: section-career-summary
-              container: section
-              components:
-              - component: stages
-                collection: stages
-                filter_by: type
-                filter_value: professional
-                links: false
-                date_format: 2006
-                unit:
-                  limit: 1
-                  type: false
-                function: false
-                style:
-                  layout:
-                    - shallow
-                    - inline
-                  heading: larger-1
-                  label:
-                    function: false
+          # Front page
+          - template: front-page
+            # enabled: false
+            pagination_policy: first
+            slots:
+            - slot: header
+              sections:
+              - section: header
+                components:
+                - component: header
+                  portrait: true
+                  degrees: true
+                  tagline: true
+                  # style:
+                  #   font-size: larger-1
+                  fragments:
+                  - fragment: contact
+                  - fragment: personal
+                    fields:
+                    - field: date_of_birth
+                    - field: citizenship
+                      title: fragment_citizenship
+            - slot: main
+              sections:
+              - section: personal-profile
+                title: section-personal-profile
+                container: section
+                components:
+                - component: panels
+                  collection: profile
+              - section: career-summary-awards
+                # container: div
+                sections:
+                - section: career-summary
+                  title: section-career-summary
+                  container: section
+                  components:
+                  - component: stages
+                    collection: stages
+                    filter_by: type
+                    filter_value: professional
+                    links: false
+                    date_format: 2006
                     unit: false
-                organization:
-                  period: true
-                  details: false
-                role:
-                  period: true
-                  details: false
-                  summary: false
-                  description: false
-                  skills: false
-                  achievements: false
-            - section: award-selection
-              title: section-awards
-              container: section
-              components:
-              - component: awards
-                details: false
-                screen: true
-                print: true
-                style:
-                  logo: false
-                  heading: larger-1
-                  # layout: narrow
-                  layout: inline
-            # - section: language-skills
-            #   title: section-language-skills
-            #   container: section
-            #   components:
-            #   - component: skills
-            #     collection: skills
-            #     filter_by: type
-            #     filter_value: language
-            #     details: false
-            #     level_bar: true
-          - section: key-achievements
-            title: section-key-achievements
-            container: section
-            components:
-            - component: panels
-              collection: achievements
-              style:
-                # font-size: larger-1
-                # layout: inline
-          - section: connect
-            title: section-connect
-            container: section
-            components:
-            - component: links
-              screen: true
-              print: true
-              style:
-                layout: shallow
-                icon: true
-                text: true
-                qrcode: true
+                      # limit: 1
+                      # type: false
+                    function: false
+                    style:
+                      layout:
+                        - shallow
+                        - inline
+                      heading: larger-1
+                      label:
+                        function: false
+                        unit: false
+                    organization:
+                      period: true
+                      details: false
+                    role:
+                      period: true
+                      details: false
+                      summary: false
+                      description: false
+                      skills: false
+                      achievements: false
+                - section: award-selection
+                  title: section-awards
+                  container: section
+                  components:
+                  - component: awards
+                    details: false
+                    screen: true
+                    print: true
+                    style:
+                      logo: false
+                      heading: larger-1
+                      # layout: narrow
+                      # layout: inline
+                # - section: language-skills
+                #   title: section-language-skills
+                #   container: section
+                #   components:
+                #   - component: skills
+                #     collection: skills
+                #     filter_by: type
+                #     filter_value: language
+                #     details: false
+                #     level_bar: true
+              - section: key-achievements
+                title: section-key-achievements
+                container: section
+                components:
+                - component: panels
+                  collection: achievements
+                  style:
+                    # font-size: larger-1
+                    # layout: inline
+              - section: connect
+                title: section-connect
+                container: section
+                components:
+                - component: links
+                  screen: true
+                  print: true
+                  style:
+                    layout: shallow
+                    icon: true
+                    text: true
+                    qrcode: true
 
 
-      # Career timeline
-      - template: career-timeline
-        # enabled: false
-        pagination_policy: break
-        slots:
-        - slot: main
-          sections:
-          - section: experience
-            title: section-experience
-            components:
-            - component: stages
-              collection: stages
-              filter_by: type
-              filter_value: professional
-              unit:
-                limit: 1
-                type: false
-              style:
-                timeline: column
-                layout: inline
-                logo: left
-                label:
-                  unit: false
-                  function: false
-              organization:
-                period: true
-                # duration: true
-                details: true
-              role:
-                headings: false
-                period: true
-                duration: false
-                details: true
-                summary: false
-                description: false
-                skills: false
-                achievements: true
-          - section: education-languages
-            # container: div
+          # Career timeline
+          - template: main
+            # enabled: false
+            pagination_policy: break
+            slots:
+            - slot: main
+              sections:
+              - section: experience
+                title: section-experience
+                components:
+                - component: stages
+                  collection: stages
+                  filter_by: type
+                  filter_value: professional
+                  unit:
+                    limit: 1
+                    type: false
+                  style:
+                  #   timeline: column
+                    layout: inline
+                  #   logo: left
+                    label:
+                      unit: false
+                      function: false
+                  # organization:
+                  #   period: true
+                  #   # duration: true
+                  #   details: true
+                  # role:
+                  #   headings: false
+                  #   period: true
+                  #   duration: false
+                  #   details: true
+                  #   summary: false
+                  #   description: false
+                  #   skills: false
+                  #   achievements: true
+              - section: education-languages
+                # container: div
+                sections:
+                - section: education
+                  # enabled: false
+                  title: section-education
+                  container: section
+                  components:
+                  - component: stages
+                    collection: stages
+                    filter_by: type
+                    filter_value: education
+                    style:
+                      heading: normal
+                      separate_roles: true
+                    role:
+                      period: false
+                      duration: false
+                      details: false
+                - section: language-skills
+                  title: section-language-skills
+                  container: section
+                  components:
+                  - component: skills
+                    collection: skills
+                    filter_by: type
+                    filter_value: language
+                    details: true
+                    level_bar: false
+            - slot: footer
+              shared: footer
+
+          # Appendix
+          - template: appendix
+            enabled: false
+            pagination_policy: first
+            slots:
+            - slot: main
+              sections:
+              - section: patent-selection
+                title: section-patents
+                container: section
+                components:
+                - component: publications
+                  collection: publications
+                  filter_by: kind
+                  filter_value: patent
+                  screen: true
+                  print: true
+              - section: publication-selection
+                title: section-publications
+                container: section
+                components:
+                - component: publications
+                  collection: publications
+                  filter_by: kind
+                  filter_value: publication
+                  screen: true
+                  print: true
+              # - section: interests
+              #   title: section-interests
+              #   container: section
+              #   components:
+              #   - component: panels
+              #     collection: interests
+            - slot: footer
+              shared: footer
+
+        shared:
+          # Footer to be repeated on every printed page
+          footer:
+            pagination_policy: clone
+            container: footer
+            container_class: footer_name-page-number
+            pagination_container_class: footer_name-page-number
             sections:
-            - section: education
-              # enabled: false
-              title: section-education
-              container: section
+            - section: main
               components:
-              - component: stages
-                collection: stages
-                filter_by: type
-                filter_value: education
-                style:
-                  # layout: compact
-                  # layout: narrow
-                  layout:
-                    - shallow
-                    - inline
-                  # timeline: column
-                  heading: larger-1
-                  # heading: normal
-                  # logo: false
-                # organization:
-                #   period: true
-                #   duration: true
-                #   details: true
-                role:
-                  period: false
-                  duration: false
-                  details: true
-                  description: true
-            - section: language-skills
-              title: section-language-skills
-              container: section
+              - component: footer
+                # style:
+                #   font-size: normal
+                fragments:
+                  - fragment: page-meta
+                    fields:
+                      # - field: content-type
+                      #   content: Resume of
+                      #   align: start
+                      - field: name
+                        content: "{personal.name}"
+                        align: start
+                      - field: content-type
+                        content: CV
+                        align: center
+                      - field: page-number
+                        content: "{page-number}"
+                        align: end
+                      - field: page-of-total
+                        content: '|'
+                        align: end
+                      - field: total-pages
+                        content: "{total-pages}"
+                        align: end
+
+      two-pager:
+
+        style:
+          # inline_separator: " · "
+          inline_separator: " • "
+          layout:
+            - inline
+            - shallow
+
+        parts:
+
+          - template: main
+            # enabled: false
+            slots:
+            - slot: header
+              pagination_policy: first
+              sections:
+              - section: header
+                components:
+                - component: header
+                  portrait: true
+                  degrees: true
+                  tagline: true
+                  # style:
+                  #   font-size: larger-1
+                  fragments:
+                  - fragment: contact
+                  - fragment: personal
+                    fields:
+                    - field: date_of_birth
+                    - field: citizenship
+                      title: fragment_citizenship
+            - slot: main
+              pagination_policy: break
+              sections:
+              - section: personal-profile
+                title: section-personal-profile
+                # container: section
+                components:
+                - component: panels
+                  collection: profile
+              - section: award-selection
+                title: section-awards
+                # container: section
+                components:
+                - component: awards
+                  details: false
+                  screen: true
+                  print: true
+                  style:
+                    logo: false
+                    heading: larger-1
+              - section: experience
+                title: section-experience
+                components:
+                - component: stages
+                  collection: stages
+                  filter_by: type
+                  filter_value: professional
+                  unit:
+                    limit: 1
+                    type: false
+                  style:
+                    timeline: column
+                    layout: inline
+                    logo: left
+                    label:
+                      unit: false
+                      function: false
+                  organization:
+                    period: true
+                    # duration: true
+                    details: true
+                  role:
+                    headings: false
+                    period: true
+                    duration: false
+                    details: true
+                    summary: false
+                    description: false
+                    skills: false
+                    achievements: true
+              - section: education
+                # enabled: false
+                title: section-education
+                # container: section
+                components:
+                - component: stages
+                  collection: stages
+                  filter_by: type
+                  filter_value: education
+                  style:
+                    layout:
+                      - inline
+                    heading: normal
+                    separate_roles: true
+                  role:
+                    period: false
+                    duration: false
+                    details: false
+                    description: true
+
+          # Appendix
+          - template: appendix
+            enabled: false
+            pagination_policy: first
+            slots:
+            - slot: main
+              sections:
+              - section: patent-selection
+                title: section-patents
+                container: section
+                components:
+                - component: publications
+                  collection: publications
+                  filter_by: kind
+                  filter_value: patent
+                  screen: true
+                  print: true
+              - section: publication-selection
+                title: section-publications
+                container: section
+                components:
+                - component: publications
+                  collection: publications
+                  filter_by: kind
+                  filter_value: publication
+                  screen: true
+                  print: true
+
+        shared:
+          # Footer to be repeated on every printed page
+          footer:
+            pagination_policy: clone
+            container: footer
+            container_class: footer_name-page-number
+            pagination_container_class: footer_name-page-number
+            sections:
+            - section: main
               components:
-              - component: skills
-                collection: skills
-                filter_by: type
-                filter_value: language
-                details: true
-                level_bar: false
+              - component: footer
+                # style:
+                #   font-size: normal
+                fragments:
+                  - fragment: page-meta
+                    fields:
+                      # - field: content-type
+                      #   content: Resume of
+                      #   align: start
+                      - field: name
+                        content: "{personal.name}"
+                        align: start
+                      - field: content-type
+                        content: CV
+                        align: center
+                      - field: page-number
+                        content: "{page-number}"
+                        align: end
+                      - field: page-of-total
+                        content: '|'
+                        align: end
+                      - field: total-pages
+                        content: "{total-pages}"
+                        align: end
 
-      # Appendix
-      - template: appendix
-        enabled: false
-        pagination_policy: first
-        slots:
-        - slot: main
-          sections:
-          # - section: education
-          #   # enabled: false
-          #   title: section-education
-          #   container: section
-          #   components:
-          #   - component: stages
-          #     collection: stages
-          #     filter_by: type
-          #     filter_value: education
-          #     style:
-          #       layout: compact
-          #       heading: larger-1
-          #       # heading: normal
-          #       # logo: false
-          #     # organization:
-          #     #   period: true
-          #     #   duration: true
-          #     #   details: true
-          #     role:
-          #       period: false
-          #       duration: false
-          #       details: true
-          #       description: true
-          # - section: language-skills
-          #   title: section-language-skills
-          #   container: section
-          #   components:
-          #   - component: skills
-          #     collection: skills
-          #     filter_by: type
-          #     filter_value: language
-          #     details: true
-          #     level_bar: false
-          - section: patent-selection
-            title: section-patents
-            container: section
-            components:
-            - component: publications
-              collection: publications
-              filter_by: kind
-              filter_value: patent
-              screen: true
-              print: true
-          - section: publication-selection
-            title: section-publications
-            container: section
-            components:
-            - component: publications
-              collection: publications
-              filter_by: kind
-              filter_value: publication
-              screen: true
-              print: true
-          # - section: award-selection
-          #   title: section-awards
-          #   container: section
-          #   components:
-          #   - component: awards
-          #     details: true
-          #     screen: true
-          #     print: true
-          #     style:
-          #       logo: false
-          # - section: interests
-          #   title: section-interests
-          #   container: section
-          #   components:
-          #   - component: panels
-          #     collection: interests
-          # - section: connect
-          #   title: section-connect
-          #   container: section
-          #   components:
-          #   - component: links
-          #     screen: true
-          #     print: true
-          #     style:
-          #       # layout: shallow
-          #       layout: narrow
-          #       icon: true
-          #       text: true
-          #       qrcode: true
-
-    # Footer to be repeated on every printed page
-    footer:
-      template: name-page-number
-      sections:
-      - section: main
-        components:
-        - component: footer
-          # style:
-          #   font-size: normal
-          fragments:
-            - fragment: page-meta
-              fields:
-                # - field: content-type
-                #   content: Resume of
-                #   align: start
-                - field: name
-                  content: "{personal.name}"
-                  align: start
-                - field: content-type
-                  content: CV
-                  align: center
-                - field: page-number
-                  content: "{page-number}"
-                  align: end
-                - field: page-of-total
-                  content: '|'
-                  align: end
-                - field: total-pages
-                  content: "{total-pages}"
-                  align: end
 
 # ------ Template RESUME --------- #
   resume:

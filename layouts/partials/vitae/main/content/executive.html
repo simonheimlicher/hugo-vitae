@@ -5,13 +5,13 @@
 
 {{ partial "html-comment" (printf "BEGIN '%s'" $template) }}
 
-{{- $vitaeParams := $pp.VitaeParams }}
+{{- $vitaeTemplate := $pp.VitaeTemplate }}
 {{- $vitaeData := $pp.VitaeData }}
 
 {{- $debug := false }}
-{{/* {{- $debug = or $debug (not (not (findRE `^/([^/]+-demo/)?preview-ats` $page.RelPermalink) ) ) -}} */}}
+{{/* {{- $debug = or $debug (not (not (findRE `^/([^/]+-demo/)?ats/preview` $page.RelPermalink) ) ) -}} */}}
 
-{{- $vitaeStyle := default dict $pp.VitaeStyle }}
+{{- $style := default dict $pp.VitaeStyle }}
 
 {{- $validStyles := merge (default dict .ValidStyles) (dict
   "layout" (dict
@@ -38,13 +38,13 @@
 
 {{- $styleClassList := partial "vitae/_functions/style-class" (dict
   "Template" $template
-  "Style" $vitaeStyle
+  "Style" $style
   "ValidStyles" $validStyles
   ) -}}
 
 {{- if $debug }}
   {{- warnf "%s[%s]:\nstyle=%v\nvalidStyles=%v" $page $template
-      (jsonify (dict "indent" "  ") $vitaeStyle)
+      (jsonify (dict "indent" "  ") $style)
       (jsonify (dict "indent" "  ") $validStyles ) }}
 {{- end }}
 
@@ -52,7 +52,7 @@
 Part: an independent section of one or more printed pages
 PaginationPage: a printed page that is part of a Part
 -->
-{{- range $partIndex, $part := where $vitaeParams.parts "enabled" "ne" false }}
+{{- range $partIndex, $part := where $vitaeTemplate.parts "enabled" "ne" false }}
   <!-- Initially, all content is placed within one Pagination Page
   When rendering the print preview with `print-view.js`,
   this DOM node is cloned and the content is distributed across as many
@@ -62,50 +62,62 @@ PaginationPage: a printed page that is part of a Part
       (printf "%s%d" $pp.PartClassPrefix $partIndex)
       $pp.PaginationPageClass
     ) -}}
-  {{- $footer := false }}
-  {{- with $vitaeParams.footer }}
-    {{- if and (not (in (slice true) $vitaeStyle.ats)) (default true $part.footer.enabled) }}
-      {{- $footer = . }}
-      {{- $partClassList = append (printf "footer_%s" .template) $partClassList }}
+
+  {{- $partSlots := slice }}
+  {{- range $slotIndex, $slotParams := $part.slots }}
+    {{- $slot := false }}
+    {{- $slotName := $slotParams.slot }}
+    {{- with $slotParams.sections }}
+      {{- $slot = $slotParams }}
+    {{- else }}
+      {{- if not $style.ats }}
+        {{- with $vitaeTemplate.shared }}
+          {{- with index . $slotParams.shared }}
+            {{- $slot = . }}
+            {{/* {{- warnf "%s[%s]: vitaeTemplate.shared.%v=%v" $page $template $slotParams.shared $vitaeTemplate.shared }} */}}
+          {{- end }}
+        {{- end }}
+      {{- end }}
+    {{- end }}
+    {{- with $slot }}
+      {{- with $slot.pagination_container_class }}
+        {{- $partClassList = append . $partClassList }}
+      {{- end }}
+      {{- $slot = merge $slot (dict "slot" $slotName) }}
+      {{- $partSlots = append $slot $partSlots }}
     {{- end }}
   {{- end }}
+
   <div class="{{ delimit $partClassList ` `}}">
-    {{- range $slotIndex, $slot := $part.slots }}
+    {{- range $slotIndex, $slot := $partSlots }}
       {{/* {{- partial "html-comment" (printf "[%s]: slot[%T] name=%s:\n%v"
           $template $slot $slot.slot (jsonify (dict "indent" "  ") $slot) ) }} */}}
-      <div class="{{ printf "slot_%s" $slot.slot }} {{ $pp.PaginationContainerClass }}"
-      {{- $paginationPolicy := default "break" $part.pagination_policy }}
-      {{ printf `%s="%d"` $pp.PaginationOrderAttr 9 | safeHTMLAttr }}
-      {{ printf `%s="%s"` $pp.PaginationPolicyAttr $paginationPolicy | safeHTMLAttr -}}
-      >
-        {{- $childClass := default "" .child_class }}
-        {{- partial "vitae/_components/index" (dict
-          "Page" $page
-          "Config" $vitaeParams
-          "Style" $vitaeStyle
-          "ValidStyles" $validStyles
-          "ChildClass" $childClass
-          "Data" $vitaeData
-          "Sections" $slot.sections
-        ) -}}
-      </div>
-    {{- end }}
-    {{- with $footer }}
-      {{- $footerContainer := default "footer" .container }}
-      {{- if $footerContainer }}
-        {{ printf `<%s class="slot_footer footer_%s">` $footerContainer .template | safeHTML }}
+      {{/* {{- warnf "%s[%s]: slot=%v" $page $template $slot.slot }} */}}
+      {{/* {{- warnf "%s[%s]: shared=%v" $page $template $slot.shared }} */}}
+      {{- $paginationPolicy := $slot.pagination_policy | default $part.pagination_policy | default `break` }}
+      {{- $paginationOrder := $slot.pagination_order | default $slotIndex }}
+      {{- $container := default "div" .container }}
+      {{- with $container }}
+        {{- $containerClass := slice (printf "slot_%s" $slot.slot) $pp.PaginationContainerClass }}
+        {{- with $slot.container_class }}
+          {{- $containerClass = append . $containerClass }}
+        {{- end }}
+        {{ printf `<%s class="%s" %s="%d" %s="%s">` $container
+        (delimit $containerClass ` `)
+        $pp.PaginationOrderAttr $paginationOrder
+        $pp.PaginationPolicyAttr $paginationPolicy | safeHTML }}
       {{- end }}
       {{- $childClass := default "" .child_class }}
       {{- partial "vitae/_components/index" (dict
         "Page" $page
-        "Config" $vitaeParams
-        "Style" $vitaeStyle
+        "Config" $vitaeTemplate
+        "Style" $style
         "ValidStyles" $validStyles
         "ChildClass" $childClass
         "Data" $vitaeData
-        "Sections" .sections
+        "Sections" $slot.sections
       ) -}}
-      {{- with $footerContainer }}
+      {{- with $container }}
         {{ printf "</%s>" . | safeHTML }}
       {{- end }}
     {{- end }}

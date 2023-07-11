@@ -16,7 +16,7 @@
 {{- $paginationContainerClass := $pp.PaginationContainerClass }}
 {{- $paginationOrderAttr := $pp.PaginationOrderAttr }}
 {{- $paginationPolicyAttr := $pp.PaginationPolicyAttr }}
-{{- $vitaeParams := $pp.VitaeParams }}
+{{- $vitaeTemplate := $pp.VitaeTemplate }}
 {{- $vitaeData := $pp.VitaeData }}
 
 {{- $headerChildClass := "header-item" }}
@@ -27,14 +27,14 @@
   {{- if $pp.LoremipsumOnly }}
     {{- partial "loremipsum" (dict "Count" 1 "Class" $headerChildClass "Header" "<h2>main-column</h2>" "Prefix" "<strong>main-column</strong>") }}
   {{- else }}
-    {{- range $vitaePageIndex, $vitaePage := $vitaeParams.pages }}
+    {{- range $vitaePageIndex, $vitaePage := $vitaeTemplate.pages }}
       {{- with $vitaePage.main -}}
         {{- /* warnf "%s[%s]: Render header %d: main=%v" $page $template $vitaePageIndex . */ -}}
         {{- range $vitaeFeatureIndex, $vitaeFeature := . }}
           {{ partial "vitae/sections/index" (dict
           "Page" $page
           "Feature" $vitaeFeature
-          "Config" $vitaeParams
+          "Config" $vitaeTemplate
           "HeadingLevel" 1
           "PageIndex" $vitaePageIndex
           "FeatureIndex" $vitaeFeatureIndex
@@ -85,14 +85,14 @@
   {{- if $pp.LoremipsumOnly }}
     {{- partial "loremipsum" (dict "Count" 5 "Class" $asidePrimaryChildClass "Header" "<h3>aside-primary</h3>" "Prefix" "<strong>aside-primary</strong>") }}
   {{- else }}
-    {{- range $vitaePageIndex, $vitaePage := $vitaeParams.header }}
+    {{- range $vitaePageIndex, $vitaePage := $vitaeTemplate.header }}
       {{- with $vitaePage.main -}}
         {{- /* warnf "%s[%s]: Render aside-header %d: main=%v" $page $template $vitaePageIndex . */ -}}
         {{- range $vitaeFeatureIndex, $vitaeFeature := . }}
           {{ partial "vitae/sections/index" (dict
           "Page" $page
           "Feature" $vitaeFeature
-          "Config" $vitaeParams
+          "Config" $vitaeTemplate
           "HeadingLevel" 1
           "PageIndex" $vitaePageIndex
           "FeatureIndex" $vitaeFeatureIndex
@@ -107,14 +107,14 @@
 {{ printf "%s=\"%d\"" $paginationOrderAttr 99 | safeHTMLAttr }}
 {{ printf "%s=\"%s\"" $paginationPolicyAttr "break" | safeHTMLAttr -}}
 >
-    {{- range $vitaePageIndex, $vitaePage := $vitaeParams.pages }}
+    {{- range $vitaePageIndex, $vitaePage := $vitaeTemplate.pages }}
       {{- with $vitaePage.primary -}}
         {{- /* warnf "%s[%s]: Render aside-primary %d: %v" $page $template $vitaePageIndex . */ -}}
         {{- range $vitaeFeatureIndex, $vitaeFeature := . }}
           {{ partial "vitae/sections/index" (dict
           "Page" $page
           "Feature" $vitaeFeature
-          "Config" $vitaeParams
+          "Config" $vitaeTemplate
           "HeadingLevel" 1
           "PageIndex" $vitaePageIndex
           "FeatureIndex" $vitaeFeatureIndex

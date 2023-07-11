@@ -142,6 +142,9 @@ const numberPages = function (conf) {
         page['paginationContainers'].forEach(function (containerSpec, containerIndex) {
           let selector = containerSpec['selector'];
           let container = pageElement.querySelector(selector);
+          if (container === null) {
+            return;
+          }
           // pushClass(container, "container-" + containerIndex);
           if (containerIndex == 0) {
             pushClass(container, "container-first");
@@ -259,20 +262,28 @@ const isPreviewRendered = function (conf) {
 //     return false;
 // };
 
+const requestPrintViewVisible = function (conf) {
+  // If conf['requestPrintViewVisible'] appears in the class list,
+  // show print preview on page load
+  if (containsClass(conf['previewTargetElement'], conf['requestPrintViewVisible'])) {
+    return true;
+  }
+  return false;
+};
+
 const requestPrintViewPrepared = function (conf) {
   // If conf['requestPrintViewPrepared'] appears in the class list,
   // prepare print preview automatically on page load
   if (containsClass(conf['previewTargetElement'], conf['requestPrintViewPrepared'])) {
-    // Run automatically
     return true;
   }
   return false;
 };
 
 const requestPrintViewRendered = function (conf) {
-  // If "auto" appears in the class list, activate print preview automatically
+  // If conf['requestPrintViewPrepared'] appears in the class list,
+  // render print preview automatically on page load
   if (containsClass(conf['previewTargetElement'], conf['requestPrintViewRendered'])) {
-    // Run automatically
     return true;
   }
   return false;
@@ -298,24 +309,17 @@ const preparePrintPreview = function (conf) {
       });
 
       if (overflowingContainers.length > 0) {
-        const overflowPage = targetPageElement.cloneNode(true);
+        const overflowPage = targetPageElement.cloneNode(false);
         page['paginatedPageElements'].push(overflowPage);
+
         const parent = page['targetPageElement'].parentNode;
         parent.insertBefore(overflowPage, page['targetPageElement'].nextSibling);
 
         paginationContainers.forEach(function (el) {
-          el['clonePages'].push(overflowPage.querySelector(el['selector']));
-
-          let overflowElement = el['clonePages'][1];
-
-          // Remove all elements from the pagination columns on the clonePages page
-          while (overflowElement.firstChild) {
-            overflowElement.removeChild(overflowElement.lastChild);
-          }
-        });
-
-        paginationContainers.forEach(function (el) {
-          el['clonePages'].push(overflowPage.querySelector(el['selector']));
+          const deepClone = el.policy == "clone";
+          const overflowContainer = el.originalContainer.cloneNode(deepClone);
+          overflowPage.appendChild(overflowContainer);
+          el['clonePages'].push(overflowContainer);
         });
       }
     });
@@ -382,6 +386,7 @@ const init = function (reset) {
     printPreviewClass: "print-preview",
     printPreviewActiveBodyClass: "print-preview_active",
     overflowClass: 'print-preview_overflow',
+    requestPrintViewPrepared: "preview-visible",
     requestPrintViewPrepared: "preview-prepare",
     requestPrintViewRendered: "preview-render",
 
@@ -393,6 +398,7 @@ const init = function (reset) {
     paginationPolicyAttr: "data-pagination-policy",
 
     paginationPoliciesToPaginate: ["break"],
+    paginationPoliciesToClone: ["clone"],
   };
 
   let parts = [];
@@ -429,6 +435,14 @@ const init = function (reset) {
     containerElements.forEach(function (el, idx) {
       const policy = el.getAttribute(conf['paginationPolicyAttr']);
       if (conf['paginationPoliciesToPaginate'].includes(policy)) {
+        paginationContainers.push({
+          'order': el.getAttribute(conf['paginationOrderAttr']),
+          'policy': policy,
+          'selector': '.' + el.className.split(' ').join('.'),
+          'originalContainer': el,
+        });
+      }
+      if (conf['paginationPoliciesToClone'].includes(policy)) {
         paginationContainers.push({
           'order': el.getAttribute(conf['paginationOrderAttr']),
           'policy': policy,
@@ -485,15 +499,15 @@ const init = function (reset) {
   //     + " previewButton = " + (typeof conf['previewButton'] === "undefined" ? undefined : conf['previewButton'])
   //     + " printButton = " + (typeof conf['printButton'] === "undefined" ? undefined : conf['printButton'])
   // );
-  // initializePrintPreview(conf);
   initializePrintPreview(conf);
-  if (requestPrintViewPrepared(conf)) {
-    // initializePrintPreview(conf);
+  if (requestPrintViewVisible(conf)) {
+    setPreviewVisibility(conf, true);
+  }
+  else if (requestPrintViewPrepared(conf)) {
     preparePrintPreview(conf);
   }
   else if (requestPrintViewRendered(conf)) {
     // console.log("Automatic print preview: " + conf['requestPrintViewRendered']);
-    // initializePrintPreview(conf);
     renderPrintPreview(conf, true);
   }
 };

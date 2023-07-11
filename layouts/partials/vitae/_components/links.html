@@ -39,7 +39,7 @@
 {{- $linkText := $style.text }}
 {{- $qrCodes := $style.qrcode }}
 
-{{- $topLevelClass := delimit (append (slice $componentClass $childClass) $styleClassList) " " }}
+{{- $topLevelClass := delimit (append $styleClassList (slice $componentClass $childClass) ) " " }}
 
 {{- $classPrefix := printf "link" }}
 

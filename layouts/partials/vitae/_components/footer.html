@@ -8,19 +8,7 @@
 
 {{- $style := default dict .Style }}
 {{- $validStyles := merge (default dict .ValidStyles) (dict
-  "layout" (dict
-    "shallow" "shallow"
-    "narrow" "narrow"
-  )
-  "icon" (dict
-    "false" false
-    "true" true
-  )
-  "text" (dict
-    "false" false
-    "true" true
-  )
-  "qrcode" (dict
+  "ats" (dict
     "false" false
     "true" true
   )
@@ -32,7 +20,7 @@
   "ValidStyles" $validStyles
 ) -}}
 
-{{- $topLevelClass := delimit (append (slice $componentClass $childClass) $styleClassList) " " }}
+{{- $topLevelClass := delimit (append $styleClassList (slice $componentClass $childClass) ) " " }}
 
 {{- $optInline := dict "display" "inline" }}
 

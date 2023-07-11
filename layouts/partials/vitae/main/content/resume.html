@@ -11,7 +11,7 @@
 {{ partial "html-comment" (printf "BEGIN '%s'" $template) }}
 
 {{- $asideSecondary := false }}
-{{- range $vitaePageIndex, $vitaePage := $pp.VitaeParams.pages }}
+{{- range $vitaePageIndex, $vitaePage := $pp.VitaeTemplate.pages }}
   {{- with $vitaePage.secondary -}}
     {{- $asideSecondary = true }}
   {{- end }}
@@ -39,13 +39,13 @@ PaginationPage: a printed page that is part of a Part
       {{- if $pp.LoremipsumOnly }}
         {{- partial "loremipsum" (dict "Count" 1 "Class" $headerChildClass "Header" "<h2>main-column</h2>" "Prefix" "<strong>main-column</strong>") }}
       {{- else }}
-        {{- range $vitaePageIndex, $vitaePage := $pp.VitaeParams.header }}
+        {{- range $vitaePageIndex, $vitaePage := $pp.VitaeTemplate.header }}
           {{- /* warnf "%s[%s]: Render header %d" $page $template $vitaePageIndex */ -}}
           {{- range $vitaeFeatureIndex, $vitaeFeature := $vitaePage.main }}
             {{ partial "vitae/sections/index" (dict
             "Page" $page
             "Feature" $vitaeFeature
-            "Config" $pp.VitaeParams
+            "Config" $pp.VitaeTemplate
             "PageIndex" $vitaePageIndex
             "FeatureIndex" $vitaeFeatureIndex
             "Container" false
@@ -64,13 +64,13 @@ PaginationPage: a printed page that is part of a Part
       {{- if $pp.LoremipsumOnly }}
         {{- partial "loremipsum" (dict "Count" 25 "Class" $mainColumnChildClass "Header" "<h2>main-column</h2>" "Prefix" "<strong>main-column</strong>") }}
       {{- else }}
-        {{- range $vitaePageIndex, $vitaePage := $pp.VitaeParams.pages }}
+        {{- range $vitaePageIndex, $vitaePage := $pp.VitaeTemplate.pages }}
           {{- /* warnf "Render page %d %s" $vitaePageIndex $template */ -}}
           {{- range $vitaeFeatureIndex, $vitaeFeature := $vitaePage.main }}
             {{ partial "vitae/sections/index" (dict
             "Page" $page
             "Feature" $vitaeFeature
-            "Config" $pp.VitaeParams
+            "Config" $pp.VitaeTemplate
             "PageIndex" $vitaePageIndex
             "FeatureIndex" $vitaeFeatureIndex
             "Container" false
@@ -89,13 +89,13 @@ PaginationPage: a printed page that is part of a Part
       {{- if $pp.LoremipsumOnly }}
         {{- partial "loremipsum" (dict "Count" 5 "Class" $asidePrimaryChildClass "Header" "<h3>aside-primary</h3>" "Prefix" "<strong>aside-primary</strong>") }}
       {{- else }}
-        {{- range $vitaePageIndex, $vitaePage := $pp.VitaeParams.pages }}
+        {{- range $vitaePageIndex, $vitaePage := $pp.VitaeTemplate.pages }}
           {{- with $vitaePage.primary -}}
             {{- range $vitaeFeatureIndex, $vitaeFeature := . }}
               {{ partial "vitae/sections/index" (dict
               "Page" $page
               "Feature" $vitaeFeature
-              "Config" $pp.VitaeParams
+              "Config" $pp.VitaeTemplate
               "PageIndex" $vitaePageIndex
               "FeatureIndex" $vitaeFeatureIndex
               "Container" "div"

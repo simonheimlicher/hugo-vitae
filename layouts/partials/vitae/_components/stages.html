@@ -2,14 +2,12 @@
 {{- $headingLevel := default 3 .HeadingLevel }}
 {{- $componentClass := default "component_stages" .ComponentClass }}
 {{- $childClass := default "" .ChildClass }}
-{{- $partialOutput := default true .PartialOutput }}
 {{- $template := "vitae/_components/stages" }}
 
 {{- $component := .Component }}
-{{- $config := .Config }}
 
 {{- $debug := false }}
-{{/* {{- $debug = or $debug (not (not (findRE `^/([^/]+-demo/)?preview-ats` $page.RelPermalink) ) ) -}} */}}
+{{/* {{- $debug = or $debug (not (not (findRE `^/([^/]+-demo/)?ats/preview` $page.RelPermalink) ) ) -}} */}}
 
 {{- $style := default dict .Style }}
 {{- $validStyles := merge (default dict .ValidStyles) (dict
@@ -44,6 +42,10 @@
       "true" true
       "false" false
     )
+  )
+  "separate_roles" (dict
+    "true" true
+    "false" false
   )
 ) -}}
 
@@ -83,7 +85,16 @@
   {{- end }}
 {{- end }}
 
-{{- $stagePeriodInHeader := true }}
+{{- $periodDurationParams := (dict
+  "DurationFirst" $durationFirst
+  "DateFormat" $dateFormat
+  "Container" "span"
+  "DateContainer" "span"
+  "PeriodDurationSeparator" $periodDurationSeparator
+  "PeriodBeginEndSeparator" $periodBeginEndSeparator
+) -}}
+
+{{- $separateRoles := $style.separate_roles }}
 
 {{- $inlineHeader := false }}
 {{- with $style.layout }}
@@ -96,27 +107,21 @@
     {{- $inlineHeader = in $inlineLayoutStyles . }}
   {{- end }}
 {{- end }}
-{{- $organizationMetaInHeader := $inlineHeader }}
 {{- $roleMetaInHeader := $inlineHeader }}
+{{- $organizationMetaInHeader := $inlineHeader }}
 
+{{- $homeCountry := default "USA" .Data.features.contact.print.address.country }}
+
+{{- $inlinePartialParams := (dict
+  "Style" $style
+  "Component" $component
+  "HeadingLevel" $headingLevel
+  "HomeCountry" $homeCountry
+  "PeriodDurationParams" $periodDurationParams
+) }}
 
 {{- $filterField := default "type" $component.filter_by -}}
 {{- $filterMatch := default "professional" $component.filter_value -}}
-
-{{- $logoImageWidthHeight := 96 }}
-{{- $logoImageDisplayWidthHeight := 48 }}
-{{- $sizeSpec := printf "%dx%d center png" (int $logoImageWidthHeight) (int $logoImageWidthHeight) }}
-{{- $logoImageRoot := "images/organization-logos" }}
-
-{{- $roleStarHeading := false }}
-{{- $roleStarHeadingParams := (dict "HeadingLevel" $headingLevel) }}
-{{- $roleSectionSeparator := false }}
-{{- if .component.headings }}
-  {{- $roleSectionSeparator = "role_section-separator" }}
-  {{- $roleStarHeading = "role_star_column_heading" }}
-{{- end }}
-
-{{- $homeCountry := default "USA" .Data.features.contact.print.address.country }}
 
 {{- $orgListRaw := (index .Data (default $component.component $component.collection) ) }}
 {{- $orgList := slice }}
@@ -158,124 +163,36 @@
       {{- $timelineOrgClass = "org_last" }}
     {{- end }}
 
-    {{- $inlinePartialParams := (dict "Style" $style "Component" $component "HeadingLevel" $headingLevel) }}
-
     {{- $topLevelClass := strings.TrimLeft " " (delimit (append $styleClassList (slice $orgClass $timelineOrgClass $componentClass $childClass)) " ") }}
 
-    {{- $logoImageResource := false }}
-    {{- if eq "left" $style.logo }}
-      <!-- Use urlize to sanitize organization name -->
-      {{- $imgAssetID := printf "%s/%s*" $logoImageRoot (anchorize $org.organization) -}}
-      {{- with partial "claris/_functions/resources/images/image-resource" (dict "Page" $page "resource" $imgAssetID) }}
-        {{ $logoImageResource = . }}
-      {{- else }}
-        {{- warnf "%s[%s]: organization=%s: logo '%s' not found"
-            $page $template $org.organization $imgAssetID }}
-      {{- end }}
-    {{/* {{- else }}
-      {{- warnf "%s[%s]: style.logo=%v"
-          $page $template $style.logo }} */}}
-    {{- end }}
-
-    {{- $stageHeaderClassPrefix := "stage_header" }}
-    {{- $oganizationHeaderClassList := slice "organization_header stage_header" }}
-    {{ if $component.organization.period }}
-      {{- $oganizationHeaderClassList = append (printf "%s_period" $stageHeaderClassPrefix) $oganizationHeaderClassList }}
-    {{ end }}
-    {{ if $component.organization.duration }}
-      {{- $oganizationHeaderClassList = append (printf "%s_duration" $stageHeaderClassPrefix) $oganizationHeaderClassList }}
-    {{ end }}
-    {{ if $logoImageResource }}
-      {{- $oganizationHeaderClassList = append (printf "%s_logo" $stageHeaderClassPrefix) $oganizationHeaderClassList }}
-    {{ end }}
-
-    {{- if $stagePeriodInHeader }}
-    <div class="{{ delimit (append $topLevelClass $oganizationHeaderClassList) ` ` }}">
-    {{- end }}
-
-    {{- if or $component.organization.period $component.organization.duration }}
-      {{- with $org.roles }}
-        <div class="organization_period stage_period{{ if not $stagePeriodInHeader }} {{ $topLevelClass }}{{ end }}">{{- partial
-          "vitae/_functions/date-period-duration" (dict
-          "PeriodList" .
-          "ShowPeriod" $component.organization.period
-          "ShowDuration" $component.organization.duration
-          "DurationFirst" $durationFirst
-          "DateFormat" $dateFormat
-          "Container" "span"
-          "DateContainer" "span"
-          "PeriodDurationSeparator" $periodDurationSeparator
-          "PeriodBeginEndSeparator" $periodBeginEndSeparator
-        ) -}}</div>
-      {{- end }}
-    {{- end }}
-
-    {{- if not $stagePeriodInHeader }}
-    <div class="{{ delimit (append $topLevelClass $oganizationHeaderClassList) ` ` }}">
-    {{- end }}
-
-      <div class="organization_header_main stage_main">
-        <h{{ $headingLevel }} class="organization_title">
-        {{- if $org.website }}
-          <a class="organization_link" target="_self" href="{{ $org.website }}">
-        {{- end -}}
-        {{ $org.organization }}
-        {{- with $org.remark }}
-          <span class="remark">({{ page.RenderString $renderOptInline . }})</span>
-        {{- end -}}
-        {{- if $org.website }}
-          </a>
-        {{- end }}
-        </h{{ $headingLevel }}>
-
-        {{- if $organizationMetaInHeader }}
-          {{- partial "stage_meta" (merge $inlinePartialParams (dict
-            "Organization" $org
-            "HomeCountry" $homeCountry
-            "Style" $style
-            "Template" $template
-          ) ) -}}
-        {{- end }}
-      </div>
-      {{- if $logoImageResource }}
-      <div class="stage_logo">
-        {{- $logoImageResource = $logoImageResource.Fill $sizeSpec }}
-        {{- if $org.website }}
-        <a class="organization_logo_link organization_link" target="_self" href="{{ $org.website }}">
-        {{- end }}
-        <img class="stage_logo_img"
-              src="{{ absURL $logoImageResource.Permalink }}"
-              width="{{ $logoImageDisplayWidthHeight }}"
-              height="{{ $logoImageDisplayWidthHeight }}"
-              alt="{{ $org.organization }}">
-        {{- if $org.website }}
-        </a>
-        {{- end }}
-      </div>
-      {{- end }}
-    </div>
-
-    {{- if not $organizationMetaInHeader }}
-      {{- partial "stage_meta" (merge $inlinePartialParams (dict
-        "Organization" $org
-        "StageType" "organization"
-        "HomeCountry" $homeCountry
-        "TopLevelClass" $topLevelClass
+    {{- if not $separateRoles }}
+      {{- partial "organization_header.html" (merge $inlinePartialParams (dict
+        "Page" $page
         "Style" $style
-        "Template" $template
-      ) ) -}}
+        "InlinePartialParams" $inlinePartialParams
+        "TopLevelClass" $topLevelClass
+        "Organization" $org
+        "OrganizationMetaInHeader" $organizationMetaInHeader
+        "RoleMetaInHeader" $roleMetaInHeader
+        )
+      ) -}}
     {{- end }}
 
     {{- range $roleIdx, $role := $roleList }}
 
-      {{- $stageHeaderClassPrefix := "stage_header" }}
-      {{- $roleHeaderClassList := slice "role_header stage_header" }}
-      {{ if $component.role.period }}
-        {{- $roleHeaderClassList = append (printf "%s_period" $stageHeaderClassPrefix) $roleHeaderClassList }}
-      {{ end }}
-      {{ if $component.role.duration }}
-        {{- $roleHeaderClassList = append (printf "%s_duration" $stageHeaderClassPrefix) $roleHeaderClassList }}
-      {{ end }}
+      {{- if $separateRoles }}
+      <div class="stage_header {{ $topLevelClass }}">
+        {{- partial "organization_header.html" (merge $inlinePartialParams (dict
+          "Page" $page
+          "Style" $style
+          "InlinePartialParams" $inlinePartialParams
+          "TopLevelClass" $topLevelClass
+          "Organization" $org
+          "OrganizationMetaInHeader" $organizationMetaInHeader
+          "RoleMetaInHeader" $roleMetaInHeader
+          )
+        ) -}}
+      {{- end }}
 
       {{- $singleRole := eq (len $roleList) 1}}
 
@@ -292,69 +209,31 @@
 
       {{- $topLevelClass = strings.TrimLeft " " (delimit (append $styleClassList (slice $roleClass $timelineOrgClass $componentClass $childClass)) " ") }}
 
-      {{- if $stagePeriodInHeader }}
-      <div class="{{ delimit (append $topLevelClass $roleHeaderClassList) ` ` }}">
-        {{- if in (slice "dot-dash" "column") $style.timeline }}
-          <div class="{{ printf `timeline_%s_marker stage_timeline` $style.timeline }}"></div>
-        {{- end }}
-      {{- end }}
-
-        {{- if or $component.role.period $component.role.duration }}
-          {{- with $role.period }}
-            <div class="role_period num-roles-{{ $numRoles }} stage_period{{ if not $stagePeriodInHeader }} {{ $topLevelClass }}{{ end }}">
-            {{- partial
-              "vitae/_functions/date-period-duration" (dict
-              "PeriodList" .
-              "ShowPeriod" $component.role.period
-              "ShowDuration" $component.role.duration
-              "DurationFirst" $durationFirst
-              "DateFormat" $dateFormat
-              "Container" "span"
-              "DateContainer" "span"
-              "PeriodDurationSeparator" $periodDurationSeparator
-              "PeriodBeginEndSeparator" $periodBeginEndSeparator
-            ) -}}
-            </div>
-          {{- end }}
-        {{- end }}
-
-      {{- if not $stagePeriodInHeader }}
-      <div class="{{ delimit (append $topLevelClass $roleHeaderClassList) ` ` }}">
-      {{- end }}
-
-        <div class="role_header_main stage_main">
-          <h{{ add 1 $headingLevel }} class="role_title{{ if $role.supertitle }} supertitle{{ end }}{{ if $role.subtitle }} subtitle{{ end }}">
-            {{- with $role.supertitle }}
-              <span class="role_supertitle">{{ $page.RenderString . }}</span>
-            {{- end }}
-            {{- $page.RenderString $role.role }}
-            {{- with $role.subtitle }}
-              <span class="role_subtitle">{{ $page.RenderString . }}</span>
-            {{- end }}
-          </h{{ add 1 $headingLevel }}>
-        {{- if $roleMetaInHeader }}
-          {{- partial "stage_meta" (merge $inlinePartialParams (dict
-            "Organization" $org
-            "Role" $role
-            "StageType" "role"
-            "HomeCountry" $homeCountry
-            "Style" $style
-            "Template" $template
-          ) ) -}}
-        {{- end }}
-        </div>
-      </div>
-
       {{- if and (not $timelineForSingleRole) (ge $roleIdx (sub $numRoles 1) ) }}
         {{- $topLevelClass = strings.TrimLeft " " (delimit (append $styleClassList (slice $roleClass $componentClass $childClass)) " ") }}
       {{- end }}
 
+      {{- partial "role_header.html" (merge $inlinePartialParams (dict
+        "Page" $page
+        "Style" $style
+        "InlinePartialParams" $inlinePartialParams
+
+        "TopLevelClass" $topLevelClass
+        "Organization" $org
+        "Role" $role
+        "RoleMetaInHeader" $roleMetaInHeader
+        "Organization" $org
+        "Role" $role
+        )
+      ) -}}
+      {{- if $separateRoles }}
+      </div>
+      {{- end }}
       {{- if not $roleMetaInHeader }}
         {{- partial "stage_meta" (merge $inlinePartialParams (dict
           "Organization" $org
           "Role" $role
           "StageType" "role"
-          "HomeCountry" $homeCountry
           "TopLevelClass" $topLevelClass
           "Style" $style
           "Template" $template
@@ -366,70 +245,24 @@
         {{- $containerClass = "" }}
       {{- end }}
 
-      {{- if default true $component.role.summary }}
-        {{- with $value := $role.summary }}
-          {{- with $containerClass }}
-            <div class="{{ $containerClass }} {{ $topLevelClass }}">
-              <div class="timeline_column_line stage_timeline">
-              <div class="{{ printf `timeline_%smarker` $style.timeline }} stage_timeline"></div>
-              </div>
-          {{- end }}
-          <div class="role_summary_container stage_main{{ with (and (not $containerClass) $topLevelClass) }} {{ . }}{{ end }}">
-            {{- partial "render_string_slice" $value }}
-          </div>
-          {{- with $containerClass }}
-            </div>
-          {{- end }}
-        {{- end }}
-      {{- end }}
-
-      {{- if default true $component.role.description }}
-        {{- with $value := $role.description }}
-          {{- with $containerClass }}
-            <div class="{{ $containerClass }} {{ $topLevelClass }}">
-              <div class="stage_timeline">
-              </div>
-          {{- end }}
-          <div class="role_description_container stage_main{{ with (and (not $containerClass) $topLevelClass) }} {{ . }}{{ end }}">
-            {{- partial "render_string_slice" $value }}
-          </div>
-          {{- with $containerClass }}
-            </div>
-          {{- end }}
-        {{- end }}
-      {{- end }}
-
       {{- if default true $component.role.achievements }}
         {{- with $role.achievements }}
-          {{- $roleStarHeadingParams := (dict "HeadingLevel" $headingLevel) }}
-          {{- range $starRecordIndex, $starRecord := . }}
+          {{- range $achievementIndex, $achievement := . }}
             {{- with $containerClass }}
               <div class="{{ $containerClass }} {{ $topLevelClass }}">
-                <div class="stage_timeline">
-                </div>
-            {{- end }}
-            <div class="role_star_header stage_header{{ with (and (not $containerClass) $topLevelClass) }} {{ . }}{{ end }}">
-              {{- if and $roleStarHeading (eq $starRecordIndex 0) }}
-                {{ partial $roleStarHeading (merge $roleStarHeadingParams (dict "Section" "responsibilities_deprecated") ) }}
+              {{- if $style.timeline }}
+                <div class="stage_timeline"></div>
               {{- end }}
-              <h{{ add $headingLevel 2 }} class="role_star_title">
-                {{-  page.RenderString $starRecord.title -}}
+            {{- end }}
+            <div class="role_achievement_header stage_header{{ with (and (not $containerClass) $topLevelClass) }} {{ . }}{{ end }}">
+              <h{{ add $headingLevel 2 }} class="role_achievement_title">
+                {{-  page.RenderString $achievement.title -}}
               </h{{ add $headingLevel 2 }}>
               {{/* <pre>{{ jsonify (dict "indent" "  ") . }}</pre> */}}
-              {{- with $starRecord.responsibilities_deprecated }}
-                <div class="role_star_responsibilities role_star">
-                  {{- partial "render_string_slice" . }}
-                </div>
-              {{- end }}
             </div>
-            <div class="role_star_main stage_main{{ with (and (not $containerClass) $topLevelClass) }} {{ . }}{{ end }}">
-              {{- if and $roleStarHeading (eq $starRecordIndex 0) }}
-                {{ partial $roleStarHeading (merge $roleStarHeadingParams (dict "Section" "content") ) }}
-              {{- end }}
-              {{- with $starRecord.content }}
-                <div class="role_star_achievements_deprecated role_star">
-                  {{- partial "render_string_slice" . }}
-                </div>
+            <div class="role_achievement_main stage_main{{ with (and (not $containerClass) $topLevelClass) }} {{ . }}{{ end }}">
+              {{- with $achievement.content }}
+                {{- partial "render_string_slice" . }}
               {{- end }}
             </div>
             {{- with $containerClass }}
@@ -437,41 +270,220 @@
             {{- end }}
           {{- end }}
         {{- end }}
+
       {{- end }}
     {{- end }}
   {{- end }}
 {{- end }}
 
-{{- define "partials/render_string_slice.html" }}
-              {{- if reflect.IsSlice . }}
-                <ul>
-                {{- range . }}
-                  <li>
-                    {{ page.RenderString . }}
-                  </li>
-                {{- end }}
-                </ul>
-              {{- else }}
-                  {{ page.RenderString . }}
-              {{- end }}
+{{- define "partials/organization_header.html" }}
+  {{- $template := "vitae/_components/stages/organization_header" }}
+  {{- $page := .Page -}}
+  {{- $style := .Style }}
+  {{- $inlinePartialParams := .InlinePartialParams }}
+
+  {{- $topLevelClass := .TopLevelClass }}
+  {{- $organizationMetaInHeader := .OrganizationMetaInHeader }}
+  {{- $org := .Organization }}
+
+  {{- $debug := false }}
+  {{/* {{- $debug = or $debug (not (not (findRE `^/([^/]+-demo/)?ats/preview` $page.RelPermalink) ) ) -}} */}}
+
+  {{- $headingLevel := $inlinePartialParams.HeadingLevel }}
+  {{- $component := $inlinePartialParams.Component }}
+
+  {{- $roleList := $org.roles }}
+  {{- $numRoles := (len $roleList) }}
+
+  {{- $renderOptInline := dict "display" "inline" }}
+
+  {{- $logoImageWidthHeight := 96 }}
+  {{- $logoImageDisplayWidthHeight := 48 }}
+  {{- $sizeSpec := printf "%dx%d center png" (int $logoImageWidthHeight) (int $logoImageWidthHeight) }}
+  {{- $logoImageRoot := "images/organization-logos" }}
+
+  {{- $logoImageResource := false }}
+  {{- if eq "left" $style.logo }}
+    <!-- Use urlize to sanitize organization name -->
+    {{- $imgAssetID := printf "%s/%s*" $logoImageRoot (anchorize $org.organization) -}}
+    {{- with partial "claris/_functions/resources/images/image-resource" (dict "Page" $page "resource" $imgAssetID) }}
+      {{ $logoImageResource = . }}
+    {{- else }}
+      {{- warnf "%s[%s]: organization=%s: logo '%s' not found"
+          $page $template $org.organization $imgAssetID }}
+    {{- end }}
+    {{/* {{- else }}
+      {{- warnf "%s[%s]: style.logo=%v"
+          $page $template $style.logo }} */}}
+  {{- end }}
+
+  {{- $stageHeaderClassPrefix := "stage_header" }}
+  {{- $oganizationHeaderClassList := slice "organization_header" }}
+  {{- if not $style.separate_roles }}
+    {{- $oganizationHeaderClassList = append "stage_header" $oganizationHeaderClassList }}
+  {{ end }}
+
+  {{- $showPeriod := default true $component.organization.period }}
+  {{- $showDuration := default false $component.organization.duration }}
+  {{- if $style.separate_roles }}
+    {{- $showPeriod = false }}
+    {{- $showDuration = false }}
+  {{- end }}
+
+  {{ if $showPeriod }}
+    {{- $oganizationHeaderClassList = append (printf "%s_period" $stageHeaderClassPrefix) $oganizationHeaderClassList }}
+  {{ end }}
+  {{ if $showDuration }}
+    {{- $oganizationHeaderClassList = append (printf "%s_duration" $stageHeaderClassPrefix) $oganizationHeaderClassList }}
+  {{ end }}
+  {{ if $logoImageResource }}
+    {{- $oganizationHeaderClassList = append (printf "%s_logo" $stageHeaderClassPrefix) $oganizationHeaderClassList }}
+  {{ end }}
+
+  {{- if not $style.separate_roles }}
+    {{- $oganizationHeaderClassList = append $topLevelClass $oganizationHeaderClassList }}
+  {{- end }}
+  <div class="{{ delimit $oganizationHeaderClassList ` ` }}">
+
+  {{- if or $showPeriod $showDuration }}
+    {{- with $org.roles }}
+      <div class="organization_period stage_period">
+          {{- partial
+            "vitae/_functions/date-period-duration" (merge $inlinePartialParams.PeriodDurationParams (dict
+            "PeriodList" .
+            "ShowPeriod" $showPeriod
+            "ShowDuration" $showDuration
+          )
+        ) -}}</div>
+    {{- end }}
+  {{- end }}
+
+    <div class="organization_header_main stage_main">
+      <h{{ $headingLevel }} class="organization_title">
+      {{- if $org.website }}
+        <a class="organization_link" target="_self" href="{{ $org.website }}">
+      {{- end -}}
+      {{ $org.organization }}
+      {{- with $org.remark }}
+        <span class="remark">({{ page.RenderString $renderOptInline . }})</span>
+      {{- end -}}
+      {{- if $org.website }}
+        </a>
+      {{- end }}
+      </h{{ $headingLevel }}>
+
+      {{- if $organizationMetaInHeader }}
+        {{- partial "stage_meta" (merge $inlinePartialParams (dict
+          "Organization" $org
+          "Style" $style
+          "Template" $template
+        ) ) -}}
+      {{- end }}
+    </div>
+    {{- if $logoImageResource }}
+    <div class="stage_logo">
+      {{- $logoImageResource = $logoImageResource.Fill $sizeSpec }}
+      {{- if $org.website }}
+      <a class="organization_logo_link organization_link" target="_self" href="{{ $org.website }}">
+      {{- end }}
+      <img class="stage_logo_img"
+            src="{{ absURL $logoImageResource.Permalink }}"
+            width="{{ $logoImageDisplayWidthHeight }}"
+            height="{{ $logoImageDisplayWidthHeight }}"
+            alt="{{ $org.organization }}">
+      {{- if $org.website }}
+      </a>
+      {{- end }}
+    </div>
+    {{- end }}
+  </div>
+
+  {{- if not $organizationMetaInHeader }}
+    {{- partial "stage_meta" (merge $inlinePartialParams (dict
+      "Organization" $org
+      "StageType" "organization"
+      "TopLevelClass" $topLevelClass
+      "Style" $style
+      "Template" $template
+    ) ) -}}
+  {{- end }}
 {{- end }}
 
-{{- define "partials/role_section-separator.html" }}
-            <h{{- (add 2 .HeadingLevel) }} class="role_section-heading{{ with .TopLevelClass }} {{ . }}{{ end }}">
-              <span>{{ page.RenderString (T (printf "section-title_%s" .section ) ) }}</span><span class="separator-line"></span>
-            </h{{- (add 2 .HeadingLevel) }}>
-{{- end }}
+{{- define "partials/role_header.html" }}
+  {{- $template := "vitae/_components/stages/organization_header" }}
+  {{- $page := .Page -}}
+  {{- $style := .Style }}
+  {{- $inlinePartialParams := .InlinePartialParams }}
 
-{{- define "partials/role_star_column_heading.html" }}
-          {{- with .HeadingLevel }}
-            <h{{- (add 2 .) }} class="role_star_column_heading">
-          {{- end }}
-          {{- with .Section }}
-              {{ page.RenderString (default . (T (printf "section-title_%s" . ) ) ) }}
-          {{- end }}
-          {{- with .HeadingLevel }}
-            </h{{- (add 2 .) }}>
-          {{- end }}
+  {{- $topLevelClass := .TopLevelClass }}
+  {{- $org := .Organization }}
+  {{- $role := .Role }}
+  {{- $roleMetaInHeader := .RoleMetaInHeader }}
+
+  {{- $debug := false }}
+  {{/* {{- $debug = or $debug (not (not (findRE `^/([^/]+-demo/)?ats/preview` $page.RelPermalink) ) ) -}} */}}
+
+  {{- $headingLevel := $inlinePartialParams.HeadingLevel }}
+  {{- $component := $inlinePartialParams.Component }}
+
+  {{- $roleList := $org.roles }}
+  {{- $numRoles := (len $roleList) }}
+
+  {{- $stageHeaderClassPrefix := "stage_header" }}
+  {{- $roleHeaderClassList := slice "role_header" }}
+  {{- if not $style.separate_roles }}
+    {{- $roleHeaderClassList = append (slice "stage_header" $topLevelClass) $roleHeaderClassList }}
+  {{ end }}
+
+  {{- $showPeriod := default true $component.role.period }}
+  {{- $showDuration := default false $component.role.duration }}
+
+  {{ if $showPeriod }}
+    {{- $roleHeaderClassList = append (printf "%s_period" $stageHeaderClassPrefix) $roleHeaderClassList }}
+  {{ end }}
+  {{ if $showDuration }}
+    {{- $roleHeaderClassList = append (printf "%s_duration" $stageHeaderClassPrefix) $roleHeaderClassList }}
+  {{ end }}
+
+  <div class="{{ delimit $roleHeaderClassList ` ` }}">
+    {{- if in (slice "dot-dash" "column") $style.timeline }}
+      <div class="{{ printf `timeline_%s_marker stage_timeline` $style.timeline }}"></div>
+    {{- end }}
+
+    {{- if or $showPeriod $showDuration }}
+      {{- with $role.period }}
+        <div class="role_period num-roles-{{ $numRoles }} stage_period">
+          {{- partial
+            "vitae/_functions/date-period-duration" (merge $inlinePartialParams.PeriodDurationParams (dict
+            "PeriodList" .
+            "ShowPeriod" $showPeriod
+            "ShowDuration" $showDuration
+            )
+          ) -}}</div>
+      {{- end }}
+    {{- end }}
+
+    <div class="role_header_main stage_main">
+      <h{{ add 1 $headingLevel }} class="role_title{{ if $role.supertitle }} supertitle{{ end }}{{ if $role.subtitle }} subtitle{{ end }}">
+        {{- with $role.supertitle }}
+          <span class="role_supertitle">{{ $page.RenderString . }}</span>
+        {{- end }}
+        {{- $page.RenderString $role.role }}
+        {{- with $role.subtitle }}
+          <span class="role_subtitle">{{ $page.RenderString . }}</span>
+        {{- end }}
+      </h{{ add 1 $headingLevel }}>
+    {{- if $roleMetaInHeader }}
+      {{- partial "stage_meta" (merge $inlinePartialParams (dict
+        "Organization" $org
+        "Role" $role
+        "StageType" "role"
+        "Style" $style
+        "Template" $template
+      ) ) -}}
+    {{- end }}
+    </div>
+  </div>
 {{- end }}
 
 {{- define "partials/stage_meta.html" }}
@@ -543,24 +555,35 @@
                 page $template (default true $org.unit)
                 $stage.division (cond (eq $stage.division $org.division) "==" "!=") $org.division
                 $stage.department (cond (eq $stage.department $org.department) "==" "!=") $org.department }} */ -}}
+            {{- $configUnitLimit := 99 }}
+            {{- $configUnitType:= false }}
+            {{- if reflect.IsMap $metaConfig.unit }}
+              {{- with $metaConfig.unit.limit }}
+                {{- with cond (eq (printf "%T" .) "int") (int .) 99 }}
+                  {{- $configUnitLimit = . }}
+                {{- end }}
+              {{- end }}
+              {{- with $metaConfig.unit.type }}
+                {{- $configUnitType = . }}
+              {{- end }}
+            {{- end }}
             {{- if or (eq $stage $org) (not (default true $org.unit) ) (ne $stage.unit $org.unit) }}
               {{- with $stage.unit }}
                 {{- if reflect.IsSlice . }}
-                  {{- $unitLimit := cond (eq (printf "%T" $metaConfig.unit.limit) "int") (int $metaConfig.unit.limit) 99 }}
                   {{- if $debug }}
-                    {{- if (gt $unitLimit (len .)) }}
+                    {{- if (gt $configUnitLimit (len .)) }}
                       {{- warnf "%s[%s]: metaConfig.unit=%v[%T]: only showing %d of %d organizational units"
-                          page $template $metaConfig.unit $metaConfig.unit $unitLimit (len .) }}
+                          page $template $metaConfig.unit $metaConfig.unit $configUnitLimit (len .) }}
                     {{- end }}
                   {{- end }}
-                  {{- range $unit := first $unitLimit . }}
+                  {{- range $unit := first $configUnitLimit . }}
                     {{- if reflect.IsMap . }}
                       {{- range $unitType, $unitName := . }}
                         {{- if and $unitSeparatorStr $stageUnitMarkup }}
                           {{- $stageUnitMarkup = printf `%s%s` $stageUnitMarkup $unitSeparatorStr }}
                         {{- end }}
                         {{- $stageUnitMarkup = printf `%s<span class="stage_unit">%s</span>` $stageUnitMarkup . }}
-                        {{- if $metaConfig.unit.type }}
+                        {{- if $configUnitType }}
                           {{ with default $unitType (T (printf "stage_unit_type_%s" $unitType) ) }}
                             {{- $stageUnitMarkup = printf `%s <span class="stage_unit_label">%s</span>` $stageUnitMarkup . }}
                           {{- end }}
@@ -580,7 +603,7 @@
                         {{- $stageUnitMarkup = printf `%s%s` $stageUnitMarkup $unitSeparatorStr }}
                       {{- end }}
                       {{- $stageUnitMarkup = printf `%s<span class="stage_unit">%s</span>` $stageUnitMarkup . }}
-                      {{- if $metaConfig.unit.type }}
+                      {{- if $configUnitType }}
                         {{ with default $unitType (T (printf "stage_unit_type_%s" $unitType) ) }}
                           {{- $stageUnitMarkup = printf `%s <span class="stage_unit_label">%s</span>` $stageUnitMarkup . }}
                         {{- end }}
@@ -662,3 +685,18 @@
     {{- end }}
   {{- end }}
 {{- end }}
+
+{{- define "partials/render_string_slice.html" }}
+              {{- if reflect.IsSlice . }}
+                <ul>
+                {{- range . }}
+                  <li>
+                    {{ page.RenderString . }}
+                  </li>
+                {{- end }}
+                </ul>
+              {{- else }}
+                  {{ page.RenderString . }}
+              {{- end }}
+{{- end }}
+

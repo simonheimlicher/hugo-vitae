@@ -629,57 +629,6 @@ $inline-list-sep-width: math.div($inline-list-item-separation, 3.0);
   }
 }
 
-
-/* ----- Layout EXECUTIVE ------ */
-.vitae.layout-executive .view-print .template {
-  // Part FRONT PAGE
-  // &_front-page {
-  //   .slot {
-  //     &_main {
-  //       .section ~ .section {
-  //         border-top: calc(var(--line-width_separator_heading)) solid var(--border-color-faint);
-  //       }
-  //     }
-  //   }
-  // }
-
-  // Part CAREER TIMELINE
-  &_career-timeline {
-    .slot {
-      &_main {
-        &.grid {
-          &.organization-header, &.role-header {
-            .stage-period {
-              grid-column: 1 / span 2;
-            }
-          }
-          &.role-responsibilities {
-            grid-column: 3 / span 4;
-          }
-          &.role-achievements {
-            grid-column: 7 / span 6;
-          }
-          &.grid {
-            &.stage-period {
-              grid-column: 1 / span 2;
-            }
-            &.organization-header, &.role-header {
-              grid-column: 3 / span all;
-            }
-            &.role-responsibilities {
-              grid-column: 3 / span 4;
-            }
-            &.role-achievements {
-              grid-column: 7 / span 6;
-            }
-          }
-        }
-      }
-    }
-  }
-}
-
-
 /* ----- Layout LETTER ------ */
 .vitae {
   &.layout-letter {
