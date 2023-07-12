@@ -12,34 +12,6 @@
 // Using table footer to have footer repeating on every page:
 // https://stackoverflow.com/a/69136303/617559
 
-// Target page dimensions for on screen preview
-// $page-width: 210mm // DIN A4
-// $page-height: 297mm // DIN A4
-// FIXME: It appears that Chrome v109 thinks that A4 is only 1122px high
-// $page-height: 1122px // DIN A4
-// DIN A4 for Chrome
-$page-height: 296.8625mm;
-// DIN A4 for Chrome
-// $page-width: 794px
-$page-width: 210.0791667mm;
-
-// Page margins
-$page-mar-h: 15mm;
-// $page-mar-v: $page-mar-h;
-// $page-mar-v: math.div($page-mar-h * $page-height, $page-width);
-$page-mar-v: 10mm;
-
-$page-mar-ratio-top-bottom: math.div(1, 1);
-$page-mar-top: math.div( math.round(10 * math.div($page-mar-ratio-top-bottom, (1 + $page-mar-ratio-top-bottom) ) * $page-mar-v * 2), 10);
-$page-mar-bottom: math.div( math.round(10 * math.div(1, (1 + $page-mar-ratio-top-bottom) ) * $page-mar-v * 2), 10);
-
-
-$column-pad-h: math.div($page-mar-h, 2);
-$column-pad-v: math.div($page-mar-h, 4);
-
-$screen-pad-h: 1rem;
-$screen-pad-v: 1rem;
-
 .vitae {
   --rem_base: 1rem;
   --em_base: 1rem;
@@ -48,13 +20,32 @@ $screen-pad-v: 1rem;
   --inner_padding_scale-factor: 1;
   --line_width_scale-factor: 1;
 
-  --page_width: #{$page-width};
-  --page_height: #{$page-height};
+  --page_width_base: #{$printPageWidth};
+  --page_height_base: #{$printPageHeight};
+  --page_width: calc(var(--page_width_base));
+  --page_height: calc(var(--page_height_base));
 
-  --page_margin_base_left: #{$page-mar-h};
-  --page_margin_base_right: #{$page-mar-h};
-  --page_margin_base_top: #{$page-mar-top};
-  --page_margin_base_bottom: #{$page-mar-bottom};
+  --page_margin_base_horizontal: #{$printPageMarginHorizontal};
+  --page_margin_base_center_horizontal: #{$printPageMarginCenterHorizontal};
+
+  --page_margin_base_vertical: #{$printPageMarginVertical};
+  --page_margin_base_center_vertical: #{$printPageMarginCenterVertical};
+
+  --page_margin_base_left: calc(
+    var(--page_margin_base_center_horizontal) * var(--page_margin_base_horizontal) * 2
+  );
+
+  --page_margin_base_right: calc(
+    (1 - var(--page_margin_base_center_horizontal)) * var(--page_margin_base_horizontal) * 2
+  );
+
+  --page_margin_base_top: calc(
+    var(--page_margin_base_center_vertical) * var(--page_margin_base_vertical) * 2
+  );
+
+  --page_margin_base_bottom: calc(
+    (1 - var(--page_margin_base_center_vertical)) * var(--page_margin_base_vertical) * 2
+  );
 
   --page_margin_left: var(--page_margin_base_left);
   --page_margin_right: var(--page_margin_base_right);
@@ -62,8 +53,8 @@ $screen-pad-v: 1rem;
   --page_margin_bottom: var(--page_margin_base_bottom);
 
   @media screen {
-    --page_width: calc(#{$page-width} * var(--page_scale-factor));
-    --page_height: calc(#{$page-height} * var(--page_scale-factor));
+    --page_width: calc(var(--page_width_base) * var(--page_scale-factor));
+    --page_height: calc(var(--page_height_base) * var(--page_scale-factor));
 
     --page_margin_left: calc(var(--page_margin_base_left) * var(--page_scale-factor));
     --page_margin_right: calc(var(--page_margin_base_right) * var(--page_scale-factor));

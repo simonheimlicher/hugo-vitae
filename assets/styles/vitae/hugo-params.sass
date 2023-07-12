@@ -3,6 +3,21 @@ $contentType: '{{ .ContentType }}'
 $mediaType: '{{ .MediaType }}'
 /* File='styles/vitae/hugo-params.sass': .Page='{{ .Page }}' .MediaType='{{ .MediaType }}' */
 
+// Target page dimensions for on screen preview and print to PDF
+// DIN A4 for Chrome: 794px by 1122px
+// NOTE: Even though DIN A4 is 297mm high, Chrome believes its only 794px by 1122px
+$printPageWidth: 210.0791667mm
+$printPageHeight: 296.8625mm
+
+// Page margins
+$printPageMarginHorizontal: 25mm
+$printPageMarginVertical: 15mm
+// $printPageMarginVertical: $printPageMarginHorizontal;
+// $printPageMarginVertical: math.div($printPageMarginHorizontal * $printPageHeight, $printPageWidth);
+
+$printPageMarginCenterVertical: 0.5
+$printPageMarginCenterHorizontal: 0.5
+
 $themeColorLit: {{ default "hsl(47, 20%, 98%)" ($page.Param "themeColorLit") }}
 $themeColorDim: {{ default "hsl(47, 20%, 17%)" ($page.Param "themeColorDim") }}
 
