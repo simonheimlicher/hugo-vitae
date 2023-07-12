@@ -344,7 +344,6 @@ html[data-mode="dim"] {
     }
     display: grid;
     grid-template-columns: 1fr 3fr 1fr;
-    // grid-template-rows: minmax(0px, 1fr) 12fr minmax(0px, 1fr);
 
     &.portrait {
       &_overlay {
@@ -539,6 +538,7 @@ html[data-mode="dim"] {
   /* ----- Component STAGES ------ */
 
   &_stages {
+
     --font-size-heading-organization: var(--font-size-larger-2);
     --font-weight-heading-organization: var(--font-weight-strong);
     --font-size-heading-role: var(--font-size-larger-2);
@@ -559,10 +559,8 @@ html[data-mode="dim"] {
     --padding_role_first: var(--inner_padding_4-2);
     --padding_stage_meta: var(--inner_padding_4-0);
 
-    --stage-org-sep-vert: 1.0rem;
-    --stage-org-header-mar-v: 0.125rem;
-    --stage-role-sep-vert: 1.0rem;
-    --stage-org-role-sep-vert: 0.5rem;
+    --padding_stage_content_between: var(--inner_padding_4-2);
+    --padding_stage_content_first: var(--inner_padding_4-1);
 
     --grid_period-column_width: 10em;
     --grid_separator-column_width: var(--inner_margin_4-2);
@@ -630,47 +628,24 @@ html[data-mode="dim"] {
       }
     }
 
-    &.stage_header ~ .stage_content {
-      .stage_main {
-        padding-top: var(--inner_padding_4-4);
-      }
-    }
-    &.stage_header + .stage_meta .stage_main, &.stage_header .stage_main .stage_meta {
-      // outline: 1px solid yellow;
+    // Padding before stage_meta when style.layout != inline
+    &.stage_header + .stage_meta .stage_main {
+      outline: 1px solid red;
       padding-top: var(--padding_stage_meta);
     }
-    &.stage_header + .stage_content, &.stage_meta + .stage_content {
-      padding-top: 0;
-    }
-    &.stage_header {
-      .stage_meta {
-        padding-top: var(--padding_stage_meta);
-      }
-    }
-    &.stage_meta + .stage_content {
-      // outline: 1px solid yellow;
-      .stage_main {
-        padding-top: var(--inner_padding_4-3);
-      }
-    }
-    &.stage_content + .stage_content {
-      // outline: 1px solid yellow;
-      .stage_main {
-        padding-top: var(--inner_padding_4-3);
-      }
-    }
 
-    &.role_header {
-      // --tl-col_timeline_color: blue;
-      .stage_main {
-        padding-top: var(--padding_role_between);
+    // Padding before stage_content
+    &.stage_content .stage_main {
+      // outline: 1px solid yellow;
+      padding-top: var(--padding_stage_content_between);
+    }
+    &.stage_header, &.stage_meta {
+      & + .stage_content .stage_main {
+        padding-top: var(--padding_stage_content_first);
       }
     }
 
     // Header for organizations
-    // &.organization_header {
-    //   margin-top: var(--inner_margin_4-2);
-    // }
     &.component_stages + .organization_header {
       margin-top: 0;
     }
@@ -685,16 +660,16 @@ html[data-mode="dim"] {
     // Header for roles at organizations
     &.role_header {
       .stage_main {
-        padding-top: var(--inner_padding_4-3);
-      }
-    }
-    &.role_header ~ .role_header {
-      .stage_main {
         padding-top: var(--padding_role_between);
       }
     }
-    &.organization_header + .role_header, &.stage_meta + .role_header {
-      .stage_main {
+    // &.role_header ~ .role_header {
+    //   .stage_main {
+    //     padding-top: var(--padding_role_between);
+    //   }
+    // }
+    &.organization_header, &.stage_meta {
+      & + .role_header .stage_main {
         padding-top: var(--padding_role_first);
       }
     }
@@ -727,6 +702,7 @@ html[data-mode="dim"] {
         }
       }
       &_period {
+        align-items: flex-start;
         font-size: var(--font-size-normal);
       }
       &_meta {
@@ -736,7 +712,8 @@ html[data-mode="dim"] {
         display: grid;
         align-items: baseline;
         grid-template-columns:
-          calc(var(--grid_period-column_width)) calc(var(--grid_separator-column_width))
+          var(--grid_period-column_width)
+          var(--grid_separator-column_width)
           minmax(0px, max-content);
         .stage {
           &_timeline {
@@ -792,27 +769,36 @@ html[data-mode="dim"] {
 
     // First column is dedicated to timeline to facilitate scanning by year
     &.style_timeline_column {
-
-      --grid_separator-column_width: var(--inner_margin_4-4);
-
-      --tl-col_period_separator-column_width: 2 * var(--grid_separator-column_width);
-      --tl-col_timeline-column_width: var(--grid_period-column_width);
-
-      --tl-col_main_separator-column_width: var(--grid_separator-column_width);
-
-      --tl-col_main-column_width: calc(var(--page_width) - 2 * var(--page-margin-h) - var(--tl-col_timeline-column_width) - var(--tl-col_main_separator-column_width));
-
-      --tl-col_stage_logo_width: var(--organization_logo_width);
-      --tl-col_stage_logo_height: var(--organization_logo_width);
-
       // FIXME: In Chrome, the alignment of timeline marker and line
       // gets out of control when the width of the timeline is less than
       // 3pt
       --tl-col_timeline_width: calc(0.25 * var(--rem));
       --tl-col_timeline_color: var(--neutral-haze);
+      --tl-col_stage-marker_background: var(--neutral-haze);
+
       --tl-col_stage-marker_width: calc(0.75 * var(--rem));
       --tl-col_stage-marker_height: var(--tl-col_stage-marker_width);
-      --tl-col_stage-marker_background: var(--neutral-haze);
+      --tl-col_stage-marker_organization_width: calc(4 / 3 * var(--tl-col_stage-marker_width));
+      --tl-col_stage-marker_organization_height: var(--tl-col_stage-marker_organization_width);
+
+      --tl-col_stage-marker_outline_width: calc(0.5 * var(--tl-col_timeline_width));
+      --tl-col_stage-marker_organization_outline_width: var(--tl-col_stage-marker_outline_width);
+
+      --tl-col_stage-marker_outline: var(--tl-col_stage-marker_outline_width) solid var(--tl-col_stage-marker_background);
+      --tl-col_stage-marker_organization_outline: var(--tl-col_stage-marker_organization_outline_width) solid var(--tl-col_stage-marker_background);
+
+      --grid_separator-column_width: var(--inner_margin_4-4);
+
+      --tl-col_timeline-column_width: calc(max(
+        var(--tl-col_stage-marker_width) + 2 * var(--tl-col_stage-marker_outline_width),
+        var(--tl-col_stage-marker_organization_width) + 2 * var(--tl-col_stage-marker_organization_outline_width)
+      ));
+
+      --tl-col_main_separator-column_width: var(--grid_separator-column_width);
+
+      --tl-col_stage_logo_width: var(--organization_logo_width);
+      --tl-col_stage_logo_height: var(--organization_logo_width);
+
 
       &.style_logo_left {
         --tl-col_timeline-column_width: var(--tl-col_stage_logo_width);
@@ -857,8 +843,8 @@ html[data-mode="dim"] {
 
       @mixin timeline_column_header_logo($top: null, $right: null, $bottom: null, $left: null,
           $line-height: 100%, $line-width: var(--tl-col_timeline_width),
-          $marker-width: calc(var(--tl-col_stage-marker_width)), $marker-height: calc(var(--tl-col_stage-marker_height))
-        ) {
+          $marker-width: var(--tl-col_stage-marker_width), $marker-height: var(--tl-col_stage-marker_height)
+      ) {
         .timeline_column_marker::before {
           position: relative;
           display: inline-block;
@@ -903,10 +889,38 @@ html[data-mode="dim"] {
         }
       }
 
-      @mixin timeline_column_header($top-before: null, $height-before: 100%, $bottom-after: null, $height-after: 0px,
-          $left: null, $right: null,
-          $line-width: var(--tl-col_timeline_width)
-        ) {
+      @mixin timeline_column_header(
+          $top-before: null,
+          $height-before: 100%,
+          $bottom-after: null,
+          $height-after: 0px,
+          $left: null,
+          $right: null,
+          $marker-background: var(--bg),
+          $marker-outline: var(--tl-col_stage-marker_outline),
+          $marker-width: var(--tl-col_stage-marker_width),
+          $marker-height: var(--tl-col_stage-marker_height),
+          $marker-border-radius: 50%,
+          $line-width: var(--tl-col_timeline_width),
+      ) {
+        .timeline_column_marker::before {
+          position: relative;
+          display: inline-block;
+          content: "";
+          @if ($right) {
+            margin: 0 calc($right - $marker-width / 2) 0 0;
+          }
+          @if ($left) {
+            margin: 0 0 0 calc($left - $marker-width / 2);
+          }
+          padding: 0;
+          width: $marker-width;
+          height: $marker-height;
+          border-radius: $marker-border-radius;
+          outline: $marker-outline;
+          background-color: $marker-background;
+          z-index: 1;
+        }
         &::before {
           position: absolute;
           @if ($top-before) {
@@ -953,6 +967,7 @@ html[data-mode="dim"] {
         }
       }
       &.stage_meta, &.stage_content {
+        // --tl-col_timeline_color: red;
         @include timeline_column_line(0px, null, null, calc(var(--tl-col_timeline-column_width) / 2));
         &:has( + .organization_header) {
           // --tl-col_timeline_color: yellow;
@@ -966,49 +981,56 @@ html[data-mode="dim"] {
         }
       }
 
-      &.stage_content {
-        // outline: 1px solid yellow;
-        .stage_main {
-          padding-top: var(--inner_padding_4-3);
-        }
-      }
-      &.stage_header + .stage_meta .stage_main, &.stage_header .stage_main .stage_meta {
-        // outline: 1px solid green;
-        padding-top: var(--padding_stage_meta);
-      }
-      &.stage_header, &.stage_meta {
-        & + .stage_content {
-          .stage_main {
-            padding-top: var(--inner_padding_4-1);
-          }
-        }
-      }
-      &.stage_header {
-        .stage_meta {
-          padding-top: var(--padding_stage_meta);
-        }
-      }
-
       &:not(.style_logo_left) {
         &.organization_header {
-          // --tl-col_timeline_color: var(--RGB_slider_bg);
+          // --tl-col_timeline_color: purple;
           @include timeline_column_header(
             null,
             null,
             0px,
             calc(100% - max(var(--font-size-normal) * var(--line-height), var(--font-size-heading-organization) * var(--line-height-heading))),
-            calc(var(--tl-col_timeline-column_width) / 2)
+            calc(var(--tl-col_timeline-column_width) / 2),
+            null,
+            var(--tl-col_stage-marker_background),
+            var(--tl-col_stage-marker_organization_outline),
+            var(--tl-col_stage-marker_organization_width),
+            var(--tl-col_stage-marker_organization_height),
+            // calc(var(--font-size_stage_header) * var(--line-height-heading)),
+            // calc(var(--font-size_stage_header) * var(--line-height-heading)),
+            // 50%,
+            // var(--tl-col_timeline_width),
           );
+          &.org_last {
+            @include timeline_column_header(
+              null,
+              null,
+              0px,
+              0px,
+              calc(var(--tl-col_timeline-column_width) / 2),
+              null,
+              var(--tl-col_stage-marker_background),
+              var(--tl-col_stage-marker_organization_outline),
+              var(--tl-col_stage-marker_organization_width),
+              var(--tl-col_stage-marker_organization_height),
+              // calc(var(--font-size_stage_header) * var(--line-height-heading)),
+              // calc(var(--font-size_stage_header) * var(--line-height-heading)),
+              // 50%,
+              // var(--tl-col_timeline_width),
+            );
+          }
         }
         &.role_header {
-          // --tl-col_timeline_color: blue;
-          @include timeline_column_header(
-            0px,
-            calc(var(--padding_role_between)),
-            0px,
-            calc(100% - var(--padding_role_between) - max(var(--font-size-normal) * var(--line-height), var(--font-size-heading-role) * var(--line-height-heading))),
-            calc(var(--tl-col_timeline-column_width) / 2)
-          );
+          &:not(.org_last) {
+            // --tl-col_timeline_color: blue;
+            @include timeline_column_header(
+              0px,
+              calc(var(--padding_role_between)),
+              0px,
+              // calc(100% - var(--padding_role_between) - max(var(--font-size-normal) * var(--line-height), var(--font-size-heading-role) * var(--line-height-heading))),
+              100%,
+              calc(var(--tl-col_timeline-column_width) / 2)
+            );
+          }
           .stage_main {
             padding-top: var(--padding_role_between);
           }
@@ -1018,11 +1040,12 @@ html[data-mode="dim"] {
               0px,
               calc(var(--padding_role_first)),
               0px,
-              calc(100% - var(--padding_role_first) - max(var(--font-size-normal) * var(--line-height), var(--font-size-heading-role) * var(--line-height-heading))),
+              // calc(100% - var(--padding_role_first) - max(var(--font-size-normal) * var(--line-height), var(--font-size-heading-role) * var(--line-height-heading))),
+              100%,
               calc(var(--tl-col_timeline-column_width) / 2)
             );
           }
-          &.role_single {
+          &.role_single:not(.org_last) {
             // --tl-col_timeline_color: yellow;
             @include timeline_column_header(
               0px,
@@ -1032,21 +1055,18 @@ html[data-mode="dim"] {
               calc(var(--tl-col_timeline-column_width) / 2)
             );
           }
+          // & + .role_header {
+          //   // No timeline between role_header elements without anything between
+          //   // --tl-col_timeline_color: crimson;
+          //   @include timeline_column_header(
+          //     0px,
+          //     calc(var(--padding_role_between)),
+          //     0px,
+          //     0px,
+          //     calc(var(--tl-col_timeline-column_width) / 2)
+          //   );
+          // }
         }
-        // &.role_header.stage_header_period.role_single {
-        //   --tl-col_timeline_color: green;
-        //   @include timeline_column_header(
-        //     0px,
-        //     calc(var(--padding_role_between)),
-        //     0px,
-        //     calc(100% - var(--padding_role_between) - var(--font-size-heading-role)),
-        //     calc(var(--tl-col_timeline-column_width) / 2)
-        //   );
-        // }
-      }
-      // Header for organizations
-      &.organization_header {
-        margin-top: var(--inner_margin_4-2);
       }
       &.component_stages + .organization_header {
         margin-top: 0;
@@ -1059,16 +1079,7 @@ html[data-mode="dim"] {
         }
       }
 
-      // &.component_stages ~ .organization_header {
-      //   padding-top: var(--inner_padding_4-6);
-      //   border-top: var(--tl-col_timeline_width) solid var(--border-color-faint);
-      // }
-
-      // Header for roles at organizations
       &.role_header {
-        .stage_main {
-          padding-top: var(--inner_padding_4-3);
-        }
         &.style_logo_left {
           &.stage_header_period {
             position: relative;
@@ -1124,44 +1135,14 @@ html[data-mode="dim"] {
         }
       }
       &.stage {
-        &_header {
-          break-after: avoid;
-          .stage {
-            &_main {
-              grid-column: 1 / span all;
-              font-size: var(--font-size_stage_header);
-            }
-          }
-          &.stage_header_period {
-            .stage {
-              &_period, &_timeline {
-                font-size: var(--font-size_stage_header);
-                .date_period {
-                  font-size: var(--font-size_date_period);
-                }
-                .date_duration {
-                  font-size: var(--font-size_date_duration);
-                }
-              }
-            }
-            &.organization_header {
-              .date_period {
-                font-weight: var(--font-weight-heading-organization);
-              }
-            }
-          }
-        }
-        &_period {
-          font-size: var(--font-size-normal);
-        }
-        &_meta {
-          break-after: avoid;
-        }
         &_header, &_meta, &_content {
           display: grid;
           align-items: baseline;
           grid-template-columns:
-            calc(var(--grid_period-column_width)) calc(var(--grid_separator-column_width))
+            var(--tl-col_timeline-column_width)
+            var(--grid_separator-column_width)
+            var(--grid_period-column_width)
+            var(--grid_separator-column_width)
             minmax(0px, max-content);
           .stage {
             &_timeline {
@@ -1191,43 +1172,31 @@ html[data-mode="dim"] {
               }
             }
           }
-          &.role_single .role_period {
-            opacity: 0;
-          }
-          &.style_logo_left {
-            grid-template-columns:
-              calc(var(--tl-col_timeline-column_width)) calc(var(--grid_separator-column_width))
-              calc(var(--grid_period-column_width)) calc(var(--grid_separator-column_width))
-              minmax(0px, max-content);
-            .stage_logo {
-              grid-column: 1;
-              grid-row: 1;
-              justify-self: center;
-              &_img {
-                width: calc(var(--tl-col_stage_logo_width));
+          &.stage {
+            &_header {
+              .stage_main {
+                grid-column: 3 / span all;
+                grid-row: 1;
               }
             }
-            &.stage {
-              &_header {
-                .stage_main {
-                  grid-column: 3 / span all;
+            &_header.stage_header_period, &_meta, &_content {
+              .stage {
+                &_period, &_header {
+                  grid-column: 3;
                   grid-row: 1;
                 }
-              }
-              &_header.stage_header_period, &_meta, &_content {
-                .stage {
-                  &_period, &_header {
-                    grid-column: 3;
-                    grid-row: 1;
-                  }
-                  &_main {
-                    grid-column: 5;
-                  }
+                &_main {
+                  grid-column: 5;
                 }
               }
             }
-            .stage_period {
-              align-items: flex-start;
+          }
+          .stage_logo {
+            grid-column: 1;
+            grid-row: 1;
+            justify-self: center;
+            &_img {
+              width: calc(var(--tl-col_stage_logo_width));
             }
           }
         }
@@ -1247,23 +1216,19 @@ html[data-mode="dim"] {
 
     // Similar to LinkedIn
     &.style_timeline_dot-dash {
-      --tl-dash-dot_column_width: 4rem;
-      --tl-dash-dot_padding-right: 0.75rem;
-      --tl-dash-dot_marker_border-radius: 50%;
-      --tl-dash-dot_marker_pad-v: 0.25rem;
-      --tl-dash-dot_marker_width: 0.5rem;
-      --tl-dash-dot_marker_height: var(--tl-dash-dot_marker_width);
+      --tl-dot-dash_column_width: 4rem;
+      --tl-dot-dash_padding-right: 0.75rem;
+      --tl-dot-dash_marker_border-radius: 50%;
+      --tl-dot-dash_marker_pad-v: 0.25rem;
+      --tl-dot-dash_marker_width: 0.5rem;
+      --tl-dot-dash_marker_height: var(--tl-dot-dash_marker_width);
       --tl-item-pad-v: 0.25rem;
       --tl-line-width: 2px;
-      --tl-offset-left: (-1 * var(--tl-dash-dot_column_width) / 2 - var(--tl-dash-dot_padding-right));
-
-      // FIXME: DEBUG
-      // --tl-dash-dot_marker_border-radius: 0;
-      // --tl-dash-dot_marker_width: 20rem;
-      // --tl-dash-dot_marker_height: 1px;
-      // --tl-item-pad-v: 3rem;
-      // --stage-org-role-sep-vert: 7rem;
-
+      --tl-offset-left: (-1 * var(--tl-dot-dash_column_width) / 2 - var(--tl-dot-dash_padding-right));
+      --stage-org-sep-vert: 1.0rem;
+      --stage-org-header-mar-v: 0.125rem;
+      --stage-role-sep-vert: 1.0rem;
+      --stage-org-role-sep-vert: 0.5rem;
 
       // Header for organizations
       &.organization_header {
@@ -1346,17 +1311,17 @@ html[data-mode="dim"] {
         .timeline_dot-dash_marker {
           position: absolute;
           display: block;
-          border-radius: var(--tl-dash-dot_marker_border-radius);
+          border-radius: var(--tl-dot-dash_marker_border-radius);
           background-color: var(--border-color-faint);
-          height: var(--tl-dash-dot_marker_height);
-          width: var(--tl-dash-dot_marker_width);
-          top: calc((100% + var(--stage-role-sep-vert)) / 2 - var(--tl-dash-dot_marker_height) / 2);
-          left: calc((var(--tl-dash-dot_column_width) / 2 - var(--tl-dash-dot_marker_width) / 2) );
+          height: var(--tl-dot-dash_marker_height);
+          width: var(--tl-dot-dash_marker_width);
+          top: calc((100% + var(--stage-role-sep-vert)) / 2 - var(--tl-dot-dash_marker_height) / 2);
+          left: calc((var(--tl-dot-dash_column_width) / 2 - var(--tl-dot-dash_marker_width) / 2) );
         }
       }
 
       &.timeline {
-        padding-left: calc( var(--tl-dash-dot_column_width) );
+        padding-left: calc( var(--tl-dot-dash_column_width) );
         // Timeline line part above dot
         &_role_within,
         &_role_last {
@@ -1368,8 +1333,8 @@ html[data-mode="dim"] {
             background-color: var(--border-color-faint);
             width: var(--tl-line-width);
             top: 0;
-            height: calc(50% - var(--tl-dash-dot_marker_height) / 2 - var(--tl-dash-dot_marker_pad-v) + var(--stage-role-sep-vert) / 2);
-            left: calc((var(--tl-dash-dot_column_width) / 2 - var(--tl-line-width) / 2) );
+            height: calc(50% - var(--tl-dot-dash_marker_height) / 2 - var(--tl-dot-dash_marker_pad-v) + var(--stage-role-sep-vert) / 2);
+            left: calc((var(--tl-dot-dash_column_width) / 2 - var(--tl-line-width) / 2) );
           }
         }
 
@@ -1384,10 +1349,10 @@ html[data-mode="dim"] {
             background-color: var(--border-color-faint);
             // z-index: 99
             width: var(--tl-line-width);
-            top: var(--tl-dash-dot_marker_pad-v);
+            top: var(--tl-dot-dash_marker_pad-v);
             top: 0;
             bottom: 0;
-            left: calc((var(--tl-dash-dot_column_width) / 2 - var(--tl-line-width) / 2) );
+            left: calc((var(--tl-dot-dash_column_width) / 2 - var(--tl-line-width) / 2) );
           }
           // Timeline line part below dot for role header
           &.role_header {
@@ -1398,22 +1363,22 @@ html[data-mode="dim"] {
               border-radius: 0;
               background-color: var(--border-color-faint);
               width: var(--tl-line-width);
-              height: calc(50% - var(--tl-dash-dot_marker_height) / 2 - var(--tl-dash-dot_marker_pad-v) - var(--stage-role-sep-vert) / 2);
+              height: calc(50% - var(--tl-dot-dash_marker_height) / 2 - var(--tl-dot-dash_marker_pad-v) - var(--stage-role-sep-vert) / 2);
               bottom: 0;
-              left: calc((var(--tl-dash-dot_column_width) / 2 - var(--tl-line-width) / 2) );
+              left: calc((var(--tl-dot-dash_column_width) / 2 - var(--tl-line-width) / 2) );
             }
           }
         }
         &.organization_header {
           &.logo {
-            padding-left: calc(var(--tl-dash-dot_column_width));
+            padding-left: calc(var(--tl-dot-dash_column_width));
           }
         }
 
         // Timeline for role header following immediately after organization header:
         &.organization_header + .role_header {
           .timeline_dot-dash_marker {
-            top: calc((100% + var(--stage-org-role-sep-vert) - var(--tl-item-pad-v)) / 2 - var(--tl-dash-dot_marker_height) / 2);
+            top: calc((100% + var(--stage-org-role-sep-vert) - var(--tl-item-pad-v)) / 2 - var(--tl-dot-dash_marker_height) / 2);
           }
           &::before {
             content: none;
@@ -1426,112 +1391,24 @@ html[data-mode="dim"] {
             background-color: var(--border-color-faint);
             // z-index: 99
             width: var(--tl-line-width);
-            height: calc(50% - var(--tl-dash-dot_marker_height) / 2 + var(--tl-item-pad-v) / 2 - var(--tl-dash-dot_marker_pad-v));
-            height: calc((100% - var(--stage-org-role-sep-vert) + var(--tl-item-pad-v)) / 2 - var(--tl-dash-dot_marker_height) / 2 - var(--tl-dash-dot_marker_pad-v));
+            height: calc(50% - var(--tl-dot-dash_marker_height) / 2 + var(--tl-item-pad-v) / 2 - var(--tl-dot-dash_marker_pad-v));
+            height: calc((100% - var(--stage-org-role-sep-vert) + var(--tl-item-pad-v)) / 2 - var(--tl-dot-dash_marker_height) / 2 - var(--tl-dot-dash_marker_pad-v));
             bottom: 0;
-            left: calc((var(--tl-dash-dot_column_width) / 2 - var(--tl-line-width) / 2) );
+            left: calc((var(--tl-dot-dash_column_width) / 2 - var(--tl-line-width) / 2) );
           }
         }
       }
     }
 
-    .role {
-      &_title {
-        margin-right: auto;
-        &.partition {
-          display: flex;
-          align-items: center;
-          column-gap: 1rem;
-        }
-      }
-      &_supertitle {
-        font-weight: var(--font-weight-heading);
-      }
-      &_subtitle {
-        font-weight: var(--font-weight);
-        font-style: italic;
-      }
-    }
-
-    .role {
-      // &_summary {
-      //   &_container {
-      //     font-size: var(--font-size-larger-1);
-      //   }
-      // }
-      // &_description {
-      //   &_container {
-      //     font-size: var(--font-size-larger-1);
-      //   }
-      // }
-      &_star {
-        &_container {
-          grid-column: 2 / span all;
-          display: grid;
-          grid-auto-flow: dense column;
-          grid-template-columns: calc(var(--grid_period-column_width)) calc(var(--tl-col_period_separator-column_width)) minmax(0px, max-content);
-        }
-        &_header {
-          grid-column: 1;
-          // grid-row: 1;
-          @include flush-top;
-        }
-        &_main {
-          grid-column: 3;
-          @include flush-top;
-        }
-        &_column_heading {
-          margin: 0;
-          padding: 0 0 calc(var(--inner_padding_4-2)) 0;
-          // font-size: var(--font-size-larger-1);
-          @include upper-caps;
-        }
-        &_title {
-          margin: 0;
-          padding: 0 0 calc(var(--inner_padding_4-2)) 0;
-          // padding: 0;
-          // font-weight: var(--font-weight);
-          // font-size: var(--font-size-larger-1);
-        }
-        &_result {
-          padding-bottom: var(--inner_padding_4-2);
-        }
-      }
-    }
-    &.role_section-heading {
-      display: flex;
-      align-items: center;
-      margin: 0;
-      padding: 0.75rem 0 0.25rem 0;
-      font-weight: var(--font-weight);
-      font-family: var(--font-section-title);
-      font-variant: small-caps;
-      text-transform: uppercase;
-      .separator-line {
-        flex: 1 1 auto;
-        border-bottom: 1px solid var(--border-color-faint);
-        margin-left: 1rem;
-      }
-    }
     /*
      * Layout style NARROW
      */
 
     &.style_layout_narrow {
-      // --padding_organization_between: var(--inner_padding_4-3);
-      // --padding_role_first: var(--inner_padding_4-0);
-      // --padding_role_between: var(--inner_padding_4-2);
-      // --padding_stage_meta: 0px;
-      // .stage {
-      //   &_main, &_meta, &_content {
-      //     grid-column: 1 / span all;
-      //   }
-      // }
-      &.role_header.role_single.stage_header_period, &.stage_meta, &.stage_content {
-        .stage_main {
-          grid-column: 1 / span all;
-        }
-      }
+      --tl-col_stage-marker_width: calc(0.5 * var(--rem));
+      --grid_separator-column_width: var(--inner_margin_4-1);
+      --tl-col_timeline_width: calc(0.125 * var(--rem));
+      --grid_period-column_width: 6em;
     }
 
     /*
@@ -1547,21 +1424,15 @@ html[data-mode="dim"] {
           flex-direction: row;
           justify-content: flex-start;
           align-items: baseline;
+          // &.organization_header_main, &.role_header_main {
+          //   display: flex;
+          //   flex-direction: row;
+          //   flex-wrap: wrap;
+          //   justify-content: flex-start;
+          //   align-items: baseline;
+          // }
         }
       }
-      // &.style_timeline_column {
-      //   .stage {
-      //     &_header, &_main {
-      //       padding-top: 0;
-      //       outline: solid 1px pink;
-      //       grid-column: 3;
-      //       grid-row: unset;
-      //       flex-direction: row;
-      //       justify-content: flex-start;
-      //       align-items: baseline;
-      //     }
-      //   }
-      // }
       .organization_title, .role_title {
         display: inline-block;
       }

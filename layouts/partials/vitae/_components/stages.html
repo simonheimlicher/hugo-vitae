@@ -7,7 +7,7 @@
 {{- $component := .Component }}
 
 {{- $debug := false }}
-{{/* {{- $debug = or $debug (not (not (findRE `^/([^/]+-demo/)?ats/preview` $page.RelPermalink) ) ) -}} */}}
+{{/* {{- $debug = or $debug (not (not (findRE `^/([^/]+-demo/)?preview` $page.RelPermalink) ) ) -}} */}}
 
 {{- $style := default dict .Style }}
 {{- $validStyles := merge (default dict .ValidStyles) (dict
@@ -65,8 +65,6 @@
 {{- $renderOptInline := dict "display" "inline" }}
 {{- $renderOptBlock := dict "display" "block" }}
 
-{{- $dateFormat := default "Jan 2006" (string $component.date_format) }}
-
 {{- $inlineSeparatorStr := default " · " $style.inline_separator }}
 
 {{- $timelineBaseClass := "timeline" }}
@@ -85,6 +83,34 @@
   {{- end }}
 {{- end }}
 
+{{- $separateRoles := $style.separate_roles }}
+
+{{- $defaultDateFormat := "Jan 2006" }}
+
+{{- $inlineHeader := false }}
+{{- with $style.layout }}
+  {{- $inlineLayoutStyles := (slice "inline" "shallow" "compact") }}
+  {{- $dateYearLayoutStyles := (slice "narrow" "compact") }}
+  {{- if reflect.IsSlice . }}
+    {{/* {{- warnf "%s[%s]: intersect style.layout=%v with inlineLayoutStyles=%v = %v"
+        $page $template . $inlineLayoutStyles (intersect $inlineLayoutStyles .) }} */}}
+    {{- $inlineHeader = gt (len (intersect $inlineLayoutStyles .) ) 0 }}
+    {{- if gt (len (intersect $dateYearLayoutStyles .) ) 0 }}
+      {{- $defaultDateFormat = "2006" }}
+    {{- end }}
+  {{- else }}
+    {{- $inlineHeader = in $inlineLayoutStyles . }}
+    {{- if in $dateYearLayoutStyles . }}
+      {{- $defaultDateFormat = "2006" }}
+    {{- end }}
+  {{- end }}
+{{- end }}
+{{- $roleMetaInHeader := $inlineHeader }}
+{{- $organizationMetaInHeader := $inlineHeader }}
+{{- $dateFormat := default $defaultDateFormat (string $component.date_format) }}
+
+{{- $homeCountry := default "USA" .Data.features.contact.print.address.country }}
+
 {{- $periodDurationParams := (dict
   "DurationFirst" $durationFirst
   "DateFormat" $dateFormat
@@ -94,28 +120,11 @@
   "PeriodBeginEndSeparator" $periodBeginEndSeparator
 ) -}}
 
-{{- $separateRoles := $style.separate_roles }}
-
-{{- $inlineHeader := false }}
-{{- with $style.layout }}
-  {{- $inlineLayoutStyles := (slice "inline" "shallow" "compact") }}
-  {{- if reflect.IsSlice . }}
-    {{/* {{- warnf "%s[%s]: intersect style.layout=%v with inlineLayoutStyles=%v = %v"
-        $page $template . $inlineLayoutStyles (intersect $inlineLayoutStyles .) }} */}}
-    {{- $inlineHeader = gt (len (intersect $inlineLayoutStyles .) ) 0 }}
-  {{- else }}
-    {{- $inlineHeader = in $inlineLayoutStyles . }}
-  {{- end }}
-{{- end }}
-{{- $roleMetaInHeader := $inlineHeader }}
-{{- $organizationMetaInHeader := $inlineHeader }}
-
-{{- $homeCountry := default "USA" .Data.features.contact.print.address.country }}
-
 {{- $inlinePartialParams := (dict
   "Style" $style
   "Component" $component
   "HeadingLevel" $headingLevel
+  "InlineHeader" $inlineHeader
   "HomeCountry" $homeCountry
   "PeriodDurationParams" $periodDurationParams
 ) }}
@@ -318,9 +327,9 @@
   {{- end }}
 
   {{- $stageHeaderClassPrefix := "stage_header" }}
-  {{- $oganizationHeaderClassList := slice "organization_header" }}
+  {{- $organizationHeaderClassList := slice "organization_header" }}
   {{- if not $style.separate_roles }}
-    {{- $oganizationHeaderClassList = append "stage_header" $oganizationHeaderClassList }}
+    {{- $organizationHeaderClassList = append "stage_header" $organizationHeaderClassList }}
   {{ end }}
 
   {{- $showPeriod := default true $component.organization.period }}
@@ -331,19 +340,23 @@
   {{- end }}
 
   {{ if $showPeriod }}
-    {{- $oganizationHeaderClassList = append (printf "%s_period" $stageHeaderClassPrefix) $oganizationHeaderClassList }}
+    {{- $organizationHeaderClassList = append (printf "%s_period" $stageHeaderClassPrefix) $organizationHeaderClassList }}
   {{ end }}
   {{ if $showDuration }}
-    {{- $oganizationHeaderClassList = append (printf "%s_duration" $stageHeaderClassPrefix) $oganizationHeaderClassList }}
+    {{- $organizationHeaderClassList = append (printf "%s_duration" $stageHeaderClassPrefix) $organizationHeaderClassList }}
   {{ end }}
   {{ if $logoImageResource }}
-    {{- $oganizationHeaderClassList = append (printf "%s_logo" $stageHeaderClassPrefix) $oganizationHeaderClassList }}
+    {{- $organizationHeaderClassList = append (printf "%s_logo" $stageHeaderClassPrefix) $organizationHeaderClassList }}
   {{ end }}
 
   {{- if not $style.separate_roles }}
-    {{- $oganizationHeaderClassList = append $topLevelClass $oganizationHeaderClassList }}
+    {{- $organizationHeaderClassList = append $topLevelClass $organizationHeaderClassList }}
   {{- end }}
-  <div class="{{ delimit $oganizationHeaderClassList ` ` }}">
+
+  <div class="{{ delimit $organizationHeaderClassList ` ` }}">
+    {{- if and (not (in (slice "left") $style.logo)) (in (slice "dot-dash" "column") $style.timeline) }}
+      <div class="{{ printf `timeline_%s_marker stage_timeline` $style.timeline }}"></div>
+    {{- end }}
 
   {{- if or $showPeriod $showDuration }}
     {{- with $org.roles }}
@@ -446,7 +459,7 @@
   {{ end }}
 
   <div class="{{ delimit $roleHeaderClassList ` ` }}">
-    {{- if in (slice "dot-dash" "column") $style.timeline }}
+    {{- if and (in (slice "dot-dash" "column") $style.timeline) (or $style.logo (not (eq $numRoles 1))) }}
       <div class="{{ printf `timeline_%s_marker stage_timeline` $style.timeline }}"></div>
     {{- end }}
 
@@ -491,6 +504,7 @@
   {{- $role := .Role }}
   {{- $stage := default $org $role }}
   {{- $stageType := cond (not (not .Role)) "role" "organization" }}
+  {{- $inlineHeader := .InlineHeader }}
   {{- $homeCountry := .HomeCountry }}
   {{- $orgLocationStr := default "" .OrganizationLocationStr }}
   {{- $style := .Style }}
@@ -500,7 +514,8 @@
   {{- $template := .Template }}
   {{- $debug := false }}
 
-  {{- $inlineSeparatorStr := default " · " $style.inline_separator }}
+  {{- $inlineSeparatorStr := default "·" $style.inline_separator }}
+  {{- $inlineSeparatorStr = printf " %s " (trim $inlineSeparatorStr "  ") }}
 
   {{- $metaConfig := (dict
     "function" (and $stage.function (default true (default $component.function $componentStageType.function)) )
@@ -655,7 +670,7 @@
             {{- end }}
           {{- end }}
           {{- with $functionUnitLocationMarkup }}
-            {{ $markup = printf `%s<%s class="stage_function_unit_location function=%v unit=%v location=%v">%s</%s>` $markup $childContainer $metaConfig.function $metaConfig.unit $metaConfig.location . $childContainer }}
+            {{ $markup = printf `%s<%s class="stage_function_unit_location">%s</%s>` $markup $childContainer . $childContainer }}
           {{- end }}
         {{- end }}
 
@@ -671,9 +686,9 @@
           <div class="stage_main">
       {{- else }}
         <span class="{{ printf `%s_meta stage_meta` $stageType }}">
-      {{- end }}
-      {{- if in (slice "inline") $style.layout }}
-        {{- safeHTML $inlineSeparatorStr }}
+        {{- if $inlineHeader }}
+        {{- safeHTML $inlineSeparatorStr -}}
+        {{- end }}
       {{- end }}
       {{- safeHTML $markup }}
       {{- with $topLevelClass }}
