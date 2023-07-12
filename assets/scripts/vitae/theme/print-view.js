@@ -38,20 +38,55 @@ const valueAfterDOMUpdate = function (callback) {
 };
 
 const transferOverflow = function (conf) {
-  numberPages(conf);
-
   // Indicates if any paginationContainer has overflow
   let overflowingContainers = [];
 
   conf['parts'].forEach(function (part) {
     part['pages'].forEach(function (page) {
-      page['paginationContainers'].forEach(function (el) {
-        let baseElement = el['clonePages'][0];
-        let overflowElement = el['clonePages'][1];
+
+      // Do the preparation steps formerly done in preparePrintPreview(conf)
+      if (!page['paginatedPageElements']) {
+        // The targetPageElement is the copy of this page in the previewTarget
+        const targetPageElement = page['targetPageElement'];
+
+        let overflowingContainers = [];
+        let paginationContainers = page['paginationContainers'];
+
+        // paginatedPageElements is a list of all pages that represent the page
+        page['paginatedPageElements'] = [targetPageElement];
+
+        paginationContainers.forEach(function (el) {
+          let baseElement = targetPageElement.querySelector(el['selector']);
+          if (baseElement.scrollHeight > baseElement.clientHeight) {
+            overflowingContainers.push(el);
+          }
+
+          // Keep reference to baseElement
+          el['clonePages'] = [baseElement];
+        });
+
+        if (overflowingContainers.length > 0) {
+          const overflowPage = targetPageElement.cloneNode(false);
+          page['paginatedPageElements'].push(overflowPage);
+
+          const parent = page['targetPageElement'].parentNode;
+          parent.insertBefore(overflowPage, page['targetPageElement'].nextSibling);
+
+          paginationContainers.forEach(function (el) {
+            const deepClone = el.policy == "clone";
+            const overflowContainer = el.originalContainer.cloneNode(deepClone);
+            overflowPage.appendChild(overflowContainer);
+            el['clonePages'].push(overflowContainer);
+          });
+        }
+      }
+
+      page['paginationContainers'].forEach(function (el, idx) {
+        const baseElement = el['clonePages'][0];
+        const overflowElement = el['clonePages'][1];
 
         if (conf['paginationPoliciesToPaginate'].includes(el['policy'])) {
           // Move elements from base to overflow until base no longer overflows
-          // console.log('Moving direct descendants of baseElement ', baseElement, ' to overflowElement: ', overflowElement);
           let baseElementOverflow = baseElement.scrollHeight > baseElement.clientHeight;
 
           if (baseElementOverflow) {
@@ -85,6 +120,23 @@ const transferOverflow = function (conf) {
               }
             }
 
+            // Re-number features after having them transferred between base and overflow page
+            for (let featureIndex = 0, feature = el.firstElementChild; feature; ++featureIndex, feature = feature.nextElementSibling) {
+              // pushClass(feature, "feature-" + featureIndex);
+              if (featureIndex == 0) {
+                pushClass(feature, "feature-first");
+              }
+              else {
+                deleteClass(feature, "feature-first");
+              }
+              if (!feature.nextElementSibling) {
+                pushClass(feature, "feature-last");
+              }
+              else {
+                deleteClass(feature, "feature-last");
+              }
+            }
+
             // Set callback after DOM has updated to determine,
             // if any paginationContainer still has overflow
             return valueAfterDOMUpdate(function () {
@@ -108,7 +160,6 @@ const transferOverflow = function (conf) {
     // Let overflow be visible
     deleteClass(conf['previewTargetElement'], conf['overflowClass']);
     numberPages(conf);
-    // pushClass(conf['previewTargetElement'], conf['previewTargetElementDoneClass']);
     setPreviewStatus(conf, conf['previewStatusDone']);
     setPreviewVisibility(conf, true);
     // console.log('None of the pagination containers have overflow');
@@ -137,43 +188,6 @@ const numberPages = function (conf) {
         else {
           deleteClass(pageElement, "page-last");
         }
-
-        // Number features within all paginationContainers on page
-        page['paginationContainers'].forEach(function (containerSpec, containerIndex) {
-          let selector = containerSpec['selector'];
-          let container = pageElement.querySelector(selector);
-          if (container === null) {
-            return;
-          }
-          // pushClass(container, "container-" + containerIndex);
-          if (containerIndex == 0) {
-            pushClass(container, "container-first");
-          }
-          else {
-            deleteClass(container, "container-first");
-          }
-          if (containerIndex === page['paginationContainers'].length - 1) {
-            pushClass(container, "container-last");
-          }
-          else {
-            deleteClass(container, "container-last");
-          }
-          for (let featureIndex = 0, feature = container.firstElementChild; feature; ++featureIndex, feature = feature.nextElementSibling) {
-            // pushClass(feature, "feature-" + featureIndex);
-            if (featureIndex == 0) {
-              pushClass(feature, "feature-first");
-            }
-            else {
-              deleteClass(feature, "feature-first");
-            }
-            if (!feature.nextElementSibling) {
-              pushClass(feature, "feature-last");
-            }
-            else {
-              deleteClass(feature, "feature-last");
-            }
-          }
-        });
       });
     });
   });
@@ -292,40 +306,6 @@ const requestPrintViewRendered = function (conf) {
 const preparePrintPreview = function (conf) {
   // We need print preview to be rendered (not 'display: none') to determine if there is overflow
   setPreviewVisibility(conf, true);
-
-  conf['parts'].forEach(function (part) {
-    part['pages'].forEach(function (page) {
-      let overflowingContainers = [];
-      let paginationContainers = page['paginationContainers'];
-      let targetPageElement = page['targetPageElement'];
-      page['paginatedPageElements'] = [targetPageElement];
-      paginationContainers.forEach(function (el) {
-        let baseElement = targetPageElement.querySelector(el['selector']);
-        if (baseElement.scrollHeight > baseElement.clientHeight) {
-          overflowingContainers.push(el);
-        }
-        // Keep reference to baseElement
-        el['clonePages'] = [baseElement];
-      });
-
-      if (overflowingContainers.length > 0) {
-        const overflowPage = targetPageElement.cloneNode(false);
-        page['paginatedPageElements'].push(overflowPage);
-
-        const parent = page['targetPageElement'].parentNode;
-        parent.insertBefore(overflowPage, page['targetPageElement'].nextSibling);
-
-        paginationContainers.forEach(function (el) {
-          const deepClone = el.policy == "clone";
-          const overflowContainer = el.originalContainer.cloneNode(deepClone);
-          overflowPage.appendChild(overflowContainer);
-          el['clonePages'].push(overflowContainer);
-        });
-      }
-    });
-  });
-  numberPages(conf);
-  // pushClass(conf['previewTargetElement'], conf['previewTargetElementReadyClass']);
   setPreviewStatus(conf, conf['previewStatusReady']);
 };
 
