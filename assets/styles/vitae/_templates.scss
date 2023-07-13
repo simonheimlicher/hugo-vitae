@@ -16,7 +16,16 @@
 }
 
 .vitae.layout-executive .view-print {
-  .section-panel {
+  --num_columns: 12;
+  --main_column_width: 8;
+  --aside_column_width: calc(var(--num_columns) - var(--main_column_width));
+  --main_column: 1;
+  --aside_column: calc(var(--main_column) + var(--main_column_width));
+  // --main_column: calc(var(--aside_column) + var(--aside_column_width));
+  // --aside_column: 1;
+  --column_content_width: calc( (var(--page_content_width) - (var(--num_columns) - 1) * var(--column_gap)) / var(--num_columns));
+
+.section-panel {
     margin-top: var(--inner_margin_4-0);
     display: grid;
     gap: var(--inner_margin_4-4) var(--column_gap);
@@ -41,21 +50,29 @@
 .vitae.layout-executive .view-print .template {
   // Part front page
   &_front-page {
-    --num_columns: 12;
-    --main_column_width: 9;
-    --aside_column_width: calc(var(--num_columns) - var(--main_column_width));
-    --main_column: 1;
-    --main_column: calc(var(--aside_column) + var(--aside_column_width));
-    --aside_column: calc(var(--main_column) + var(--main_column_width));
-    --aside_column: 1;
     --front-page_header_height_fraction: 1 / 6;
 
     .slot_header {
       height: calc( var(--page_height) * var(--front-page_header_height_fraction) );
       margin-bottom: var(--inner_margin_4-2);
+      position: relative;
     }
 
     .slot_main {
+      /* FIXME: To validate whether var(--column_content_width) is correct
+      position: relative;
+      &::before {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: calc( var(--num_columns) * var(--column_content_width) + (var(--num_columns) - 1) * var(--column_gap));
+        height: var(--page_height);
+        border: 1px solid red;
+        content: "";
+        z-index: 3;
+      }
+      */
+
       display: grid;
       // gap: var(--inner_margin_4-4) var(--inner_margin_4-4);
       gap: 0 var(--column_gap);
@@ -127,11 +144,9 @@
 
   // Main part (may include content from front page)
   &_main {
-    --num_columns: 12;
-    --main_column: 1;
-    --main_column_width: 7;
-    --aside_column: calc(var(--main_column) + var(--main_column_width));
-    --aside_column_width: calc(var(--num_columns) - var(--main_column_width));
+    // --main_column_width: 7;
+    // --aside_column: calc(var(--main_column) + var(--main_column_width));
+    // --aside_column_width: calc(var(--num_columns) - var(--main_column_width));
 
     --front-page_header_height_fraction: 1 / 6;
 

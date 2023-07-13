@@ -52,6 +52,8 @@
   --page_margin_top: var(--page_margin_base_top);
   --page_margin_bottom: var(--page_margin_base_bottom);
 
+  --page_content_width: calc(var(--page_width) - var(--page_margin_left) - var(--page_margin_right));
+
   @media screen {
     --page_width: calc(var(--page_width_base) * var(--page_scale-factor));
     --page_height: calc(var(--page_height_base) * var(--page_scale-factor));
@@ -249,6 +251,10 @@
 
     @include inner_margin_padding(var(--inner_margin), var(--inner_padding));
 
+    --line-width_normal: calc(0.0625 * var(--rem));
+    --line-width_wider-1: calc(0.125 * var(--rem));
+    --line-width_wider-2: calc(0.25 * var(--rem));
+
     --list-style_margin: var(--inner_margin_4-0);
     --list-style_padding: var(--inner_padding_4-1);
     --list-style_indent: 0;
@@ -275,11 +281,20 @@
     --inner_padding: var(--inner_padding_base);
 
     @include inner_margin_padding(var(--inner_margin), var(--inner_padding));
+
+    --line-width_normal: calc(0.0625 * var(--rem));
+    --line-width_wider-1: calc(0.125 * var(--rem));
+    --line-width_wider-2: calc(0.25 * var(--rem));
+
     @media screen {
       --inner_margin: calc(var(--inner_margin_base) * var(--inner_margin_scale-factor));
       --inner_padding: calc(var(--inner_padding_base) * var(--inner_padding_scale-factor));
+      --line-width_normal: calc(0.0625 * var(--rem) * var(--line_width_scale-factor));
+      --line-width_wider-1: calc(0.125 * var(--rem) * var(--line_width_scale-factor));
+      --line-width_wider-2: calc(0.25 * var(--rem) * var(--line_width_scale-factor));
     }
     @include inner_margin_padding(var(--inner_margin), var(--inner_padding));
+
     --list-style_margin: var(--inner_margin_4-0);
     --list-style_padding: var(--inner_padding_4-1);
     --list-style_indent: 0;
