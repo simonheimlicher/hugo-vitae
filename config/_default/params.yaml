@@ -17,8 +17,6 @@ vitae:
           # inline_separator: "·"
           # inline_separator: "•"
           # layout: inline
-          inline:
-            header: true
 
         parts:
 
@@ -52,6 +50,8 @@ vitae:
                 components:
                 - component: panels
                   collection: profile
+                  style:
+                    dt_columns: 3
               - section: career-summary-awards
                 # container: div
                 sections:
@@ -116,6 +116,8 @@ vitae:
                 components:
                 - component: panels
                   collection: achievements
+                  style:
+                    dt_columns: 3
               - section: connect
                 title: section-connect
                 container: section

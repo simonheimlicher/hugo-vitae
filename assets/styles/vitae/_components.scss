@@ -419,7 +419,6 @@ html[data-mode="dim"] {
           grid-column: 3;
           margin: 0;
         }
-
         &_img {
           height: calc( var(--page_height) * var(--front-page_header_height_fraction) );
         }
@@ -429,6 +428,8 @@ html[data-mode="dim"] {
 
   /* ----- Component PANELS ------ */
   &_panels {
+    --dt_columns: var(--aside_column_width);
+    --dd_column_skip: 1;
     font-size: var(--font-size-normal);
     h3, h4, h5, dt {
       font-size: var(--font-size-larger-1);
@@ -448,28 +449,12 @@ html[data-mode="dim"] {
       }
     }
     dl {
-      /*
-      position: relative;
-      &::before {
-        position: absolute;
-        top: 0;
-        left: 0;
-        width: calc( var(--num_columns) * var(--column_content_width) + (var(--num_columns) - 1) * var(--column_gap));
-        height: 10px;
-        background: red;
-        content: "";
-      }
-      */
       display: grid;
       gap: var(--inner_padding_4-1) var(--column_gap);
       grid-template-columns: repeat(var(--num_columns), 1fr);
       align-items: start;
       grid-auto-flow: dense row;
       hyphens: manual;
-      --dt_columns: var(--aside_column_width);
-      --dd_column_skip: 1;
-      --content_width: calc(var(--page_width) - var(--page_margin_left) - var(--page_margin_right));
-      --column_content_width: calc( (var(--content_width) - 11 * var(--column_gap)) / var(--num_columns));
       dt {
         grid-column: 1 / span var(--dt_columns);
         width: auto;
@@ -483,6 +468,18 @@ html[data-mode="dim"] {
         border-left: var(--line-width_separator_heading) solid var(--border-color-faint);
       }
     }
+    &.style_dt_columns_2 {
+      --dt_columns: 2;
+    }
+    &.style_dt_columns_3 {
+      --dt_columns: 3;
+    }
+    &.style_dt_columns_4 {
+      --dt_columns: 4;
+    }
+    &.style_dt_columns_5 {
+      --dt_columns: 5;
+    }
     &.style_layout_inline {
       display: flex;
       flex-direction: column;
@@ -495,6 +492,26 @@ html[data-mode="dim"] {
           }
         }
       }
+      /*
+      dl {
+        display: flex;
+        flex-direction: column;
+        gap: var(--padding_role_between) 0;
+        align-items: start;
+        hyphens: manual;
+        dt {
+          width: auto;
+          padding: 0;
+          margin: 0;
+        }
+        dd {
+          width: auto;
+          border: none;
+          padding: 0;
+          margin: 0;
+        }
+      }
+      */
     }
     &.style_font-size_larger-1 {
       font-size: var(--font-size-larger-1);

@@ -17,6 +17,9 @@
     "larger-1" "larger-1"
     "smaller-1" "smaller-1"
   )
+  "dt_columns" (dict
+    "ANY_INT" true
+  )
 ) -}}
 
 {{- $styleClassList := partial "vitae/_functions/style-class" (dict
@@ -25,12 +28,25 @@
   "ValidStyles" $validStyles
   ) -}}
 
-{{- $topLevelClass := strings.TrimLeft " " (delimit (append $styleClassList (slice $componentClass $childClass)) " ") }}
+{{- $topLevelClass := delimit (append $styleClassList (slice $componentClass $childClass) ) " " }}
 
 {{- $filterField := default "type" $component.filter_by -}}
 {{- $filterMatch := default false $component.filter_value -}}
 
 {{- $optInline := dict "display" "inline" }}
+
+{{- $styleLayoutInline := false }}
+{{- with $style.layout }}
+  {{- if reflect.IsSlice . }}
+    {{- if in . "inline" }}
+      {{ $styleLayoutInline = true }}
+    {{- end }}
+  {{- else }}
+    {{- if eq . "inline" }}
+      {{ $styleLayoutInline = true }}
+    {{- end }}
+  {{- end }}
+{{- end }}
 
 {{- $panelData := (index .Data (default $component.component $component.collection) ) }}
 {{- with $panelData }}
@@ -53,22 +69,57 @@
     {{- end }}
     {{- with $definitions }}
       <div class="panels_content {{ $topLevelClass }}">
-        <dl>
+        {{- if not $styleLayoutInline }}
+          <dl>
+        {{- end }}
+
         {{- range $definitionItem := . }}
+
           {{- with $definitionItem.title }}
-            <dt>{{ page.RenderString $optInline . }}</dt>
+
+            {{- if $styleLayoutInline }}
+              <h{{ $headingLevel }}>
+            {{- else }}
+              <dt>
+            {{- end -}}
+
+            {{ page.RenderString $optInline . }}
+
+            {{- if $styleLayoutInline }}
+              </h{{ $headingLevel }}>
+            {{- else }}
+              </dt>
+            {{- end }}
             {{- with $definitionItem.content }}
-              {{- $ddList := . }}
-              {{- if not (reflect.IsSlice $ddList) }}
-                {{- $ddList = slice $ddList }}
-              {{- end }}
-              {{- range $ddList }}
-                <dd>{{ page.RenderString $optInline . }}</dd>
+              {{- if $styleLayoutInline }}
+                {{- if reflect.IsSlice . }}
+                  <ul>
+                  {{- range . }}
+                    <li>
+                      {{ page.RenderString $optInline . }}
+                    </li>
+                  {{- end }}
+                  </ul>
+                {{- else }}
+                    {{ page.RenderString $optInline . }}
+                {{- end }}
+            {{- else }}
+                {{- $ddList := . }}
+                {{- if not (reflect.IsSlice $ddList) }}
+                  {{- $ddList = slice $ddList }}
+                {{- end }}
+                {{- range $ddList }}
+                  <dd>
+                  {{ page.RenderString $optInline . }}
+                  </dd>
+                {{- end }}
               {{- end }}
             {{- end }}
           {{- end }}
         {{- end }}
-        </dl>
+        {{- if not $styleLayoutInline }}
+          </dl>
+        {{- end }}
       </div>
     {{- end }}
   {{- end }}
