@@ -74,6 +74,7 @@ vitae:
                       inline:
                         header: true
                       timeline: column
+                      heading: normal
                       label:
                         function: false
                         unit: false
@@ -97,7 +98,7 @@ vitae:
                     print: true
                     style:
                       logo: false
-                      # heading: larger-1
+                      heading: normal
                       layout: narrow
                 # - section: language-skills
                 #   title: section-language-skills

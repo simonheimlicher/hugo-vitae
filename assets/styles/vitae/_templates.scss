@@ -42,10 +42,12 @@
   // Part front page
   &_front-page {
     --num_columns: 12;
-    --main_column: 1;
-    --main_column_width: 8;
-    --aside_column: calc(var(--main_column) + var(--main_column_width));
+    --main_column_width: 9;
     --aside_column_width: calc(var(--num_columns) - var(--main_column_width));
+    --main_column: 1;
+    --main_column: calc(var(--aside_column) + var(--aside_column_width));
+    --aside_column: calc(var(--main_column) + var(--main_column_width));
+    --aside_column: 1;
     --front-page_header_height_fraction: 1 / 6;
 
     .slot_header {
@@ -103,7 +105,7 @@
         grid-column: 1 / span var(--num_columns);
         .section_career-summary {
           grid-row: 1;
-          grid-column: 1 / span var(--main_column_width);
+          grid-column: var(--main_column) / span var(--main_column_width);
         }
         .section_award-selection {
           grid-row: 1;
