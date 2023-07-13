@@ -51,7 +51,11 @@ section-awards:
 section-career-summary:
   other: Laufbahn
 section-personal-profile:
-  other: Persönliches Profil
+  other: Profil
+section-key-achievements:
+  other: Herausragende Erfolge
+section-interests:
+  other: Freizeitinteressen
 stage_function_label:
   other: Funktion
 stage_unit_type_division:
