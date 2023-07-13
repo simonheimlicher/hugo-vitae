@@ -39,6 +39,39 @@
       {{- page.RenderString . }}
     </div>
   {{- end }}
+  {{- with $definitionsRaw := .definitions }}
+    {{- $definitions := . }}
+    {{- $classPrefix := "panel" }}
+    {{- with $filterMatch }}
+      {{- if reflect.IsSlice . }}
+        {{- $definitions = where $definitionsRaw $filterField "in" . }}
+        {{- $classPrefix = printf "%s %s" $filterMatch (delimit $classPrefix "_") }}
+      {{- else }}
+        {{- $definitions = where $definitionsRaw $filterField . }}
+        {{- $classPrefix = printf "%s %s" $filterMatch $classPrefix }}
+      {{- end }}
+    {{- end }}
+    {{- with $definitions }}
+      <div class="panels_content {{ $topLevelClass }}">
+        <dl>
+        {{- range $definitionItem := . }}
+          {{- with $definitionItem.title }}
+            <dt>{{ page.RenderString $optInline . }}</dt>
+            {{- with $definitionItem.content }}
+              {{- $ddList := . }}
+              {{- if not (reflect.IsSlice $ddList) }}
+                {{- $ddList = slice $ddList }}
+              {{- end }}
+              {{- range $ddList }}
+                <dd>{{ page.RenderString $optInline . }}</dd>
+              {{- end }}
+            {{- end }}
+          {{- end }}
+        {{- end }}
+        </dl>
+      </div>
+    {{- end }}
+  {{- end }}
   {{- with $panelsRaw := .panels }}
     {{- $panels := . }}
     {{- $classPrefix := "panel" }}

@@ -448,17 +448,38 @@ html[data-mode="dim"] {
       }
     }
     dl {
+      /*
+      position: relative;
+      &::before {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: calc( var(--num_columns) * var(--column_content_width) + (var(--num_columns) - 1) * var(--column_gap));
+        height: 10px;
+        background: red;
+        content: "";
+      }
+      */
       display: grid;
-      gap: var(--inner_margin_4-2) var(--inner_margin_4-4);
+      gap: var(--inner_padding_4-1) var(--column_gap);
+      grid-template-columns: repeat(var(--num_columns), 1fr);
+      align-items: start;
+      grid-auto-flow: dense row;
       hyphens: manual;
+      --dt_columns: 4;
+      --dd_column_skip: 1;
+      --content_width: calc(var(--page_width) - var(--page_margin_left) - var(--page_margin_right));
+      --column_content_width: calc( (var(--content_width) - 11 * var(--column_gap)) / var(--num_columns));
       dt {
-        grid-column: 1;
+        grid-column: 1 / span var(--dt_columns);
         width: auto;
+        padding-right: calc(var(--column_gap));
       }
       dd {
-        grid-column: 2;
+        grid-column: calc(var(--dt_columns) + var(--dd_column_skip)) / span calc(var(--num_columns) - var(--dt_columns));
         width: auto;
-        padding-left: var(--inner_padding_4-4);
+        margin-left: calc(0px - var(--column_gap));
+        padding-left: calc(var(--column_gap));
         border-left: var(--line-width_separator_heading) solid var(--border-color-faint);
       }
     }
