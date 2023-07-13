@@ -44,13 +44,14 @@ const transferOverflow = function (conf) {
   conf['parts'].forEach(function (part) {
     part['pages'].forEach(function (page) {
 
+      const targetPageElement = page['targetPageElement'];
+      const paginationContainers = page['paginationContainers'];
+      let pageOverflowingContainers = [];
       // Do the preparation steps formerly done in preparePrintPreview(conf)
       if (!page['paginatedPageElements']) {
         // The targetPageElement is the copy of this page in the previewTarget
-        const targetPageElement = page['targetPageElement'];
 
         let overflowingContainers = [];
-        let paginationContainers = page['paginationContainers'];
 
         // paginatedPageElements is a list of all pages that represent the page
         page['paginatedPageElements'] = [targetPageElement];
@@ -81,72 +82,107 @@ const transferOverflow = function (conf) {
         }
       }
 
-      page['paginationContainers'].forEach(function (el, idx) {
-        const baseElement = el['clonePages'][0];
-        const overflowElement = el['clonePages'][1];
+      const paginatedPageElements = page['paginatedPageElements'];
+      paginatedPageElements.forEach(function (paginatedPage, paginatedPageIdx) {
+        paginationContainers.forEach(function (el, idx) {
+          const baseElement = el['clonePages'][paginatedPageIdx];
+          let overflowElement = null;
+          if (paginatedPageIdx < el['clonePages'].length) {
+            overflowElement = el['clonePages'][paginatedPageIdx + 1];
+          }
 
-        if (conf['paginationPoliciesToPaginate'].includes(el['policy'])) {
-          // Move elements from base to overflow until base no longer overflows
-          let baseElementOverflow = baseElement.scrollHeight > baseElement.clientHeight;
 
-          if (baseElementOverflow) {
-            // Not done yet
-            overflowingContainers.push(el);
+          if (conf['paginationPoliciesToPaginate'].includes(el['policy'])) {
+            // Move elements from base to overflow until base no longer overflows
+            let baseElementOverflow = baseElement.scrollHeight > baseElement.clientHeight;
 
-            // Transfer the last child from the baseElement to the overflowElement
-            overflowElement.prepend(baseElement.removeChild(baseElement.lastChild));
-            // console.log("Moved to next page:", el);
-            // console.log("LastChild: ", baseElement.lastChild);
+            if (baseElementOverflow) {
+              // Not done yet
+              overflowingContainers.push(el);
 
-            // Transfer any non-DOM nodes from the baseElement to the overflowElement
-            while (baseElement.lastChild && baseElement.lastChild.nodeType !== 1) {
-              let text = baseElement.removeChild(baseElement.lastChild);
-              overflowElement.prepend(text);
-            }
+              if (!overflowElement) {
+                // console.log('Element', baseElement, ' still has overflow but overflowElement is ', overflowElement);
+                pageOverflowingContainers.push(el);
+                return;
+              }
 
-            // Transfer any DOM nodes that have style 'breakAfter' or 'pageBreakAfter' set to 'avoid'
-            // This style should for instance be set for headings (H1, H2, ...)
-            let breakAfter;
-            while (baseElement.lastChild && baseElement.lastChild.nodeType === 1 && (
-              (breakAfter = getComputedStyle(baseElement.lastChild).breakAfter) === 'avoid'
-              || (breakAfter = getComputedStyle(baseElement.lastChild).pageBreakAfter) === 'avoid')) {
-              let sibling = baseElement.removeChild(baseElement.lastChild);
-              overflowElement.prepend(sibling);
-              // console.log("Sibling with breakAfter=" + breakAfter + " moved to next page: " + sibling);
+              // Transfer the last child from the baseElement to the overflowElement
+              overflowElement.prepend(baseElement.removeChild(baseElement.lastChild));
+              // console.log("Moved to next page:", el);
+              // console.log("LastChild: ", baseElement.lastChild);
+
               // Transfer any non-DOM nodes from the baseElement to the overflowElement
               while (baseElement.lastChild && baseElement.lastChild.nodeType !== 1) {
                 let text = baseElement.removeChild(baseElement.lastChild);
                 overflowElement.prepend(text);
               }
-            }
 
-            // Re-number features after having them transferred between base and overflow page
-            for (let featureIndex = 0, feature = el.firstElementChild; feature; ++featureIndex, feature = feature.nextElementSibling) {
-              // pushClass(feature, "feature-" + featureIndex);
-              if (featureIndex == 0) {
-                pushClass(feature, "feature-first");
+              // Transfer any DOM nodes that have style 'breakAfter' or 'pageBreakAfter' set to 'avoid'
+              // This style should for instance be set for headings (H1, H2, ...)
+              let breakAfter;
+              while (baseElement.lastChild && baseElement.lastChild.nodeType === 1 && (
+                (breakAfter = getComputedStyle(baseElement.lastChild).breakAfter) === 'avoid'
+                || (breakAfter = getComputedStyle(baseElement.lastChild).pageBreakAfter) === 'avoid')) {
+                let sibling = baseElement.removeChild(baseElement.lastChild);
+                overflowElement.prepend(sibling);
+                // console.log("Sibling with breakAfter=" + breakAfter + " moved to next page: " + sibling);
+                // Transfer any non-DOM nodes from the baseElement to the overflowElement
+                while (baseElement.lastChild && baseElement.lastChild.nodeType !== 1) {
+                  let text = baseElement.removeChild(baseElement.lastChild);
+                  overflowElement.prepend(text);
+                }
               }
-              else {
-                deleteClass(feature, "feature-first");
-              }
-              if (!feature.nextElementSibling) {
-                pushClass(feature, "feature-last");
-              }
-              else {
-                deleteClass(feature, "feature-last");
-              }
-            }
 
-            // Set callback after DOM has updated to determine,
-            // if any paginationContainer still has overflow
-            return valueAfterDOMUpdate(function () {
-              const innerConf = conf;
-              return transferOverflow(innerConf);
-            });
+              // Re-number features after having them transferred between base and overflow page
+              for (let featureIndex = 0, feature = el.firstElementChild; feature; ++featureIndex, feature = feature.nextElementSibling) {
+                // pushClass(feature, "feature-" + featureIndex);
+                if (featureIndex == 0) {
+                  pushClass(feature, "feature-first");
+                }
+                else {
+                  deleteClass(feature, "feature-first");
+                }
+                if (!feature.nextElementSibling) {
+                  pushClass(feature, "feature-last");
+                }
+                else {
+                  deleteClass(feature, "feature-last");
+                }
+              }
+
+              // Set callback after DOM has updated to determine,
+              // if any paginationContainer still has overflow
+              return valueAfterDOMUpdate(function () {
+                const innerConf = conf;
+                return transferOverflow(innerConf);
+              });
+            }
+            else {
+              // console.log("No overflow on baseElement: ", baseElement);
+            }
           }
-          // else {
-          //     console.log("No overflow on baseElement: ", baseElement);
-          // }
+        });
+
+        if (pageOverflowingContainers.length > 0) {
+          const overflowPage = targetPageElement.cloneNode(false);
+          paginatedPageElements.push(overflowPage);
+
+          const parent = page['targetPageElement'].parentNode;
+          // parent.insertBefore(overflowPage, page['targetPageElement'].nextSibling);
+          parent.insertBefore(overflowPage, paginatedPageElements[paginatedPageElements.length - 1].nextSibling);
+
+          paginationContainers.forEach(function (el) {
+            const deepClone = el.policy == "clone";
+            const overflowContainer = el.originalContainer.cloneNode(deepClone);
+            overflowPage.appendChild(overflowContainer);
+            el['clonePages'].push(overflowContainer);
+          });
+          // Set callback after DOM has updated to determine,
+          // if any paginationContainer on subsequent pages still has overflow
+          return valueAfterDOMUpdate(function () {
+            const innerConf = conf;
+            return transferOverflow(innerConf);
+          });
         }
       });
     });
@@ -320,6 +356,12 @@ const initializePrintPreview = function (conf) {
     conf['previewTargetElement'].removeChild(conf['previewTargetElement'].lastChild);
   }
 
+  conf['parts'].forEach(function (part) {
+    part['pages'].forEach(function (page) {
+      delete page['paginatedPageElements'];
+    });
+  });
+
   // Ensure overflow is visible
   pushClass(conf['previewTargetElement'], conf['overflowClass']);
 
@@ -335,8 +377,7 @@ const initializePrintPreview = function (conf) {
 
 const renderPrintPreview = function (conf, reset = false) {
   if (reset || !isPreviewReadyToRender(conf)) {
-    initializePrintPreview(conf);
-    preparePrintPreview(conf);
+    preparePrintPreview(conf, reset);
   }
   transferOverflow(conf);
 };
