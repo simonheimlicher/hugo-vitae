@@ -14,8 +14,30 @@
   "layout" (dict
     "shallow" "shallow"
     "narrow" "narrow"
-    "inline" "inline"
-    "compact" (slice "shallow" "narrow" "inline")
+    "inline" (dict
+      "inline" (dict
+        "header" true
+        "content" false
+      )
+    )
+  )
+  "ats" (dict
+    "true" (dict
+      "inline" (dict
+        "header" true
+        "content" true
+      )
+    )
+  )
+  "inline" (dict
+    "header" (dict
+      "true" true
+      "false" false
+    )
+    "content" (dict
+      "true" true
+      "false" false
+    )
   )
   "timeline" (dict
     "false" false
@@ -25,7 +47,7 @@
   )
   "heading" (dict
     "normal" "normal"
-    "larger-1" "larger-1"
+    "larger-2" "larger-2"
     "smaller-1" "smaller-1"
   )
   "logo" (dict
@@ -65,7 +87,7 @@
 {{- $renderOptInline := dict "display" "inline" }}
 {{- $renderOptBlock := dict "display" "block" }}
 
-{{- $inlineSeparatorStr := default " · " $style.inline_separator }}
+{{- $inlineSeparatorStr := default "•" $style.inline_separator }}
 
 {{- $timelineBaseClass := "timeline" }}
 
@@ -88,26 +110,30 @@
 {{- $defaultDateFormat := "Jan 2006" }}
 
 {{- $inlineHeader := false }}
+{{- $inlineContent := false }}
 {{- with $style.layout }}
-  {{- $inlineLayoutStyles := (slice "inline" "shallow" "compact") }}
   {{- $dateYearLayoutStyles := (slice "narrow" "compact") }}
   {{- if reflect.IsSlice . }}
-    {{/* {{- warnf "%s[%s]: intersect style.layout=%v with inlineLayoutStyles=%v = %v"
-        $page $template . $inlineLayoutStyles (intersect $inlineLayoutStyles .) }} */}}
-    {{- $inlineHeader = gt (len (intersect $inlineLayoutStyles .) ) 0 }}
+    {{/* {{- warnf "%s[%s]: intersect style.layout=%v with inlineHeaderLayoutStyles=%v = %v"
+        $page $template . $inlineHeaderLayoutStyles (intersect $inlineHeaderLayoutStyles .) }} */}}
     {{- if gt (len (intersect $dateYearLayoutStyles .) ) 0 }}
       {{- $defaultDateFormat = "2006" }}
     {{- end }}
   {{- else }}
-    {{- $inlineHeader = in $inlineLayoutStyles . }}
     {{- if in $dateYearLayoutStyles . }}
       {{- $defaultDateFormat = "2006" }}
     {{- end }}
   {{- end }}
+  {{- if reflect.IsMap . }}
+    {{/* {{- $inlineHeader = default false (default (eq $style.layout.inline true) (eq $style.layout.inline.header true)) }} */}}
+  {{- end }}
 {{- end }}
+{{- $dateFormat := default $defaultDateFormat (string $component.date_format) }}
+
+{{- $inlineHeader = $style.inline.header | default (eq $style.ats true) | default false }}
+{{- $inlineContent = $style.inline.content | default (eq $style.ats true) | default false }}
 {{- $roleMetaInHeader := $inlineHeader }}
 {{- $organizationMetaInHeader := $inlineHeader }}
-{{- $dateFormat := default $defaultDateFormat (string $component.date_format) }}
 
 {{- $homeCountry := default "USA" .Data.features.contact.print.address.country }}
 
@@ -263,17 +289,47 @@
                 <div class="stage_timeline"></div>
               {{- end }}
             {{- end }}
-            <div class="role_achievement_header stage_header{{ with (and (not $containerClass) $topLevelClass) }} {{ . }}{{ end }}">
-              <h{{ add $headingLevel 2 }} class="role_achievement_title">
-                {{-  page.RenderString $achievement.title -}}
-              </h{{ add $headingLevel 2 }}>
-              {{/* <pre>{{ jsonify (dict "indent" "  ") . }}</pre> */}}
-            </div>
-            <div class="role_achievement_main stage_main{{ with (and (not $containerClass) $topLevelClass) }} {{ . }}{{ end }}">
-              {{- with $achievement.content }}
-                {{- partial "render_string_slice" . }}
-              {{- end }}
-            </div>
+            {{- if $inlineContent }}
+              <div class="role_achievement_main stage_main{{ with (and (not $containerClass) $topLevelClass) }} {{ . }}{{ end }}">
+                {{- $content := false }}
+                {{- $title := false }}
+                {{- with $achievement.title }}
+                  {{- if strings.Contains . `**` }}
+                    {{- $title = . -}}
+                  {{- else }}
+                    {{- $title = printf "**%s**" . -}}
+                  {{- end }}
+                {{- end }}
+                {{- with $achievement.content }}
+                  {{- if reflect.IsSlice . }}
+                    {{- $content = . }}
+                    {{- with $title }}
+                      {{- $content = append $content (slice .) -}}
+                    {{- end }}
+                  {{- else }}
+                    {{- $content = . }}
+                    {{- with $title }}
+                      {{- $content = printf "* %s\n%s" . $content -}}
+                    {{- end }}
+                  {{- end }}
+                {{- end }}
+                {{- with $content }}
+                  {{- partial "render_string_slice" . }}
+                {{- end }}
+              </div>
+            {{- else }}
+              <div class="role_achievement_header stage_header{{ with (and (not $containerClass) $topLevelClass) }} {{ . }}{{ end }}">
+                <h{{ add $headingLevel 2 }} class="role_achievement_title">
+                  {{-  page.RenderString $achievement.title -}}
+                </h{{ add $headingLevel 2 }}>
+                {{/* <pre>{{ jsonify (dict "indent" "  ") . }}</pre> */}}
+              </div>
+              <div class="role_achievement_main stage_main{{ with (and (not $containerClass) $topLevelClass) }} {{ . }}{{ end }}">
+                {{- with $achievement.content }}
+                  {{- partial "render_string_slice" . }}
+                {{- end }}
+              </div>
+            {{- end }}
             {{- with $containerClass }}
               </div>
             {{- end }}

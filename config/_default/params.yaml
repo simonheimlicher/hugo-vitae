@@ -15,7 +15,10 @@ vitae:
 
         style:
           # inline_separator: "·"
-          inline_separator: "•"
+          # inline_separator: "•"
+          # layout: inline
+          inline:
+            header: true
 
         parts:
 
@@ -63,16 +66,14 @@ vitae:
                     links: false
                     # date_format: 2006
                     unit: false
-                      # limit: 1
-                      # type: false
                     function: false
                     style:
                       layout:
                         - shallow
-                        - inline
                         - narrow
+                      inline:
+                        header: true
                       timeline: column
-                      heading: larger-1
                       label:
                         function: false
                         unit: false
@@ -96,9 +97,8 @@ vitae:
                     print: true
                     style:
                       logo: false
-                      heading: larger-1
-                      # layout: narrow
-                      # layout: inline
+                      # heading: larger-1
+                      layout: narrow
                 # - section: language-skills
                 #   title: section-language-skills
                 #   container: section
@@ -115,9 +115,6 @@ vitae:
                 components:
                 - component: panels
                   collection: achievements
-                  style:
-                    # font-size: larger-1
-                    # layout: inline
               - section: connect
                 title: section-connect
                 container: section
@@ -151,11 +148,13 @@ vitae:
                     type: false
                   style:
                     timeline: column
-                    layout: inline
+                    inline:
+                      header: true
+                      # content: true
                     # logo: left
-                    label:
-                      unit: false
-                      function: false
+                    # label:
+                    #   unit: false
+                    #   function: false
                   # organization:
                   #   period: true
                   #   # duration: true
@@ -202,7 +201,8 @@ vitae:
               shared: footer
 
           # Appendix
-          - template: appendix
+          # - template: appendix
+          - template: main
             enabled: false
             pagination_policy: first
             slots:
@@ -210,7 +210,7 @@ vitae:
               sections:
               - section: patent-selection
                 title: section-patents
-                container: section
+                # container: section
                 components:
                 - component: publications
                   collection: publications
@@ -220,7 +220,7 @@ vitae:
                   print: true
               - section: publication-selection
                 title: section-publications
-                container: section
+                # container: section
                 components:
                 - component: publications
                   collection: publications
@@ -236,6 +236,30 @@ vitae:
               #     collection: interests
             - slot: footer
               shared: footer
+
+          # # Education
+          # - template: main
+          #   # enabled: false
+          #   pagination_policy: break
+          #   slots:
+          #   - slot: main
+          #     sections:
+          #       - section: education
+          #         # enabled: false
+          #         title: section-education
+          #         container: section
+          #         components:
+          #         - component: stages
+          #           collection: stages
+          #           filter_by: type
+          #           filter_value: education
+          #           style:
+          #             heading: normal
+          #             separate_roles: true
+          #           role:
+          #             period: false
+          #             duration: false
+          #             details: false
 
         shared:
           # Footer to be repeated on every printed page
@@ -275,6 +299,7 @@ vitae:
       two-pager:
 
         style:
+          # inline_separator: "·"
           inline_separator: "•"
           layout:
             - inline
@@ -294,8 +319,6 @@ vitae:
                   portrait: true
                   degrees: true
                   tagline: true
-                  # style:
-                  #   font-size: larger-1
                   fragments:
                   - fragment: contact
                   - fragment: personal
@@ -340,6 +363,7 @@ vitae:
                     label:
                       unit: false
                       function: false
+                  function: false
                   organization:
                     period: true
                     # duration: true

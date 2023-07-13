@@ -8,67 +8,98 @@
 {{- $styleClassPrefix := default "style" .StyleClassPrefix }}
 
 {{- $debug := false }}
-{{/* {{- $debug = or $debug (and (eq $callingTemplate "vitae/main/content/executive") (not (not (findRE `^/([^/]+-demo/)?ats/preview` page.RelPermalink) ) ) ) -}} */}}
-
-{{- $paramValueParsePartial := "parse-param-value" }}
+{{- $debug = or $debug (and (strings.HasPrefix "vitae/_components/stages" $callingTemplate) (not (not (findRE `^/([^/]+-demo/)?ats/two-pager` page.RelPermalink) ) ) ) -}}
+{{/* {{- $debugPrefix := printf "%s[%s->%s]: " $debugPrefix}} */}}
+{{- $debugPrefix := "" }}
+{{- $parseValuePartial := "parse_value" }}
 
 {{- with $style := .Style }}
-  {{- range $key, $paramValue := . }}
-    {{- if reflect.IsMap $paramValue }}
-      {{- with $styleClassSub := partial $template (dict
-        "Template" $callingTemplate
-        "Style" $paramValue
-        "ValidStyles" (index $validStyles $key)
-        "StyleClassPrefix" (printf "%s_%s" $styleClassPrefix $key)
-      ) }}
-        {{- $styleClassList = append $styleClassSub $styleClassList }}
-        {{- if $debug }}
-          {{- warnf "%s[%s --> %s]: key=%v: styleClassList=%v[%T] from styleClassSub=%v[%T] with\nvalidStyles=%v"
-              page $callingTemplate $template $key $styleClassList $styleClassList $styleClassSub $styleClassSub
-              (jsonify (dict "indent" "  ") (index $validStyles $key)) }}
-        {{- end }}
-      {{- end }}
-    {{- else }}
+  {{- range $key, $value := . }}
+    {{- $paramValueList := $value }}
+    {{- if not (reflect.IsSlice $value) }}
+      {{- $paramValueList = slice $value }}
+    {{- end }}
+    {{- range $paramValue := $paramValueList }}
       {{- with $validValuesForKey := index $validStyles $key }}
-        {{- $parsePartialParams := (dict
-          "Template" $callingTemplate
-          "StyleClassPrefix" $styleClassPrefix
-          "Key" $key
-          "ParamValue" $paramValue
-          "ValidValuesForKey" $validValuesForKey
-        ) -}}
-        {{- if reflect.IsSlice $paramValue }}
-          {{- range $paramValue }}
-            {{- $parsePartialParams = merge $parsePartialParams (dict
-              "ParamValue" . ) }}
-            {{- with $styleClassSub := partial $paramValueParsePartial $parsePartialParams -}}
-              {{- if and false $debug }}
-                {{- warnf "%s[%s --> %s]: key=%v: Adding %v from paramValue=%v with parsePartialParams:\n%v"
-                    page $callingTemplate $template $key $styleClassSub $paramValue
-                    (jsonify (dict "indent" "  ") $parsePartialParams) }}
-              {{- end }}
-              {{- $styleClassList = append $styleClassSub $styleClassList }}
+        {{- if reflect.IsMap $paramValue }}
+          {{- $subParams := (dict
+            "Template" $callingTemplate
+            "Style" $paramValue
+            "ValidStyles" $validValuesForKey
+            "StyleClassPrefix" (printf "%s_%s" $styleClassPrefix $key)
+          ) }}
+          {{- if $debug }}
+            {{- warnf "%vkey=%v: $styleClassList=%v: paramValue is map: calling self with \nsubParams=%v"
+                $debugPrefix $key $styleClassList
+                (jsonify (dict "indent" "  ") ($subParams)) }}
+          {{- end }}
+          {{- with $styleClassSub := partial $template $subParams }}
+            {{- $styleClassList = append $styleClassSub $styleClassList }}
+            {{- if $debug }}
+              {{- warnf "%vkey=%v: styleClassList=%v[%T] after appending styleClassSub=%v[%T] resulting from call to self with \nsubParams=%v"
+                  $debugPrefix $key $styleClassList $styleClassList $styleClassSub $styleClassSub
+                  (jsonify (dict "indent" "  ") ($subParams)) }}
             {{- end }}
           {{- end }}
         {{- else }}
-          {{- with $styleClassSub := partial $paramValueParsePartial $parsePartialParams -}}
-            {{- $styleClassList = append $styleClassSub $styleClassList }}
-            {{- if and false $debug }}
-              {{- warnf "%s[%s --> %s]: key=%v: Adding %v from paramValue=%v with parsePartialParams:\n%v"
-                  page $callingTemplate $template $key $styleClassSub $paramValue
+          {{/* To index the validation map $validValuesForKey, we need to use the string representation of candidate value $paramValue */}}
+          {{- $paramValueStr := string $paramValue }}
+          {{- with $resultingValue := index $validValuesForKey $paramValueStr }}
+            {{- if reflect.IsMap $resultingValue }}
+              {{/* This resultingValue being a map means that we treat it as if this map had been passed as $style */}}
+              {{- $subParams := (dict
+                "Template" $callingTemplate
+                "Style" $resultingValue
+                "ValidStyles" $validStyles
+                "StyleClassPrefix" $styleClassPrefix
+              ) }}
+              {{- if $debug }}
+                {{- warnf "%vkey=%v: $styleClassList=%v: resultingValue is map: calling self with \nsubParams=%v"
+                    $debugPrefix $key $styleClassList
+                    (jsonify (dict "indent" "  ") ($subParams)) }}
+              {{- end }}
+              {{- with $styleClassSub := partial $template $subParams }}
+                {{- $styleClassList = append $styleClassSub $styleClassList }}
+                {{- if $debug }}
+                  {{- warnf "%vkey=%v: styleClassList=%v[%T] after appending styleClassSub=%v[%T] resulting from call to self with \nsubParams=%v"
+                      $debugPrefix $key $styleClassList $styleClassList $styleClassSub $styleClassSub
+                      (jsonify (dict "indent" "  ") ($subParams)) }}
+                {{- end }}
+              {{- end }}
+            {{- else }}
+              {{- $parsePartialParams := (dict
+                "Template" $callingTemplate
+                "StyleClassPrefix" $styleClassPrefix
+                "Key" $key
+                "ParamValue" $paramValue
+                "ValidValuesForKey" $validValuesForKey
+                "Debug" $debug
+              ) -}}
+              {{- if $debug }}
+                {{- warnf "%vkey=%v: Parsing paramValue=%v [type=%T] with parsePartialParams=%v"
+                    $debugPrefix $key $paramValue $paramValue
                     (jsonify (dict "indent" "  ") $parsePartialParams) }}
+              {{- end }}
+              {{- with $styleClassSub := partial $parseValuePartial $parsePartialParams -}}
+                {{- $styleClassList = append $styleClassSub $styleClassList }}
+                {{- if and false $debug }}
+                  {{- warnf "%vkey=%v: Adding %v from paramValue=%v with parsePartialParams:\n%v"
+                      $debugPrefix $key $styleClassSub $paramValue
+                        (jsonify (dict "indent" "  ") $parsePartialParams) }}
+                {{- end }}
+              {{- end }}
             {{- end }}
           {{- end }}
         {{- end }}
       {{- else }}
-        {{- warnf `%s[%s --> %s]: Invalid style key='%v' with value='%v'` page $callingTemplate $template $key $paramValue }}
+        {{- warnf `%vInvalid style key='%v' with value='%v'` $debugPrefix $key $paramValue }}
       {{- end }}
     {{- end }}
   {{- end }}
   {{- if $debug }}
     {{- if ne (printf "%T" $styleClassList) "[]string" }}
-      {{- warnf "%s[%s --> %s]: Returning styleClassList=%v[%T] from\nstyle=%v\nvalidStyles=%v"
-          page $callingTemplate $template $styleClassList $styleClassList
+      {{- warnf "%vReturning styleClassList=%v[%T] from\nstyle=%v\nvalidStyles=%v"
+          $debugPrefix $styleClassList $styleClassList
           (jsonify (dict "indent" "  ") $style)
           (jsonify (dict "indent" "  ") $validStyles ) }}
     {{- end }}
@@ -76,8 +107,8 @@
 {{- end }}
 {{- return $styleClassList }}
 
-{{- define "partials/parse-param-value.html" }}
-  {{- $template := "vitae/_functions/style-class/parse-param-value" }}
+{{- define "partials/parse_value.html" }}
+  {{- $template := "vitae/_functions/style-class/parse_value" }}
   {{- $callingTemplate := .Template }}
   {{- $styleClassList := default slice .StyleClass }}
   {{- $styleClassPrefix := default "style" .StyleClassPrefix }}
@@ -85,54 +116,85 @@
   {{- $paramValue := .ParamValue }}
   {{- $validValuesForKey := .ValidValuesForKey }}
 
-  {{- $debug := false }}
-  {{/* {{- $debug = or $debug (not (not (findRE `^/([^/]+-demo/)?ats/preview` page.RelPermalink) ) ) -}} */}}
+  {{- $debug := default false .Debug }}
+  {{/* {{- $debug = or $debug (not (not (findRE `^/([^/]+-demo/)?preview` page.RelPermalink) ) ) -}} */}}
+  {{/* {{- $debugPrefix := printf "%s[%s->%s]: " $debugPrefix}} */}}
+  {{- $debugPrefix := "parse: " }}
 
   {{- $ignoreValues := (slice "STRING") }}
 
   {{/* To index the validation map $validValuesForKey, we need to use the string representation of candidate value $paramValue */}}
   {{- $paramValueStr := string $paramValue }}
+
+  {{/* paramValueType indicates, how to deal with the value of the param */}}
   {{- $paramValueType := "STRING" }}
   {{- $validValueTypes := slice "string" "bool" }}
+  {{/* For params that may have arbitrary values such as strings or whose value is validated by the type, such as bool */}}
+  {{- $nonValidatable := (slice "string" "bool") }}
+
+  {{- $validParamValueList := slice }}
+  {{- $resultingParamValueList := slice }}
+  {{- range $validParamValue, $resultingValue := $validValuesForKey }}
+    {{- $validParamValueList = append $validParamValue $validParamValueList }}
+    {{- $resultingParamValueList = append $resultingValue $resultingParamValueList }}
+  {{- end }}
+
   {{- $validatedParamValueList := slice }}
-  {{- $candParamValue := index $validValuesForKey $paramValueStr }}
-  {{- if eq (printf "%T" $candParamValue) "<nil>" }}
-    {{- $paramValueType = "INVALID" }}
-    {{- range $ignoreValue := $ignoreValues }}
-      {{- if index $validValuesForKey $ignoreValue }}
-        {{- $paramValueType = "IGNORE" }}
-        {{- if $debug }}
-          {{- warnf "%s[%s --> %s]: key=%v: paramValue=%v[%T]: ignoreValue=%v is in %v from $validValuesForKey:\n%v"
-              page $callingTemplate $template $key $paramValueStr $paramValue $ignoreValue $validValuesForKey
-              (jsonify (dict "indent" "  ") $validValuesForKey ) }}
-        {{- end }}
-      {{- else }}
-        {{- if $debug }}
-          {{- warnf "%s[%s --> %s]: key=%v: paramValue=%v[%T]: ignoreValue=%v is not in %v from $validValuesForKey:\n%v"
-              page $callingTemplate $template $key $paramValueStr $paramValue $ignoreValue $validValuesForKey
-              (jsonify (dict "indent" "  ") $validValuesForKey ) }}
-        {{- end }}
+
+  {{- $paramValueType := printf "%T" $paramValue }}
+
+  {{- $nonValidatableType := gt (len (intersect $validParamValueList $nonValidatable)) 0 }}
+  {{- if $nonValidatableType }}
+    {{- if eq $paramValueType $nonValidatableType }}
+      {{- $validatedParamValueList = slice $paramValueStr }}
+      {{- if $debug }}
+        {{- warnf "%vkey=%v: paramValue=%v[%T]: adding paramValueStr=%s as-is: nonValidatableType=%v from $validValuesForKey:\n%v"
+            $debugPrefix $key $paramValueStr $paramValue $paramValueStr $nonValidatableType $validValuesForKey
+            (jsonify (dict "indent" "  ") $validValuesForKey ) }}
       {{- end }}
-    {{- end }}
-  {{- else }}
-    {{- if and false $debug }}
-      {{- warnf "%s[%s --> %s]: key=%v: paramValue=%v[%T] vs. validParamValue=%v[%T] from $validValuesForKey:\n%v"
-          page $callingTemplate $template $key $paramValueStr $paramValue $candParamValue $candParamValue
+    {{- else }}
+      {{- warnf "%vkey=%v: paramValue=%v[%T]: not adding paramValueStr=%s as-is: nonValidatableType=%v from $validValuesForKey:\n%v"
+          $debugPrefix $key $paramValueStr $paramValue $paramValueStr $nonValidatableType $validValuesForKey
           (jsonify (dict "indent" "  ") $validValuesForKey ) }}
     {{- end }}
-    {{- if reflect.IsSlice $candParamValue }}
-      {{- $validatedParamValueList = $candParamValue }}
+  {{- else }}
+    {{- $candParamValue := index $validValuesForKey $paramValueStr }}
+    {{- if eq (printf "%T" $candParamValue) "<nil>" }}
+      {{- $paramValueType = "INVALID" }}
+      {{- range $ignoreValue := $ignoreValues }}
+        {{- if index $validValuesForKey $ignoreValue }}
+          {{- $paramValueType = "IGNORE" }}
+          {{- if $debug }}
+            {{- warnf "%vkey=%v: paramValue=%v[%T]: ignoreValue=%v is in %v from $validValuesForKey:\n%v"
+                $debugPrefix $key $paramValueStr $paramValue $ignoreValue $validValuesForKey
+                (jsonify (dict "indent" "  ") $validValuesForKey ) }}
+          {{- end }}
+        {{- else }}
+          {{- if $debug }}
+            {{- warnf "%vkey=%v: paramValue=%v[%T]: ignoreValue=%v is not in %v from $validValuesForKey:\n%v"
+                $debugPrefix $key $paramValueStr $paramValue $ignoreValue $validValuesForKey
+                (jsonify (dict "indent" "  ") $validValuesForKey ) }}
+          {{- end }}
+        {{- end }}
+      {{- end }}
     {{- else }}
-      {{- $validatedParamValueList = slice $candParamValue }}
-    {{- end }}
-    {{- range $validatedParamValueList }}
-      {{- if in $validValueTypes (printf "%T" $candParamValue) }}
-        {{- $styleClassList = append (printf "%s_%s_%v" $styleClassPrefix $key .) $styleClassList }}
+      {{- if $debug }}
+        {{- warnf "%vkey=%v: paramValue=%v[%T] vs. candParamValue=%v [type=%T] from $validValuesForKey:\n%v"
+            $debugPrefix $key $paramValueStr $paramValue $candParamValue $candParamValue
+            (jsonify (dict "indent" "  ") $validValuesForKey ) }}
+      {{- end }}
+      {{- if reflect.IsSlice $candParamValue }}
+        {{- $validatedParamValueList = $candParamValue }}
+        {{- if $debug }}
+          {{- warnf "%vkey=%v: paramValue=%v [type=%T] translated to validatedParamValueList=%v"
+              $debugPrefix $key $paramValueStr $paramValue $validatedParamValueList }}
+        {{- end }}
       {{- else }}
-        {{- $paramValueType = "INVALID" }}
+        {{- $validatedParamValueList = slice $candParamValue }}
       {{- end }}
     {{- end }}
   {{- end }}
+
   {{- if eq $paramValueType "INVALID" }}
     {{- $validParamValueList := slice }}
     {{- range $candParamValue, $resultingValue := $validValuesForKey }}
@@ -140,14 +202,25 @@
         {{- $validParamValueList = append $candParamValue $validParamValueList }}
       {{- end }}
     {{- end }}
-    {{- warnf "%s[%s --> %s]: Valid style key='%v' has invalid value=%v[%T]. Valid values: '%v'"
-        page $callingTemplate $template $key $paramValue $paramValue
+    {{- warnf "%vValid style key='%v' has invalid value=%v[%T]. Valid values: '%v'"
+        $debugPrefix $key $paramValue $paramValue
         (delimit (sort $validParamValueList) "', '") }}
+
+  {{- else }}
+
+    {{- range $validatedParamValueList }}
+      {{- if in $validValueTypes (printf "%T" .) }}
+        {{- $styleClassList = append (printf "%s_%s_%v" $styleClassPrefix $key .) $styleClassList }}
+      {{- else }}
+        {{- $paramValueType = "INVALID" }}
+      {{- end }}
+    {{- end }}
+
   {{- end }}
   {{- if $debug }}
     {{- if ne (printf "%T" $styleClassList) "[]string" }}
-      {{- warnf "%s[%s --> %s]: key='%v': Returning styleClassList=%v[%T] from paramValue=%v[%T]\nvalidStyles=%v"
-          page $callingTemplate $template $key $styleClassList $styleClassList $paramValue $paramValue
+      {{- warnf "%vkey='%v': Returning styleClassList=%v[%T] from paramValue=%v[%T]\nvalidStyles=%v"
+          $debugPrefix $key $styleClassList $styleClassList $paramValue $paramValue
           (jsonify (dict "indent" "  ") $validValuesForKey) }}
     {{- end }}
   {{- end }}

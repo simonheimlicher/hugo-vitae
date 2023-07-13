@@ -1,6 +1,7 @@
 {{- $page := .Page }}
 {{- $fragment := .Fragment }}
 {{- $config := .Config }}
+{{- $style := .Style }}
 {{- $template := "partials/vitae/fragments/contact" }}
 {{- $outputFormat := default "HTML" (partial "claris/_functions/output-format" $page).Name }}
 {{- $media := cond (eq $outputFormat "print") "print" "screen" }}
@@ -15,8 +16,8 @@
 ) .AddressFields }}
 
 {{- $contactIcons := true }}
-{{- $separatorStr := " • " }}
-{{/* {{- $separatorStr := "<br>" }} */}}
+{{- $inlineSeparatorStr := default "•" $style.inline_separator }}
+{{/* {{- $inlineSeparatorStr := "<br>" }} */}}
 
 {{- /* warnf "%s[%s]: .Fragment=%s .Config=%s .Data=%s" $page $template $fragment $config .Data.features.contact */ -}}
 {{- with (index .Data.features.contact $media) }}
@@ -68,7 +69,7 @@
         {{- range $fieldSpec := $addressFields }}
           {{- range $field, $sep := $fieldSpec }}
             {{- with (index $address $field) }}
-              {{- if (eq $sep "SEP") }}{{ $sep = $separatorStr}}{{- end }}
+              {{- if (eq $sep "SEP") }}{{ $sep = $inlineSeparatorStr}}{{- end }}
                 <span class="address-{{ $field }}">{{ print . $sep | safeHTML }}</span>
               {{- end }}
             {{- end }}

@@ -24,10 +24,12 @@
 {{- $titleSeparatorStr := `` }}
 {{- $fieldSeparatorStr := `<br>` }}
 
-{{- if eq $style.layout "compact" }}
+{{- $inlineSeparatorStr := default "•" $style.inline_separator }}
+
+{{- if in (slice "compact" "narrow") $style.layout }}
   {{- $headingContainer = "span" }}
-  {{- $titleSeparatorStr = `&middot;` }}
-  {{- $fieldSeparatorStr = `&middot;` }}
+  {{- $titleSeparatorStr = $inlineSeparatorStr}}
+  {{- $fieldSeparatorStr = $inlineSeparatorStr }}
 {{- end }}
 
 {{- $filterField := default "type" $component.filter_by -}}

@@ -11,7 +11,7 @@
   <div class="selflink-item{{- if (in $selfLink "qrcode") }} selflink-item-with-qrcode{{- end }}{{ with $containerClass }} {{ . }}{{ end }}">
   {{- if (in $selfLink "link") }}
     {{- /* href="{{ $page.Permalink }}" title="{{ T $config.title }}" */ -}}
-    <div class="selflink-item-icon qrcode-link label">
+    <div class="selflink-item-icon qrcode-link">
       {{- if (and $linkIcons (isset $config "icon") ) }}
         {{ partial "fa-icon" $config.icon }}
       {{- end -}}
