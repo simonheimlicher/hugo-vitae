@@ -218,9 +218,9 @@ const setPreviewVisibility = function (conf, visible = true) {
 
 const togglePreview = function (conf, reset = false) {
   // Determine if print preview has been rendered
-  if (reset || (!isPreviewReadyToRender(conf) && !isPreviewRendered(conf))) {
-    initializePrintPreview(conf);
-    preparePrintPreview(conf);
+  const resetPreview = reset || (!isPreviewReadyToRender(conf) && !isPreviewRendered(conf));
+  if (resetPreview) {
+    preparePrintPreview(conf, resetPreview);
   }
   else if (!isPreviewRendered(conf)) {
     renderPrintPreview(conf);
@@ -303,7 +303,10 @@ const requestPrintViewRendered = function (conf) {
   return false;
 };
 
-const preparePrintPreview = function (conf) {
+const preparePrintPreview = function (conf, reset = false) {
+  if (reset) {
+    initializePrintPreview(conf);
+  }
   // We need print preview to be rendered (not 'display: none') to determine if there is overflow
   setPreviewVisibility(conf, true);
   setPreviewStatus(conf, conf['previewStatusReady']);
@@ -463,8 +466,8 @@ const init = function (reset) {
       'togglePreview': () => {
         togglePreview(conf);
       },
-      'renderPrintPreview': () => {
-        renderPrintPreview(conf)
+      'renderPrintPreview': (reset) => {
+        renderPrintPreview(conf, reset)
       },
       'transferOverflow': () => {
         transferOverflow(conf)
