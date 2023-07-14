@@ -9,9 +9,8 @@
 {{- $title := .Title | markdownify }}
 
 {{- $debug := false }}
-{{- /* {{- $debug = page.Scratch.Get "clarisdebug" }} */ -}}
-{{/* {{- $debug = or $debug (not (not (findRE `^/([^/]+-demo/)?leadership` $page.RelPermalink) ) ) -}} */}}
-{{/* {{- warnf "%s[%s]: media=%s .Component=%s .Config=%s" $page $template $component $config -}} */}}
+{{/* {{- $debug = or $debug (not (not (findRE `^/([^/]+-demo/)?ats/preview` $page.RelPermalink) ) ) -}} */}}
+{{/* {{- warnf "%s[%s]: media=%s .Component=%s .Config=%s" $page $template $componentArgs.Media $component $config -}} */}}
 
 {{- $style := default dict .Style }}
 {{- $validStyles := merge (default dict .ValidStyles) (dict
@@ -23,17 +22,17 @@
   "ValidStyles" $validStyles
   ) -}}
 
-{{- $topLevelClass := (append (slice $componentClass $childClass) $styleClassList) }}
+{{- $topLevelClass := append $styleClassList (slice $componentClass $childClass) }}
 
 {{- with .Data.features.about }}
   {{- with .portrait }}
-    {{- $topLevelClass =  $topLevelClass | append (slice "portrait_style-background") }}
+    {{- $topLevelClass = $topLevelClass | append "portrait_style-background" }}
     {{- range $key, $value := .overlay }}
-      {{- $topLevelClass = $topLevelClass | append (slice (printf "portrait_overlay_%s-%s" $key $value) ) }}
+      {{- $topLevelClass = $topLevelClass | append (printf "portrait_overlay_%s-%s" $key $value) }}
     {{- end }}
   {{- end }}
 {{- end }}
-<div class="{{ delimit $topLevelClass " " }}">
+<div class="{{ delimit $topLevelClass ` ` }}">
 {{- with .Data.features.about }}
   {{- with .portrait }}
     {{- $classPrefix := "portrait" }}
@@ -81,11 +80,9 @@
         {{- $fragmentName := .fragment }}
         {{- $fragmentConfig := merge (index $config $fragmentName) . }}
         {{- $partial := printf "vitae/fragments/%s" $fragmentName}}
-        {{- /* {{- warnf "%s[%s]: component=%v: Calling fragment=%s with .Config=%v"
-            $page $template $component $fragmentName $fragmentConfig -}} */ -}}
-        {{/* <div class="fragment_{{ $fragmentName }} fragment"> */}}
+        {{/* {{- warnf "%s[%s]: component=%v: Calling fragment=%s with .Config=%v"
+            $page $template $component $fragmentName $fragmentConfig -}} */}}
         {{- partial $partial (merge $componentArgs (dict "Fragment" $fragmentName "Config" $fragmentConfig ))  }}
-        {{/* </div> */}}
       {{- end }}
     </div>
   {{- end }}

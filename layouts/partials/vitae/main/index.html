@@ -23,10 +23,16 @@
 
 {{- $type := default (default "vitae" $page.Type) ($page.Param "Type") }}
 {{- $layout := default (default "profile" $page.Layout) ($page.Param "Layout") }}
-{{- $media := default "screen" ($page.Param "Media") }}
 {{- $printPreview := default false ($page.Param "PrintPreview") }}
 {{- $printView := default false ($page.Param "PrintView") }}
 {{- $printControl := default false ($page.Param "PrintControl") }}
+{{- $media := ($page.Param "Media") | default (cond (or $printPreview $printView $printControl) "print" "screen") }}
+{{/* Hugo output format overrides configuration if and only if it is print */}}
+{{- $outputFormat := default "HTML" (partial "claris/_functions/output-format" $page).Name }}
+{{- $media = cond (eq $outputFormat "print") "print" $media }}
+{{- if $debug }}
+    {{ warnf "%s[%s]: media=%v [printPreview=%v printView=%v printControl=%v]"  $page $template $media $printPreview $printView $printControl }}
+{{- end }}
 
 {{- $vitaeParamRoot := split (default "vitae" ($page.Param "VitaeRoot")) "." }}
 {{- $vitaeParams := $page.Param (delimit $vitaeParamRoot ".") }}

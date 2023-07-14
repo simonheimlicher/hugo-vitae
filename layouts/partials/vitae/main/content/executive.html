@@ -14,6 +14,11 @@
 {{- $style := default dict $pp.VitaeStyle }}
 
 {{- $validStyles := merge (default dict .ValidStyles) (dict
+  "ats" (dict
+    "true" (dict
+     "layout" (slice "inline" "shallow")
+    )
+  )
   "layout" (dict
     "shallow" "shallow"
     "narrow" "narrow"
@@ -107,7 +112,7 @@ PaginationPage: a printed page that is part of a Part
         $pp.PaginationPolicyAttr $paginationPolicy | safeHTML }}
       {{- end }}
       {{- $childClass := default "" .child_class }}
-      {{- partial "vitae/_components/index" (dict
+      {{- partial "vitae/_components/index" (merge $pp (dict
         "Page" $page
         "Config" $vitaeTemplate
         "Style" $style
@@ -115,7 +120,7 @@ PaginationPage: a printed page that is part of a Part
         "ChildClass" $childClass
         "Data" $vitaeData
         "Sections" $slot.sections
-      ) -}}
+      )) -}}
       {{- with $container }}
         {{ printf "</%s>" . | safeHTML }}
       {{- end }}

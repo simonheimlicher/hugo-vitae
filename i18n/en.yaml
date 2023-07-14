@@ -48,6 +48,8 @@ private-data-requires-javascript:
   other: 'Private: access requires JavaScript'
 section-awards:
   other: honors & awards
+section-certificates:
+  other: certificates
 section-career-summary:
   other: career summary
 section-personal-profile:

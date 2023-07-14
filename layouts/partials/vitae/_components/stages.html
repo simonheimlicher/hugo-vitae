@@ -414,6 +414,8 @@
     {{- $organizationHeaderClassList = append (printf "%s_logo" $stageHeaderClassPrefix) $organizationHeaderClassList }}
   {{ end }}
 
+  {{- $showOrganizationRemark := default false $component.organization.remark }}
+
   {{- if not $style.separate_roles }}
     {{- $organizationHeaderClassList = append $topLevelClass $organizationHeaderClassList }}
   {{- end }}
@@ -442,7 +444,7 @@
         <a class="organization_link" target="_self" href="{{ $org.website }}">
       {{- end -}}
       {{ $org.organization }}
-      {{- with $org.remark }}
+      {{- with and $showOrganizationRemark $org.remark }}
         <span class="remark">({{ page.RenderString . }})</span>
       {{- end -}}
       {{- if $org.website }}
@@ -524,6 +526,9 @@
     {{- $roleHeaderClassList = append (printf "%s_duration" $stageHeaderClassPrefix) $roleHeaderClassList }}
   {{ end }}
 
+  {{- $showRoleRemark := default false $component.role.remark }}
+  {{- $showRoleAppendix := default false $component.role.appendix }}
+
   <div class="{{ delimit $roleHeaderClassList ` ` }}">
     {{- if and (in (slice "dot-dash" "column") $style.timeline) (or $style.logo (not (eq $numRoles 1))) }}
       <div class="{{ printf `timeline_%s_marker stage_timeline` $style.timeline }}"></div>
@@ -551,11 +556,11 @@
         {{- with $role.subtitle }}
           <span class="role_subtitle">{{ $page.RenderString . }}</span>
         {{- end }}
-        {{- with $role.remark }}
+        {{- with and $showRoleRemark $role.remark }}
           <span class="remark">({{ page.RenderString . }})</span>
         {{- end -}}
       </h{{ add 1 $headingLevel }}>
-      {{- with $role.appendix }}
+      {{- with and $showRoleAppendix $role.appendix }}
         {{/* <span class="appendix">{{- with $inlineSeparatorStr }} {{ . }} {{ end }}{{ page.RenderString . }}</span> */}}
         <span class="appendix">({{ page.RenderString . }})</span>
       {{- end -}}

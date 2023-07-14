@@ -315,6 +315,10 @@ html[data-mode="dim"] {
       --section-title_margin_bottom: var(--inner_margin_4-1);
       --section-title_margin_top_between: var(--inner_margin_4-3);
     }
+    .style_layout_shallow {
+      --section-title_margin_bottom: var(--inner_margin_4-0);
+      --section-title_margin_top_between: var(--inner_margin_4-1);
+    }
   }
 
   .section-title {
@@ -337,8 +341,9 @@ html[data-mode="dim"] {
     &.style_font-size_larger-1 {
       font-size: var(--font-size-larger-1);
     }
+    --portrait_width: calc( 2 / 3 * var(--page_height) * var(--page_header_height_fraction) + var(--page_margin_top));
     display: grid;
-    grid-template-columns: 2fr 5fr 2fr;
+    grid-template-columns: var(--portrait_width) var(--column_gap) minmax(0px, max-content) var(--column_gap) var(--portrait_width);
 
     .fragment_container {
       --row_gap: var(--inner_margin_8-1);
@@ -349,52 +354,11 @@ html[data-mode="dim"] {
     .degree + .fragment_container {
       margin-top: var(--inner_margin_4-1);
     }
-
-    &.portrait {
-      &_overlay {
-        &_color-white {
-          color: white;
-          --header-text: white;
-        }
-
-        &_position-left {
-          .overlay {
-            grid-column: 1 / span 2;
-          }
-        }
-      }
-    }
-
-    .portrait {
-      &_figure {
-        z-index: 1;
-        grid-row: 1 / span 3;
-        grid-column: 1 / span all;
-      }
-
-      &_img {
-        margin: 0;
-        padding: 0;
-        width: 100%;
-        max-width: 100%;
-        height: 100%;
-        max-height: calc( var(--page_height) * var(--front-page_header_height_fraction) + var(--page_margin_top) );
-        object-fit: cover;
-        object-position: center center;
-        border-radius: 0;
-      }
-    }
-    @at-root {
-      .vitae .view-print .component_header .portrait_figure {
-        @include full-bleed_page(top, both);
-      }
-    }
-
     .overlay {
       z-index: 2;
       // grid-row: 1 / span 2;
       grid-row: 1;
-      grid-column: 2 / span 2;
+      grid-column: 3 / span 3;
       display: flex;
       flex-direction: column;
       // row-gap: 0.5em;
@@ -423,14 +387,54 @@ html[data-mode="dim"] {
         @include upper-caps;
       }
     }
-    &.style_ats_true {
+
+    &.portrait {
+      &_overlay {
+        &_color-white {
+          color: white;
+          --header-text: white;
+        }
+        &_position-left {
+          .overlay {
+            grid-column: 1 / span 3;
+          }
+        }
+      }
+    }
+
+    .portrait {
+      &_figure {
+        z-index: 1;
+        grid-row: 1 / span 3;
+        grid-column: 1 / span all;
+      }
+
+      &_img {
+        margin: 0;
+        padding: 0;
+        width: 100%;
+        max-width: 100%;
+        height: 100%;
+        max-height: calc( var(--page_height) * var(--page_header_height_fraction) + var(--page_margin_top) );
+        object-fit: cover;
+        object-position: center center;
+        border-radius: 0;
+      }
+    }
+    @at-root {
+      .vitae .view-print .component_header .portrait_figure {
+        @include full-bleed_page(top, both);
+      }
+    }
+    &.style_layout_inline {
       .portrait {
         &_figure {
-          grid-column: 3;
+          grid-column: 5;
           margin: 0;
         }
         &_img {
-          height: calc( var(--page_height) * var(--front-page_header_height_fraction) );
+          // height: calc( var(--page_height) * var(--page_header_height_fraction) );
+          height: 100%;
         }
       }
     }
@@ -460,7 +464,7 @@ html[data-mode="dim"] {
     }
     dl {
       display: grid;
-      gap: var(--inner_padding_4-1) var(--column_gap);
+      gap: var(--inner_padding_4-2) var(--column_gap);
       grid-template-columns: repeat(var(--num_columns), 1fr);
       align-items: start;
       grid-auto-flow: dense row;
@@ -585,7 +589,8 @@ html[data-mode="dim"] {
     --font-size-heading-organization: var(--font-size-larger-1);
     --font-weight-heading-organization: var(--font-weight-strong);
     --font-size-heading-role: var(--font-size-larger-1);
-    --font-weight-heading-role: var(--font-weight-strong);
+    // --font-weight-heading-role: var(--font-weight-strong);
+    --font-weight-heading-role: var(--font-weight);
 
     --font-size_stage_header_main: var(--font-size-larger-1);
     --font-size_stage_header_meta: var(--font-size-normal);
@@ -642,7 +647,7 @@ html[data-mode="dim"] {
       font-size: var(--font-size-heading-role);
       font-weight: var(--font-weight-heading-role);
     }
-    .remark, .appendix {
+    .remark {
       font-weight: var(--font-weight);
       font-size: var(--font-size-smaller-1);
     }
@@ -1000,7 +1005,7 @@ html[data-mode="dim"] {
             // outline: $marker-outline;
             outline: $marker-outline;
             background-color: $marker-background;
-            // z-index: 3;
+            z-index: 3;
             content: "";
           }
         }
@@ -1024,7 +1029,7 @@ html[data-mode="dim"] {
             height: $height-before;
             content: "";
             background-color: var(--tl-col_timeline_color);
-            z-index: 3;
+            // z-index: 3;
           }
         }
         &::after {
@@ -1047,7 +1052,7 @@ html[data-mode="dim"] {
             height: $height-after;
             content: "";
             background-color: var(--tl-col_timeline_color);
-            z-index: 3;
+            // z-index: 3;
           }
         }
       }
@@ -1587,8 +1592,8 @@ html[data-mode="dim"] {
         display: inline-block;
       }
       --padding_organization_between: var(--inner_padding_4-1);
-      --padding_role_first: var(--inner_padding_4-0);
-      --padding_role_between: var(--inner_padding_4-0);
+      --padding_role_first: var(--inner_padding_8-1);
+      --padding_role_between: var(--inner_padding_8-1);
       --padding_stage_meta: 0;
     }
 
@@ -1665,17 +1670,21 @@ html[data-mode="dim"] {
         }
         &.style_layout_inline {
           font-size: var(--font-size-normal);
-          row-gap: var(--inner_margin_4-0);
+          row-gap: var(--inner_margin_8-1);
           .award {
             &_title {
               font-size: var(--font-size-normal);
             }
             &_item {
               display: flex;
+              flex-direction: column;
               align-items: baseline;
               column-gap: var(--inner_margin_4-1);
             }
           }
+        }
+        &.style_layout_shallow {
+          row-gap: var(--inner_margin_8-1);
         }
       }
     }

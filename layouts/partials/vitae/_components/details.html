@@ -1,19 +1,16 @@
 {{- $sectionArgs := . }}
 {{- $page := .Page }}
-{{- $p := .Page.Params }}
-{{- $s := site.Params }}
 {{- $template := "vitae/_components/details" }}
 {{- $component := .Component }}
 {{- $config := .Config }}
-{{- $media := default "screen" $p.media }}
+{{- $media := default "screen" .Media }}
 {{- $headingLevel := default 2 .HeadingLevel }}
 {{- $componentClass := default "component_contact" .ComponentClass }}
 {{- $childClass := default "" .ChildClass }}
 {{- $title := .Title | markdownify }}
 
 {{- $debug := false }}
-{{- /* {{- $debug = page.Scratch.Get "clarisdebug" }} */ -}}
-{{/* {{- $debug = or $debug (not (not (findRE `^/([^/]+-demo/)?leadership` $page.RelPermalink) ) ) -}} */}}
+{{/* {{- $debug = or $debug (not (not (findRE `^/([^/]+-demo/)?ats/preview` $page.RelPermalink) ) ) -}} */}}
 {{/* {{- warnf "%s[%s]: media=%s .Component=%s .Config=%s" $page $template $media $component $config -}} */}}
 
 {{- with .Data.features.about }}
@@ -22,8 +19,8 @@
   {{- range $fragment := $component.fragments }}
     {{- $fragmentConfig := (index $config $fragment) }}
     {{- $partial := printf "vitae/fragments/%s" $fragment}}
-    {{- /* warnf "%s[%s]: media=%s component=%v: Calling fragment=%s with .Config=%v"
-        $page $template $media $component $fragment $fragmentConfig */ -}}
+    {{- warnf "%s[%s]: media=%s component=%v: Calling fragment=%s with .Config=%v"
+        $page $template $media $component $fragment $fragmentConfig -}}
     {{- partial $partial (merge $sectionArgs (dict "Fragment" $fragment "Config" $fragmentConfig ))  }}
   {{- end }}
   </div>

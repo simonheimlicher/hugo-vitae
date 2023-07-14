@@ -4,8 +4,7 @@
 {{- $data := .Data }}
 {{- $style := .Style }}
 {{- $template := "partials/vitae/fragments/personal" }}
-{{- $outputFormat := default "HTML" (partial "claris/_functions/output-format" $page).Name }}
-{{- $media := cond (eq $outputFormat "print") "print" "screen" }}
+{{- $media := .Media }}
 {{/* {{- warnf "%s[%s]: outputFormat:%s" $page $template $outputFormat }} */}}
 
 {{- $classPrefix := "fragment_personal" }}
@@ -15,6 +14,9 @@
 {{- $contactIcons := true }}
 {{- $inlineLayout := in (slice "inline") $style.layout }}
 
+{{- $debug := false }}
+{{/* {{- $debug = or $debug (not (not (findRE `^/([^/]+-demo/)?ats/preview` $page.RelPermalink) ) ) -}} */}}
+{{/* {{- warnf "%s[%s]: media=%s .Fragment=%s .Config=%s" $page $template $media $fragment $config -}} */}}
 {{- /* warnf "%s[%s]: .Fragment=%s .Config=%s .Data=%s" $page $template $fragment $config $data.features.date-of-birth */ -}}
 
 {{- with $config.fields }}

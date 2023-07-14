@@ -348,8 +348,14 @@
       overflow: visible;
       & > h2, & > h3, & > div {
         &:first-child {
-          margin-top: 0;
-          padding-top: 0;
+          & {
+            --padding_organization_between: 0px;
+            --padding_organization_first: 0px;
+            --padding_role_between: 0px;
+            --padding_role_first: 0px;
+            margin-top: 0;
+            padding-top: 0;
+          }
         }
       }
       h1, h2, h3, h4, h5, h6 {

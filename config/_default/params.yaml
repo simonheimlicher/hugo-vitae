@@ -53,7 +53,7 @@ vitae:
                   style:
                     dt_columns: 3
                     heading: normal
-              - section: career-summary-awards
+              - section: career-summary-awards-certificates
                 # container: div
                 sections:
                 - section: career-summary
@@ -76,27 +76,38 @@ vitae:
                         header: true
                       timeline: column
                       heading: normal
-                      label:
-                        function: false
-                        unit: false
                     organization:
                       period: true
                       details: false
+                      remark: true
                     role:
                       period: true
+                      appendix: true
                       details: false
                       summary: false
                       description: false
                       skills: false
                       achievements: false
-                - section: award-selection
+                - section: awards
                   title: section-awards
                   container: section
                   components:
                   - component: awards
                     details: false
-                    screen: true
-                    print: true
+                    filter_by: type
+                    filter_value: award
+                    style:
+                      logo: false
+                      heading: normal
+                      layout: narrow
+                - section: certificates
+                  title: section-certificates
+                  container: section
+                  components:
+                  - component: awards
+                    details: false
+                    filter_by: type
+                    filter_value: certificate
                     style:
                       logo: false
                       heading: normal
@@ -339,12 +350,22 @@ vitae:
                 components:
                 - component: panels
                   collection: profile
-              - section: award-selection
+              - section: awards
                 title: section-awards
                 # container: section
                 components:
                 - component: awards
                   details: false
+                  filter_by: type
+                  filter_value: award
+              - section: certificates
+                title: section-certificates
+                # container: section
+                components:
+                - component: awards
+                  details: false
+                  filter_by: type
+                  filter_value: certificate
               - section: experience
                 title: section-experience
                 components:
@@ -356,7 +377,7 @@ vitae:
                     limit: 1
                     type: false
                   style:
-                    timeline: column
+                    # timeline: column
                     # logo: left
                     # label:
                     #   unit: false

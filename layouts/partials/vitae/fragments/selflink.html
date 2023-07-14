@@ -3,8 +3,7 @@
 {{- $config := .Config }}
 {{- $containerClass := .ContainerClass }}
 {{- $template := "vitae/fragments/selflink" }}
-{{- $outputFormat := default "HTML" (partial "claris/_functions/output-format" $page).Name }}
-{{- $media := cond (eq $outputFormat "print") "print" "screen" }}
+{{- $media := .Media }}
 {{- $linkIcons := true }}
 {{- $selfLink := default (slice "link" "qrcode") ($page.Param "selfLink") }}
 {{- if (gt (len $selfLink) 0) }}

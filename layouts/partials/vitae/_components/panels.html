@@ -5,6 +5,9 @@
 {{- $componentClass := default "component_panels" .ComponentClass }}
 {{- $childClass := default "" .ChildClass }}
 
+{{- $debug := false }}
+{{- $debug = or $debug (not (not (findRE `^/([^/]+-demo/)?ats/preview` $page.RelPermalink) ) ) -}}
+
 {{- $style := default dict .Style }}
 {{- $validStyles := merge (default dict .ValidStyles) (dict
   "layout" (dict
@@ -28,6 +31,13 @@
   "Style" $style
   "ValidStyles" $validStyles
   ) -}}
+
+{{- if $debug }}
+{{- warnf "%s[%s]: styleClassList=%v from\nstyle=%v\nvalidStyles=%v"
+    $page $template $styleClassList
+    (jsonify (dict "indent" "  ") $style)
+    (jsonify (dict "indent" "  ") $validStyles ) }}
+{{- end }}
 
 {{- $topLevelClass := delimit (append $styleClassList (slice $componentClass $childClass) ) " " }}
 
