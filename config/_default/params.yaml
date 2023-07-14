@@ -52,6 +52,7 @@ vitae:
                   collection: profile
                   style:
                     dt_columns: 3
+                    heading: normal
               - section: career-summary-awards
                 # container: div
                 sections:
@@ -118,6 +119,7 @@ vitae:
                   collection: achievements
                   style:
                     dt_columns: 3
+                    heading: normal
               - section: connect
                 title: section-connect
                 container: section
@@ -304,9 +306,8 @@ vitae:
         style:
           # inline_separator: "·"
           inline_separator: "•"
-          layout:
-            - inline
-            - shallow
+          layout: inline
+          logo: false
 
         parts:
 
@@ -344,11 +345,6 @@ vitae:
                 components:
                 - component: awards
                   details: false
-                  screen: true
-                  print: true
-                  style:
-                    logo: false
-                    heading: larger-1
               - section: experience
                 title: section-experience
                 components:
@@ -361,11 +357,10 @@ vitae:
                     type: false
                   style:
                     timeline: column
-                    layout: inline
-                    logo: left
-                    label:
-                      unit: false
-                      function: false
+                    # logo: left
+                    # label:
+                    #   unit: false
+                    #   function: false
                   function: false
                   organization:
                     period: true
@@ -415,8 +410,6 @@ vitae:
                   collection: publications
                   filter_by: kind
                   filter_value: patent
-                  screen: true
-                  print: true
               - section: publication-selection
                 title: section-publications
                 container: section
@@ -425,8 +418,6 @@ vitae:
                   collection: publications
                   filter_by: kind
                   filter_value: publication
-                  screen: true
-                  print: true
 
         shared:
           # Footer to be repeated on every printed page

@@ -76,16 +76,18 @@
     {{- end -}}
   {{- end -}}
   {{- with $component.fragments }}
-    {{- range $fragment := . }}
-      {{- $fragmentName := .fragment }}
-      {{- $fragmentConfig := merge (index $config $fragmentName) . }}
-      {{- $partial := printf "vitae/fragments/%s" $fragmentName}}
-      {{- /* {{- warnf "%s[%s]: component=%v: Calling fragment=%s with .Config=%v"
-          $page $template $component $fragmentName $fragmentConfig -}} */ -}}
-      <div class="fragment_{{ $fragmentName }} fragment">
-      {{- partial $partial (merge $componentArgs (dict "Fragment" $fragmentName "Config" $fragmentConfig ))  }}
-      </div>
-    {{- end }}
+    <div class="fragment_container">
+      {{- range $fragment := . }}
+        {{- $fragmentName := .fragment }}
+        {{- $fragmentConfig := merge (index $config $fragmentName) . }}
+        {{- $partial := printf "vitae/fragments/%s" $fragmentName}}
+        {{- /* {{- warnf "%s[%s]: component=%v: Calling fragment=%s with .Config=%v"
+            $page $template $component $fragmentName $fragmentConfig -}} */ -}}
+        {{/* <div class="fragment_{{ $fragmentName }} fragment"> */}}
+        {{- partial $partial (merge $componentArgs (dict "Fragment" $fragmentName "Config" $fragmentConfig ))  }}
+        {{/* </div> */}}
+      {{- end }}
+    </div>
   {{- end }}
   </div>
 {{- end }}

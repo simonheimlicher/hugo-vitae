@@ -238,8 +238,8 @@
 
 .vitae {
   .view-screen {
-    --rem_base: 1rem;
-    --em_base: 1rem;
+    // --rem_base: 1rem;
+    // --em_base: 1rem;
     --rem: var(--rem_base);
     --em: var(--em_base);
     @include font-size-scale(var(--em));
@@ -250,6 +250,7 @@
     --inner_padding: var(--inner_padding_base);
 
     @include inner_margin_padding(var(--inner_margin), var(--inner_padding));
+    @include inner_margin_padding(var(--inner_margin), var(--inner_padding), 8, 1);
 
     --line-width_normal: calc(0.0625 * var(--rem));
     --line-width_wider-1: calc(0.125 * var(--rem));
@@ -281,17 +282,22 @@
     --inner_padding: var(--inner_padding_base);
 
     @include inner_margin_padding(var(--inner_margin), var(--inner_padding));
+    @include inner_margin_padding(var(--inner_margin), var(--inner_padding), 8, 1);
 
-    --line-width_normal: calc(0.0625 * var(--rem));
-    --line-width_wider-1: calc(0.125 * var(--rem));
-    --line-width_wider-2: calc(0.25 * var(--rem));
+    --line-width_normal_base: calc(0.0625 * var(--rem));
+    --line-width_wider-1_base: calc(0.125 * var(--rem));
+    --line-width_wider-2_base: calc(0.25 * var(--rem));
+
+    --line-width_normal: var(--line-width_normal_base);
+    --line-width_wider-1: var(--line-width_wider-1_base);
+    --line-width_wider-2: var(--line-width_wider-2_base);
 
     @media screen {
       --inner_margin: calc(var(--inner_margin_base) * var(--inner_margin_scale-factor));
       --inner_padding: calc(var(--inner_padding_base) * var(--inner_padding_scale-factor));
-      --line-width_normal: calc(0.0625 * var(--rem) * var(--line_width_scale-factor));
-      --line-width_wider-1: calc(0.125 * var(--rem) * var(--line_width_scale-factor));
-      --line-width_wider-2: calc(0.25 * var(--rem) * var(--line_width_scale-factor));
+      --line-width_normal: calc(var(--line-width_normal_base) * var(--line_width_scale-factor));
+      --line-width_wider-1: calc(var(--line-width_wider-1_base) * var(--line_width_scale-factor));
+      --line-width_wider-2: calc(var(--line-width_wider-2_base) * var(--line_width_scale-factor));
     }
     @include inner_margin_padding(var(--inner_margin), var(--inner_padding));
 

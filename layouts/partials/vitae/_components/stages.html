@@ -88,6 +88,7 @@
 {{- $renderOptBlock := dict "display" "block" }}
 
 {{- $inlineSeparatorStr := default "•" $style.inline_separator }}
+{{- $inlineSeparatorStr = printf " %s " (trim $inlineSeparatorStr "  ") }}
 
 {{- $timelineBaseClass := "timeline" }}
 
@@ -152,6 +153,7 @@
   "HeadingLevel" $headingLevel
   "InlineHeader" $inlineHeader
   "HomeCountry" $homeCountry
+  "InlineSeparatorStr" $inlineSeparatorStr
   "PeriodDurationParams" $periodDurationParams
 ) }}
 
@@ -291,29 +293,38 @@
             {{- end }}
             {{- if $inlineContent }}
               <div class="role_achievement_main stage_main{{ with (and (not $containerClass) $topLevelClass) }} {{ . }}{{ end }}">
-                {{- $content := false }}
-                {{- $title := false }}
-                {{- with $achievement.title }}
+                {{- $bullets := false }}
+                {{- with $achievement.lead }}
+                  {{- $bullets = . }}
+                {{- else }}
+                  {{- with $achievement.title }}
+                    {{- $bullets = . }}
+                  {{- end }}
+                {{- end }}
+                {{- with $bullets }}
                   {{- if strings.Contains . `**` }}
-                    {{- $title = . -}}
+                    {{- $bullets = . }}
                   {{- else }}
-                    {{- $title = printf "**%s**" . -}}
+                    {{- $bullets = printf "**%s**" . -}}
                   {{- end }}
                 {{- end }}
                 {{- with $achievement.content }}
                   {{- if reflect.IsSlice . }}
-                    {{- $content = . }}
-                    {{- with $title }}
-                      {{- $content = append $content (slice .) -}}
+                    {{/* if .lead exists, it must express the same as the first item in .content */}}
+                    {{- if $achievement.lead }}
+                      {{- $bullets = append (last (sub (len .) 1) .) (slice $bullets) -}}
+                    {{- else }}
+                      {{- $bullets = append . (slice $bullets) -}}
                     {{- end }}
                   {{- else }}
-                    {{- $content = . }}
-                    {{- with $title }}
-                      {{- $content = printf "* %s\n%s" . $content -}}
+                    {{- if $bullets }}
+                      {{- $bullets = printf "* %s\n%s" $bullets . -}}
+                    {{- else }}
+                      {{- $bullets = . }}
                     {{- end }}
                   {{- end }}
                 {{- end }}
-                {{- with $content }}
+                {{- with $bullets }}
                   {{- partial "render_string_slice" . }}
                 {{- end }}
               </div>
@@ -359,8 +370,6 @@
 
   {{- $roleList := $org.roles }}
   {{- $numRoles := (len $roleList) }}
-
-  {{- $renderOptInline := dict "display" "inline" }}
 
   {{- $logoImageWidthHeight := 96 }}
   {{- $logoImageDisplayWidthHeight := 48 }}
@@ -434,7 +443,7 @@
       {{- end -}}
       {{ $org.organization }}
       {{- with $org.remark }}
-        <span class="remark">({{ page.RenderString $renderOptInline . }})</span>
+        <span class="remark">({{ page.RenderString . }})</span>
       {{- end -}}
       {{- if $org.website }}
         </a>
@@ -488,6 +497,7 @@
   {{- $org := .Organization }}
   {{- $role := .Role }}
   {{- $roleMetaInHeader := .RoleMetaInHeader }}
+  {{- $inlineSeparatorStr := .InlineSeparatorStr }}
 
   {{- $debug := false }}
   {{/* {{- $debug = or $debug (not (not (findRE `^/([^/]+-demo/)?ats/preview` $page.RelPermalink) ) ) -}} */}}
@@ -521,7 +531,7 @@
 
     {{- if or $showPeriod $showDuration }}
       {{- with $role.period }}
-        <div class="role_period num-roles-{{ $numRoles }} stage_period">
+        <div class="role_period stage_period">
           {{- partial
             "vitae/_functions/date-period-duration" (merge $inlinePartialParams.PeriodDurationParams (dict
             "PeriodList" .
@@ -541,7 +551,14 @@
         {{- with $role.subtitle }}
           <span class="role_subtitle">{{ $page.RenderString . }}</span>
         {{- end }}
+        {{- with $role.remark }}
+          <span class="remark">({{ page.RenderString . }})</span>
+        {{- end -}}
       </h{{ add 1 $headingLevel }}>
+      {{- with $role.appendix }}
+        {{/* <span class="appendix">{{- with $inlineSeparatorStr }} {{ . }} {{ end }}{{ page.RenderString . }}</span> */}}
+        <span class="appendix">({{ page.RenderString . }})</span>
+      {{- end -}}
     {{- if $roleMetaInHeader }}
       {{- partial "stage_meta" (merge $inlinePartialParams (dict
         "Organization" $org
@@ -570,8 +587,7 @@
   {{- $template := .Template }}
   {{- $debug := false }}
 
-  {{- $inlineSeparatorStr := default "·" $style.inline_separator }}
-  {{- $inlineSeparatorStr = printf " %s " (trim $inlineSeparatorStr "  ") }}
+  {{- $inlineSeparatorStr := .InlineSeparatorStr }}
 
   {{- $metaConfig := (dict
     "function" (and $stage.function (default true (default $component.function $componentStageType.function)) )
@@ -640,6 +656,10 @@
             {{- end }}
             {{- if or (eq $stage $org) (not (default true $org.unit) ) (ne $stage.unit $org.unit) }}
               {{- with $stage.unit }}
+                {{- $stageUnitList := . }}
+                {{- if reflect.IsMap . }}
+                  {{- $stageUnitList = slice . }}
+                {{- end }}
                 {{- if reflect.IsSlice . }}
                   {{- if $debug }}
                     {{- if (gt $configUnitLimit (len .)) }}
@@ -647,16 +667,26 @@
                           page $template $metaConfig.unit $metaConfig.unit $configUnitLimit (len .) }}
                     {{- end }}
                   {{- end }}
-                  {{- range $unit := first $configUnitLimit . }}
-                    {{- if reflect.IsMap . }}
-                      {{- range $unitType, $unitName := . }}
-                        {{- if and $unitSeparatorStr $stageUnitMarkup }}
-                          {{- $stageUnitMarkup = printf `%s%s` $stageUnitMarkup $unitSeparatorStr }}
-                        {{- end }}
-                        {{- $stageUnitMarkup = printf `%s<span class="stage_unit">%s</span>` $stageUnitMarkup . }}
-                        {{- if $configUnitType }}
-                          {{ with default $unitType (T (printf "stage_unit_type_%s" $unitType) ) }}
-                            {{- $stageUnitMarkup = printf `%s <span class="stage_unit_label">%s</span>` $stageUnitMarkup . }}
+                  {{- $orgUnit := false }}
+                  {{- range $unitIndex, $stageUnit := first $configUnitLimit . }}
+                    {{- if ne $stage $org }}
+                      {{- with $orgUnit = index $org.unit $unitIndex }}
+                      {{- else }}
+                        {{ $orgUnit = false }}
+                      {{- end }}
+                    {{- end }}
+                    {{- if reflect.IsMap $stageUnit }}
+                      {{- range $unitType, $unitName := $stageUnit }}
+                        {{- if eq $stageUnit $orgUnit }}
+                        {{- else }}
+                          {{- if and $unitSeparatorStr $stageUnitMarkup }}
+                            {{- $stageUnitMarkup = printf `%s%s` $stageUnitMarkup $unitSeparatorStr }}
+                          {{- end }}
+                          {{- $stageUnitMarkup = printf `%s<span class="stage_unit">%s</span>` $stageUnitMarkup $unitName}}
+                          {{- if $configUnitType }}
+                            {{ with default $unitType (T (printf "stage_unit_type_%s" $unitType) ) }}
+                              {{- $stageUnitMarkup = printf `%s <span class="stage_unit_label">%s</span>` $stageUnitMarkup . }}
+                            {{- end }}
                           {{- end }}
                         {{- end }}
                       {{- end }}
@@ -664,28 +694,14 @@
                       {{- if and $unitSeparatorStr $stageUnitMarkup }}
                         {{- $stageUnitMarkup = printf `%s%s` $stageUnitMarkup $unitSeparatorStr }}
                       {{- end }}
-                      {{- $stageUnitMarkup = printf `%s<span class="stage_unit">%s</span>` $stageUnitMarkup . }}
+                      {{- $stageUnitMarkup = printf `%s<span class="stage_unit">%s</span>` $stageUnitMarkup $stageUnit }}
                     {{- end }}
                   {{- end }}
                 {{- else }}
-                  {{- if reflect.IsMap . }}
-                    {{- range $unitType, $unitName := . }}
-                      {{- if and $unitSeparatorStr $stageUnitMarkup }}
-                        {{- $stageUnitMarkup = printf `%s%s` $stageUnitMarkup $unitSeparatorStr }}
-                      {{- end }}
-                      {{- $stageUnitMarkup = printf `%s<span class="stage_unit">%s</span>` $stageUnitMarkup . }}
-                      {{- if $configUnitType }}
-                        {{ with default $unitType (T (printf "stage_unit_type_%s" $unitType) ) }}
-                          {{- $stageUnitMarkup = printf `%s <span class="stage_unit_label">%s</span>` $stageUnitMarkup . }}
-                        {{- end }}
-                      {{- end }}
-                    {{- end }}
-                  {{- else }}
-                    {{- if and $unitSeparatorStr $stageUnitMarkup }}
-                      {{- $stageUnitMarkup = printf `%s%s` $stageUnitMarkup $unitSeparatorStr }}
-                    {{- end }}
-                    {{- $stageUnitMarkup = printf `%s<span class="stage_unit">%s</span>` $stageUnitMarkup . }}
+                  {{- if and $unitSeparatorStr $stageUnitMarkup }}
+                    {{- $stageUnitMarkup = printf `%s%s` $stageUnitMarkup $unitSeparatorStr }}
                   {{- end }}
+                  {{- $stageUnitMarkup = printf `%s<span class="stage_unit">%s</span>` $stageUnitMarkup . }}
                 {{- end }}
               {{- end }}
 

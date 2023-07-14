@@ -29,7 +29,7 @@ $font-size-scale-factor: math.pow(2.0, math.div(1, 5) );
 
 .vitae {
   --font-size-base: 100%;
-  --line-height: 1.3;
+  --line-height: 1.4;
   --line-height-heading: var(--line-height);
   --font-size-label: var(--font-size-normal);
   --line-height-label: var(--line-height-heading);

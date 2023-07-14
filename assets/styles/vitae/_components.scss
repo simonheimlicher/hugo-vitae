@@ -338,7 +338,17 @@ html[data-mode="dim"] {
       font-size: var(--font-size-larger-1);
     }
     display: grid;
-    grid-template-columns: 1fr 3fr 1fr;
+    grid-template-columns: 2fr 5fr 2fr;
+
+    .fragment_container {
+      --row_gap: var(--inner_margin_8-1);
+      display: flex;
+      flex-wrap: wrap;
+      gap: var(--row_gap) var(--column_gap);
+    }
+    .degree + .fragment_container {
+      margin-top: var(--inner_margin_4-1);
+    }
 
     &.portrait {
       &_overlay {
@@ -365,10 +375,10 @@ html[data-mode="dim"] {
       &_img {
         margin: 0;
         padding: 0;
-        max-width: 100%;
         width: 100%;
+        max-width: 100%;
         height: 100%;
-        height: calc( var(--page_height) * var(--front-page_header_height_fraction) + var(--page_margin_top) );
+        max-height: calc( var(--page_height) * var(--front-page_header_height_fraction) + var(--page_margin_top) );
         object-fit: cover;
         object-position: center center;
         border-radius: 0;
@@ -516,10 +526,10 @@ html[data-mode="dim"] {
     &.style_font-size_larger-1 {
       font-size: var(--font-size-larger-1);
     }
-    &.style_font-size_normal {
-      font-size: var(--font-size-normal);
-      h3, h4, h5 {
+    &.style_heading_normal {
+      h3, h4, h5, dt {
         font-size: var(--font-size-normal);
+        font-weight: var(--font-weight-strong);
       }
     }
   }
@@ -591,14 +601,14 @@ html[data-mode="dim"] {
     --padding_organization_between: var(--inner_padding_4-4);
     --padding_organization_first: var(--inner_padding_4-0);
     --padding_role_between: var(--inner_padding_4-4);
-    --padding_role_first: var(--inner_padding_4-2);
+    --padding_role_first: var(--inner_padding_4-1);
 
     --padding_stage_meta: var(--inner_padding_4-0);
 
     --padding_stage_content_between: var(--inner_padding_4-2);
     --padding_stage_content_first: var(--inner_padding_4-1);
 
-    --grid_period-column_width: 11em;
+    --grid_period-column_width: 10em;
     --grid_separator-column_width: var(--inner_margin_4-2);
 
     position: relative;
@@ -627,14 +637,14 @@ html[data-mode="dim"] {
     .organization_title {
       font-size: var(--font-size-heading-organization);
       font-weight: var(--font-weight-heading-organization);
-      .remark {
-        font-weight: var(--font-weight);
-        font-size: var(--font-size-smaller-1);
-      }
     }
     .role_title {
       font-size: var(--font-size-heading-role);
       font-weight: var(--font-weight-heading-role);
+    }
+    .remark, .appendix {
+      font-weight: var(--font-weight);
+      font-size: var(--font-size-smaller-1);
     }
 
     .stage {
@@ -822,7 +832,7 @@ html[data-mode="dim"] {
       --tl-col_timeline_color: var(--neutral-haze);
       --tl-col_stage-marker_background: var(--neutral-haze);
 
-      --tl-col_stage-marker_width: calc(0.75 * var(--rem));
+      --tl-col_stage-marker_width: calc(0.25 * var(--font-size-heading-role));
       --tl-col_stage-marker_height: var(--tl-col_stage-marker_width);
       --tl-col_stage-marker_organization_width: calc(4 / 3 * var(--tl-col_stage-marker_width));
       --tl-col_stage-marker_organization_height: var(--tl-col_stage-marker_organization_width);
@@ -952,23 +962,47 @@ html[data-mode="dim"] {
           $line-width: var(--tl-col_timeline_width),
       ) {
         .timeline_column_marker {
-          position: absolute;
-          top: calc($padding-top + $line-height / 2 - $marker-height / 2);
-          @if ($right) {
-            right: calc($right - $marker-width / 2);
+          // FIXME: If we use this element as the marker, the marker does not appear on print
+          // in Chrome v114. In Firefox, it works either way
+          // position: absolute;
+          // top: calc($padding-top + $line-height / 2 - $marker-height / 2);
+          // @if ($right) {
+          //   right: calc($right - $marker-width / 2);
+          // }
+          // @if ($left) {
+          //   left: calc($left - $marker-width / 2);
+          // }
+          // padding: 0;
+          // align-self: start;
+          // width: $marker-width;
+          // height: $marker-height;
+          // border-radius: $marker-border-radius;
+          // // outline: $marker-outline;
+          // border: $marker-outline;
+          // // background-color: $marker-background;
+          // background-color: red;
+          // z-index: 3;
+          position: static;
+          &::before {
+            position: absolute;
+            top: calc($padding-top + $line-height / 2 - $marker-height / 2);
+            @if ($right) {
+              right: calc($right - $marker-width / 2);
+            }
+            @if ($left) {
+              left: calc($left - $marker-width / 2);
+            }
+            padding: 0;
+            align-self: start;
+            width: $marker-width;
+            height: $marker-height;
+            border-radius: $marker-border-radius;
+            // outline: $marker-outline;
+            outline: $marker-outline;
+            background-color: $marker-background;
+            // z-index: 3;
+            content: "";
           }
-          @if ($left) {
-            left: calc($left - $marker-width / 2);
-          }
-          padding: 0;
-          align-self: start;
-          width: $marker-width;
-          height: $marker-height;
-          border-radius: $marker-border-radius;
-          // outline: $marker-outline;
-          border: $marker-outline;
-          background-color: $marker-background;
-          z-index: 1;
         }
         &::before {
           position: absolute;
@@ -990,6 +1024,7 @@ html[data-mode="dim"] {
             height: $height-before;
             content: "";
             background-color: var(--tl-col_timeline_color);
+            z-index: 3;
           }
         }
         &::after {
@@ -1012,6 +1047,7 @@ html[data-mode="dim"] {
             height: $height-after;
             content: "";
             background-color: var(--tl-col_timeline_color);
+            z-index: 3;
           }
         }
       }
@@ -1043,13 +1079,14 @@ html[data-mode="dim"] {
       }
 
       &:not(.style_logo_left) {
+        --fuzz_factor: 0.8;
         &.organization_header {
           // --tl-col_timeline_color: purple;
           @include timeline_column_header(
             0px,
-            calc((var(--font-size-heading-organization) * var(--line-height-heading)) - var(--tl-col_stage-marker_organization_height) + var(--padding_organization_between)),
+            calc(var(--padding_organization_between) + var(--font-size-heading-organization) * var(--line-height-heading) / 2 - var(--tl-col_stage-marker_organization_height) / 2 - var(--fuzz_factor) * var(--tl-col_stage-marker_organization_outline_width)),
             0px,
-            calc(100% - var(--padding_organization_between) - var(--tl-col_stage-marker_organization_height)),
+            calc(100% - var(--padding_organization_between) - var(--font-size-heading-organization) * var(--line-height-heading) / 2 - var(--tl-col_stage-marker_organization_height) / 2 - var(--fuzz_factor) * var(--tl-col_stage-marker_organization_outline_width)),
             calc(var(--tl-col_timeline-column_width) / 2),
             null,
             calc(var(--font-size-heading-organization) * var(--line-height-heading)),
@@ -1062,11 +1099,12 @@ html[data-mode="dim"] {
             // var(--tl-col_timeline_width),
           );
           &.org_first {
+            // --tl-col_timeline_color: red;
             @include timeline_column_header(
               0px,
               0px,
               0px,
-              calc(100% - var(--padding_organization_first) - var(--tl-col_stage-marker_organization_height)),
+              calc(100% - var(--padding_organization_first) - var(--font-size-heading-organization) * var(--line-height-heading) / 2 - var(--tl-col_stage-marker_organization_height) / 2 - var(--fuzz_factor) * var(--tl-col_stage-marker_organization_outline_width)),
               calc(var(--tl-col_timeline-column_width) / 2),
               null,
               calc(var(--font-size-heading-organization) * var(--line-height-heading)),
@@ -1081,7 +1119,7 @@ html[data-mode="dim"] {
           &.org_last {
             @include timeline_column_header(
               0px,
-              calc((var(--font-size-heading-organization) * var(--line-height-heading)) - var(--tl-col_stage-marker_organization_height) + var(--padding_organization_between)),
+              calc(var(--padding_organization_between) + var(--font-size-heading-organization) * var(--line-height-heading) / 2 - var(--tl-col_stage-marker_organization_height) / 2 - var(--fuzz_factor) * var(--tl-col_stage-marker_organization_outline_width)),
               0px,
               0px,
               calc(var(--tl-col_timeline-column_width) / 2),
@@ -1126,7 +1164,7 @@ html[data-mode="dim"] {
               calc(var(--tl-col_timeline-column_width) / 2),
               null,
               calc(var(--font-size-heading-role) * var(--line-height-heading)),
-              var(--padding_role_between)
+              var(--padding_role_first)
             );
           }
           &.role_single:not(.org_last) {
@@ -1197,16 +1235,16 @@ html[data-mode="dim"] {
           null,
           calc(var(--tl-col_timeline-column_width) / 2));
       }
-      &.role_header ~ .role_header {
-        .stage_main {
-          padding-top: calc(var(--padding_role_between));
-        }
-      }
-      &.organization_header + .role_header, &.stage_meta + .role_header {
-        .stage_main {
-          padding-top: calc(var(--padding_role_first));
-        }
-      }
+      // &.role_header ~ .role_header {
+      //   .stage_main {
+      //     padding-top: calc(var(--padding_role_between));
+      //   }
+      // }
+      // &.organization_header + .role_header, &.stage_meta + .role_header {
+      //   .stage_main {
+      //     padding-top: calc(var(--padding_role_first));
+      //   }
+      // }
       &.stage {
         &_header, &_meta, &_content {
           display: grid;
@@ -1534,10 +1572,10 @@ html[data-mode="dim"] {
 
     &.style_layout_narrow {
       --tl-col_stage-marker_width: calc(0.5 * var(--rem));
-      --grid_separator-column_width: var(--inner_margin_4-1);
+      --grid_separator-column_width: var(--inner_margin_4-2);
       // --tl-col_timeline_width: calc(0.125 * var(--rem));
       --tl-col_timeline_width: var(--line-width_wider-1);
-      --grid_period-column_width: 6em;
+      --grid_period-column_width: 5em;
     }
 
     /*
@@ -1574,11 +1612,11 @@ html[data-mode="dim"] {
       --font-weight-heading-role: var(--font-weight);
       --font-size_stage_header_main: var(--font-size-normal);
       --font-size_date_period: var(--font-size-normal);
-        // --font-weight-heading-organization: var(--font-weight);
+      // --font-weight-heading-organization: var(--font-weight);
       // --font-weight-heading-role: var(--font-weight);
-      --padding_organization_between: var(--inner_padding_4-3);
-      --padding_role_first: var(--inner_padding_4-0);
-      --padding_role_between: var(--inner_padding_4-1);
+      // --padding_organization_between: var(--inner_padding_4-3);
+      // --padding_role_first: var(--inner_padding_4-0);
+      // --padding_role_between: var(--inner_padding_4-1);
     }
   }
 

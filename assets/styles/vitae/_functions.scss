@@ -49,8 +49,8 @@
   @include flush-top($line-height);
 }
 
-@mixin inner_margin_padding($margin_base, $padding_base, $denominator: 4) {
-  @for $numerator from 0 to (3 * $denominator + 1) {
+@mixin inner_margin_padding($margin_base, $padding_base, $denominator: 4, $max-factor: 3) {
+  @for $numerator from 0 to ($max-factor * $denominator + 1) {
     --inner_margin_#{$denominator}-#{$numerator}: calc(#{math.div($numerator, $denominator)} * #{$margin_base});
     --inner_padding_#{$denominator}-#{$numerator}: calc(#{math.div($numerator, $denominator)} * #{$padding_base});
   }
