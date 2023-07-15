@@ -3,20 +3,29 @@
 {{- $component := .Component }}
 {{- $headingLevel := default 3 .HeadingLevel }}
 {{- $componentClass := default "component_publications" .ComponentClass }}
-{{- $childClass := default "" .ChildClass }}
+{{- $childClass := default "publication_item" .ChildClass }}
 
-{{- $style := (dict "abbreviate" "first_name") }}
-{{- $styleClass := "" }}
-{{- with .Style }}
-  {{- if reflect.IsMap . }}
-    {{- $style = . }}
-  {{- end }}
+{{- $debug := false }}
+{{/* {{- $debug = or $debug (not (not (findRE `^/([^/]+-demo/)?preview` $page.RelPermalink) ) ) -}} */}}
+
+{{- $validStyles := (dict
+  "abbreviate" (dict
+  "first_name" "first_name")
+) -}}
+
+{{- $mergedStyle := partial "vitae/_functions/style-class" (dict
+  "Template" $template
+  "MergedStyle" .MergedStyle
+  "ValidStyles" $validStyles
+  ) -}}
+{{- if $debug }}
+  {{- warnf "%s[%s]: After style-class:\nmergedStyle=%v" $page $template
+      (jsonify (dict "indent" "  ") $mergedStyle) }}
 {{- end }}
-{{- range $key, $value := $style }}
-  {{- if . }}
-    {{- $styleClass = trim (printf "%s %s_%v" $styleClass $key .) " " }}
-  {{- end }}
-{{- end }}
+{{- $style := $mergedStyle.Style }}
+{{- $styleClassList := $mergedStyle.StyleClass }}
+
+{{- $topLevelClass := delimit (append $styleClassList (slice $componentClass $childClass) ) " " }}
 
 {{- $dateFormat := default "Jan 2006" (default site.Params.periodDateFormat .Params.periodDateFormat )}}
 
@@ -34,8 +43,6 @@
 
 {{- $filterField := default "type" $component.filter_by -}}
 {{- $filterMatch := default "publication" $component.filter_value -}}
-
-{{- $topLevelClass := delimit (slice "publication_item" $styleClass $componentClass $childClass) " " }}
 
 {{- $publicationData := (index .Data (default $component.component $component.collection) ) }}
 {{- with $publicationData }}

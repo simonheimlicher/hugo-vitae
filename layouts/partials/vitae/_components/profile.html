@@ -5,20 +5,24 @@
 {{- $componentClass := default "component_profile" .ComponentClass }}
 {{- $childClass := default "" .ChildClass }}
 
-{{- $style := (dict "font-size" "normal") }}
-{{- $styleClass := "" }}
-{{- with .Style }}
-  {{- if reflect.IsMap . }}
-    {{- $style = . }}
-  {{- end }}
-{{- end }}
-{{- range $key, $value := $style }}
-  {{- if . }}
-    {{- $styleClass = trim (printf "%s %s_%v" $styleClass $key .) " " }}
-  {{- end }}
-{{- end }}
+{{- $debug := false }}
+{{/* {{- $debug = or $debug (not (not (findRE `^/([^/]+-demo/)?preview` $page.RelPermalink) ) ) -}} */}}
 
-{{- $topLevelClass := delimit (slice $styleClass $componentClass $childClass) " " }}
+{{- $validStyles := dict }}
+
+{{- $mergedStyle := partial "vitae/_functions/style-class" (dict
+  "Template" $template
+  "MergedStyle" .MergedStyle
+  "ValidStyles" $validStyles
+  ) -}}
+{{- if $debug }}
+  {{- warnf "%s[%s]: After style-class:\nmergedStyle=%v" $page $template
+      (jsonify (dict "indent" "  ") $mergedStyle) }}
+{{- end }}
+{{- $style := $mergedStyle.Style }}
+{{- $styleClassList := $mergedStyle.StyleClass }}
+
+{{- $topLevelClass := delimit (append $styleClassList (slice $componentClass $childClass) ) " " }}
 
 {{- $filterField := default "type" $component.filter_by -}}
 {{- $filterMatch := default false $component.filter_value -}}

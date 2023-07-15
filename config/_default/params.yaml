@@ -15,7 +15,7 @@ vitae:
 
         style:
           # inline_separator: "·"
-          # inline_separator: "•"
+          inline_separator: "•"
           # layout: inline
 
         parts:
@@ -132,12 +132,11 @@ vitae:
                     dt_columns: 3
                     heading: normal
               - section: connect
-                title: section-connect
+                # title: section-connect
                 container: section
                 components:
                 - component: links
-                  screen: true
-                  print: true
+                  title: section-connect
                   style:
                     layout: shallow
                     icon: true
@@ -232,8 +231,6 @@ vitae:
                   collection: publications
                   filter_by: kind
                   filter_value: patent
-                  screen: true
-                  print: true
               - section: publication-selection
                 title: section-publications
                 # container: section
@@ -242,8 +239,6 @@ vitae:
                   collection: publications
                   filter_by: kind
                   filter_value: publication
-                  screen: true
-                  print: true
               # - section: interests
               #   title: section-interests
               #   container: section
@@ -377,7 +372,7 @@ vitae:
                     limit: 1
                     type: false
                   style:
-                    # timeline: column
+                    timeline: column
                     # logo: left
                     # label:
                     #   unit: false
@@ -523,28 +518,20 @@ vitae:
             title: section-language-skills
           - feature: awards
             title: section-awards
-            screen: true
-            print: true
           - feature: publications
             collection: publications
             filter_by: kind
             filter_value: patent
             title: section-patents
-            screen: true
-            print: true
           # - feature: publications
           #   collection: publications
           #   filter_by: kind
           #   filter_value: publication
           #   title: section-publications
           #   remark: selected-publications
-          #   screen: true
-          #   print: true
           - feature: links
             # title: section-connect
             title: false
-            screen: true
-            print: true
 
 # ------ Template LETTER --------- #
   letter:

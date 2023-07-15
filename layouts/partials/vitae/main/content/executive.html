@@ -9,11 +9,9 @@
 {{- $vitaeData := $pp.VitaeData }}
 
 {{- $debug := false }}
-{{/* {{- $debug = or $debug (not (not (findRE `^/([^/]+-demo/)?ats/preview` $page.RelPermalink) ) ) -}} */}}
+{{- $debug = or $debug (not (not (findRE `^/([^/]+-demo/)?ats/preview` $page.RelPermalink) ) ) -}}
 
-{{- $style := default dict $pp.VitaeStyle }}
-
-{{- $validStyles := merge (default dict .ValidStyles) (dict
+{{- $validStyles := (dict
   "ats" (dict
     "true" (dict
      "layout" (slice "inline" "shallow")
@@ -40,17 +38,19 @@
   )
 ) -}}
 
-{{- $styleClassList := partial "vitae/_functions/style-class" (dict
-  "Template" $template
-  "Style" $style
+{{- $mergedStyle := partial "vitae/_functions/style-class" (dict
+  "Style" (default dict $pp.VitaeStyle)
   "ValidStyles" $validStyles
-  ) -}}
+  "Template" $template
+) -}}
 
 {{- if $debug }}
-  {{- warnf "%s[%s]:\nstyle=%v\nvalidStyles=%v" $page $template
-      (jsonify (dict "indent" "  ") $style)
-      (jsonify (dict "indent" "  ") $validStyles ) }}
+  {{- warnf "%s[%s]: mergedStyle=%v" $page $template
+      (jsonify (dict "indent" "  ") $mergedStyle) }}
 {{- end }}
+
+{{- $style := $mergedStyle.Style }}
+{{- $styleClassList := $mergedStyle.StyleClass }}
 
 <!-- Pagination
 Part: an independent section of one or more printed pages
@@ -115,8 +115,7 @@ PaginationPage: a printed page that is part of a Part
       {{- partial "vitae/_components/index" (merge $pp (dict
         "Page" $page
         "Config" $vitaeTemplate
-        "Style" $style
-        "ValidStyles" $validStyles
+        "MergedStyle" $mergedStyle
         "ChildClass" $childClass
         "Data" $vitaeData
         "Sections" $slot.sections

@@ -309,8 +309,8 @@ html[data-mode="dim"] {
 
 .vitae {
   .view-print {
-    --section-title_margin_bottom: var(--inner_margin_4-1);
-    --section-title_margin_top_between: var(--inner_margin_4-2);
+    --section-title_margin_bottom: var(--inner_margin_4-2);
+    --section-title_margin_top_between: var(--inner_margin_4-4);
     .style_layout_inline {
       --section-title_margin_bottom: var(--inner_margin_4-1);
       --section-title_margin_top_between: var(--inner_margin_4-3);
@@ -337,13 +337,15 @@ html[data-mode="dim"] {
 
   /* ----- Component HEADER ------ */
   &_header {
+    --portrait_width: calc( 1 * var(--page_height) * var(--page_header_height_fraction));
+    // overflow: hidden;
+    height: 100%;
+    display: grid;
+    grid-template-columns: var(--portrait_width) var(--column_gap) minmax(0px, max-content) var(--column_gap) var(--portrait_width);
     font-size: var(--font-size-normal);
     &.style_font-size_larger-1 {
       font-size: var(--font-size-larger-1);
     }
-    --portrait_width: calc( 2 / 3 * var(--page_height) * var(--page_header_height_fraction) + var(--page_margin_top));
-    display: grid;
-    grid-template-columns: var(--portrait_width) var(--column_gap) minmax(0px, max-content) var(--column_gap) var(--portrait_width);
 
     .fragment_container {
       --row_gap: var(--inner_margin_8-1);
@@ -362,6 +364,7 @@ html[data-mode="dim"] {
       display: flex;
       flex-direction: column;
       // row-gap: 0.5em;
+      height: min-content;
 
       .headline {
         padding: 0;
@@ -405,7 +408,8 @@ html[data-mode="dim"] {
     .portrait {
       &_figure {
         z-index: 1;
-        grid-row: 1 / span 3;
+        // grid-row: 1 / span 3;
+        grid-row: 1;
         grid-column: 1 / span all;
       }
 
@@ -413,9 +417,9 @@ html[data-mode="dim"] {
         margin: 0;
         padding: 0;
         width: 100%;
-        max-width: 100%;
+        // max-width: 100%;
         height: 100%;
-        max-height: calc( var(--page_height) * var(--page_header_height_fraction) + var(--page_margin_top) );
+        // max-height: calc( var(--page_height) * var(--page_header_height_fraction) + var(--page_margin_top) );
         object-fit: cover;
         object-position: center center;
         border-radius: 0;
@@ -425,6 +429,9 @@ html[data-mode="dim"] {
       .vitae .view-print .component_header .portrait_figure {
         @include full-bleed_page(top, both);
       }
+      // .vitae .view-print .component_header {
+      //   @include full-bleed_page(top, both, true);
+      // }
     }
     &.style_layout_inline {
       .portrait {
@@ -435,6 +442,7 @@ html[data-mode="dim"] {
         &_img {
           // height: calc( var(--page_height) * var(--page_header_height_fraction) );
           height: 100%;
+          max-height: calc( var(--page_height) * var(--page_header_height_fraction) );
         }
       }
     }
@@ -469,16 +477,17 @@ html[data-mode="dim"] {
       align-items: start;
       grid-auto-flow: dense row;
       hyphens: manual;
+      --padding_between: var(--column_content_width) / 2;
       dt {
         grid-column: 1 / span var(--dt_columns);
         width: auto;
-        padding-right: calc(var(--column_gap));
-        margin-right: calc(0px - var(--column_gap));
+        padding-right: calc(var(--padding_between) / 2);
+        margin-right: calc(0px - var(--padding_between));
       }
       dd {
         grid-column: calc(var(--dt_columns) + var(--dd_column_skip)) / span calc(var(--num_columns) - var(--dt_columns));
         width: auto;
-        padding-left: calc(var(--column_gap));
+        padding-left: calc(var(--padding_between));
         border-left: var(--line-width_separator_heading) solid var(--border-color-faint);
       }
     }

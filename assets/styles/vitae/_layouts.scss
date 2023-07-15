@@ -212,28 +212,31 @@
   margin: $margin_top $margin_right $margin_bottom $margin_left;
 }
 
-@mixin full-bleed_page($vertical: none, $horizontal: none) {
+@mixin full-bleed_page($vertical: none, $horizontal: none, $padding: false) {
   $margin_top: 0;
   $margin_right: 0;
   $margin_bottom: 0;
   $margin_left: 0;
 
   @if $vertical == 'top' {
-    $margin_top: calc(-1 * var(--page_margin_top));
+    $margin_top: var(--page_margin_top);
   }  @else if $vertical == 'bottom' {
-    $margin_bottom: calc(-1 * var(--page_margin_bottom));
+    $margin_bottom: var(--page_margin_bottom);
   }
 
   @if $horizontal == 'right' {
-    $margin_right: calc(-1 * var(--page_margin_right));
+    $margin_right: var(--page_margin_right);
   }  @else if $horizontal == 'left' {
-    $margin_left: calc(-1 * var(--page_margin_left));
+    $margin_left: var(--page_margin_left);
   }  @else if $horizontal == 'both' {
-    $margin_right: calc(-1 * var(--page_margin_right));
-    $margin_left: calc(-1 * var(--page_margin_left));
+    $margin_right: var(--page_margin_right);
+    $margin_left: var(--page_margin_left);
   }
 
-  margin: $margin_top $margin_right $margin_bottom $margin_left;
+  margin: calc(-1 * $margin_top) calc(-1 * $margin_right) calc(-1 * $margin_bottom) calc(-1 * $margin_left);
+  @if $padding {
+    padding: $margin_top $margin_right $margin_bottom $margin_left;
+  }
 }
 
 .vitae {
@@ -311,6 +314,8 @@
     @include link-lvhfa-reset;
 
     --column_gap: var(--inner_margin_4-3);
+    // Row gap is provided by section-title in most templates
+    --row_gap: var(--inner_margin_4-0);
 
     --line-width_separator: calc(0.025 * var(--rem));;
     --line-width_separator_heading: calc(0.05 * var(--rem));;

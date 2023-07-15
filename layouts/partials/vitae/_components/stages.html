@@ -10,7 +10,7 @@
 {{/* {{- $debug = or $debug (not (not (findRE `^/([^/]+-demo/)?preview` $page.RelPermalink) ) ) -}} */}}
 
 {{- $style := default dict .Style }}
-{{- $validStyles := merge (default dict .ValidStyles) (dict
+{{- $validStyles := (dict
   "layout" (dict
     "shallow" "shallow"
     "narrow" "narrow"
@@ -71,18 +71,17 @@
   )
 ) -}}
 
-{{- $styleClassList := partial "vitae/_functions/style-class" (dict
+{{- $mergedStyle := partial "vitae/_functions/style-class" (dict
   "Template" $template
-  "Style" $style
+  "MergedStyle" .MergedStyle
   "ValidStyles" $validStyles
-) -}}
-
+  ) -}}
 {{- if $debug }}
-  {{- warnf "%s[%s]: styleClassList=%v from\nstyle=%v\nvalidStyles=%v"
-      $page $template $styleClassList
-      (jsonify (dict "indent" "  ") $style)
-      (jsonify (dict "indent" "  ") $validStyles ) }}
+  {{- warnf "%s[%s]: After style-class:\nmergedStyle=%v" $page $template
+      (jsonify (dict "indent" "  ") $mergedStyle) }}
 {{- end }}
+{{- $style := $mergedStyle.Style }}
+{{- $styleClassList := $mergedStyle.StyleClass }}
 
 {{- $renderOptInline := dict "display" "inline" }}
 {{- $renderOptBlock := dict "display" "block" }}

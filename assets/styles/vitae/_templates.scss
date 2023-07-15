@@ -29,7 +29,7 @@
   .section-panel {
     margin-top: var(--inner_margin_4-0);
     display: grid;
-    gap: var(--inner_margin_4-4) var(--column_gap);
+    gap: var(--row_gap) var(--column_gap);
     grid-template-columns: repeat(var(--num_columns), 1fr);
     align-items: start;
     grid-auto-flow: dense row;

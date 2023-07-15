@@ -2,8 +2,6 @@
 {{- $headingLevel := default 3 .HeadingLevel }}
 {{- $vitaeTemplate := .Config }}
 {{- $vitaeData := .Data }}
-{{- $vitaeStyle := .Style }}
-{{- $validStyles := default dict .ValidStyles }}
 {{- $sections := .Sections }}
 {{- $childClass := default "" .ChildClass }}
 {{- $media := .Media }}
@@ -11,35 +9,31 @@
 {{- $template := "vitae/_components/index" }}
 
 {{- $debug := false }}
-{{/* {{- $debug = or $debug (not (not (findRE `^/([^/]+-demo/)?ats/preview` $page.RelPermalink) ) ) -}} */}}
+{{- $debug = or $debug (not (not (findRE `^/([^/]+-demo/)?ats/preview` $page.RelPermalink) ) ) -}}
 
+{{- if $debug }}
+  {{- warnf "%s[%s]: .MergedStyle=%v" $page $template
+      (jsonify (dict "indent" "  ") .MergedStyle) }}
+{{- end }}
 
-{{- $style := default dict .Style }}
-{{- $validStyles := merge (default dict .ValidStyles) (dict
+{{- $validStyles := (dict
   "layout" (dict
     "inline" "inline"
     "shallow" "shallow"
   )
-  "ats" (dict
-    "true" (dict
-      "layout" (slice "inline" "shallow")
-    )
-  )
 ) -}}
 
-{{- $styleClassList := partial "vitae/_functions/style-class" (dict
+{{- $mergedStyle := partial "vitae/_functions/style-class" (dict
   "Template" $template
-  "Style" $style
+  "MergedStyle" .MergedStyle
   "ValidStyles" $validStyles
   ) -}}
-
-{{- $topLevelClass := delimit (append $styleClassList (slice $componentClass $childClass) ) " " }}
-
 {{- if $debug }}
-  {{- warnf "%s[%s]:\nstyle=%v\nvalidStyles=%v" $page $template
-      (jsonify (dict "indent" "  ") $vitaeStyle)
-      (jsonify (dict "indent" "  ") $validStyles ) }}
+  {{- warnf "%s[%s]: After style-class:\nmergedStyle=%v" $page $template
+      (jsonify (dict "indent" "  ") $mergedStyle) }}
 {{- end }}
+
+{{- $topLevelClass := delimit (append $mergedStyle.StyleClass (slice $componentClass $childClass) ) " " }}
 
 {{- range $sectionIndex, $section := where $sections "enabled" "ne" false }}
   {{- $sectionName := $section.section }}
@@ -60,11 +54,12 @@
   {{- end }}
   {{- range $componentIndex, $component := $section.components }}
     {{- $componentName := $component.component }}
-    {{- $componentPartial := printf "vitae/_components/%s" $componentName }}
+
     {{- $componentContainer := default "" .container }}
     {{- if $componentContainer }}
-      {{- printf `<%s class="component-container_%s component-container">` $componentContainer $componentName | safeHTML }}
+      {{- printf `<%s class="component-container_%s component-container{{ with $mergedStyle.StyleClass }} {{ . }}{{ end }}">` $componentContainer $componentName | safeHTML }}
     {{- end }}
+
     {{- $componentTitle := $component.title | default $componentName -}}
     {{- with $component.title }}
       {{- $componentTitle := (cond (gt (len (T $componentTitle)) 0) (T $componentTitle) $componentTitle) | strings.FirstUpper }}
@@ -72,18 +67,18 @@
       {{- $headingLevel = (add $headingLevel 1) }}
     {{- end }}
 
-    {{- $componentStyle := $vitaeStyle }}
+    {{- $mergedComponentStyle := $mergedStyle }}
     {{- with $component.style }}
-      {{- $componentStyle = merge $vitaeStyle . }}
+      {{- $mergedComponentStyle = merge $mergedComponentStyle (dict "Style" (merge $mergedStyle.Style .)) }}
     {{- end }}
 
+    {{- $componentPartial := printf "vitae/_components/%s" $componentName }}
     {{- partial $componentPartial (dict
       "Page" $page
       "Config" $vitaeTemplate
       "Media" $media
       "Component" $component
-      "Style" $componentStyle
-      "ValidStyles" $validStyles
+      "MergedStyle" $mergedComponentStyle
       "Index" $componentIndex
       "ChildClass" $childClass
       "Container" false
@@ -107,8 +102,7 @@
         "Page" $page
         "Config" $vitaeTemplate
         "Media" $media
-        "Style" $vitaeStyle
-        "ValidStyles" $validStyles
+        "MergedStyle" $mergedStyle
         "ChildClass" $childClass
         "Data" $vitaeData
         "Sections" .

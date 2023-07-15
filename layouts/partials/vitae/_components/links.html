@@ -1,5 +1,5 @@
 {{- $template := "vitae/_components/links" }}
-
+{{- $page := .Page }}
 {{- $componentArgs := . }}
 
 {{- $mediaType := default "screen" .MediaType }}
@@ -9,8 +9,10 @@
 
 {{- $component := .Component }}
 
-{{- $style := default dict .Style }}
-{{- $validStyles := merge (default dict .ValidStyles) (dict
+{{- $debug := false }}
+{{/* {{- $debug = or $debug (not (not (findRE `^/([^/]+-demo/)?preview` $page.RelPermalink) ) ) -}} */}}
+
+{{- $validStyles := (dict
   "layout" (dict
     "shallow" "shallow"
     "narrow" "narrow"
@@ -29,11 +31,17 @@
   )
 ) -}}
 
-{{- $styleClassList := partial "vitae/_functions/style-class" (dict
+{{- $mergedStyle := partial "vitae/_functions/style-class" (dict
   "Template" $template
-  "Style" $style
+  "MergedStyle" .MergedStyle
   "ValidStyles" $validStyles
-) -}}
+  ) -}}
+{{- if $debug }}
+  {{- warnf "%s[%s]: After style-class:\nmergedStyle=%v" $page $template
+      (jsonify (dict "indent" "  ") $mergedStyle) }}
+{{- end }}
+{{- $style := $mergedStyle.Style }}
+{{- $styleClassList := $mergedStyle.StyleClass }}
 
 {{- $linkIcon := $style.icon }}
 {{- $linkText := $style.text }}
@@ -43,7 +51,7 @@
 
 {{- $classPrefix := printf "link" }}
 
-{{ if (index .Component $mediaType) -}}
+{{ if default true (index .Component $mediaType) -}}
   <div class="{{ $classPrefix }}_container {{ $topLevelClass }}">
   {{ with .Data.features.links }}
     {{- $last := sub (len .) 1 -}}
