@@ -32,6 +32,29 @@ const controlPanelSettings = {
       // onChange: console.log  // javascript callback on every "input" event
     },
     {
+      cssVar: ['em_base', 'pt'],
+      label: 'Font size',
+      labelTitle: 'Adjust base font size',
+      type: 'range',
+      // Getting the value using getComputedStyle and getPropertyValue does not work in Safari
+      value: 10,
+      min: 7,
+      max: 12,
+      step: 0.1,
+      // onChange: console.log,
+      // onChange: (e, knobData) => console.log(e, knobData, knobData.value),
+      // onChange: () => {
+      //   if (window.vitae) {
+      //     console.log('em_base changed. Calling renderPrintPreview');
+      //     window.vitae.printView.renderPrintPreview();
+      //   }
+      //   else {
+      //     console.log('em_base changed but window.vitae=', window.viae);
+      //   }
+      // }
+    },
+    ['Spacing', false], // if false, group is collapsed by default
+    {
       cssVar: ['inner_margin_scale-factor', '-%'],
       label: 'Inner margins',
       labelTitle: 'Adjust inner margins',
@@ -88,28 +111,7 @@ const controlPanelSettings = {
       //   }
       // },
     },
-    {
-      cssVar: ['em_base', 'pt'],
-      label: 'Font size',
-      labelTitle: 'Adjust base font size',
-      type: 'range',
-      // Getting the value using getComputedStyle and getPropertyValue does not work in Safari
-      value: 10,
-      min: 7,
-      max: 12,
-      step: 0.1,
-      // onChange: console.log,
-      // onChange: (e, knobData) => console.log(e, knobData, knobData.value),
-      // onChange: () => {
-      //   if (window.vitae) {
-      //     console.log('em_base changed. Calling renderPrintPreview');
-      //     window.vitae.printView.renderPrintPreview();
-      //   }
-      //   else {
-      //     console.log('em_base changed but window.vitae=', window.viae);
-      //   }
-      // }
-    },
+    ['Page margins', false], // if false, group is collapsed by default
     {
       cssVar: ['page_margin_base_horizontal', 'mm'],
       label: 'Page margin horizontal',
@@ -150,7 +152,7 @@ const controlPanelSettings = {
       max: 1,
       step: 0.01,
     },
-    ['Print', true], // if false, group is collapsed by default
+    ['Print', false], // if false, group is collapsed by default
     {
       label: 'Control', // label is mandatory
       // FIXME: all buttons need attribute `type='button'`,
