@@ -846,7 +846,7 @@ html[data-mode="dim"] {
       --tl-col_timeline_color: var(--neutral-haze);
       --tl-col_stage-marker_background: var(--neutral-haze);
 
-      --tl-col_stage-marker_width: calc(0.25 * var(--font-size-heading-role));
+      --tl-col_stage-marker_width: calc(0.5 * var(--font-size-heading-role));
       --tl-col_stage-marker_height: var(--tl-col_stage-marker_width);
       --tl-col_stage-marker_organization_width: calc(4 / 3 * var(--tl-col_stage-marker_width));
       --tl-col_stage-marker_organization_height: var(--tl-col_stage-marker_organization_width);
@@ -1585,7 +1585,7 @@ html[data-mode="dim"] {
      */
 
     &.style_layout_narrow {
-      --tl-col_stage-marker_width: calc(0.5 * var(--rem));
+      // --tl-col_stage-marker_width: calc(0.25 * var(--rem));
       --grid_separator-column_width: var(--inner_margin_4-2);
       // --tl-col_timeline_width: calc(0.125 * var(--rem));
       --tl-col_timeline_width: var(--line-width_wider-1);
