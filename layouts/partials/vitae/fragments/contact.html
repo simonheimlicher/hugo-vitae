@@ -16,6 +16,7 @@
 
 {{- $contactIcons := true }}
 {{- $inlineSeparatorStr := default "•" $style.inline_separator }}
+{{- $inlineSeparatorStr = printf " %s " (trim $inlineSeparatorStr " ") }}
 {{/* {{- $inlineSeparatorStr := "<br>" }} */}}
 
 {{- /* warnf "%s[%s]: .Fragment=%s .Config=%s .Data=%s" $page $template $fragment $config .Data.features.contact */ -}}
