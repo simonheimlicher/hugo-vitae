@@ -108,8 +108,6 @@ const transferOverflow = function (conf) {
 
               // Transfer the last child from the baseElement to the overflowElement
               overflowElement.prepend(baseElement.removeChild(baseElement.lastChild));
-              // console.log("Moved to next page:", el);
-              // console.log("LastChild: ", baseElement.lastChild);
 
               // Transfer any non-DOM nodes from the baseElement to the overflowElement
               while (baseElement.lastChild && baseElement.lastChild.nodeType !== 1) {
@@ -133,20 +131,20 @@ const transferOverflow = function (conf) {
                 }
               }
 
-              // Re-number features after having them transferred between base and overflow page
-              for (let featureIndex = 0, feature = el.firstElementChild; feature; ++featureIndex, feature = feature.nextElementSibling) {
-                // pushClass(feature, "feature-" + featureIndex);
-                if (featureIndex == 0) {
-                  pushClass(feature, "feature-first");
+              // Re-number components after having them transferred between base and overflow page
+              for (let componentIndex = 0, component = baseElement.firstElementChild; component; ++componentIndex, component = component.nextElementSibling) {
+                // pushClass(component, "component_" + componentIndex);
+                if (componentIndex == 0) {
+                  pushClass(component, "component_first");
                 }
-                else {
-                  deleteClass(feature, "feature-first");
+                else if (component.classList.contains("component_first")) {
+                  component.classList.remove("component_first");
                 }
-                if (!feature.nextElementSibling) {
-                  pushClass(feature, "feature-last");
+                if (!component.nextElementSibling) {
+                  pushClass(component, "component_last");
                 }
-                else {
-                  deleteClass(feature, "feature-last");
+                else if (component.classList.contains("component_last")) {
+                  component.classList.remove("component_last");
                 }
               }
 

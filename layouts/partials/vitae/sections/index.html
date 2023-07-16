@@ -20,7 +20,7 @@
 {{- end }}
 {{- $featureTitle := .Feature.title | default (title .Feature.feature) -}}
 {{- with .Feature.title }}
-  {{- /*<h2 class="section-title page-{{ $pageIndex }} feature-{{ $featureIndex }} {{ $childClass }}">{{ $featureTitle }}</h2> */ -}}
+  {{- /*<h2 class="section-title page-{{ $pageIndex }} component_{{ $featureIndex }} {{ $childClass }}">{{ $featureTitle }}</h2> */ -}}
   {{- $featureTitle := cond (gt (len (T $featureTitle)) 0) (T $featureTitle) $featureTitle }}
   <h{{ $headingLevel }} class="section-{{ $feature.feature }}-title section-title {{ $childClass }}">{{ $featureTitle }}</h{{ $headingLevel }}>
   {{- $headingLevel = (add $headingLevel 1) }}

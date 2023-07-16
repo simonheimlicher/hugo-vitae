@@ -54,10 +54,10 @@ $inline-list-sep-width: math.div($inline-list-item-separation, 3.0);
       padding: 0;
       margin: var(--stage-org-header-mar-v) 0;
       break-after: avoid;
-      // FIXME: Setting a negative margin on .feature-last
+      // FIXME: Setting a negative margin on .component_last
       // breaks the JavaScript function to distribute content
       // across pages
-      // &.feature-last
+      // &.component_last
       //   // border: 1px solid blue
       //   margin-bottom: -0.25rem
       &.logo {
@@ -267,13 +267,13 @@ $inline-list-sep-width: math.div($inline-list-item-separation, 3.0);
         ul + ul {
           padding: 0;
         }
-        // FIXME: Setting a negative margin on .feature-last
+        // FIXME: Setting a negative margin on .component_last
         // breaks the JavaScript function to distribute content
         // across pages
-        // &.feature-last
+        // &.component_last
         //   border: 1px solid red
         //   margin-bottom: -0.5rem
-        &.feature-first {
+        &.component_first {
           p:first-child,
           ul:first-child {
             padding: 0;

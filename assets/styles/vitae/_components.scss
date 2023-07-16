@@ -1361,10 +1361,10 @@ html[data-mode="dim"] {
         padding: 0;
         margin: var(--stage-org-header-mar-v) 0;
         break-after: avoid;
-        // FIXME: Setting a negative margin on .feature-last
+        // FIXME: Setting a negative margin on .component_last
         // breaks the JavaScript function to distribute content
         // across pages
-        // &.feature-last
+        // &.component_last
         //   // border: 1px solid blue
         //   margin-bottom: -0.25rem
         &.stage_header_logo {
