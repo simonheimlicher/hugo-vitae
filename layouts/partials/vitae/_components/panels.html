@@ -6,7 +6,7 @@
 {{- $childClass := default "" .ChildClass }}
 
 {{- $debug := false }}
-{{- $debug = or $debug (not (not (findRE `^/([^/]+-demo/)?ats/preview` $page.RelPermalink) ) ) -}}
+{{/* {{- $debug = or $debug (not (not (findRE `^/([^/]+-demo/)?ats/preview` $page.RelPermalink) ) ) -}} */}}
 
 {{- $validStyles := (dict
   "layout" (dict
@@ -92,7 +92,7 @@
               <dt>
             {{- end -}}
 
-            {{ page.RenderString $optInline . }}
+            {{ page.RenderString $optInline (replaceRE `\s*<br>\s*` ` ` .) }}
 
             {{- if $styleLayoutInline }}
               </h{{ $headingLevel }}>

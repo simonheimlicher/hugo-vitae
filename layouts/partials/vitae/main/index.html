@@ -9,16 +9,6 @@
 {{- $debug := false }}
 {{/* {{- $debug = or $debug (not (not (findRE `^/([^/]+-demo/)?ats/preview` $page.RelPermalink) ) ) -}} */}}
 
-{{- $validStyles := (dict
-  "ats" (dict
-    "true" true
-    "false" false
-  )
-  "inline_separator" (dict
-    "ANY_STRING" true
-  )
-) }}
-
 {{/* {{ partial "html-comment" (printf "[%s]: PartialParams:%v" $template $pp) }} */}}
 
 {{- $type := default (default "vitae" $page.Type) ($page.Param "Type") }}
@@ -53,13 +43,12 @@
     {{- $vitaeStyle = merge $vitaeStyle . }}
   {{- end }}
 
-  {{- if $debug }}
-    {{- warnf "%s[%s]: RelPermalink=%s\ntemplate.variant '%s.%s'=%v\nstyle=%v\nvalidStyles=%v"
+  {{- if and false $debug }}
+    {{- warnf "%s[%s]: RelPermalink=%s\ntemplate.variant '%s.%s'=%v"
         $page $template $page.RelPermalink
         $vitaeTemplateName $vitaeVariantName
         (jsonify (dict "indent" "  ") $vitaeTemplate)
-        (jsonify (dict "indent" "  ") $vitaeStyle)
-        (jsonify (dict "indent" "  ") $validStyles ) }}
+    -}}
   {{- end }}
 
   {{- $vitaeData := dict }}
@@ -128,7 +117,6 @@
         "VitaeTemplate" $vitaeTemplate
         "VitaeData" $vitaeData
         "VitaeStyle" $vitaeStyle
-        "ValidStyles" $validStyles
         "PartClass" $partClass
         "PartClassPrefix" $partClassPrefix
         "PaginationPageClass" $paginationPageClass
@@ -139,7 +127,7 @@
         "OriginalInnerClass" $originalInnerClass
         ) $pp }}
 
-    {{ partial "html-comment" (printf "[%s]: BEGIN [layout=%v media=%v printPreview=%v printView=%v printControl=%v vitaeStyle:\n"
+    {{ partial "html-comment" (printf "[%s]: BEGIN [layout=%v media=%v printPreview=%v printView=%v printControl=%v'\nVitaeStyle="
         $template $pp.Layout $pp.Media $pp.PrintPreview $pp.PrintView $pp.PrintControl)
         (jsonify (dict "indent" "  ") $vitaeStyle) -}}
 
@@ -149,7 +137,9 @@
       {{- end }}
       <div id="originalContainer" class="view-{{ cond $pp.PrintPreview "print" "screen" }}">
         <div id="contentContainer" class="{{- $originalInnerClass }}">
-          {{/* {{- warnf "%s[%s]: Calling partial %s with pp:\n%v" $page $template (path.Join $pp.Type $pp.Layout) ($pp | jsonify (dict "indent" "  ")) }} */}}
+          {{/* {{- if $debug }}
+            {{- warnf "%s[%s]: Calling partial %s with pp:\n%v" $page $template (path.Join $pp.Type $pp.Layout) ((merge $pp (dict "Page" "OMITTED")) | jsonify (dict "indent" "  ")) }}
+          {{- end }} */}}
           {{- partial (path.Join $pp.Type $mainContentPrefix $pp.Layout) $pp }}
         </div>
       </div>

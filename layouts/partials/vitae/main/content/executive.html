@@ -7,15 +7,17 @@
 
 {{- $vitaeTemplate := $pp.VitaeTemplate }}
 {{- $vitaeData := $pp.VitaeData }}
+{{- $vitaeStyle := $pp.VitaeStyle }}
 
 {{- $debug := false }}
-{{- $debug = or $debug (not (not (findRE `^/([^/]+-demo/)?ats/preview` $page.RelPermalink) ) ) -}}
+{{/* {{- $debug = or $debug (not (not (findRE `^/([^/]+-demo/)?ats/preview` $page.RelPermalink) ) ) -}} */}}
 
 {{- $validStyles := (dict
   "ats" (dict
-    "true" (dict
-     "layout" (slice "inline" "shallow")
-    )
+    "ANY_BOOL" true
+  )
+  "inline_separator" (dict
+    "ANY_STRING" true
   )
   "layout" (dict
     "shallow" "shallow"
@@ -39,18 +41,17 @@
 ) -}}
 
 {{- $mergedStyle := partial "vitae/_functions/style-class" (dict
-  "Style" (default dict $pp.VitaeStyle)
+  "Style" $vitaeStyle
   "ValidStyles" $validStyles
   "Template" $template
 ) -}}
-
 {{- if $debug }}
-  {{- warnf "%s[%s]: mergedStyle=%v" $page $template
+  {{- warnf "%s[%s]: After style-class:\nmergedStyle=%v" $page $template
       (jsonify (dict "indent" "  ") $mergedStyle) }}
 {{- end }}
-
 {{- $style := $mergedStyle.Style }}
 {{- $styleClassList := $mergedStyle.StyleClass }}
+
 
 <!-- Pagination
 Part: an independent section of one or more printed pages

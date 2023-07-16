@@ -13,6 +13,14 @@
 {{/* {{- warnf "%s[%s]: media=%s .Component=%s .Config=%s" $page $template $componentArgs.Media $component $config -}} */}}
 
 {{- $validStyles := (dict
+  "ats" (dict
+    "true" (dict
+     "layout" (slice "inline")
+    )
+  )
+  "layout" (dict
+    "inline" "inline"
+  )
 ) -}}
 
 {{- $mergedStyle := partial "vitae/_functions/style-class" (dict
