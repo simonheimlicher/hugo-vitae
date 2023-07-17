@@ -17,6 +17,14 @@
 {{- end }}
 
 {{- $validStyles := (dict
+  "ats" (dict
+    "true" (dict
+      "layout" (slice
+        "shallow"
+        "inline"
+      )
+    )
+  )
   "layout" (dict
     "inline" "inline"
     "shallow" "shallow"

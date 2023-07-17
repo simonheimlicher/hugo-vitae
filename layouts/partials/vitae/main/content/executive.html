@@ -10,18 +10,19 @@
 {{- $vitaeStyle := $pp.VitaeStyle }}
 
 {{- $debug := false }}
-{{/* {{- $debug = or $debug (not (not (findRE `^/([^/]+-demo/)?ats/preview` $page.RelPermalink) ) ) -}} */}}
+{{/* {{- $debug = or $debug (not (not (findRE `^/([^/]+-demo/)?preview` $page.RelPermalink) ) ) -}} */}}
 
 {{- $validStyles := (dict
   "ats" (dict
-    "true" (dict
-      "layout" (slice
-        "shallow"
-        "inline"
-      )
-    )
+    "ANY_BOOL" true
   )
   "inline_separator" (dict
+    "ANY_STRING" true
+  )
+  "role_header_separator" (dict
+    "ANY_STRING" true
+  )
+  "stage_meta_separator" (dict
     "ANY_STRING" true
   )
   "layout" (dict
@@ -127,7 +128,7 @@ PaginationPage: a printed page that is part of a Part
         "Sections" $slot.sections
       )) -}}
       {{- with $container }}
-        {{ printf "</%s>" . | safeHTML }}
+        {{ printf `</%s>` . | safeHTML }}
       {{- end }}
     {{- end }}
   </div>

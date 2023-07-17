@@ -2,7 +2,7 @@
 {{- $fragment := .Fragment }}
 {{- $config := .Config }}
 {{- $data := .Data }}
-{{- $style := .Style }}
+{{- $style := .MergedStyle.Style }}
 {{- $template := "partials/vitae/fragments/personal" }}
 {{- $media := .Media }}
 {{/* {{- warnf "%s[%s]: outputFormat:%s" $page $template $outputFormat }} */}}

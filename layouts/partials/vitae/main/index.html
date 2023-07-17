@@ -7,7 +7,7 @@
 {{- $template := "vitae/main/index" }}
 
 {{- $debug := false }}
-{{/* {{- $debug = or $debug (not (not (findRE `^/([^/]+-demo/)?ats/preview` $page.RelPermalink) ) ) -}} */}}
+{{/* {{- $debug = or $debug (not (not (findRE `^/([^/]+-demo/)?preview` $page.RelPermalink) ) ) -}} */}}
 
 {{/* {{ partial "html-comment" (printf "[%s]: PartialParams:%v" $template $pp) }} */}}
 
@@ -25,25 +25,85 @@
 {{- end }}
 
 {{- $vitaeParamRoot := split (default "vitae" ($page.Param "VitaeRoot")) "." }}
+{{- $vitaeTemplateVariantPath := "variants" }}
+{{- $vitaeStylePath := "style" }}
+
 {{- $vitaeParams := $page.Param (delimit $vitaeParamRoot ".") }}
 
 {{- $vitaeTemplateName := default "executive" $vitaeParams.template }}
 {{- $vitaeVariantName := default "default" $vitaeParams.variant }}
 
-{{- $vitaeTemplateRoot := append (slice $vitaeTemplateName "variants" $vitaeVariantName) $vitaeParamRoot }}
+{{- $vitaeBaseTemplateRoot := append $vitaeTemplateName $vitaeParamRoot }}
+{{- $vitaeTemplateRoot := append (slice $vitaeTemplateName $vitaeTemplateVariantPath $vitaeVariantName) $vitaeParamRoot }}
 
-{{- $vitaeTemplate := index site.Params $vitaeTemplateRoot }}
-{{- with index $page.Params $vitaeTemplateRoot }}
+{{- $vitaeStyleRoot := append $vitaeStylePath $vitaeParamRoot }}
+
+{{- /* Initialize all params from site.Params */ -}}
+{{- $vitaeTemplate := merge (index site.Params $vitaeBaseTemplateRoot) (dict $vitaeTemplateVariantPath nil) }}
+{{- if $debug }}
+  {{- with $vitaeTemplate.style }}
+    {{- warnf "%s[%s]: site.Params.%s.style=%s" $page $template
+        (delimit $vitaeBaseTemplateRoot `.`) (jsonify (dict "indent" "  ") .) }}
+  {{- end }}
+{{- end }}
+
+{{- with index site.Params $vitaeTemplateRoot }}
+  {{- if $debug }}
+    {{- with .style }}
+      {{- warnf "%s[%s]: site.Params.%s.style=%s" $page $template
+          (delimit $vitaeTemplateRoot `.`) (jsonify (dict "indent" "  ") .) }}
+    {{- end }}
+  {{- end }}
   {{- $vitaeTemplate = merge $vitaeTemplate . }}
 {{- end }}
 
-{{- with $vitaeTemplate }}
-  {{- $vitaeStyle := $vitaeParams.style }}
-  {{- with $vitaeTemplate.style }}
-    {{- $vitaeStyle = merge $vitaeStyle . }}
+{{- /* Update all params from page.Params */ -}}
+{{- with index $page.Params $vitaeBaseTemplateRoot }}
+  {{- if $debug }}
+    {{- with .style }}
+      {{- warnf "%s[%s]: page.Params.%s.style=%s" $page $template
+        (delimit $vitaeBaseTemplateRoot `.`) (jsonify (dict "indent" "  ") .) }}
+    {{- end }}
   {{- end }}
+  {{- $vitaeTemplate = merge $vitaeTemplate . (dict $vitaeTemplateVariantPath nil) }}
+{{- end }}
 
-  {{- if and false $debug }}
+{{- with index $page.Params $vitaeTemplateRoot }}
+  {{- if $debug }}
+    {{- with .style }}
+      {{- warnf "%s[%s]: page.Params.%s.style=%s" $page $template
+        (delimit $vitaeTemplateRoot `.`) (jsonify (dict "indent" "  ") .) }}
+    {{- end }}
+  {{- end }}
+  {{- $vitaeTemplate = merge $vitaeTemplate . }}
+{{- end }}
+
+{{- /* Keep style params separate from template once extracted from the template */}}
+{{- $vitaeStyle := index $vitaeTemplate $vitaeStylePath }}
+{{- $vitaeTemplate = merge $vitaeTemplate (dict $vitaeStylePath nil) }}
+
+{{- /* Style params can be specified in front matter under $vitaeStyleRoot:
+---
+vitae:
+  style:
+    inline_separator: ' <-> '
+    ats: true
+    layout:
+      - narrow
+      - shallow
+*/ -}}
+
+{{- with index $page.Params $vitaeStyleRoot }}
+  {{- if $debug }}
+    {{- warnf "%s[%s]: page.Params.%s=%s" $page $template
+      (delimit $vitaeStyleRoot `.`) (jsonify (dict "indent" "  ") .) }}
+  {{- end }}
+  {{- $vitaeStyle = merge $vitaeStyle . }}
+{{- end }}
+
+{{- with $vitaeTemplate }}
+
+  {{- if $debug }}
     {{- warnf "%s[%s]: RelPermalink=%s\ntemplate.variant '%s.%s'=%v"
         $page $template $page.RelPermalink
         $vitaeTemplateName $vitaeVariantName
@@ -127,9 +187,9 @@
         "OriginalInnerClass" $originalInnerClass
         ) $pp }}
 
-    {{ partial "html-comment" (printf "[%s]: BEGIN [layout=%v media=%v printPreview=%v printView=%v printControl=%v'\nVitaeStyle="
+    {{ partial "html-comment" (printf "[%s]: BEGIN [layout=%v media=%v printPreview=%v printView=%v printControl=%v]\nstyle="
         $template $pp.Layout $pp.Media $pp.PrintPreview $pp.PrintView $pp.PrintControl)
-        (jsonify (dict "indent" "  ") $vitaeStyle) -}}
+        (jsonify (dict "indent" "  ") $vitaeTemplate.style) -}}
 
     <div id="vitaeContainer" class="{{ $containerClass }}" {{ $printViewVisibleAttr | safeHTMLAttr }}>
       {{- if (or $pp.PrintPreview $pp.PrintView $pp.PrintControl) }}
@@ -137,9 +197,9 @@
       {{- end }}
       <div id="originalContainer" class="view-{{ cond $pp.PrintPreview "print" "screen" }}">
         <div id="contentContainer" class="{{- $originalInnerClass }}">
-          {{/* {{- if $debug }}
+          {{- if and false $debug }}
             {{- warnf "%s[%s]: Calling partial %s with pp:\n%v" $page $template (path.Join $pp.Type $pp.Layout) ((merge $pp (dict "Page" "OMITTED")) | jsonify (dict "indent" "  ")) }}
-          {{- end }} */}}
+          {{- end }}
           {{- partial (path.Join $pp.Type $mainContentPrefix $pp.Layout) $pp }}
         </div>
       </div>

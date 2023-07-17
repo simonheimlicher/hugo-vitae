@@ -1599,6 +1599,25 @@ html[data-mode="dim"] {
     }
 
     /*
+     * Inline style Role
+     */
+
+     &.style_inline_role_true {
+      .stage {
+        &_main {
+          flex-direction: row;
+          justify-content: flex-start;
+          align-items: baseline;
+          flex-wrap: wrap;
+          .role_header {
+            // background-color: red;
+            display: inline-block;
+          }
+        }
+      }
+    }
+
+    /*
      * Layout style NARROW
      */
 
