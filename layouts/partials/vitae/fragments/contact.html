@@ -16,7 +16,7 @@
 
 {{- $contactIcons := true }}
 {{- $inlineSeparatorStr := default "•" $style.inline_separator }}
-{{- $inlineSeparatorStr = printf " %s " (trim $inlineSeparatorStr " ") }}
+{{- $inlineSeparatorStr = trim $inlineSeparatorStr "  " }}
 {{/* {{- $inlineSeparatorStr := "<br>" }} */}}
 
 {{- /* warnf "%s[%s]: .Fragment=%s .Config=%s .Data=%s" $page $template $fragment $config .Data.features.contact */ -}}
@@ -70,7 +70,7 @@
           {{- range $field, $sep := $fieldSpec }}
             {{- with (index $address $field) }}
               {{- if (eq $sep "SEP") }}{{ $sep = $inlineSeparatorStr}}{{- end }}
-                <span class="address-{{ $field }}">{{ print . $sep | safeHTML }}</span>
+                <span class="address-{{ $field }}">{{ printf "%v %v" . $sep | safeHTML }}</span>
               {{- end }}
             {{- end }}
           {{- end }}

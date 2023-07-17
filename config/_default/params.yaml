@@ -74,8 +74,10 @@ vitae:
                         - narrow
                       inline:
                         header: true
+                        role: false
                       timeline: column
                       heading: normal
+                      date: year
                     organization:
                       period: true
                       details: false
@@ -134,11 +136,15 @@ vitae:
               - section: connect
                 # title: section-connect
                 container: section
+                style:
+                  title: left
                 components:
                 - component: links
                   title: section-connect
                   style:
-                    layout: shallow
+                    layout:
+                      - shallow
+                      - inline
                     icon: true
                     text: true
                     qrcode: true

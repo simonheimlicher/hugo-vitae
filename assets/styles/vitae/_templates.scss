@@ -51,22 +51,12 @@
       flex-direction: column;
       gap: var(--inner_margin_4-1) 0;
     }
-
-    .slot_header {
-      // outline: 1px dashed green;
-      margin-bottom: var(--inner_margin_4-2);
-    }
   }
 }
 
 .vitae.layout-executive .view-print .template {
   // Part front page
   &_front-page {
-    .slot_header {
-      height: calc( var(--page_height) * var(--page_header_height_fraction) );
-      margin-bottom: var(--inner_margin_4-2);
-      position: relative;
-    }
 
     .slot_main {
       /* FIXME: To validate whether var(--column_content_width) is correct

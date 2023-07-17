@@ -14,7 +14,12 @@
 
 {{- $validStyles := (dict
   "ats" (dict
-    "ANY_BOOL" true
+    "true" (dict
+      "layout" (slice
+        "shallow"
+        "inline"
+      )
+    )
   )
   "inline_separator" (dict
     "ANY_STRING" true

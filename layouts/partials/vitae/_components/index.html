@@ -37,13 +37,33 @@
 
 {{- range $sectionIndex, $section := where $sections "enabled" "ne" false }}
   {{- $sectionName := $section.section }}
-  {{- $sectionClass := printf "section_%s" $sectionName }}
-  {{- $childClass := default "" .child_class }}
+  {{- $sectionClassList := slice (printf "section_%s" $sectionName) }}
   {{- $sectionContainer := default "" .container }}
+  {{- $sectionChildClass := slice (default "" .child_class) }}
   {{- if $sectionContainer }}
-    {{ printf `<%s class="%s section">` $sectionContainer $sectionClass | safeHTML }}
+    {{- $validSectionStyles := (dict
+      "title" (dict
+        "left" "left"
+        "inline" "left"
+      )
+    ) -}}
+
+    {{- $mergedSectionStyle := partial "vitae/_functions/style-class" (dict
+      "Template" $template
+      "Style" .style
+      "ValidStyles" $validSectionStyles
+      ) -}}
+    {{- if $debug }}
+      {{- warnf "%s[%s]: section=%s: After style-class:\nmergedStyle=%v"
+          $page $template $sectionName
+          (jsonify (dict "indent" "  ") $mergedStyle) }}
+    {{- end }}
+    {{- with $mergedSectionStyle.StyleClass }}
+      {{- $sectionClassList = append . $sectionClassList }}
+    {{- end }}
+    {{ printf `<%s class="%s section">` $sectionContainer (delimit $sectionClassList ` `) | safeHTML }}
   {{- else }}
-    {{- $childClass = trim (printf "%v %s" $childClass $sectionClass) " " }}
+    {{- $childClass = print (delimit $sectionClassList ` `) }}
   {{- end }}
   {{- $headingLevel := default 2 $section.level }}
   {{- $sectionTitle := $section.title | default $sectionName -}}
