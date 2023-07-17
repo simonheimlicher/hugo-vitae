@@ -1,5 +1,6 @@
 /* ----- Templates for layout EXECUTIVE ------ */
-.vitae.layout-executive .view-print {
+// .vitae.layout-executive .view-print {
+.vitae.layout-executive {
   .slot_footer {
     display: grid;
     gap: var(--inner_margin_4-4) var(--column_gap);
@@ -13,18 +14,27 @@
       }
     }
   }
+  .view-screen {
+    .slot_footer {
+      display: none;
+    }
+  }
 }
 
-.vitae.layout-executive .view-print {
+// .vitae.layout-executive .view-print {
+.vitae.layout-executive {
   --num_columns: 12;
-  --main_column_width: 8;
+  --main_column_width: 6;
   --aside_column_width: calc(var(--num_columns) - var(--main_column_width));
   --main_column: 1;
   --aside_column: calc(var(--main_column) + var(--main_column_width));
   // --main_column: calc(var(--aside_column) + var(--aside_column_width));
   // --aside_column: 1;
-  --column_content_width: calc( (var(--page_content_width) - (var(--num_columns) - 1) * var(--column_gap)) / var(--num_columns));
   --page_header_height_fraction: 1 / 6;
+  --column_content_width: calc( (var(--page_content_width) - (var(--num_columns) - 1) * var(--column_gap)) / var(--num_columns));
+  .view-print {
+    --column_content_width: calc( (var(--page_content_width) - (var(--num_columns) - 1) * var(--column_gap)) / var(--num_columns));
+  }
 
   .section-panel {
     margin-top: var(--inner_margin_4-0);
@@ -52,12 +62,15 @@
   }
 }
 
-.vitae.layout-executive .view-print .template {
-  // Part front page
+// .vitae.layout-executive .view-print .template {
+.vitae.layout-executive .template {
+    // Part front page
   &_front-page {
 
     .slot_main {
-      /* FIXME: To validate whether var(--column_content_width) is correct
+
+      // FIXME: To validate whether var(--column_content_width) is correct
+      /*
       position: relative;
       &::before {
         position: absolute;

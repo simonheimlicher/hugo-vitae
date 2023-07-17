@@ -15,53 +15,54 @@
 .vitae {
   --rem_base: 1rem;
   --em_base: 1rem;
-  --page_scale-factor: 1.0;
-  --inner_margin_scale-factor: 1;
-  --inner_padding_scale-factor: 1;
-  --line_width_scale-factor: 1;
+  --page_content_width: 100%;
 
-  --page_width_base: #{$printPageWidth};
-  --page_height_base: #{$printPageHeight};
-  --page_width: calc(var(--page_width_base));
-  --page_height: calc(var(--page_height_base));
+  .view-print {
+    --page_scale-factor: 1;
 
-  --page_margin_base_horizontal: #{$printPageMarginHorizontal};
-  --page_margin_base_center_horizontal: #{$printPageMarginCenterHorizontal};
+    --page_width_base: #{$printPageWidth};
+    --page_height_base: #{$printPageHeight};
+    --page_width: calc(var(--page_width_base));
+    --page_height: calc(var(--page_height_base));
 
-  --page_margin_base_vertical: #{$printPageMarginVertical};
-  --page_margin_base_center_vertical: #{$printPageMarginCenterVertical};
+    --page_margin_base_horizontal: #{$printPageMarginHorizontal};
+    --page_margin_base_center_horizontal: #{$printPageMarginCenterHorizontal};
 
-  --page_margin_base_left: calc(
-    var(--page_margin_base_center_horizontal) * var(--page_margin_base_horizontal) * 2
-  );
+    --page_margin_base_vertical: #{$printPageMarginVertical};
+    --page_margin_base_center_vertical: #{$printPageMarginCenterVertical};
 
-  --page_margin_base_right: calc(
-    (1 - var(--page_margin_base_center_horizontal)) * var(--page_margin_base_horizontal) * 2
-  );
+    --page_margin_base_left: calc(
+      var(--page_margin_base_center_horizontal) * var(--page_margin_base_horizontal) * 2
+    );
 
-  --page_margin_base_top: calc(
-    var(--page_margin_base_center_vertical) * var(--page_margin_base_vertical) * 2
-  );
+    --page_margin_base_right: calc(
+      (1 - var(--page_margin_base_center_horizontal)) * var(--page_margin_base_horizontal) * 2
+    );
 
-  --page_margin_base_bottom: calc(
-    (1 - var(--page_margin_base_center_vertical)) * var(--page_margin_base_vertical) * 2
-  );
+    --page_margin_base_top: calc(
+      var(--page_margin_base_center_vertical) * var(--page_margin_base_vertical) * 2
+    );
 
-  --page_margin_left: var(--page_margin_base_left);
-  --page_margin_right: var(--page_margin_base_right);
-  --page_margin_top: var(--page_margin_base_top);
-  --page_margin_bottom: var(--page_margin_base_bottom);
+    --page_margin_base_bottom: calc(
+      (1 - var(--page_margin_base_center_vertical)) * var(--page_margin_base_vertical) * 2
+    );
 
-  --page_content_width: calc(var(--page_width) - var(--page_margin_left) - var(--page_margin_right));
+    --page_margin_left: var(--page_margin_base_left);
+    --page_margin_right: var(--page_margin_base_right);
+    --page_margin_top: var(--page_margin_base_top);
+    --page_margin_bottom: var(--page_margin_base_bottom);
 
-  @media screen {
-    --page_width: calc(var(--page_width_base) * var(--page_scale-factor));
-    --page_height: calc(var(--page_height_base) * var(--page_scale-factor));
+    --page_content_width: calc(var(--page_width) - var(--page_margin_left) - var(--page_margin_right));
 
-    --page_margin_left: calc(var(--page_margin_base_left) * var(--page_scale-factor));
-    --page_margin_right: calc(var(--page_margin_base_right) * var(--page_scale-factor));
-    --page_margin_top: calc(var(--page_margin_base_top) * var(--page_scale-factor));
-    --page_margin_bottom: calc(var(--page_margin_base_bottom) * var(--page_scale-factor));
+    @media screen {
+      --page_width: calc(var(--page_width_base) * var(--page_scale-factor));
+      --page_height: calc(var(--page_height_base) * var(--page_scale-factor));
+
+      --page_margin_left: calc(var(--page_margin_base_left) * var(--page_scale-factor));
+      --page_margin_right: calc(var(--page_margin_base_right) * var(--page_scale-factor));
+      --page_margin_top: calc(var(--page_margin_base_top) * var(--page_scale-factor));
+      --page_margin_bottom: calc(var(--page_margin_base_bottom) * var(--page_scale-factor));
+    }
   }
 
   .view-print {
@@ -239,35 +240,93 @@
   }
 }
 
-.vitae {
-  .view-screen {
-    // --rem_base: 1rem;
-    // --em_base: 1rem;
-    --rem: var(--rem_base);
-    --em: var(--em_base);
-    @include font-size-scale(var(--em));
-    --inner_margin_base: calc(1.8 * var(--rem));
-    --inner_padding_base: calc(1.2 * var(--rem));
+@mixin property-scale($prop-spec) {
+  $base-suffix: '_base';
+  $factor-suffix: '_scale-factor';
+  $initial: 1;
+  $target: '.view-print';
+  $base: null;
 
-    --inner_margin: var(--inner_margin_base);
-    --inner_padding: var(--inner_padding_base);
+  @each $prop-key, $prop-values in $prop-spec {
+    $factor: #{$prop-key}#{$factor-suffix};
+    @if type-of($prop-values) == 'map' {
+      @each $p, $v in $prop-values {
+        $p-value-name: #{$prop-key}_#{$p};
+        $p-base: #{$p-value-name}#{$base-suffix};
+        @if $base {
+          #{$base} {
+            --#{$p-base}: #{$v};
+            --#{$p-value-name}: var(--#{$p-base});
+          }
+        }
+        @else {
+          --#{$p-base}: #{$v};
+          --#{$p-value-name}: var(--#{$p-base});
+        }
+      }
+    }
+    @else {
+      $p-value-name: #{$prop-key};
+      $v: #{$prop-values};
+      $p-base: #{$p-value-name}#{$base-suffix};
+      @if $base {
+        #{$base} {
+          --#{$p-base}: #{$v};
+          --#{$p-value-name}: var(--#{$p-base});
+        }
+      }
+      @else {
+        --#{$p-base}: #{$v};
+        --#{$p-value-name}: var(--#{$p-base});
+      }
+    }
 
-    @include inner_margin_padding(var(--inner_margin), var(--inner_padding));
-    @include inner_margin_padding(var(--inner_margin), var(--inner_padding), 8, 1);
-
-    --line-width_normal: calc(0.0625 * var(--rem));
-    --line-width_wider-1: calc(0.125 * var(--rem));
-    --line-width_wider-2: calc(0.25 * var(--rem));
-
-    --list-style_margin: var(--inner_margin_4-0);
-    --list-style_padding: var(--inner_padding_4-1);
-    --list-style_indent: 0;
-    @include list-style_indented(var(--list-style_margin), var(--list-style_padding), var(--list-style_indent));
+    #{$target} {
+      --#{$factor}: #{$initial};
+      @if type-of($prop-values) == 'map' {
+        @each $p, $v in $prop-values {
+          $p-value-name: #{$prop-key}_#{$p};
+          $p-base: #{$p-value-name}#{$base-suffix};
+          // --#{$p-base}: #{$v};
+          --#{$p-value-name}: var(--#{$p-base});
+        }
+      }
+      @else {
+        $p-value-name: #{$prop-key};
+        $v: #{$prop-values};
+        $p-base: #{$p-value-name}#{$base-suffix};
+        // --#{$p-base}: #{$v};
+        --#{$p-value-name}: var(--#{$p-base});
+      }
+      @media screen {
+        @if type-of($prop-values) == 'map' {
+          @each $p, $v in $prop-values {
+            $p-value-name: #{$prop-key}_#{$p};
+            $p-base: #{$p-value-name}#{$base-suffix};
+            --#{$p-base}: #{$v};
+            --#{$p-value-name}: calc( var(--#{$p-base}) * var(--#{$factor}) );
+          }
+        }
+        @else {
+          $p-value-name: #{$prop-key};
+          $v: #{$prop-values};
+          $p-base: #{$p-value-name}#{$base-suffix};
+          --#{$p-base}: #{$v};
+          --#{$p-value-name}: calc( var(--#{$p-base}) * var(--#{$factor}) );
+        }
+      }
+    }
   }
+}
+
+.vitae {
+  --rem: var(--rem_base);
+  --em: var(--em_base);
+  @include font-size-scale(var(--em));
 
   .view-print {
-    // --rem_base: 10pt;
-    // --em_base: 10pt;
+    --rem_base: 10pt;
+    --em_base: 10pt;
 
     --rem: var(--rem_base);
     --em: var(--em_base);
@@ -275,34 +334,8 @@
     @media screen {
       --rem: calc(var(--rem_base) * var(--page_scale-factor));
       --em: calc(var(--em_base) * var(--page_scale-factor));
+      @include font-size-scale(var(--em));
     }
-    @include font-size-scale(var(--em));
-
-    --inner_margin_base: calc(1.8 * var(--rem));
-    --inner_padding_base: calc(1.2 * var(--rem));
-
-    --inner_margin: var(--inner_margin_base);
-    --inner_padding: var(--inner_padding_base);
-
-    @include inner_margin_padding(var(--inner_margin), var(--inner_padding));
-    @include inner_margin_padding(var(--inner_margin), var(--inner_padding), 8, 1);
-
-    --line-width_normal_base: calc(0.0625 * var(--rem));
-    --line-width_wider-1_base: calc(0.125 * var(--rem));
-    --line-width_wider-2_base: calc(0.25 * var(--rem));
-
-    --line-width_normal: var(--line-width_normal_base);
-    --line-width_wider-1: var(--line-width_wider-1_base);
-    --line-width_wider-2: var(--line-width_wider-2_base);
-
-    @media screen {
-      --inner_margin: calc(var(--inner_margin_base) * var(--inner_margin_scale-factor));
-      --inner_padding: calc(var(--inner_padding_base) * var(--inner_padding_scale-factor));
-      --line-width_normal: calc(var(--line-width_normal_base) * var(--line_width_scale-factor));
-      --line-width_wider-1: calc(var(--line-width_wider-1_base) * var(--line_width_scale-factor));
-      --line-width_wider-2: calc(var(--line-width_wider-2_base) * var(--line_width_scale-factor));
-    }
-    @include inner_margin_padding(var(--inner_margin), var(--inner_padding));
 
     --list-style_margin: var(--inner_margin_4-0);
     --list-style_padding: var(--inner_padding_4-1);
@@ -310,18 +343,41 @@
     @include list-style_indented(var(--list-style_margin), var(--list-style_padding), var(--list-style_indent));
   }
 
+  $props: (
+    'inner_margin': calc(1.8 * var(--rem)),
+    'inner_padding': calc(1.2 * var(--rem)),
+    'line-width': (
+      'normal': calc(0.0625 * var(--rem)),
+      'wider-1': calc(0.125 * var(--rem)),
+      'wider-2': calc(0.25 * var(--rem)),
+    )
+  );
+
+  @include property-scale($props);
+  @include inner_margin_padding(var(--inner_margin), var(--inner_padding));
+  @include inner_margin_padding(var(--inner_margin), var(--inner_padding), 8, 1);
+
+  // --column_gap: var(--inner_margin_4-3);
+  // Row gap is provided by section-title in most templates
+  // --row_gap: var(--inner_margin_4-0);
+
+  --line-width_separator: calc(0.025 * var(--rem));;
+  --line-width_separator_heading: calc(0.05 * var(--rem));;
+
+  .view-print {
+    @media screen {
+      @include inner_margin_padding(var(--inner_margin), var(--inner_padding));
+      @include inner_margin_padding(var(--inner_margin), var(--inner_padding), 8, 1);
+      --column_gap: var(--inner_margin_4-3);
+      --row_gap: var(--inner_margin_4-0);
+    }
+  }
+
+  --border-color: var(--text);
+  --border-color-faint: var(--text-color-faint);
+
   .view-print {
     @include link-lvhfa-reset;
-
-    --column_gap: var(--inner_margin_4-3);
-    // Row gap is provided by section-title in most templates
-    --row_gap: var(--inner_margin_4-0);
-
-    --line-width_separator: calc(0.025 * var(--rem));;
-    --line-width_separator_heading: calc(0.05 * var(--rem));;
-
-    --border-color: var(--text);
-    --border-color-faint: var(--text-color-faint);
 
     .pagination-page {
       padding: var(--page_margin_top) var(--page_margin_right) var(--page_margin_bottom) var(--page_margin_left);

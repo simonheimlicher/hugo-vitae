@@ -11,7 +11,7 @@ const controlPanelSettings = {
   // 0 - starts as hidden, 1 - starts as visible, 2 - always visible
   visible: 0,
 
-  CSSVarTarget: document.querySelector('#vitaeContainer'),
+  CSSVarTarget: document.querySelector('.vitae .view-print'),
 
   // Persist changes using the browser's localstorage.
   // Store key/ value per knob, where key is the knob's label.
@@ -53,7 +53,7 @@ const controlPanelSettings = {
       //   }
       // }
     },
-    ['Spacing', false], // if false, group is collapsed by default
+    ['Spacing', true], // if false, group is collapsed by default
     {
       cssVar: ['inner_margin_scale-factor', '-%'],
       label: 'Inner margins',
@@ -93,7 +93,7 @@ const controlPanelSettings = {
       // },
     },
     {
-      cssVar: ['line_width_scale-factor', ''],
+      cssVar: ['line-width_scale-factor', ''],
       label: 'Line width',
       labelTitle: 'Adjust line width',
       type: 'range',
@@ -111,7 +111,7 @@ const controlPanelSettings = {
       //   }
       // },
     },
-    ['Page margins', false], // if false, group is collapsed by default
+    ['Page margins', true], // if false, group is collapsed by default
     {
       cssVar: ['page_margin_base_horizontal', 'mm'],
       label: 'Page margin horizontal',

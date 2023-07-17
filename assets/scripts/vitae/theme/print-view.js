@@ -162,6 +162,9 @@ const transferOverflow = function (conf) {
         });
 
         if (pageOverflowingContainers.length > 0) {
+          if (paginatedPageElements.length > conf['maxNumPages']) {
+            return;
+          }
           const overflowPage = targetPageElement.cloneNode(false);
           paginatedPageElements.push(overflowPage);
 
@@ -421,6 +424,8 @@ const init = function (reset) {
 
     paginationPoliciesToPaginate: ["break"],
     paginationPoliciesToClone: ["clone"],
+
+    maxNumPages: 10,
   };
 
   let parts = [];

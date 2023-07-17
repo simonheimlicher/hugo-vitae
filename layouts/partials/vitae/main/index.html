@@ -148,15 +148,25 @@ vitae:
     {{/* {{ partial "html-comment" (printf "vitaeData.features.about: %s"  ($vitaeData.features.about | jsonify (dict "indent" "  "))) }} */}}
     {{/* {{ warnf "%s[%s]: vitaeData.features.about: %s"  $page $template ($vitaeData.features.about | jsonify (dict "indent" "  ")) }} */}}
 
+    {{- $mainContentPrefix := "main/content" }}
+    {{- $containerClass := slice "vitae" }}
+
+    {{- /* Print view is a separate container that is only included
+        if the page should be rendered as a printable page */ -}}
+    {{- $includePrintView := or $pp.PrintPreview $pp.PrintView $pp.PrintControl }}
     {{- $printViewVisibleAttr := "" }}
-    {{- if $printView }}
-      {{- $printViewVisibleAttr = "data-print-preview-visible=\"true\"" }}
+
+    {{- if $includePrintView }}
+      {{- if $printView }}
+        {{- $printViewVisibleAttr = "data-print-preview-visible=\"true\"" }}
+      {{- end }}
+    {{- else }}
+      {{- $containerClass = append "content_singlecolumn" $containerClass }}
     {{- end }}
 
-    {{- $mainContentPrefix := "main/content" }}
-    {{- $containerClass := "vitae" }}
     {{- $originalInnerClass := "vitae_inner vitae_lightbox"  }}
-    {{- with $layout }}{{ $containerClass = printf "%s layout-%s" $containerClass $layout }}
+    {{- with $layout }}
+      {{- $containerClass = append (printf "layout-%s" $layout) $containerClass }}
     {{- end }}
 
     {{- $partClass := "part" }}
@@ -191,8 +201,8 @@ vitae:
         $template $pp.Layout $pp.Media $pp.PrintPreview $pp.PrintView $pp.PrintControl)
         (jsonify (dict "indent" "  ") $vitaeTemplate.style) -}}
 
-    <div id="vitaeContainer" class="{{ $containerClass }}" {{ $printViewVisibleAttr | safeHTMLAttr }}>
-      {{- if (or $pp.PrintPreview $pp.PrintView $pp.PrintControl) }}
+    <div id="vitaeContainer" class="{{ delimit $containerClass ` ` }}" {{ $printViewVisibleAttr | safeHTMLAttr }}>
+      {{- if $includePrintView }}
         {{- partial "vitae/print-preview" (merge $pp (dict "ContainerClass" "view-print")) }}
       {{- end }}
       <div id="originalContainer" class="view-{{ cond $pp.PrintPreview "print" "screen" }}">

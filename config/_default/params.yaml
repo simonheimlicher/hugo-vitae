@@ -18,12 +18,16 @@ vitae:
           screen: true
           print: true
 
+        # style:
+        #   layout: shallow
+
         parts:
 
           # Front page
           - template: front-page
             # enabled: false
             pagination_policy: first
+
             slots:
             - slot: header
               sections:
@@ -182,7 +186,9 @@ vitae:
                     style:
                       logo: false
                       heading: normal
-                      layout: narrow
+                      layout:
+                        - shallow
+                        # - inline # no effect
                 - section: certificates
                   title: section-certificates
                   container: section
