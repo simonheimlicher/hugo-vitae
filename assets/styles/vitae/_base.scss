@@ -202,4 +202,14 @@ $font-size-scale-factor: math.pow(2.0, math.div(1, 5) );
   address {
     font-style: var(--font-style);
   }
+  blockquote {
+    &::before {
+      content: none;
+    }
+    &::after {
+      content: none;
+    }
+    all: inherit;
+    font-size: var(--font-size-larger-1);
+  }
 }
