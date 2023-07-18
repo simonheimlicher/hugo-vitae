@@ -43,6 +43,12 @@
     grid-template-columns: repeat(var(--num_columns), 1fr);
     align-items: start;
     grid-auto-flow: dense row;
+    section:first-child {
+      grid-column: var(--main_column) / span var(--main_column_width);
+    }
+    section:last-child {
+      grid-column: var(--aside_column) / span var(--aside_column_width);
+    }
     &.style_layout_narrow {
       section:last-of-type {
         margin-top: auto;
@@ -56,9 +62,9 @@
       gap: var(--inner_margin_4-1) 0;
     }
   }
-  &.style_layout_inline {
+  .style_layout_inline {
     --list-style_padding: 0;
-    --page_header_height_fraction: 1 / 7;
+    --page_header_height_fraction: 1 / 8;
   }
 }
 
@@ -86,89 +92,94 @@
 
       margin-top: calc(max(var(--row_gap), var(--section-title_margin_top_between)));
 
-      display: grid;
-      // gap: var(--inner_margin_4-4) var(--inner_margin_4-4);
-      gap: 0 var(--column_gap);
-      grid-template-columns: repeat(var(--num_columns), 1fr);
-      align-items: start;
-      grid-auto-flow: dense row;
-      .section {
-        &_personal-profile {
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+
+      &.style_display_grid {
+        display: grid;
+        gap: 0 var(--column_gap);
+        grid-template-columns: repeat(var(--num_columns), 1fr);
+        align-items: start;
+        grid-auto-flow: dense row;
+        .section {
+          &_personal-profile {
+            grid-column: 1 / span var(--num_columns);
+            grid-row: 1;
+            // grid-area: span 1 / span 12;
+          }
+          &_career-summary {
+            grid-column: 1 / span var(--num_columns);
+            // grid-column: 1 / span var(--main_column_width);
+            grid-row: 2;
+            // grid-area: span 2 / span 12;
+          }
+          &_awards {
+            grid-column: 1 / span var(--num_columns);
+            // grid-column: 1 / span var(--main_column_width);
+            // grid-column: var(--aside_column) / span var(--aside_column_width);
+            // grid-row: 2;
+            // grid-area: span 1 / span var(--aside_column_width);
+          }
+          &_career-summary-awards {
+            grid-column: 1 / span var(--num_columns);
+            grid-row: 2;
+          }
+          &_career-summary-awards-certificates {
+            --main_column_width: 9;
+            grid-column: 1 / span var(--num_columns);
+            grid-row: 2;
+          }
+          &_key-achievements {
+            grid-column: 1 / span var(--num_columns);
+            // grid-column: 1 / span var(--main_column_width);
+            // grid-row: 3;
+          }
+          &_connect {
+            // grid-column: var(--aside_column) / span var(--aside_column_width);
+            grid-column: 1 / span var(--num_columns);
+            // grid-row: 4;
+          }
+          &_language-skills {
+            grid-column: var(--aside_column) / span var(--aside_column_width);
+            grid-row: 4;
+            // grid-area: span 1 / span var(--aside_column_width);
+          }
+        }
+        .section-panel_career-summary-awards {
           grid-column: 1 / span var(--num_columns);
-          grid-row: 1;
-          // grid-area: span 1 / span 12;
+          .section_career-summary {
+            grid-row: 1;
+            grid-column: var(--main_column) / span var(--main_column_width);
+          }
+          .section_awards {
+            grid-row: 1;
+            grid-column: var(--aside_column) / span var(--aside_column_width);
+          }
         }
-        &_career-summary {
+        .section-panel_career-summary-awards-certificates {
           grid-column: 1 / span var(--num_columns);
-          // grid-column: 1 / span var(--main_column_width);
-          grid-row: 2;
-          // grid-area: span 2 / span 12;
+          .section_career-summary {
+            grid-row: 1 / span 2;
+            grid-column: var(--main_column) / span var(--main_column_width);
+          }
+          .section_awards {
+            grid-row: 1;
+            grid-column: var(--aside_column) / span var(--aside_column_width);
+          }
+          .section_certificates {
+            grid-row: 2;
+            grid-column: var(--aside_column) / span var(--aside_column_width);
+          }
         }
-        &_awards {
+        .section-panel_awards-certificates {
           grid-column: 1 / span var(--num_columns);
-          // grid-column: 1 / span var(--main_column_width);
-          // grid-column: var(--aside_column) / span var(--aside_column_width);
-          // grid-row: 2;
-          // grid-area: span 1 / span var(--aside_column_width);
-        }
-        &_career-summary-awards {
-          grid-column: 1 / span var(--num_columns);
-          grid-row: 2;
-        }
-        &_career-summary-awards-certificates {
-          --main_column_width: 9;
-          grid-column: 1 / span var(--num_columns);
-          grid-row: 2;
-        }
-        &_key-achievements {
-          grid-column: 1 / span var(--num_columns);
-          // grid-column: 1 / span var(--main_column_width);
-          // grid-row: 3;
-        }
-        &_connect {
-          // grid-column: var(--aside_column) / span var(--aside_column_width);
-          grid-column: 1 / span var(--num_columns);
-          // grid-row: 4;
-        }
-        &_language-skills {
-          grid-column: var(--aside_column) / span var(--aside_column_width);
-          grid-row: 4;
-          // grid-area: span 1 / span var(--aside_column_width);
-        }
-      }
-      .section-panel_career-summary-awards {
-        grid-column: 1 / span var(--num_columns);
-        .section_career-summary {
-          grid-row: 1;
-          grid-column: var(--main_column) / span var(--main_column_width);
-        }
-        .section_awards {
-          grid-row: 1;
-          grid-column: var(--aside_column) / span var(--aside_column_width);
-        }
-      }
-      .section-panel_career-summary-awards-certificates {
-        grid-column: 1 / span var(--num_columns);
-        .section_career-summary {
-          grid-row: 1 / span 2;
-          grid-column: var(--main_column) / span var(--main_column_width);
-        }
-        .section_awards {
-          grid-row: 1;
-          grid-column: var(--aside_column) / span var(--aside_column_width);
-        }
-        .section_certificates {
-          grid-row: 2;
-          grid-column: var(--aside_column) / span var(--aside_column_width);
-        }
-      }
-      .section-panel_awards-certificates {
-        grid-column: 1 / span var(--num_columns);
-        .section_awards {
-          grid-column: var(--main_column) / span var(--main_column_width);
-        }
-        .section_certificates {
-          grid-column: var(--aside_column) / span var(--aside_column_width);
+          .section_awards {
+            grid-column: var(--main_column) / span var(--main_column_width);
+          }
+          .section_certificates {
+            grid-column: var(--aside_column) / span var(--aside_column_width);
+          }
         }
       }
     }

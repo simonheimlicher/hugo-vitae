@@ -3,7 +3,7 @@ vitae:
 # ------ Template EXECUTIVE --------- #
   executive:
     style:
-      inline_separator: "·"
+      # inline_separator: "·"
       role_header_separator: "|"
       stage_meta_separator: "•"
 
@@ -47,16 +47,18 @@ vitae:
                     - field: citizenship
                       title: fragment_citizenship
             - slot: main
+              # style:
+              #   display: grid
               sections:
               - section: personal-profile
-                title: section-personal-profile
+                # title: section-personal-profile
                 container: section
                 components:
                 - component: panels
                   collection: profile
                   style:
                     dt_columns: 3
-                    heading: normal
+                    # heading: normal
               - section: career-summary
                 title: section-career-summary
                 container: section
@@ -79,6 +81,7 @@ vitae:
                     timeline: column
                     heading: normal
                     date: year
+                    logo: false
                   organization:
                     period: true
                     details: false
@@ -170,7 +173,7 @@ vitae:
                   collection: achievements
                   style:
                     dt_columns: 3
-                    heading: normal
+                    # heading: normal
 
               - section: awards-certificates
                 # container: div
@@ -240,7 +243,7 @@ vitae:
                     inline:
                       header: true
                       # content: true
-                    # logo: left
+                    logo: left
                     # label:
                     #   unit: false
                     #   function: false
@@ -272,10 +275,11 @@ vitae:
                     style:
                       heading: normal
                       separate_roles: true
+                      layout: narrow
                     role:
                       period: false
                       duration: false
-                      details: false
+                      details: true
                 - section: language-skills
                   title: section-language-skills
                   container: section
@@ -286,6 +290,24 @@ vitae:
                     filter_value: language
                     details: true
                     level_bar: false
+              - section: patents-publications
+                sections:
+                - section: patent-selection
+                  title: section-patents
+                  container: section
+                  components:
+                  - component: publications
+                    collection: publications
+                    filter_by: kind
+                    filter_value: patent
+                - section: publication-selection
+                  title: section-publications
+                  container: section
+                  components:
+                  - component: publications
+                    collection: publications
+                    filter_by: kind
+                    filter_value: publication
             - slot: footer
               shared: footer
 

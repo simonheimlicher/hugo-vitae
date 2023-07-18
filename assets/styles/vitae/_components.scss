@@ -636,7 +636,7 @@ html[data-mode="dim"] {
     --inline-list-item-separation: 2ch;
     --inline-list-sep-width: var(--inline-list-item-separation) / 3.0;
 
-    --organization_logo_width: calc(2 * var(--rem));
+    --organization_logo_width: calc(1.5 * var(--rem));
 
     --padding_organization_between: var(--inner_padding_4-4);
     --padding_organization_first: var(--inner_padding_4-0);
@@ -855,7 +855,9 @@ html[data-mode="dim"] {
       // background: var(--RGB_slider_bg);
       font-size: var(--font-size_stage_header_meta);
       .stage_details {
-        font-size: var(--font-size-normal);
+        // font-size: var(--font-size-normal);
+        font-size: var(--font-size-smaller-1);
+        font-style: italic;
       }
     }
 
@@ -896,9 +898,10 @@ html[data-mode="dim"] {
       --tl-col_stage_logo_height: var(--organization_logo_width);
 
 
-      &.style_logo_left {
-        --tl-col_timeline-column_width: calc(var(--tl-col_stage_logo_width) + var(--grid_separator-column_width));
-      }
+      // FIXME: Avoid re-flow when enabling logos
+      // &.style_logo_left {
+      //   --tl-col_timeline-column_width: calc(var(--tl-col_stage_logo_width) + var(--grid_separator-column_width));
+      // }
 
       @mixin timeline_column_line($top: 0px, $right: null, $bottom: null, $left: 0px,
         $line-height: 100%, $line-width: var(--tl-col_timeline_width)) {
@@ -1340,6 +1343,7 @@ html[data-mode="dim"] {
               grid-column: 1;
               grid-row: 1;
               justify-self: center;
+              align-self: center;
               &_img {
                 width: calc(var(--tl-col_stage_logo_width));
               }
@@ -1827,8 +1831,9 @@ html[data-mode="dim"] {
         grid-column: 2;
       }
       &_certificates {
-        font-size: var(--font-size-smaller-1);
         grid-column: 2;
+        font-size: var(--font-size-smaller-1);
+        font-style: italic;
         &_item ~ .skill_certificates {
           &::before {
             content: '•';

@@ -30,6 +30,9 @@
     "narrow" "narrow"
     "inline" "inline"
   )
+  "display" (dict
+    "grid" "grid"
+  )
   "timeline" (dict
     "false" false
     "true" "column"
@@ -112,6 +115,21 @@ PaginationPage: a printed page that is part of a Part
         {{- $containerClass := slice (printf "slot_%s" $slot.slot) $pp.PaginationContainerClass }}
         {{- with $slot.container_class }}
           {{- $containerClass = append . $containerClass }}
+        {{- end }}
+        {{- $mergedSlotStyle := false }}
+        {{- with $slot.style }}
+          {{- $mergedSlotStyle = partial "vitae/_functions/style-class" (dict
+            "Style" .
+            "ValidStyles" $validStyles
+            "Template" $template
+          ) -}}
+          {{- if $debug }}
+            {{- warnf "%s[%s]: After style-class:\nmergedSlotStyle=%v" $page $template
+                (jsonify (dict "indent" "  ") $mergedSlotStyle) }}
+          {{- end }}
+          {{- with $mergedSlotStyle.StyleClass }}
+            {{- $containerClass = append . $containerClass }}
+          {{- end }}
         {{- end }}
         {{ printf `<%s class="%s" %s="%d" %s="%s">` $container
         (delimit $containerClass ` `)

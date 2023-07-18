@@ -577,6 +577,11 @@
           flex: 0 1 auto;
         }
       }
+      .section-title {
+        // FIXME: Allow a little less space and let flex use it if it's available
+        margin-top: calc(var(--section-title_margin_top_between) / 2);
+      }
+
       // FIXME: Do not allow flex of stage_header to avoid issues with timeline
       .stage_header {
         flex: 0 0 auto;
