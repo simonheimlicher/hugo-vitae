@@ -153,7 +153,7 @@ vitae:
 
     {{- /* Print view is a separate container that is only included
         if the page should be rendered as a printable page */ -}}
-    {{- $includePrintView := or $pp.PrintPreview $pp.PrintView $pp.PrintControl }}
+    {{- $includePrintView := or $printPreview $printView $printControl }}
     {{- $printViewVisibleAttr := "" }}
 
     {{- if $includePrintView }}
