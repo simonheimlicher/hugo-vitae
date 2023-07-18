@@ -609,6 +609,7 @@
   {{- $topLevelClass := .TopLevelClass }}
   {{- $org := .Organization }}
   {{- $role := .Role }}
+  {{- $roleHeaderInOrganizationHeader := .RoleHeaderInOrganizationHeader }}
   {{- $roleMetaInHeader := .RoleMetaInHeader }}
   {{- $inlineSeparatorStr := .InlineSeparatorStr }}
 
@@ -625,7 +626,7 @@
   {{- $showRoleAppendix := default false $component.role.appendix }}
 
   {{ partial "html-comment" (printf "%s: BEGIN role_header" $template ) }}
-  {{- if and (in (slice "dot-dash" "column") $style.timeline) (or $style.logo (not (eq $numRoles 1))) }}
+  {{- if and (not $roleHeaderInOrganizationHeader) (in (slice "dot-dash" "column") $style.timeline) (or $style.logo (not (eq $numRoles 1))) }}
     <div class="{{ printf `timeline_%s_marker stage_timeline` $style.timeline }}"></div>
   {{- end }}
 

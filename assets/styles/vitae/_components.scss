@@ -316,8 +316,8 @@ html[data-mode="dim"] {
       --section-title_margin_top_between: var(--inner_margin_4-3);
     }
     .style_layout_shallow {
-      --section-title_margin_bottom: var(--inner_margin_4-0);
-      --section-title_margin_top_between: var(--inner_margin_4-1);
+      --section-title_margin_bottom: var(--inner_margin_8-1);
+      --section-title_margin_top_between: var(--inner_margin_8-3);
     }
   }
 
@@ -489,6 +489,10 @@ html[data-mode="dim"] {
       &_title {
         padding: 0 0 var(--inner_padding_4-1) 0;
         margin: 0;
+        &:first-of-type {
+          margin-top: 0;
+          padding-top: 0;
+        }
       }
     }
     dl {
@@ -498,17 +502,18 @@ html[data-mode="dim"] {
       align-items: start;
       grid-auto-flow: dense row;
       hyphens: manual;
-      --padding_between: calc(var(--column_content_width) / 2);
+      --padding_between: calc(var(--column_content_width) / 2 + var(--column_gap) / 2);
       dt {
         grid-column: 1 / span var(--dt_columns);
         width: auto;
-        padding-right: calc(var(--padding_between) / 2);
-        margin-right: calc(0px - var(--padding_between));
+        padding-right: calc(var(--padding_between) - var(--column_gap));
+
+        margin-right: calc(0px - var(--padding_between) + var(--column_gap));
       }
       dd {
         grid-column: calc(var(--dt_columns) + var(--dd_column_skip)) / span calc(var(--num_columns) - var(--dt_columns));
         width: auto;
-        padding-left: calc(var(--padding_between));
+        padding-left: var(--column_gap);
         border-left: var(--line-width_separator_heading) solid var(--border-color-faint);
       }
     }
