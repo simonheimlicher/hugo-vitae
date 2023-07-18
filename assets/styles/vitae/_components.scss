@@ -326,10 +326,13 @@ html[data-mode="dim"] {
       position: relative;
       font-family: var(--font-section-title);
       @include upper-caps-strong;
-      margin: var(--section-title_margin_top_between) 0 var(--section-title_margin_bottom) 0;
+      margin: 0 0 var(--section-title_margin_bottom) 0;
       padding: 0;
-      &:fist-child {
-        margin-top: 0;
+      // &:fist-child {
+      //   margin-top: 0;
+      // }
+      & ~ .section-title {
+        margin-top: var(--section-title_margin_top_between);
       }
     }
     &.style_title_left {
@@ -337,7 +340,7 @@ html[data-mode="dim"] {
       gap: var(--row_gap) var(--column_gap);
       align-items: stretch;
       // justify-content: space-between;
-      margin-top: var(--section-title_margin_top_between);
+      // margin-top: var(--section-title_margin_top_between);
       .component-title {
         @extend .section-title;
         display: flex;
@@ -638,14 +641,14 @@ html[data-mode="dim"] {
 
     --organization_logo_width: calc(1.5 * var(--rem));
 
-    --padding_organization_between: var(--inner_padding_4-4);
+    --padding_organization_between: var(--inner_padding_4-6);
     --padding_organization_first: var(--inner_padding_4-0);
-    --padding_role_between: var(--inner_padding_4-4);
+    --padding_role_between: var(--inner_padding_4-6);
     --padding_role_first: var(--inner_padding_4-1);
 
     --padding_stage_meta: var(--inner_padding_4-0);
 
-    --padding_stage_content_between: var(--inner_padding_4-2);
+    --padding_stage_content_between: var(--inner_padding_4-4);
     --padding_stage_content_first: var(--inner_padding_4-1);
 
     --grid_period-column_width: 10em;
@@ -1587,8 +1590,8 @@ html[data-mode="dim"] {
 
      &.style_layout_inline, &.style_inline_header_true {
       // @extend .style_layout_shallow;
-      --padding_organization_between: var(--inner_padding_4-3);
-      --padding_role_between: var(--inner_padding_4-3);
+      // --padding_organization_between: var(--inner_padding_4-3);
+      // --padding_role_between: var(--inner_padding_4-3);
       .stage {
         &_main {
           flex-direction: row;

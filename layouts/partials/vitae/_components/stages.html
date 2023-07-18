@@ -527,6 +527,16 @@
   {{- end }}
   </h{{ $headingLevel }}>
 
+  {{- if $organizationMetaInHeader }}
+    {{ partial "stage_meta" (merge $ (dict
+      "Organization" $org
+      "Role" nil
+      "Style" $style
+      "TopLevelClass" false
+      "Template" $template
+    ) ) -}}
+  {{- end }}
+
   {{- if $roleHeaderInOrganizationHeader }}
 
     {{ safeHTML $roleHeaderSeparatorStr }}
@@ -552,16 +562,6 @@
     {{ partial "html-comment" (printf "%s: roleHeaderInOrganizationHeader=%v: CLOSE role_header"
         $template $roleHeaderInOrganizationHeader ) }}
     </div>
-  {{- end }}
-
-  {{- if $organizationMetaInHeader }}
-    {{ partial "stage_meta" (merge $ (dict
-      "Organization" $org
-      "Role" nil
-      "Style" $style
-      "TopLevelClass" false
-      "Template" $template
-    ) ) -}}
   {{- end }}
 
   {{- with $container }}
@@ -698,6 +698,8 @@
   {{- $homeCountry := .HomeCountry }}
   {{- $orgLocationStr := default "" .OrganizationLocationStr }}
   {{- $stageMetaSeparatorStr := .StageMetaSeparatorStr }}
+  {{- $stageUnitSeparatorStr := default ", " .StageUnitSeparatorStr }}
+  {{- $stageLocationSeparatorStr := default ", " .StageLocationSeparatorStr }}
   {{- $unitSeparatorStr := ", " }}
 
   {{- $debug := true }}
@@ -820,7 +822,7 @@
 
               {{- with $stageUnitMarkup }}
                 {{- if $stageFunctionMarkup }}
-                  {{- $functionUnitLocationMarkup = printf `%s %v ` $functionUnitLocationMarkup $stageMetaSeparatorStr }}
+                  {{- $functionUnitLocationMarkup = printf `%s%v` $functionUnitLocationMarkup $stageUnitSeparatorStr }}
                 {{- end }}
                 {{- with and $style.label.unit (default "unit" (T "unit") ) }}
                   {{- $functionUnitLocationMarkup = printf `%s<span class="stage_unit_label">%s:</span> `
@@ -850,7 +852,7 @@
             {{- end }}
             {{- if not (and $role (eq $stageLocationMarkup $orgLocationStr)) }}
               {{- with $stageLocationMarkup }}
-                {{- $functionUnitLocationMarkup = printf `%s<span class="stage_location">%s%s</span>` $functionUnitLocationMarkup (cond (not (not $stageUnitMarkup)) (printf " %s " $stageMetaSeparatorStr) "") . }}
+                {{- $functionUnitLocationMarkup = printf `%s<span class="stage_location">%s%s</span>` $functionUnitLocationMarkup (cond (not (not $stageUnitMarkup)) $stageLocationSeparatorStr "") . }}
               {{- end }}
             {{- end }}
           {{- end }}

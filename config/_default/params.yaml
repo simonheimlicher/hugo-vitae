@@ -69,7 +69,9 @@ vitae:
                   filter_value: professional
                   links: false
                   # date_format: 2006
-                  unit: false
+                  unit:
+                    limit: 1
+                    type: false
                   function: false
                   style:
                     layout:
@@ -88,7 +90,7 @@ vitae:
                     remark: true
                   role:
                     period: true
-                    appendix: true
+                    # appendix: true
                     details: false
                     summary: false
                     description: false
@@ -235,15 +237,15 @@ vitae:
                   collection: stages
                   filter_by: type
                   filter_value: professional
-                  unit: false
-                    # limit: 1
-                    # type: false
+                  unit:
+                    limit: 1
+                    type: false
                   style:
                     timeline: column
                     inline:
                       header: true
                       # content: true
-                    logo: left
+                    # logo: left
                     # label:
                     #   unit: false
                     #   function: false

@@ -69,8 +69,8 @@
         {{- range $fieldSpec := $addressFields }}
           {{- range $field, $sep := $fieldSpec }}
             {{- with (index $address $field) }}
-              {{- if (eq $sep "SEP") }}{{ $sep = $inlineSeparatorStr}}{{- end }}
-                <span class="address-{{ $field }}">{{ printf "%v %v" . $sep | safeHTML }}</span>
+              {{- if (eq $sep "SEP") }}{{ $sep = printf " %s " $inlineSeparatorStr }}{{- end }}
+                <span class="address-{{ $field }}">{{ printf "%v%v" . $sep | safeHTML }}</span>
               {{- end }}
             {{- end }}
           {{- end }}
