@@ -143,11 +143,13 @@
         overflow: hidden;
         box-shadow: 0.2rem 0.2rem 0.6rem hsla(0, 0%, 50%, 0.5);
       }
-      .print-preview_target {
-        .pagination-page {
-          height: var(--page_height);
-        }
-      }
+      // FIXME: Don't limit page height unless class
+      // print-preview_overflow is applied
+      // .print-preview_target {
+      //   .pagination-page {
+      //     height: var(--page_height);
+      //   }
+      // }
     }
     .print-preview_inner {
       // FIXME: Ensure 'main' element covers entire 'body' when two pages are shown horizontally
@@ -458,12 +460,6 @@
         }
       }
     }
-    .print-preview_overflow {
-      .pagination-container[data-pagination-policy="break"] {
-        overflow: hidden;
-        height: 100%;
-      }
-    }
     .pagination-page {
       position: relative;
       margin-bottom: auto;
@@ -568,17 +564,16 @@
     }
   }
 }
-.vitae {
-  .view-print.print-preview_overflow {
-    .pagination-page {
-      height: var(--page_height);
+
+// Constrain height of page to enable pagination
+.vitae[data-print-preview-status="readyToRender"], .vitae[data-print-preview-status="done"] {
+  .pagination-page {
+    // background-color: whitesmoke;
+    height: var(--page_height);
+    // overflow: hidden;
+    .pagination-container[data-pagination-policy="break"] {
       overflow: hidden;
-    }
-    .main-column,
-    .aside-primary,
-    .aside-secondary {
-      // height: 100%
-      overflow: hidden;
+      height: 100%;
     }
   }
 }

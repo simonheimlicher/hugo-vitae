@@ -194,9 +194,8 @@ const transferOverflow = function (conf) {
   }
   else {
     // If we get here, none of the paginationContainers has overflow
-    // Let overflow be visible
-    deleteClass(conf['previewTargetElement'], conf['overflowClass']);
     numberPages(conf);
+    // Let overflow be visible
     setPreviewStatus(conf, conf['previewStatusDone']);
     setPreviewVisibility(conf, true);
     // console.log('None of the pagination containers have overflow');
@@ -346,6 +345,7 @@ const preparePrintPreview = function (conf, reset = false) {
   }
   // We need print preview to be rendered (not 'display: none') to determine if there is overflow
   setPreviewVisibility(conf, true);
+  // Ensure overflow is visible
   setPreviewStatus(conf, conf['previewStatusReady']);
 };
 
@@ -362,9 +362,6 @@ const initializePrintPreview = function (conf) {
       delete page['paginatedPageElements'];
     });
   });
-
-  // Ensure overflow is visible
-  pushClass(conf['previewTargetElement'], conf['overflowClass']);
 
   conf['parts'].forEach(function (part) {
     part['pages'].forEach(function (page) {
@@ -405,13 +402,14 @@ const init = function (reset) {
 
     printPreviewVisibleAttr: "data-print-preview-visible",
     printPreviewStatusAttr: "data-print-preview-status",
+
     previewStatusReady: "readyToRender",
     previewStatusDone: "done",
 
     printPreviewClass: "print-preview",
     printPreviewActiveBodyClass: "print-preview_active",
     overflowClass: 'print-preview_overflow',
-    requestPrintViewPrepared: "preview-visible",
+    requestPrintViewVisible: "preview-visible",
     requestPrintViewPrepared: "preview-prepare",
     requestPrintViewRendered: "preview-render",
 
