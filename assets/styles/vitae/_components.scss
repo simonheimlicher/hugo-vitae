@@ -1973,6 +1973,7 @@ html[data-mode="dim"] {
         width: 100%;
         font-size: var(--font-size-smaller-1);
         @include upper-caps;
+        font-weight: var(--font-weight-light);
         &.style_font-size_normal {
           font-size: var(--font-size-normal);
         }
