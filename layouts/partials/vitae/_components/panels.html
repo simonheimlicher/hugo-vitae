@@ -92,15 +92,18 @@
 
         {{- range $definitionItem := . }}
 
-          {{- with $definitionItem.title }}
+          {{- with $title := $definitionItem.title }}
 
             {{- if $styleLayoutInline }}
               <h{{ $headingLevel }} class="panel_title">
             {{- else }}
               <dt>
             {{- end -}}
+            {{- if $styleLayoutInline }}
+              {{- $title = replaceRE `\s*<br>\s*` ` ` $title }}
+            {{- end -}}
 
-            {{ page.RenderString $optInline (replaceRE `\s*<br>\s*` ` ` .) }}
+            {{ page.RenderString $optInline $title }}
 
             {{- if $styleLayoutInline }}
               </h{{ $headingLevel }}>

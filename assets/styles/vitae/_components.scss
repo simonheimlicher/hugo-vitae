@@ -487,8 +487,8 @@ html[data-mode="dim"] {
     }
     .panel {
       &_title {
-        padding: 0 0 var(--inner_padding_4-1) 0;
-        margin: 0;
+        // padding: 0;
+        // margin: 0;
         &:first-of-type {
           margin-top: 0;
           padding-top: 0;

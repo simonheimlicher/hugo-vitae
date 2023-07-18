@@ -84,6 +84,8 @@
       }
       */
 
+      margin-top: calc(max(var(--row_gap), var(--section-title_margin_top_between)));
+
       display: grid;
       // gap: var(--inner_margin_4-4) var(--inner_margin_4-4);
       gap: 0 var(--column_gap);
