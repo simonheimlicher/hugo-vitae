@@ -28,7 +28,7 @@ const controlPanelSettings = {
       // value: 1, // try to get the value using getComputedStyle and getPropertyValue
       min: 0.25,
       max: 4,
-      step: 0.01,
+      step: 0.05,
       // onChange: console.log  // javascript callback on every "input" event
     },
     {
@@ -60,9 +60,9 @@ const controlPanelSettings = {
       labelTitle: 'Adjust inner margins',
       type: 'range',
       // value: 1, // try to get the value using getComputedStyle and getPropertyValue
-      min: 0.25,
-      max: 4,
-      step: 0.01,
+      min: 0,
+      max: 5,
+      step: 0.1,
       // onChange: () => {
       //   if (window.vitae) {
       //     console.log('inner_margin_base changed. Calling renderPrintPreview');
@@ -79,9 +79,9 @@ const controlPanelSettings = {
       labelTitle: 'Adjust inner padding',
       type: 'range',
       // value: 1, // try to get the value using getComputedStyle and getPropertyValue
-      min: 0.25,
-      max: 4,
-      step: 0.01,
+      min: 0,
+      max: 5,
+      step: 0.1,
       // onChange: () => {
       //   if (window.vitae) {
       //     console.log('inner_margin_base changed. Calling renderPrintPreview');
@@ -98,9 +98,9 @@ const controlPanelSettings = {
       labelTitle: 'Adjust line width',
       type: 'range',
       // value: 1, // try to get the value using getComputedStyle and getPropertyValue
-      min: 0.25,
-      max: 4,
-      step: 0.01,
+      min: 0,
+      max: 5,
+      step: 0.1,
       // onChange: () => {
       //   if (window.vitae) {
       //     console.log('line_width_base changed. Calling renderPrintPreview');
@@ -119,8 +119,8 @@ const controlPanelSettings = {
       type: 'range',
       min: 0,
       // value: 15,
-      max: 100,
-      step: 0.5,
+      max: 50,
+      step: 1,
     },
     {
       cssVar: ['page_margin_base_center_horizontal', '-%'],
@@ -139,8 +139,8 @@ const controlPanelSettings = {
       type: 'range',
       min: 0,
       // value: 15,
-      max: 100,
-      step: 0.5,
+      max: 50,
+      step: 1,
     },
     {
       cssVar: ['page_margin_base_center_vertical', '-%'],

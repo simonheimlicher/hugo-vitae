@@ -245,10 +245,12 @@
   $factor-suffix: '_scale-factor';
   $initial: 1;
   $target: '.view-print';
+  $scaled-media: 'all';
   $base: null;
 
   @each $prop-key, $prop-values in $prop-spec {
     $factor: #{$prop-key}#{$factor-suffix};
+    --#{$factor}: #{$initial};
     @if type-of($prop-values) == 'map' {
       @each $p, $v in $prop-values {
         $p-value-name: #{$prop-key}_#{$p};
@@ -282,23 +284,7 @@
     }
 
     #{$target} {
-      --#{$factor}: #{$initial};
-      @if type-of($prop-values) == 'map' {
-        @each $p, $v in $prop-values {
-          $p-value-name: #{$prop-key}_#{$p};
-          $p-base: #{$p-value-name}#{$base-suffix};
-          // --#{$p-base}: #{$v};
-          --#{$p-value-name}: var(--#{$p-base});
-        }
-      }
-      @else {
-        $p-value-name: #{$prop-key};
-        $v: #{$prop-values};
-        $p-base: #{$p-value-name}#{$base-suffix};
-        // --#{$p-base}: #{$v};
-        --#{$p-value-name}: var(--#{$p-base});
-      }
-      @media screen {
+      @if $scaled-media == 'all' {
         @if type-of($prop-values) == 'map' {
           @each $p, $v in $prop-values {
             $p-value-name: #{$prop-key}_#{$p};
@@ -313,6 +299,38 @@
           $p-base: #{$p-value-name}#{$base-suffix};
           --#{$p-base}: #{$v};
           --#{$p-value-name}: calc( var(--#{$p-base}) * var(--#{$factor}) );
+        }
+      }
+      @else {
+        @if type-of($prop-values) == 'map' {
+          @each $p, $v in $prop-values {
+            $p-value-name: #{$prop-key}_#{$p};
+            $p-base: #{$p-value-name}#{$base-suffix};
+            --#{$p-value-name}: var(--#{$p-base});
+          }
+        }
+        @else {
+          $p-value-name: #{$prop-key};
+          $v: #{$prop-values};
+          $p-base: #{$p-value-name}#{$base-suffix};
+          --#{$p-value-name}: var(--#{$p-base});
+        }
+        @media #{$scaled-media} {
+          @if type-of($prop-values) == 'map' {
+            @each $p, $v in $prop-values {
+              $p-value-name: #{$prop-key}_#{$p};
+              $p-base: #{$p-value-name}#{$base-suffix};
+              --#{$p-base}: #{$v};
+              --#{$p-value-name}: calc( var(--#{$p-base}) * var(--#{$factor}) );
+            }
+          }
+          @else {
+            $p-value-name: #{$prop-key};
+            $v: #{$prop-values};
+            $p-base: #{$p-value-name}#{$base-suffix};
+            --#{$p-base}: #{$v};
+            --#{$p-value-name}: calc( var(--#{$p-base}) * var(--#{$factor}) );
+          }
         }
       }
     }
@@ -365,12 +383,11 @@
   --line-width_separator_heading: calc(0.05 * var(--rem));;
 
   .view-print {
-    @media screen {
-      @include inner_margin_padding(var(--inner_margin), var(--inner_padding));
-      @include inner_margin_padding(var(--inner_margin), var(--inner_padding), 8, 1);
-      --column_gap: var(--inner_margin_4-3);
-      --row_gap: var(--inner_margin_4-0);
-    }
+    @include font-size-scale(var(--em));
+    @include inner_margin_padding(var(--inner_margin), var(--inner_padding));
+    @include inner_margin_padding(var(--inner_margin), var(--inner_padding), 8, 1);
+    --column_gap: var(--inner_margin_4-3);
+    --row_gap: var(--inner_margin_4-0);
   }
 
   --border-color: var(--text);
