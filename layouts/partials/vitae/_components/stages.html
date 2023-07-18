@@ -285,6 +285,17 @@
 
     {{- range $roleIdx, $role := $roleList }}
 
+      {{- $roleClass := "role_single" }}
+      {{- if gt $numRoles 1 }}
+        {{- if (eq $roleIdx 0) }}
+          {{- $roleClass = "role_first" }}
+        {{- else if (eq $roleIdx (sub (len $roleList) 1 ) ) }}
+          {{- $roleClass = "role_last" }}
+        {{- else }}
+          {{- $roleClass = "role_within" }}
+        {{- end }}
+      {{- end }}
+
       {{- if $separateRoles }}
         {{ partial "html-comment" (printf "%s: separateRoles=%v: OPEN stage_header and organization_header"
             $template $separateRoles ) }}
@@ -296,7 +307,8 @@
         {{ partial "html-comment" (printf "%s: roleIdx=%v: OPEN organization_header"
             $template $separateRoles ) }}
         {{- if $roleHeaderInOrganizationHeader }}
-          {{- $organizationHeaderParams = merge $organizationHeaderParams (dict "Role" $role) }}
+          {{- $topLevelClass = printf "%s %s" $topLevelClass $roleClass }}
+          {{- $organizationHeaderParams = merge $organizationHeaderParams (dict "Role" $role "TopLevelClass" $topLevelClass) }}
         {{- end }}
         <div class="{{ delimit $organizationHeaderClassList ` ` }}">
           {{- partial "organization_header.html" $organizationHeaderParams }}
@@ -310,20 +322,10 @@
 
       {{- $roleHeaderContainer := "div" }}
       {{- $roleHeaderClassList := slice "role_header" }}
-      {{- $roleClass := "role_single" }}
 
       {{- if $roleHeaderInOrganizationHeader }}
         {{- $roleHeaderContainer = false }}
       {{- else }}
-        {{- if gt $numRoles 1 }}
-          {{- if (eq $roleIdx 0) }}
-            {{- $roleClass = "role_first" }}
-          {{- else if (eq $roleIdx (sub (len $roleList) 1 ) ) }}
-            {{- $roleClass = "role_last" }}
-          {{- else }}
-            {{- $roleClass = "role_within" }}
-          {{- end }}
-        {{- end }}
 
         {{- $topLevelClass = strings.TrimLeft " " (delimit (append $styleClassList (slice $roleClass $timelineOrgClass $componentClass $childClass)) " ") }}
 
