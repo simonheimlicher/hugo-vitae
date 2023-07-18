@@ -390,6 +390,7 @@
     @include inner_margin_padding(var(--inner_margin), var(--inner_padding), 8, 1);
     --column_gap: var(--inner_margin_4-3);
     --row_gap: var(--inner_margin_4-0);
+    --section-gap_vertical: var(--inner_margin_4-4);
   }
 
   --border-color: var(--text);
@@ -585,8 +586,12 @@
     .pagination-container {
       &.slot_main {
         height: 100%;
-        & > * {
-          flex: 0 1 auto;
+        .section {
+          &-gap {
+            &_vertical:not(:first-child):not(:last-child) {
+              min-height: calc(var(--section-gap_vertical) / 4);
+            }
+          }
         }
       }
       // FIXME: Do not allow flex of stage_header to avoid issues with timeline

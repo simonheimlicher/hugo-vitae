@@ -3,6 +3,7 @@
 {{- $vitaeTemplate := .Config }}
 {{- $vitaeData := .Data }}
 {{- $sections := .Sections }}
+{{- $sectionSeparator := .SectionSeparator }}
 {{- $childClass := default "" .ChildClass }}
 {{- $media := .Media }}
 {{- $componentClass := default "component_index" .ComponentClass }}
@@ -48,6 +49,12 @@
   {{- $sectionClassList := slice (printf "section_%s" $sectionName) }}
   {{- $sectionContainer := default "" .container }}
   {{- $sectionChildClass := slice (default "" .child_class) }}
+
+  {{- with $sectionSeparator }}
+    {{- if gt $sectionIndex 0 }}
+      <div class="{{ . }}"></div>
+    {{- end }}
+  {{- end }}
   {{- if $sectionContainer }}
     {{- $validSectionStyles := (dict
       "title" (dict

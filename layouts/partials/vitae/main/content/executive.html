@@ -144,6 +144,7 @@ PaginationPage: a printed page that is part of a Part
         "ChildClass" $childClass
         "Data" $vitaeData
         "Sections" $slot.sections
+        "SectionSeparator" "section-gap_vertical"
       )) -}}
       {{- with $container }}
         {{ printf `</%s>` . | safeHTML }}
