@@ -91,8 +91,8 @@
 {{- $renderOptBlock := dict "display" "block" }}
 
 {{- $inlineSeparatorStr := trim $style.inline_separator "  " | default "•" }}
-{{- $roleHeaderSeparatorStr := trim $style.role_header_separator `  ` | default $inlineSeparatorStr }}
-{{- $stageMetaSeparatorStr := trim $style.stage_meta_separator `  ` | default $inlineSeparatorStr }}
+{{- $roleHeaderSeparatorStr := trim $style.role_header_separator `  ` | default "|" }}
+{{- $stageMetaSeparatorStr := trim $style.stage_meta_separator `  ` | default "•" }}
 
 {{- if $debug }}
   {{- warnf "%s[%s]: inlineSeparatorStr=%v [type=%T] roleHeaderSeparatorStr=%v [type=%T] stageMetaSeparatorStr=%v [type=%T]"
@@ -316,6 +316,16 @@
         {{ partial "html-comment" (printf "%s: roleHeaderInOrganizationHeader=%v: CLOSE organization_header"
             $template $roleHeaderInOrganizationHeader ) }}
         </div>
+        {{- if not $organizationMetaInHeader }}
+          {{ partial "stage_meta" (merge $ (dict
+            "Organization" $org
+            "StageType" "organization"
+            "TopLevelClass" $topLevelClass
+            "Style" $style
+            "Template" $template
+          ) ) -}}
+        {{- end }}
+
         {{- end }}
 
       {{- end }}
@@ -538,9 +548,7 @@
   {{- end }}
 
   {{- if $roleHeaderInOrganizationHeader }}
-
     {{ safeHTML $roleHeaderSeparatorStr }}
-
     {{- $roleHeaderParams := (merge $ (dict
         "Container" false
         "TopLevelClass" false
@@ -586,16 +594,6 @@
       </a>
       {{- end }}
     </div>
-  {{- end }}
-
-  {{- if not $organizationMetaInHeader }}
-    {{ partial "stage_meta" (merge $ (dict
-      "Organization" $org
-      "StageType" "organization"
-      "TopLevelClass" $topLevelClass
-      "Style" $style
-      "Template" $template
-    ) ) -}}
   {{- end }}
   {{ partial "html-comment" (printf "%s: END organization_header" $template ) }}
 {{- end }}
@@ -776,8 +774,8 @@
                   {{- $stageUnitList = slice . }}
                 {{- end }}
                 {{- if reflect.IsSlice . }}
-                  {{- if $debug }}
-                    {{- if (gt $configUnitLimit (len .)) }}
+                  {{- if and false $debug }}
+                    {{- if (gt (len .) $configUnitLimit) }}
                       {{- warnf "%s[%s]: metaConfig.unit=%v[%T]: only showing %d of %d organizational units"
                           page $template $metaConfig.unit $metaConfig.unit $configUnitLimit (len .) }}
                     {{- end }}
