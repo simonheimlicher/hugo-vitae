@@ -2,11 +2,6 @@ vitae:
 
 # ------ Template EXECUTIVE --------- #
   executive:
-    style:
-      # inline_separator: "·"
-      role_header_separator: "|"
-      stage_meta_separator: "•"
-
     variants:
       default:
         contact:
@@ -404,6 +399,31 @@ vitae:
                       - field: total-pages
                         content: "{total-pages}"
                         align: end
+
+      devel:
+        parts:
+          # Front page
+          - template: front-page
+            # enabled: false
+            pagination_policy: first
+            slots:
+            - slot: main
+              sections:
+              - section: career-summary
+                title: section-career-summary
+                container: section
+                components:
+                - component: stages
+                  collection: stages
+                  filter_by: type
+                  filter_value: professional
+                  # style:
+                  #   layout:
+                  #     - shallow
+                  #     - narrow
+                  #   inline:
+                  #     header: true
+                  #     role: true
 
       two-pager:
 
