@@ -10,9 +10,9 @@
 {{- $template := "vitae/_components/index" }}
 
 {{- $debug := false }}
-{{/* {{- $debug = or $debug (not (not (findRE `^/([^/]+-demo/)?ats/preview` $page.RelPermalink) ) ) -}} */}}
+{{- $debug = or $debug (not (not (findRE `^/([^/]+-demo/)?devel/$` $page.RelPermalink) ) ) -}}
 
-{{- if $debug }}
+{{- if and false $debug }}
   {{- warnf "%s[%s]: .MergedStyle=%v" $page $template
       (jsonify (dict "indent" "  ") .MergedStyle) }}
 {{- end }}
@@ -37,9 +37,62 @@
   "MergedStyle" .MergedStyle
   "ValidStyles" $validStyles
   ) -}}
-{{- if $debug }}
+{{- if and false $debug }}
   {{- warnf "%s[%s]: After style-class:\nmergedStyle=%v" $page $template
       (jsonify (dict "indent" "  ") $mergedStyle) }}
+{{- end }}
+
+{{- $validStylesTest := (dict
+  "ats" (dict
+    "true" (dict
+      "layout" (slice
+        "shallow"
+        "inline"
+      )
+    )
+  )
+  "layout" (dict
+    "inline" (dict
+      "inline" (slice
+        "content"
+        "role"
+      )
+    )
+    "shallow" "shallow"
+    "narrow" "narrow"
+  )
+  "inline" (slice
+    "header"
+    "content"
+    "role"
+  )
+) -}}
+
+{{/* {{- $mergedStyleTest := partial "vitae/_functions/style-merged" (dict
+  "Template" $template
+  "MergedStyle" (dict
+    "Style" (dict "ats" true "layout" "narrow")
+    "ValidStyles" $validStylesTest
+  )
+) -}} */}}
+
+{{- $mergedStyleTest := partial "vitae/_functions/style-merged" (dict
+  "Template" $template
+  "MergedStyle" (merge .MergedStyle (dict
+      "ValidStyles" $validStylesTest
+    )
+  )
+) -}}
+
+{{/* {{- $mergedStyleTest := partial "vitae/_functions/style-merged" (dict
+  "Template" $template
+  "MergedStyle" .MergedStyle
+  "ValidStyles" $validStyles
+) -}} */}}
+
+{{- if $debug }}
+  {{- warnf "%s[%s]: After style-merged:\nmergedStyleTest=%v" $page $template
+      (jsonify (dict "indent" "  ") $mergedStyleTest) -}}
 {{- end }}
 
 {{- $topLevelClass := delimit (append $mergedStyle.StyleClass (slice $componentClass $childClass) ) " " }}
@@ -68,7 +121,7 @@
       "Style" .style
       "ValidStyles" $validSectionStyles
       ) -}}
-    {{- if $debug }}
+    {{- if and false $debug }}
       {{- warnf "%s[%s]: section=%s: After style-class:\nmergedStyle=%v"
           $page $template $sectionName
           (jsonify (dict "indent" "  ") $mergedStyle) }}

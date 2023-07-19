@@ -23,10 +23,10 @@
 {{- $styleClassPrefix := default "style" .StyleClassPrefix }}
 
 {{- $debug := false }}
-{{/* {{- $debug = or $debug (and (strings.HasSuffix "vitae/_components/index" $callingTemplate) (not (not (findRE `^/([^/]+-demo/)?ats/preview` page.RelPermalink) ) ) ) -}} */}}
+{{/* {{- $debug = or $debug (and (strings.HasSuffix "vitae/_components/stages" $callingTemplate) (not (not (findRE `^/([^/]+-demo/)?ats/$` page.RelPermalink) ) ) ) -}} */}}
 {{- $warnPrefix := printf "%s[%s->%s]: " page $callingTemplate $template }}
-{{/* {{- $debugPrefix := $warnPrefix }} */}}
-{{- $debugPrefix := "" }}
+{{- $debugPrefix := $warnPrefix }}
+{{/* {{- $debugPrefix := "" }} */}}
 
 {{- if and false $debug }}
   {{- warnf "%v\nstyle=%v\nvalidStyles=%v\nfrom .MergedStyle=%v" $debugPrefix
@@ -63,12 +63,14 @@
           {{- end }}
 
           {{- with $mergedStyleSub := partial $template $subParams }}
-            {{- $style = merge $style $mergedStyleSub.Style }}
+            {{- $style = merge $style (dict $key $mergedStyleSub.Style) }}
             {{- $styleClassList = append $mergedStyleSub.StyleClass $styleClassList }}
             {{- if $debug }}
-              {{- warnf "%vkey=%v: style=%v\nstyleClassList=%v[%T] resulting from recursive call with \nsubParams=%v"
-                  $debugPrefix $key $style $styleClassList $styleClassList
-                  (jsonify (dict "indent" "  ") ($subParams)) }}
+              {{- warnf "%vkey=%v: recursive call with\nsubParams=%v\nreturned\nstyle=%v\nstyleClassList=%v[%T] "
+                  $debugPrefix $key
+                  (jsonify (dict "indent" "  ") ($subParams))
+                  (jsonify (dict "indent" "  ") $style)
+                  $styleClassList $styleClassList }}
             {{- end }}
           {{- end }}
 
@@ -104,9 +106,11 @@
                 {{- $styleClassList = append $mergedStyleSub.StyleClass $styleClassList }}
                 {{- $paramValueHandled = true }}
                 {{- if $debug }}
-                  {{- warnf "%vkey=%v: style=%v\nstyleClassList=%v[%T] resulting from induced call with \nsubParams=%v"
-                      $debugPrefix $key $style $styleClassList $styleClassList
-                      (jsonify (dict "indent" "  ") ($subParams)) }}
+                  {{- warnf "%vkey=%v: induced call with\nsubParams=%v\nreturned\nstyle=%v\nstyleClassList=%v[%T]"
+                      $debugPrefix $key
+                      (jsonify (dict "indent" "  ") ($subParams))
+                      (jsonify (dict "indent" "  ") $style)
+                      $styleClassList $styleClassList }}
                 {{- end }}
               {{- end }}
 
@@ -176,7 +180,8 @@
   {{- $paramValue := .ParamValue }}
   {{- $validValuesForKey := .ValidValuesForKey }}
 
-  {{- $debug := default false .Debug }}
+  {{- $debug := false }}
+  {{/* {{- $debug = or $debug .Debug }} */}}
   {{/* {{- $debug = or $debug (not (not (findRE `^/([^/]+-demo/)?preview` page.RelPermalink) ) ) -}} */}}
   {{- $warnPrefix := printf "%s[%s->%s->parse_value]: " page $callingTemplate $template }}
   {{- $debugPrefix := $warnPrefix }}

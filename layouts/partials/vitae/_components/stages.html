@@ -7,7 +7,7 @@
 {{- $component := .Component }}
 
 {{- $debug := false }}
-{{/* {{- $debug = or $debug (not (not (findRE `^/([^/]+-demo/)?preview` $page.RelPermalink) ) ) -}} */}}
+{{/* {{- $debug = or $debug (not (not (findRE `^/([^/]+-demo/)?devel/$` $page.RelPermalink) ) ) -}} */}}
 
 {{- $style := default dict .Style }}
 {{- $validStyles := (dict
@@ -80,12 +80,22 @@
   "MergedStyle" .MergedStyle
   "ValidStyles" $validStyles
   ) -}}
-{{- if $debug }}
+{{- if and false $debug }}
   {{- warnf "%s[%s]: After style-class:\nmergedStyle=%v" $page $template
       (jsonify (dict "indent" "  ") $mergedStyle) -}}
 {{- end }}
 {{- $style := $mergedStyle.Style }}
 {{- $styleClassList := $mergedStyle.StyleClass }}
+
+{{- $mergedStyleNew := partial "vitae/_functions/style-merged" (dict
+  "Template" $template
+  "MergedStyle" .MergedStyle
+  "ValidStyles" $validStyles
+) -}}
+{{- if $debug }}
+  {{- warnf "%s[%s]: After style-merged:\nmergedStyleNew=%v" $page $template
+      (jsonify (dict "indent" "  ") $mergedStyleNew) -}}
+{{- end }}
 
 {{- $renderOptInline := dict "display" "inline" }}
 {{- $renderOptBlock := dict "display" "block" }}

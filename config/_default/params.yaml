@@ -401,6 +401,13 @@ vitae:
                         align: end
 
       devel:
+        style:
+          ats: true
+          inline_separator: "•"
+          layout:
+            - inline
+            - shallow
+          logo: false
         parts:
           # Front page
           - template: front-page
@@ -412,6 +419,10 @@ vitae:
               - section: career-summary
                 title: section-career-summary
                 container: section
+                # style:
+                #   layout:
+                #     - shallow
+                #     - narrow
                 components:
                 - component: stages
                   collection: stages

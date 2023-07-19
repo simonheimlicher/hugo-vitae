@@ -10,7 +10,7 @@
 {{- $vitaeStyle := $pp.VitaeStyle }}
 
 {{- $debug := false }}
-{{/* {{- $debug = or $debug (not (not (findRE `^/([^/]+-demo/)?preview` $page.RelPermalink) ) ) -}} */}}
+{{- $debug = or $debug (not (not (findRE `^/([^/]+-demo/)?devel` $page.RelPermalink) ) ) -}}
 
 {{- $validStyles := (dict
   "ats" (dict
