@@ -407,7 +407,7 @@ vitae:
           layout:
             - inline
             - shallow
-          logo: false
+          logo: true
         parts:
           # Front page
           - template: front-page

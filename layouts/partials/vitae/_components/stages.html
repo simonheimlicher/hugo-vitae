@@ -87,7 +87,7 @@
 {{- $style := $mergedStyle.Style }}
 {{- $styleClassList := $mergedStyle.StyleClass }}
 
-{{- $mergedStyleNew := partial "vitae/_functions/style-merged" (dict
+{{/* {{- $mergedStyleNew := partial "vitae/_functions/style-merged" (dict
   "Template" $template
   "MergedStyle" .MergedStyle
   "ValidStyles" $validStyles
@@ -95,7 +95,7 @@
 {{- if $debug }}
   {{- warnf "%s[%s]: After style-merged:\nmergedStyleNew=%v" $page $template
       (jsonify (dict "indent" "  ") $mergedStyleNew) -}}
-{{- end }}
+{{- end }} */}}
 
 {{- $renderOptInline := dict "display" "inline" }}
 {{- $renderOptBlock := dict "display" "block" }}
