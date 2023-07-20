@@ -87,10 +87,77 @@
 {{- $style := $mergedStyle.Style }}
 {{- $styleClassList := $mergedStyle.StyleClass }}
 
+{{- $validStylesNew := (dict
+  "layout" (slice
+    "shallow"
+    "narrow"
+    (dict
+      "inline" (dict
+        "inline" (dict
+          "header" true
+          "content" false
+        )
+      )
+    )
+  )
+  "ats" (dict
+    "true" (dict
+      "inline" (dict
+        "header" true
+        "content" true
+        "role" true
+      )
+    )
+  )
+  "inline" (dict
+    "header" (dict
+      "ANY_BOOL" true
+    )
+    "content" (dict
+      "ANY_BOOL" true
+    )
+    "role" (dict
+      "ANY_BOOL" true
+    )
+  )
+  "date" (dict
+    "year" "year"
+    "month" "month"
+    "true" "default"
+  )
+  "timeline" (dict
+    "false" false
+    "true" "column"
+    "column" "column"
+    "dot-dash" "dot-dash"
+  )
+  "heading" (dict
+    "normal" "normal"
+    "larger-2" "larger-2"
+    "smaller-1" "smaller-1"
+  )
+  "logo" (dict
+    "false" false
+    "true" "left"
+    "left" "left"
+  )
+  "label" (dict
+    "unit" (dict
+      "ANY_BOOL" true
+    )
+    "function" (dict
+      "ANY_BOOL" true
+    )
+  )
+  "separate_roles" (dict
+    "ANY_BOOL" true
+  )
+) -}}
+
 {{/* {{- $mergedStyleNew := partial "vitae/_functions/style-merged" (dict
   "Template" $template
   "MergedStyle" .MergedStyle
-  "ValidStyles" $validStyles
+  "ValidStyles" $validStylesNew
 ) -}}
 {{- if $debug }}
   {{- warnf "%s[%s]: After style-merged:\nmergedStyleNew=%v" $page $template
