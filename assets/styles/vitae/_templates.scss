@@ -97,7 +97,8 @@
 .vitae.layout-executive {
 
   --num_columns: 12;
-  --main_column_width: 6;
+  // --main_column_width: 6;
+  --main_column_width: 8;
   --aside_column_width: calc(var(--num_columns) - var(--main_column_width));
   --main_column: 1;
   --aside_column: calc(var(--main_column) + var(--main_column_width));

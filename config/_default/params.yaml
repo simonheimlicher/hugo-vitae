@@ -287,24 +287,24 @@ vitae:
                     filter_value: language
                     details: true
                     level_bar: false
-              - section: patents-publications
-                sections:
-                - section: patent-selection
-                  title: section-patents
-                  container: section
-                  components:
-                  - component: publications
-                    collection: publications
-                    filter_by: kind
-                    filter_value: patent
-                - section: publication-selection
-                  title: section-publications
-                  container: section
-                  components:
-                  - component: publications
-                    collection: publications
-                    filter_by: kind
-                    filter_value: publication
+              # - section: patents-publications
+              #   sections:
+              #   - section: patent-selection
+              #     title: section-patents
+              #     container: section
+              #     components:
+              #     - component: publications
+              #       collection: publications
+              #       filter_by: kind
+              #       filter_value: patent
+              #   - section: publication-selection
+              #     title: section-publications
+              #     container: section
+              #     components:
+              #     - component: publications
+              #       collection: publications
+              #       filter_by: kind
+              #       filter_value: publication
             - slot: footer
               shared: footer
 
