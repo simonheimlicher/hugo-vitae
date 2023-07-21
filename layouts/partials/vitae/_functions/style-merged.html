@@ -29,11 +29,15 @@
 {{- $debug = or $debug (and (strings.HasSuffix "vitae/_components/index" $callingTemplate) (not (not (findRE `^/([^/]+-demo/)?devel/$` page.RelPermalink) ) ) ) -}}
 {{- $warnPrefix := printf "%s[%s->%s]: " page $callingTemplate $template }}
 {{- $debugPrefix := $warnPrefix }}
-{{- $debugPrefix = printf "%v%v%v"
+{{- $debugPrefix = $template }}
+{{- with printf "%v%v%v"
     (cond (gt (len $stylePath) 0) (printf "stylePath=%v" $stylePath) "")
     (cond (and (gt (len $stylePath) 0) (gt (len $inducedPath) 0)) " | " "")
     (cond (gt (len $inducedPath) 0) (printf "inducedPath=%v" $inducedPath) "") }}
-{{- with $debugPrefix }}{{- $debugPrefix = printf "%v: " $debugPrefix }}{{ end }}
+  {{- $debugPrefix = printf "%v %v: " $debugPrefix . }}
+{{- else }}
+  {{- $debugPrefix = printf "%v: " $debugPrefix }}
+{{- end }}
 
 {{- if $debug }}
   {{- warnf "%vstyle-merged called with style=%v\nvalidStyles=%v" $debugPrefix
@@ -63,7 +67,6 @@
   )
 ) }}
 
-
 {{- with $style }}
 
   {{- range $key, $value := . }}
@@ -75,7 +78,8 @@
 
     {{- $resultingValueList := slice }}
 
-    {{- with $validValuesForKey := index $validStyles $key }}
+    {{- $validValuesForKey := index $validStyles $key }}
+    {{- if ne (printf "%T" $validValuesForKey) "<nil>" }}
 
       {{/* If the value is a map, it applies to params nested deeper
            and we call this template recursively to handle this.
@@ -83,7 +87,7 @@
       {{- if reflect.IsMap $value }}
 
         {{- $subParams := (dict
-          "Template" $callingTemplate
+          "Template" $template
           "Style" $value
           "ValidStyles" $validValuesForKey
           "StylePath" (append $key $stylePath)
@@ -103,7 +107,7 @@
                 (jsonify (dict "indent" "  ") $mergedStyleSub) }}
           {{- end }}
           {{- $mergeParams := (dict
-            "Template" $callingTemplate
+            "Template" $template
             "Style" $resultStyle
             "ValidStyles" $validStyles
             "AddStyle" $mergedStyleSub.Style
@@ -112,9 +116,8 @@
           ) }}
           {{- $resultStyle = partial "merge_deep" $mergeParams }}
           {{- if $debug }}
-            {{- warnf "%vkey=%v: merge_deep call with mergeParams=%v\nreturned resultStyle=%v"
-                $debugPrefix $key (jsonify (dict "indent" "  ") $mergeParams)
-                (jsonify (dict "indent" "  ") $resultStyle) }}
+            {{- warnf "%vkey=%v: merge_deep returned resultStyle=%v"
+                $debugPrefix $key (jsonify (dict "indent" "  ") $resultStyle) }}
           {{- end }}
         {{- end }}
 
@@ -125,7 +128,7 @@
           {{- if $returnSlice }}
             {{- range $value }}
               {{- $resultingValueListParams := (dict
-                "Template" $callingTemplate
+                "Template" $template
                 "ValidStyles" $validStyles
                 "Key" $key
                 "Value" $value
@@ -136,9 +139,8 @@
               {{- $resultingValueListSub := partial "resulting_value_list" $resultingValueListParams }}
               {{- $resultingValueList = append $resultingValueListSub $resultingValueList }}
               {{- if $debug }}
-                {{- warnf "%vkey=%v: call with resultingValueListParams=%v\nreturned resultingValueListSub=%v"
-                    $debugPrefix $key (jsonify (dict "indent" "  ") ($resultingValueListParams))
-                    (jsonify (dict "indent" "  ") $resultingValueListSub) }}
+                {{- warnf "%vkey=%v: call to resulting_value_list returned resultingValueListSub=%v"
+                    $debugPrefix $key (jsonify (dict "indent" "  ") $resultingValueListSub) }}
               {{- end }}
             {{- end }}
           {{- else }}
@@ -148,7 +150,7 @@
 
         {{- else }}
           {{- $resultingValueListParams := (dict
-            "Template" $callingTemplate
+            "Template" $template
             "ValidStyles" $validStyles
             "Key" $key
             "Value" $value
@@ -159,9 +161,8 @@
           {{- $resultingValueListSub := partial "resulting_value_list" $resultingValueListParams }}
           {{- $resultingValueList = append $resultingValueListSub $resultingValueList }}
           {{- if $debug }}
-            {{- warnf "%vkey=%v: call with resultingValueListParams=%v\nreturned resultingValueListSub=%v"
-                $debugPrefix $key (jsonify (dict "indent" "  ") ($resultingValueListParams))
-                (jsonify (dict "indent" "  ") $resultingValueListSub) }}
+            {{- warnf "%vkey=%v: call to resulting_value_list returned resultingValueListSub=%v"
+                $debugPrefix $key (jsonify (dict "indent" "  ") $resultingValueListSub) }}
           {{- end }}
         {{- end }}
 
@@ -178,27 +179,39 @@
         {{- $addStyle := dict }}
 
         {{- if reflect.IsMap $resultingValue }}
-          {{- if (lt (len $inducedPath) 5 ) }}
+          {{- if (gt (len $inducedPath) 5 ) }}
+            {{- errorf "%vkey=%v: aborting induced call chain at inducedPath=%v"
+                  $warnPrefix $key $inducedPath }}
+          {{- else }}
             {{/* This resultingValue being a map means that we treat it as if this map had been passed as $style */}}
-            {{- $subParams := (dict
-              "Template" $callingTemplate
-              "Style" $resultingValue
-              "ValidStyles" $validStyles
-              "StylePath" $stylePath
-              "InducedPath" (append $key $inducedPath)
-              "Debug" $debug
-            ) }}
-            {{- if $debug }}
-              {{- warnf "%vkey=%v: resultingValue is map: induced call with style=%v"
-                  $debugPrefix $key (jsonify (dict "indent" "  ") $subParams.Style) }}
-            {{- end }}
-            {{- with $mergedStyleSub := partial $template $subParams }}
-              {{- $addStyle = $mergedStyleSub.Style }}
+            {{- with $subValidStyles := index $validStyles $key }}
+              {{- $subParams := (dict
+                "Template" $template
+                "Style" $resultingValue
+                "ValidStyles" $validStyles
+                "StylePath" $stylePath
+                "InducedPath" (append $key $inducedPath)
+                "Debug" $debug
+              ) }}
               {{- if $debug }}
-                {{- warnf "%vkey=%v: induced call with subParams=%v\nreturned mergedStyleSub=%v"
-                    $debugPrefix $key (jsonify (dict "indent" "  ") $subParams)
-                    (jsonify (dict "indent" "  ") $mergedStyleSub) }}
+                {{- warnf "%vkey=%v: resultingValue is map: induced call with style=%v"
+                    $debugPrefix $key (jsonify (dict "indent" "  ") $subParams.Style) }}
               {{- end }}
+              {{- with $mergedStyleSub := partial $template $subParams }}
+                {{- $addStyle = $mergedStyleSub.Style }}
+                {{/* {{- $addStyle = (dict $key $mergedStyleSub.Style) }} */}}
+                {{- if $debug }}
+                  {{- warnf "%vkey=%v: induced call returned mergedStyleSub=%v"
+                      $debugPrefix $key (jsonify (dict "indent" "  ") $mergedStyleSub) }}
+                {{- end }}
+              {{- else }}
+                {{- errorf "%vkey=%v: induced call returned invalid mergedStyleSub=%v"
+                    $debugPrefix $key (jsonify (dict "indent" "  ") $mergedStyleSub) }}
+              {{- end }}
+            {{- else }}
+              {{- errorf "%vkey=%v: cannot make induced call with resultingValue=%v as key=%v yielded subValidStyles="
+                  $debugPrefix $resultingValue $key (jsonify (dict "indent" "  ") $resultingValue)
+                  $key (jsonify (dict "indent" "  ") $subValidStyles) }}
             {{- end }}
           {{- end }}
 
@@ -217,7 +230,7 @@
         {{- end }}
 
         {{- $mergeParams := (dict
-          "Template" $callingTemplate
+          "Template" $template
           "Style" $resultStyle
           "ValidStyles" $validStyles
           "AddStyle" $addStyle
@@ -226,10 +239,8 @@
         ) }}
         {{- $resultStyle = partial "merge_deep" $mergeParams }}
         {{- if $debug }}
-          {{- warnf "%vkey=%v: merge_deep call with\nmergeParams=%v\nreturned resultStyle=%v"
-              $debugPrefix $key
-              (jsonify (dict "indent" "  ") $mergeParams)
-              (jsonify (dict "indent" "  ") $resultStyle) }}
+          {{- warnf "%vkey=%v: merge_deep call returned resultStyle=%v"
+              $debugPrefix $key (jsonify (dict "indent" "  ") $resultStyle) }}
         {{- end }}
 
       {{- end }}
@@ -246,17 +257,13 @@
 
   {{- if and (eq (len $stylePath) 0) (eq (len $inducedPath) 0) }}
     {{- $styleClassParams := (dict
-      "Template" $callingTemplate
+      "Template" $template
       "Style" $resultStyle
       "ValidStyles" $validStyles
       "ValidationType" $validationType
       "Debug" $debug
     ) }}
     {{- $styleClass = partial "style_class" $styleClassParams }}
-    {{- if $debug }}
-      {{- warnf "%vEnd of style-merged: Returning mergedStyle=%v" $debugPrefix
-          (jsonify (dict "indent" "  ") $mergedStyle) }}
-    {{- end }}
   {{- end }}
 
 {{- end }}
@@ -266,6 +273,11 @@
   "ValidStyles" $validStyles
   "StyleClass" $styleClass
 ) -}}
+
+{{- if and $styleClass $debug }}
+  {{- warnf "%vEnd of style-merged: Returning mergedStyle=%v" $debugPrefix
+      (jsonify (dict "indent" "  ") $mergedStyle) }}
+{{- end }}
 
 {{- return $mergedStyle }}
 
@@ -280,11 +292,12 @@
   {{- $stylePath := default slice .StylePath }}
   {{- $inducedPath := default slice .InducedPath }}
 
-  {{- $debug := default false .Debug }}
+  {{- $debug := false }}
+  {{/* {{- $debug = or $debug .Debug }} */}}
 
   {{- $warnPrefix := printf "%s[%s->%s]: " page $callingTemplate $template }}
   {{- $debugPrefix := $warnPrefix }}
-  {{- $debugPrefix = printf "%v%v%v"
+  {{- $debugPrefix = printf "%v->%v%v%v%v" $callingTemplate $template
     (cond (gt (len $stylePath) 0) (printf "stylePath=%v" $stylePath) "")
     (cond (and (gt (len $stylePath) 0) (gt (len $inducedPath) 0)) " | " "")
     (cond (gt (len $inducedPath) 0) (printf "inducedPath=%v" $inducedPath) "") }}
@@ -315,7 +328,8 @@
             (jsonify (dict "indent" "  ") $validValuesForKey) }}
       {{- end }}
 
-      {{- with $resultingValue := index $validValuesForKey (string $innerKey) }}
+      {{- $resultingValue := index $validValuesForKey (string $innerKey) }}
+      {{- if ne (printf "%T" $resultingValue) "<nil>" }}
         {{- if and $returnSlice (not reflect.IsSlice $resultingValue) }}
           {{- $resultingValue = slice $resultingValue }}
           {{- if $debug }}
@@ -347,7 +361,7 @@
           but since the values may be maps, we need to use a loop */}}
     {{- range $innerValue := $value }}
       {{- $resultingValueParams := (dict
-        "Template" $callingTemplate
+        "Template" $template
         "ValidStyles" $validStyles
         "ValidValuesForKey" $validValuesForKey
         "Key" $key
@@ -377,12 +391,11 @@
     {{- end }}
 
     {{- $resultingValueParams := (dict
-      "Template" $callingTemplate
+      "Template" $template
       "ValidStyles" $validStyles
       "ValidValuesForKey" $validValuesForKey
       "Key" $key
       "Value" $value
-      "ValidValuesForKey" $validValuesForKey
       "StylePath" $stylePath
       "InducedPath" $inducedPath
       "Debug" $debug
@@ -421,7 +434,8 @@
   {{- $stylePath := default slice .StylePath }}
   {{- $inducedPath := default slice .InducedPath }}
 
-  {{- $debug := default false .Debug }}
+  {{- $debug := false }}
+  {{/* {{- $debug = or $debug .Debug }} */}}
 
   {{- $warnPrefix := printf "%s[%s->%s]: " page $callingTemplate $template }}
   {{- $debugPrefix := $warnPrefix }}
@@ -444,7 +458,7 @@
     {{- $resultingValue = index $validValuesForKey (string $value) }}
     {{- if $debug }}
       {{- warnf "%vvalidValuesForKey is MAP: resultingValue=%v == entry of value=%v in validValuesForKey=%v"
-          $debugPrefix $value $resultingValue $value (jsonify (dict "indent" "  ") $validValuesForKey) }}
+          $debugPrefix $resultingValue $value (jsonify (dict "indent" "  ") $validValuesForKey) }}
     {{- end }}
   {{- else if reflect.IsSlice $validValuesForKey }}
     {{/* Every entry in the slice $validValuesForKey can be either
@@ -511,16 +525,20 @@
   {{- $stylePath := default slice .StylePath }}
   {{- $inducedPath := default slice .InducedPath }}
 
-  {{- $debug := default false .Debug }}
+  {{- $debug := false }}
+  {{- $debug = or $debug .Debug }}
 
   {{- $warnPrefix := printf "%s[%s->%s]: " page $callingTemplate $template }}
   {{- $debugPrefix := $warnPrefix }}
-  {{- $debugPrefix := $warnPrefix }}
-  {{- $debugPrefix = printf "%v%v%v"
-    (cond (gt (len $stylePath) 0) (printf "stylePath=%v" $stylePath) "")
-    (cond (and (gt (len $stylePath) 0) (gt (len $inducedPath) 0)) " | " "")
-    (cond (gt (len $inducedPath) 0) (printf "inducedPath=%v" $inducedPath) "") }}
-  {{- with $debugPrefix }}{{- $debugPrefix = printf "%v: " $debugPrefix }}{{ end }}
+  {{- $debugPrefix = printf "%v->%v" $callingTemplate $template }}
+  {{- with printf "%v%v%v"
+      (cond (gt (len $stylePath) 0) (printf "stylePath=%v" $stylePath) "")
+      (cond (and (gt (len $stylePath) 0) (gt (len $inducedPath) 0)) " | " "")
+      (cond (gt (len $inducedPath) 0) (printf "inducedPath=%v" $inducedPath) "") }}
+    {{- $debugPrefix = printf "%v %v: " $debugPrefix . }}
+  {{- else }}
+    {{- $debugPrefix = printf "%v: " $debugPrefix }}
+  {{- end }}
 
   {{- if $debug }}
     {{- warnf "%vmerge_deep called with addStyle=%v\nto style=%v"
@@ -534,7 +552,7 @@
   {{- range $key, $value := $addStyle }}
     {{- if reflect.IsMap $value }}
       {{- $subParams := (dict
-        "Template" $callingTemplate
+        "Template" $template
         "Style" (index $style $key)
         "ValidStyles" (index $validStyles $key)
         "AddStyle"  $value
@@ -565,9 +583,14 @@
            Otherwise, we overwrite the value
       */}}
 
-      {{- with $validValuesForKey := index $validStyles $key }}
+      {{- $validValuesForKey := index $validStyles $key }}
+      {{/* {{- $keyStylePath := append $key $stylePath }}
+      {{- $validValuesForKey := index $validStyles $keyStylePath }} */}}
+      {{- if ne (printf "%T" $validValuesForKey) "<nil>" }}
         {{- $returnSlice := reflect.IsSlice $validValuesForKey }}
-        {{- with $baseValue := index $style $key }}
+        {{- $baseValue := index $style $key }}
+        {{- if ne (printf "%T" $baseValue) "<nil>" }}
+
           {{- if reflect.IsMap $baseValue }}
             {{- errorf "%vkey=%v: validValuesForKey=%v: invalid baseValue=%v in style=%v"
                 $debugPrefix $key $validValuesForKey $baseValue
@@ -655,8 +678,8 @@
 
       {{- else }}
 
-        {{- warnf "%vkey=%v: not found in validStyles=%v"
-            $debugPrefix $key
+        {{- warnf "%vkey=%v: no entry found for key=%v in validStyles=%v"
+            $debugPrefix $key $key
             (jsonify (dict "indent" "  ") $validStyles) }}
 
       {{- end }}
@@ -685,7 +708,9 @@
   {{- $styleClassPrefix := default "style_" .StyleClassPrefix }}
   {{- $validationType := .ValidationType }}
 
-  {{- $debug := default false .Debug }}
+  {{- $debug := false }}
+  {{/* {{- $debug = or $debug .Debug }} */}}
+
   {{- $warnPrefix := printf "%s[%s->%s]: " page $callingTemplate $template }}
   {{- $debugPrefix := $warnPrefix }}
   {{- $debugPrefix = printf "%v%v%v"
@@ -705,16 +730,18 @@
   {{- with $style }}
     {{- range $key, $value := . }}
       {{- $keyStylePath := append $key $stylePath }}
-      {{- if reflect.IsMap $value }}
+
+      {{- if eq (printf "%T" $value) "<nil>" }}
+      {{- else if reflect.IsMap $value }}
         {{- $subParams := (dict
-          "Template" $callingTemplate
+          "Template" $template
           "Style" $value
           "StylePath" $keyStylePath
           "StyleClassPrefix" $styleClassPrefix
           "Debug" $debug
         ) }}
         {{- if $debug }}
-          {{- warnf "%vkey=%v: value for this key is a map: recursive call with \nsubParams=%v"
+          {{- warnf "%vkey=%v: value for this key is a map: recursive call with subParams=%v"
               $debugPrefix $key
               (jsonify (dict "indent" "  ") $subParams) }}
         {{- end }}
@@ -723,275 +750,107 @@
           {{- $styleClass = append $styleClassSub $styleClass }}
         {{- end }}
 
+      {{- else if reflect.IsSlice $value }}
+
+        {{/* Given that this is a slice, we expect that all its elements are scalar */}}
+        {{- range $value }}
+          {{- if reflect.IsMap . }}
+            {{- errorf "%vkey=%v: value for this key is a map: this should never happen"
+                $debugPrefix $key -}}
+          {{- else if reflect.IsSlice . }}
+            {{- errorf "%vkey=%v: value for this key is a map: this should never happen"
+                $debugPrefix $key -}}
+          {{- else }}
+            {{- $styleClass = append (printf "%s%s_%v" $styleClassPrefix (delimit $keyStylePath `_`) .) $styleClass }}
+          {{- end }}
+        {{- end }}
+
       {{- else }}
 
-        {{- with $validValuesForKey := index $validStyles $key }}
+        {{/* Given that this is a scalar, we expect it to be validated against a map or a scalar */}}
+        {{- $valueHandled := false }}
 
-          {{- $validValueList := slice }}
-          {{- $resultingValueList := slice }}
-          {{- if reflect.IsMap $validValuesForKey }}
-            {{- range $validValue, $resultingValue := $validValuesForKey }}
-              {{- $validValueList = append $validValue $validValueList }}
-              {{- $resultingValueList = append $resultingValue $resultingValueList }}
-            {{- end }}
-          {{- else if reflect.IsSlice $validValuesForKey }}
-            {{- $validValueList = $validValuesForKey }}
-          {{- else }}
-            {{- $validValueList = slice $validValuesForKey }}
-          {{- end }}
+        {{- $validationSpec := index $validStyles $key }}
+        {{- if ne (printf "%T" $validationSpec) "<nil>" }}
 
-          {{/* valueType indicates, how to deal with the value of the param */}}
-          {{- $valueType := printf "%T" $value }}
+          {{- if reflect.IsMap $validationSpec }}
 
-          {{- $valueHandled := false }}
-
-          {{- if $debug }}
-            {{- warnf "%vkey=%v value=%v [type=%T] vs. validValueList=%v"
-                $debugPrefix $key $value $value $validValueList }}
-          {{- end }}
-
-          {{- if reflect.IsSlice $validValuesForKey }}
-            {{- warnf "%vkey=%v: validating value=%v [type=%T] against SLICE validValuesForKey=%v [type=%T] validValueList=%v [type=%T]"
-                $debugPrefix $key $value $value
-                $validValuesForKey $validValuesForKey
-                $validValueList $validValueList }}
-            {{- $valueHandled = true }}
-            {{- if not (reflect.IsSlice $value) }}
-              {{- $value = slice $value }}
-            {{- end }}
-            {{- with $validatedValues := intersect $value $validValueList }}
-              {{- range $validatedValues }}
-                {{- $styleClass = append (printf "%s%s_%v" $styleClassPrefix (delimit $keyStylePath `_`) .) $styleClass }}
-              {{- end }}
-              {{- warnf "%vkey=%v validated against SLICE: value=%v [type=%T] vs. validValueList=%v"
-                  $debugPrefix $key $value $value $validValueList }}
-            {{- end }}
-            {{- with $invalidatedValues := complement $validValueList $value }}
-              {{- warnf "%vkey=%v: invalidatedValues=%v not found in SLICE validValueList=%v"
-                  $debugPrefix $key $invalidatedValues $validValueList }}
-            {{- end }}
-          {{- else if reflect.IsMap $validValuesForKey }}
-            {{- warnf "%vkey=%v: validating value=%v [type=%T] against validValueList=%v [type=%T] from MAP validValuesForKey=%v"
-                $debugPrefix $key $value $value
-                $validValueList $validValueList
-                (jsonify (dict "indent" "  ") $validValuesForKey) }}
-            {{- $valueHandled = true }}
-            {{- if reflect.IsSlice $value }}
-            {{- else }}
-              {{- with $resultingValue := index $validValuesForKey (string $value) }}
-                {{- $styleClass = append (printf "%s%s_%v" $styleClassPrefix (delimit $keyStylePath `_`) .) $styleClass }}
+            {{- $resultingValue := index $validationSpec (string $value) }}
+            {{- if ne (printf "%T" $resultingValue) "<nil>" }}
+              {{- $styleClass = append (printf "%s%s_%v" $styleClassPrefix (delimit $keyStylePath `_`) .) $styleClass }}
+              {{- $valueHandled = true }}
+              {{- if $debug }}
                 {{- warnf "%vkey=%v validated against MAP: value=%v [type=%T] resultingValue=%v"
                     $debugPrefix $key $value $value $resultingValue }}
-              {{- else }}
-                {{- warnf "%vkey=%v not found in MAP: value=%v [type=%T] vs. validValuesForKey=%v"
-                    $debugPrefix $key $value $value
-                    (jsonify (dict "indent" "  ") $validValuesForKey) }}
               {{- end }}
+            {{- else }}
+              {{- errorf "%vkey=%v: value=%v [type=%T] string='%s' not found in validationSpec=%v"
+                  $debugPrefix $key $value $value (string $value) (jsonify (dict "indent" "  ") $validationSpec) -}}
             {{- end }}
+
           {{- else }}
-            {{- range $validValue := $validValueList }}
-              {{- if not $valueHandled }}
-                {{- with $type := index $validationType (string $validValue) }}
-                  {{- if in $type.valid_types $valueType }}
-                    {{- if eq $type.class "boolean" }}
-                      {{- $valueHandled = true }}
-                      {{- if $debug }}
-                        {{- warnf "%vkey=%v handled as BOOLEAN: value=%v [type=%T] vs. validValue=%v"
-                            $debugPrefix $key $value $value $validValue }}
-                      {{- end }}
-                      {{- if $value }}
-                        {{- $styleClass = append (printf "%s%s" $styleClassPrefix (delimit $keyStylePath `_`)) $styleClass }}
-                      {{- end }}
-                    {{- else if eq $type.class "value" }}
-                      {{- $valueHandled = true }}
-                      {{- if $debug }}
-                        {{- warnf "%vkey=%v handled as VALUE: value=%v [type=%T] vs. validValue=%v"
-                            $debugPrefix $key $value $value $validValue }}
-                      {{- end }}
-                      {{- $styleClass = append (printf "%s%s_%v" $styleClassPrefix (delimit $keyStylePath `_`) .) $styleClass }}
-                    {{- else if eq $type.class "ignore" }}
-                      {{- $valueHandled = true }}
-                      {{- if $debug }}
-                        {{- warnf "%vkey=%v handled as IGNORE: value=%v [type=%T] vs. validValue=%v"
-                            $debugPrefix $key $value $value $validValue }}
-                      {{- end }}
-                    {{- end }}
-                  {{- else }}
-                  {{- end }}
-                {{- else }}
+
+            {{- with $validationTypeSpec := index $validationType (string $validationSpec) }}
+              {{/* valueType indicates, how to deal with the value of the param */}}
+              {{- $valueType := printf "%T" $value }}
+
+              {{- if in $validationTypeSpec.valid_types $valueType }}
+                {{- if eq $validationTypeSpec.class "boolean" }}
+                  {{- $valueHandled = true }}
                   {{- if $debug }}
-                    {{- warnf "%vkey=%v value=%v [type=%T] vs. validValue=%v"
-                        $debugPrefix $key $value $value $validValue }}
+                    {{- warnf "%vkey=%v validated as BOOLEAN: value=%v [type=%T] vs. validationSpec=%v"
+                        $debugPrefix $key $value $value $validationSpec }}
                   {{- end }}
-                  {{- with $resultingValue := and (eq $validValuesForKey (string $value)) (string $value) }}
-                    {{- $styleClass = append (printf "%s%s_%v" $styleClassPrefix (delimit $keyStylePath `_`) $resultingValue) $styleClass }}
-                  {{- else }}
-                    {{- warnf "%vkey=%v: value=%v has unexpected type=%T"
-                        $debugPrefix $key $value $value }}
+                  {{- if $value }}
+                    {{- $styleClass = append (printf "%s%s" $styleClassPrefix (delimit $keyStylePath `_`)) $styleClass }}
+                  {{- end }}
+                {{- else if eq $validationTypeSpec.class "value" }}
+                  {{- $styleClass = append (printf "%s%s_%v" $styleClassPrefix (delimit $keyStylePath `_`) .) $styleClass }}
+                  {{- $valueHandled = true }}
+                  {{- if $debug }}
+                    {{- warnf "%vkey=%v validated as VALUE: value=%v [type=%T] vs. validationSpec=%v"
+                        $debugPrefix $key $value $value $validationSpec }}
+                  {{- end }}
+                {{- else if eq $validationTypeSpec.class "ignore" }}
+                  {{- $valueHandled = true }}
+                  {{- if $debug }}
+                    {{- warnf "%vkey=%v validated as IGNORE: value=%v [type=%T] vs. validationSpec=%v"
+                        $debugPrefix $key $value $value $validationSpec }}
                   {{- end }}
                 {{- end }}
+              {{- else }}
+                {{- errorf "%vkey=%v: value=%v has wrong valueType=%v not found in valid_types=%v from validationTypeSpec=%v"
+                    $debugPrefix $key $value $valueType $validationTypeSpec.valid_types
+                    (jsonify (dict "indent" "  ") $validationTypeSpec) -}}
+              {{- end }}
+            {{- else }}
+              {{- with $resultingValue := and (eq $validationSpec (string $value)) (string $value) }}
+                {{- $styleClass = append (printf "%s%s_%v" $styleClassPrefix (delimit $keyStylePath `_`) $resultingValue) $styleClass }}
+                {{- $valueHandled = true }}
+                {{- if $debug }}
+                  {{- warnf "%vkey=%v validated as VERBATIM value=%v [type=%T] vs. validationSpec=%v"
+                      $debugPrefix $key $value $value $validationSpec }}
+                {{- end }}
+              {{- else }}
+                {{- errorf "%vkey=%v: value=%v has unexpected type=%T"
+                    $debugPrefix $key $value $value }}
               {{- end }}
             {{- end }}
+
             {{- if not $valueHandled }}
-              {{- warnf "%vkey=%v: value=%v has unexpected type=%T"
+              {{- errorf "%vkey=%v: value=%v [type=%T] could not be parsed"
                   $debugPrefix $key $value $value }}
             {{- end }}
+
           {{- end }}
-        {{- end }}
-      {{- end }}
-    {{- end }}
-
-  {{- end }}
-  {{- return $styleClass }}
-{{- end }}
-
-{{- /* ***************************************************************** */ -}}
-
-{{- define "partials/parse_value_.html" }}
-  {{- $template := "vitae/_functions/style-merged/parse_value" }}
-  {{- $callingTemplate := .Template }}
-  {{- $styleClassPrefix := default "style" .StyleClassPrefix }}
-  {{- $key := .Key }}
-  {{- $value := .Value }}
-  {{- $validValuesForKey := .ValidValuesForKey }}
-
-  {{- $debug := false }}
-  {{/* {{- $debug = or $debug .Debug }} */}}
-  {{/* {{- $debug = or $debug (not (not (findRE `^/([^/]+-demo/)?preview` page.RelPermalink) ) ) -}} */}}
-  {{- $warnPrefix := printf "%s[%s->%s->parse_value]: " page $callingTemplate $template }}
-  {{- $debugPrefix := $warnPrefix }}
-
-  {{- $styleClass := slice }}
-
-  {{/* To index the validation map $validValuesForKey, we need to use the string representation of candidate value $value */}}
-  {{- $valueStr := string $value }}
-
-  {{- $validValueTypes := slice "string" "bool" "int" }}
-  {{/* For params that may have arbitrary values such as strings or whose value is validated by the type, such as bool */}}
-  {{- $nonValidatableValueTypes := (slice "ANY_STRING" "ANY_INT" "ANY_BOOL") }}
-
-  {{/* Params of type string are not added to the style class list */}}
-  {{- $excludeFromClassValueTypes := (slice "ANY_STRING") }}
-
-  {{- $validValueList := slice }}
-  {{- $resultingValueList := slice }}
-  {{- range $validValue, $resultingValue := $validValuesForKey }}
-    {{- $validValueList = append $validValue $validValueList }}
-    {{- $resultingValueList = append $resultingValue $resultingValueList }}
-  {{- end }}
-
-  {{- $styleClassValueList := slice }}
-
-  {{/* valueType indicates, how to deal with the value of the param */}}
-  {{- $valueType := printf "%T" $value }}
-
-  {{- range $excludeValueType := $excludeFromClassValueTypes }}
-    {{- with $resultingValue := index $validValuesForKey $excludeValueType }}
-      {{- $valueType = "IGNORE" }}
-      {{- if $debug }}
-        {{- warnf "%vkey=%v: value=%v[%T]: set valueType=%v as excludeValueType=%v is in validValuesForKey=%v"
-            $debugPrefix $key $valueStr $value $valueType $excludeValueType
-            (jsonify (dict "indent" "  ") $validValuesForKey ) }}
-      {{- end }}
-    {{/* {{- else }}
-      {{- if $debug }}
-        {{- warnf "%vkey=%v: value=%v[%T]: excludeValueType=%v is not in validValuesForKey=%v"
-            $debugPrefix $key $valueStr $value $excludeValueType
-            (jsonify (dict "indent" "  ") $validValuesForKey ) }}
-      {{- end }} */}}
-    {{- end }}
-  {{- end }}
-
-  {{- if ne $valueType "IGNORE" }}
-    {{- $nonValidatableType := index (intersect $validValueList $nonValidatableValueTypes) 0 }}
-    {{/* {{- if $debug }}
-      {{- warnf "%vkey=%v: value=%v[%T]: (intersect validValueList=%v with nonValidatableType=%v) = %v from\nvalidValuesForKey=%v"
-          $debugPrefix $key $valueStr $value $validValueList $nonValidatableValueTypes $nonValidatableType
-          (jsonify (dict "indent" "  ") $validValuesForKey ) }}
-    {{- end }} */}}
-    {{- if $nonValidatableType }}
-      {{- $valueTypeStr := printf "ANY_%s" (upper $valueType) }}
-      {{- if eq $valueTypeStr $nonValidatableType }}
-        {{- $styleClassValueList = slice $valueStr }}
-        {{- if $debug }}
-          {{- warnf "%vkey=%v: value=%v[%T]: adding valueStr=%s as-is: nonValidatableType=%v from\nvalidValuesForKey=%v"
-              $debugPrefix $key $valueStr $value $valueStr $nonValidatableType
-              (jsonify (dict "indent" "  ") $validValuesForKey ) }}
-        {{- end }}
-      {{- else }}
-        {{- warnf "%vkey=%v: value=%v[%T]: invalid type: %v != %v from\nvalidValuesForKey=%v"
-            $warnPrefix $key $valueStr $value
-            $valueTypeStr $nonValidatableType
-            (jsonify (dict "indent" "  ") $validValuesForKey ) }}
-      {{- end }}
-    {{- else }}
-      {{- $candValue := index $validValuesForKey $valueStr }}
-      {{- if eq (printf "%T" $candValue) "<nil>" }}
-        {{- $valueType = "INVALID" }}
-        {{- if $debug }}
-          {{- warnf "%vkey=%v: value=%v[%T] is invalid: no match in \nvalidValuesForKey=%v"
-              $debugPrefix $key $valueStr $value $candValue $candValue
-              (jsonify (dict "indent" "  ") $validValuesForKey ) }}
-        {{- end }}
-      {{- else }}
-        {{/* {{- if $debug }}
-          {{- warnf "%vkey=%v: value=%v[%T] vs. candValue=%v [type=%T] from\nvalidValuesForKey=%v"
-              $debugPrefix $key $valueStr $value $candValue $candValue
-              (jsonify (dict "indent" "  ") $validValuesForKey ) }}
-        {{- end }} */}}
-        {{- if reflect.IsSlice $candValue }}
-          {{- $styleClassValueList = $candValue }}
         {{- else }}
-          {{- $styleClassValueList = slice $candValue }}
-        {{- end }}
-        {{- if $debug }}
-          {{- warnf "%vkey=%v: value=%v [type=%T] translated to styleClassValueList=%v"
-              $debugPrefix $key $valueStr $value $styleClassValueList }}
+          {{- errorf "%vkey=%v: key not found in validStyles=%v"
+              $debugPrefix $key $validationSpec
+              (jsonify (dict "indent" "  ") $validStyles) -}}
         {{- end }}
       {{- end }}
     {{- end }}
-  {{- end }}
 
-  {{- if ne $valueType "INVALID" }}
-    {{- if $debug }}
-      {{- warnf "%vValid style key='%v' has valid value=%v[%T] %v styleClassValueList=%v\nvalidValuesForKey=%v"
-        $debugPrefix $key $value $value
-        (cond (eq $valueType "IGNORE") "but was excluded from" "and was included in")
-        $styleClassValueList
-        (jsonify (dict "indent" "  ") $validValuesForKey) }}
-    {{- end }}
-
-    {{- range $styleClassValueList }}
-      {{- if in $validValueTypes (printf "%T" .) }}
-        {{- $styleClass = append (printf "%s_%s_%v" $styleClassPrefix $key .) $styleClass }}
-        {{/* {{- warnf "%vValid style key='%v' has valid value=%v and valid type=%T in %v: styleClass=%v"
-          $debugPrefix $key $value $value $validValueTypes $styleClass }} */}}
-      {{- else }}
-        {{- warnf "%vValid style key='%v' has valid value=%v but type=%T is not in %v"
-          $warnPrefix $key $value $value $validValueTypes }}
-        {{- $valueType = "INVALID" }}
-      {{- end }}
-    {{- end }}
-  {{- end }}
-
-  {{- if eq $valueType "INVALID" }}
-    {{- $validValueList := slice }}
-    {{- range $candValue, $resultingValue := $validValuesForKey }}
-      {{- if not (in $validValuesForKey $candValue) }}
-        {{- $validValueList = append $candValue $validValueList }}
-      {{- end }}
-    {{- end }}
-    {{- warnf "%vValid style key='%v' has invalid value=%v[%T]. Valid values: '%v'"
-        $warnPrefix $key $value $value
-        (delimit (sort $validValueList) "', '") }}
-  {{- end }}
-
-  {{- if $debug }}
-    {{- if not (in (slice (printf "%T" slice) (printf "%T" (slice "a") ) (printf "%T" (slice "a" "b") )) (printf "%T" $styleClass)) }}
-      {{- warnf "%vkey='%v': Returning unexpected type: styleClass=%v[%T] from value=%v[%T]\nvalidStyles=%v"
-          $warnPrefix $key $styleClass $styleClass $value $value
-          (jsonify (dict "indent" "  ") $validValuesForKey) }}
-    {{- end }}
   {{- end }}
   {{- return $styleClass }}
 {{- end }}
