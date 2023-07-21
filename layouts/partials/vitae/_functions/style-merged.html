@@ -87,7 +87,7 @@
       {{- if reflect.IsMap $value }}
 
         {{- $subParams := (dict
-          "Template" $template
+          "Template" $callingTemplate
           "Style" $value
           "ValidStyles" $validValuesForKey
           "StylePath" (append $key $stylePath)
@@ -183,10 +183,14 @@
             {{- errorf "%vkey=%v: aborting induced call chain at inducedPath=%v"
                   $warnPrefix $key $inducedPath }}
           {{- else }}
-            {{/* This resultingValue being a map means that we treat it as if this map had been passed as $style */}}
+            {{/* As the resultingValue is a map means, we treat the resultingValue
+                as if it had been passed as $style:
+                We call $template with Style = resultingValue
+                But we still use ValidStyles = validStyles because the
+                resultingValue applies to the top-level validStyles */}}
             {{- with $subValidStyles := index $validStyles $key }}
               {{- $subParams := (dict
-                "Template" $template
+                "Template" $callingTemplate
                 "Style" $resultingValue
                 "ValidStyles" $validStyles
                 "StylePath" $stylePath
@@ -194,8 +198,8 @@
                 "Debug" $debug
               ) }}
               {{- if $debug }}
-                {{- warnf "%vkey=%v: resultingValue is map: induced call with style=%v"
-                    $debugPrefix $key (jsonify (dict "indent" "  ") $subParams.Style) }}
+                {{- warnf "%vkey=%v: resultingValue is map: induced call with subParams=%v"
+                    $debugPrefix $key (jsonify (dict "indent" "  ") $subParams) }}
               {{- end }}
               {{- with $mergedStyleSub := partial $template $subParams }}
                 {{- $addStyle = $mergedStyleSub.Style }}
@@ -561,7 +565,7 @@
         "Debug" $debug
       ) }}
       {{- if $debug }}
-        {{- warnf "%vkey=%v: value is a map: recursive call with \nsubParams=%v"
+        {{- warnf "%vkey=%v: value is a map: recursive call with subParams=%v"
             $debugPrefix $key
             (jsonify (dict "indent" "  ") ($subParams)) }}
       {{- end }}
@@ -569,7 +573,7 @@
       {{- with $mergedStyleSub := partial $template $subParams }}
         {{- $resultStyle = merge $resultStyle (dict $key $mergedStyleSub) }}
         {{- if $debug }}
-          {{- warnf "%vkey=%v: recursive call with\nsubParams=%v\nmerged to resultStyle=%v"
+          {{- warnf "%vkey=%v: recursive call with subParams=%v\nmerged to resultStyle=%v"
               $debugPrefix $key
               (jsonify (dict "indent" "  ") ($subParams))
               (jsonify (dict "indent" "  ") $resultStyle) }}
@@ -678,7 +682,7 @@
 
       {{- else }}
 
-        {{- warnf "%vkey=%v: no entry found for key=%v in validStyles=%v"
+        {{- errorf "%vkey=%v: no entry found for key=%v in validStyles=%v"
             $debugPrefix $key $key
             (jsonify (dict "indent" "  ") $validStyles) }}
 
