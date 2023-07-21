@@ -85,7 +85,7 @@
       (jsonify (dict "indent" "  ") $mergedStyle) -}}
 {{- end }}
 
-{{- if false }}
+{{- if $debug }}
   {{- $validStylesNew := (dict
     "ats" (dict
       "true" (dict

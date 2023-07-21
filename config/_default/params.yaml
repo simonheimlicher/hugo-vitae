@@ -522,25 +522,76 @@ vitae:
                     description: false
                     skills: false
                     achievements: true
-              - section: education
-                # enabled: false
-                title: section-education
-                # container: section
-                components:
-                - component: stages
-                  collection: stages
-                  filter_by: type
-                  filter_value: education
-                  style:
-                    layout:
-                      - inline
-                    heading: normal
-                    separate_roles: true
-                  role:
-                    period: false
-                    duration: false
-                    details: false
-                    description: true
+              # - section: education
+              #   # enabled: false
+              #   title: section-education
+              #   # container: section
+              #   components:
+              #   - component: stages
+              #     collection: stages
+              #     filter_by: type
+              #     filter_value: education
+              #     style:
+              #       layout:
+              #         - inline
+              #       heading: normal
+              #       separate_roles: true
+              #     role:
+              #       period: false
+              #       duration: false
+              #       details: false
+              #       description: true
+              - section: education-languages
+                # container: div
+                sections:
+                - section: education
+                  # enabled: false
+                  title: section-education
+                  container: section
+                  components:
+                  - component: stages
+                    collection: stages
+                    filter_by: type
+                    filter_value: education
+                    style:
+                      heading: normal
+                      separate_roles: true
+                      layout: narrow
+                    role:
+                      period: false
+                      duration: false
+                      details: true
+                - section: language-skills
+                  title: section-language-skills
+                  container: section
+                  components:
+                  - component: skills
+                    collection: skills
+                    filter_by: type
+                    filter_value: language
+                    details: true
+                    level_bar: false
+              # - section: patents-publications
+              #   sections:
+              #   - section: patent-selection
+              #     title: section-patents
+              #     container: section
+              #     components:
+              #     - component: publications
+              #       collection: publications
+              #       filter_by: kind
+              #       filter_value: patent
+              #   - section: publication-selection
+              #     title: section-publications
+              #     container: section
+              #     components:
+              #     - component: publications
+              #       collection: publications
+              #       filter_by: kind
+              #       filter_value: publication
+
+            - slot: footer
+              shared: footer
 
           # Appendix
           - template: appendix
