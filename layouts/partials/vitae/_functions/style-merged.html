@@ -26,8 +26,9 @@
 {{- $inducedPath := default slice .InducedPath }}
 
 {{- $debug := false }}
-{{/* {{- $debug = or $debug (and (strings.HasSuffix $callingTemplate "_components/index") (not (not (findRE `^/([^/]+-demo/)?devel/$` page.RelPermalink) ) ) ) -}} */}}
 {{/* {{- $debug = or $debug (and (strings.HasSuffix $callingTemplate "executive") (not (not (findRE `^/([^/]+-demo/)?devel/$` page.RelPermalink) ) ) ) -}} */}}
+{{/* {{- $debug = or $debug (and (strings.HasSuffix $callingTemplate "_components/index") (not (not (findRE `^/([^/]+-demo/)?devel/$` page.RelPermalink) ) ) ) -}} */}}
+{{- $debug = or $debug (and (strings.HasSuffix $callingTemplate "_components/skills") (not (not (findRE `^/([^/]+-demo/)?devel/$` page.RelPermalink) ) ) ) -}}
 {{- $warnPrefix := printf "%s[%s->%s]: " page $callingTemplate $template }}
 {{- $debugPrefix := $warnPrefix }}
 {{- $debugPrefix = $template }}
@@ -68,6 +69,8 @@
   )
 ) }}
 
+{{- $mergeInducingParamValue := false }}
+
 {{- with $style }}
 
   {{- range $key, $value := . }}
@@ -97,8 +100,9 @@
         ) }}
 
         {{- if $debug }}
-          {{- warnf "%vkey=%v: value is a map: recursive call with style=%v"
-              $debugPrefix $key (jsonify (dict "indent" "  ") $subParams.Style) }}
+          {{- warnf "%vkey=%v: value is map=%v\nRecursive call with style=%v"
+              $debugPrefix $key (jsonify (dict "indent" "  ") $value)
+              (jsonify (dict "indent" "  ") $subParams.Style) }}
         {{- end }}
 
         {{- with $mergedStyleSub := partial $template $subParams }}
@@ -131,6 +135,7 @@
         {{- if reflect.IsSlice $value }}
           {{- if $returnSlice }}
             {{- range $value }}
+              {{/* FIXME: Should we not be using the context (.) instead of $value? */}}
               {{- $resultingValueListParams := (dict
                 "Template" $template
                 "ValidStyles" $validStyles
@@ -192,7 +197,8 @@
                 We call $template with Style = resultingValue
                 But we still use ValidStyles = validStyles because the
                 resultingValue applies to the top-level validStyles */}}
-            {{- with $subValidStyles := index $validStyles $key }}
+            {{- $subValidStyles := index $validStyles $key }}
+            {{- if ne (printf "%T" $subValidStyles) "<nil>" }}
               {{- $subParams := (dict
                 "Template" $callingTemplate
                 "Style" $resultingValue
@@ -217,9 +223,9 @@
                     $debugPrefix $key (jsonify (dict "indent" "  ") $mergedStyleSub) }}
               {{- end }}
             {{- else }}
-              {{- errorf "%vkey=%v: cannot make induced call with resultingValue=%v as key=%v yielded subValidStyles="
+              {{- errorf "%vkey=%v: cannot make induced call with resultingValue=%v as key=%v yielded subValidStyles=%v"
                   $debugPrefix $resultingValue $key (jsonify (dict "indent" "  ") $resultingValue)
-                  $key (jsonify (dict "indent" "  ") $subValidStyles) }}
+                  $key $subValidStyles }}
             {{- end }}
           {{- end }}
 
@@ -227,7 +233,7 @@
 
           {{- if $returnSlice }}
             {{- if $debug }}
-              {{- warnf "%vkey=%v: turn resultingValue %v into a slice from original value=%v [type=%T]"
+              {{- warnf "%vkey=%v: turn resultingValue %v into a slice as value is a slice=%v [type=%T]"
                   $debugPrefix $key $resultingValue $value $value }}
             {{- end }}
             {{- $resultingValue = slice $resultingValue }}
