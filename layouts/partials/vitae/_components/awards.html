@@ -65,7 +65,7 @@
   <div class="{{ $classPrefix }}_container {{ $topLevelClass }}">
   {{- range $awardIdx, $award := $awardList }}
     <div class="{{- $classPrefix }}_item">
-      {{- $logoImage := and (default true $style.logo)  .logo }}
+      {{- $logoImage := and (default false $style.logo)  .logo }}
       <div class="{{- $classPrefix }}_header{{ with $logoImage }} logo{{ end }}">
         {{- with $logoImage }}
           {{- partial "responsive-image" (merge $logoImageParams (dict "resource" .resource)) }}
