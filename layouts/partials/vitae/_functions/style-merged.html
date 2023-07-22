@@ -177,13 +177,16 @@
 
       {{- end }}
 
-      {{- range $resultingValue := $resultingValueList }}
+      {{- range $valueToResultingValue := $resultingValueList }}
 
         {{- if $debug }}
-          {{- warnf "%vkey=%v: value=%v [type=%T] returnSlice=%v: process resultingValue=%v"
+          {{- warnf "%vkey=%v: value=%v [type=%T] returnSlice=%v: process valueToResultingValue=%v"
               $debugPrefix $key $value $value $returnSlice
-              (jsonify (dict "indent" "  ") $resultingValue) }}
+              (jsonify (dict "indent" "  ") $valueToResultingValue) }}
         {{- end }}
+
+        {{- $paramValue := $valueToResultingValue.ParamValue }}
+        {{- $resultingValue := $valueToResultingValue.ResultingValue }}
 
         {{- $addStyle := dict }}
 
@@ -208,16 +211,31 @@
                 "Debug" $debug
               ) }}
               {{- if $debug }}
-                {{- warnf "%vkey=%v: resultingValue is map: induced call with subParams=%v"
-                    $debugPrefix $key (jsonify (dict "indent" "  ") $subParams) }}
+                {{- warnf "%vkey=%v: resultingValue is MAP=%v\nInduced call with subParams=%v"
+                    $debugPrefix $key
+                    (jsonify (dict "indent" "  ") $resultingValue)
+                    (jsonify (dict "indent" "  ") $subParams) }}
               {{- end }}
               {{- with $mergedStyleSub := partial $template $subParams }}
-                {{- $addStyle = $mergedStyleSub.Style }}
-                {{/* {{- $addStyle = (dict $key $mergedStyleSub.Style) }} */}}
-                {{- if $debug }}
-                  {{- warnf "%vkey=%v: induced call returned mergedStyleSub=%v"
-                      $debugPrefix $key (jsonify (dict "indent" "  ") $mergedStyleSub) }}
+
+                {{- if $mergeInducingParamValue }}
+                  {{- $addStyle = merge $paramValue $mergedStyleSub.Style }}
+                  {{- if $debug }}
+                    {{- warnf "%vkey=%v: addStyle=%v\nincluding paramValue=%v\nand result of induced call: mergedStyleSub=%v"
+                        $debugPrefix $key (jsonify (dict "indent" "  ") $addStyle)
+                        (jsonify (dict "indent" "  ") $paramValue)
+                        (jsonify (dict "indent" "  ") $mergedStyleSub) }}
+                  {{- end }}
+                {{- else }}
+                  {{- $addStyle = $mergedStyleSub.Style }}
+                  {{- if $debug }}
+                    {{- warnf "%vkey=%v: addStyle=%v\nnot including paramValue=%v\nbut result of induced call: mergedStyleSub=%v"
+                        $debugPrefix $key (jsonify (dict "indent" "  ") $addStyle)
+                        (jsonify (dict "indent" "  ") $paramValue)
+                        (jsonify (dict "indent" "  ") $mergedStyleSub) }}
+                  {{- end }}
                 {{- end }}
+
               {{- else }}
                 {{- errorf "%vkey=%v: induced call returned invalid mergedStyleSub=%v"
                     $debugPrefix $key (jsonify (dict "indent" "  ") $mergedStyleSub) }}
@@ -371,7 +389,25 @@
                 $debugPrefix $key $innerKey (jsonify (dict "indent" "  ") $validValuesForKey) }}
           {{- end }}
         {{- end }}
-        {{- $resultingValueList = append $resultingValue $resultingValueList }}
+        {{/* {{- $resultingValueList = append $resultingValue $resultingValueList }} */}}
+        {{/* {{- $resultingValueParams := (dict
+          "Template" $template
+          "ValidStyles" $validStyles
+          "ValidValuesForKey" $validValuesForKey
+          "Key" $key
+          "Value" $resultingValue
+          "StylePath" $stylePath
+          "InducedPath" $inducedPath
+          "Debug" $debug
+        ) }}
+        {{- $resultingValueListSub := partial "resulting_value" $resultingValueParams }}
+        {{- $resultingValueList = append $resultingValueListSub $resultingValueList }}
+        {{- if $debug }}
+          {{- warnf "%vkey=%v: call with resultingValueParams=%v\nreturned resultingValueListSub=%v"
+              $debugPrefix $key (jsonify (dict "indent" "  ") ($resultingValueParams))
+              (jsonify (dict "indent" "  ") $resultingValueListSub) }}
+        {{- end }} */}}
+        {{- $resultingValueList = append (dict "ParamValue" $innerValue "ResultingValue" $resultingValue) $resultingValueList }}
       {{- else }}
         {{- errorf "%vInvalid value=%v [type=%v]: innerKey=%v not found in validValuesForKey=%v"
             $debugPrefix $value $value $innerKey
@@ -541,13 +577,18 @@
     {{- end }}
   {{- end }}
 
+  {{- $valueToResultingValue := (dict
+    "ParamValue" $value
+    "ResultingValue" $resultingValue
+  ) }}
+
   {{- if $debug }}
-      {{- warnf "%vReturning resultingValue=%v"
+      {{- warnf "%vReturning valueToResultingValue=%v"
         $debugPrefix
-        (jsonify (dict "indent" "  ") $resultingValue) }}
+        (jsonify (dict "indent" "  ") $valueToResultingValue) }}
     {{- end }}
 
-  {{- return $resultingValue }}
+  {{- return $valueToResultingValue }}
 
 {{- end }}
 
