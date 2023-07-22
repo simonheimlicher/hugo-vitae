@@ -402,18 +402,37 @@ vitae:
 
       devel:
         style:
-          ats: true
-          inline_separator: "•"
-          layout:
-            - inline
-            - shallow
-          logo: false
+          # ats: true
+          # inline_separator: "INLINE"
+          # role_header_separator: "ROLE_HEADER"
+          # stage_meta_separator: "STAGE_META"
+          # layout:
+          #   - inline
+          #   - shallow
+          # logo: false
         parts:
           # Front page
           - template: front-page
             # enabled: false
             pagination_policy: first
             slots:
+            - slot: header
+              sections:
+              - section: header
+                components:
+                - component: header
+                  portrait: true
+                  degrees: true
+                  tagline: true
+                  # style:
+                  #   font-size: larger-1
+                  fragments:
+                  - fragment: contact
+                  - fragment: personal
+                    fields:
+                    - field: date_of_birth
+                    - field: citizenship
+                      title: fragment_citizenship
             - slot: main
               sections:
               - section: career-summary
@@ -429,26 +448,25 @@ vitae:
                   filter_by: type
                   filter_value: professional
                   style:
-                    inline:
-                      header: true
-                      role: true
-                      content: true
+                    # inline:
+                    #   header: true
+                    #   role: true
+                    #   content: true
                     # layout:
                     #   - shallow
-                    #   - narrow
+                    #   # - narrow
 
       two-pager:
 
         style:
           # inline_separator: "·"
-          inline_separator: "•"
+          # inline_separator: "•"
           layout:
             - inline
             - shallow
-          logo: false
 
         parts:
-
+          # Everything is in one part
           - template: main
             # enabled: false
             slots:
