@@ -389,7 +389,7 @@
     @include inner_margin_padding(var(--inner_margin), var(--inner_padding));
     @include inner_margin_padding(var(--inner_margin), var(--inner_padding), 8, 1);
     --column_gap: var(--inner_margin_4-3);
-    --row_gap: var(--inner_margin_4-0);
+    --row_gap: var(--inner_margin_4-1);
     --section-gap_vertical: var(--inner_margin_4-4);
   }
 

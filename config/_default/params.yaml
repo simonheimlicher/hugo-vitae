@@ -413,7 +413,7 @@ vitae:
         parts:
           # Front page
           - template: front-page
-            # enabled: false
+            enabled: false
             pagination_policy: first
             slots:
             - slot: header
@@ -433,6 +433,22 @@ vitae:
                     - field: date_of_birth
                     - field: citizenship
                       title: fragment_citizenship
+              - section: connect
+                # title: section-connect
+                container: section
+                style:
+                  title: left
+                components:
+                - component: links
+                  title: section-connect
+                  style:
+                    layout:
+                      - shallow
+                      - inline
+                    icon: true
+                    text: true
+                    qrcode: true
+
             - slot: main
               sections:
               - section: career-summary
@@ -456,14 +472,85 @@ vitae:
                     #   - shallow
                     #   # - narrow
 
+          - template: main
+            # enabled: false
+            pagination_policy: first
+            slots:
+            - slot: header
+              sections:
+              # - section: awards-certificates
+              #   # container: div
+              #   sections:
+              #   - section: awards
+              #     title: section-awards
+              #     container: section
+              #     components:
+              #     - component: awards
+              #       details: false
+              #       filter_by: type
+              #       filter_value: award
+              #       style:
+              #         logo: false
+              #         heading: normal
+              #         layout:
+              #           - shallow
+              #           # - inline # no effect
+              #   - section: certificates
+              #     title: section-certificates
+              #     container: section
+              #     components:
+              #     - component: awards
+              #       details: false
+              #       filter_by: type
+              #       filter_value: certificate
+              #       style:
+              #         logo: false
+              #         heading: normal
+              #         layout: narrow
+              # - section: education-languages
+              #   # container: div
+              #   sections:
+              #   - section: education
+              #     # enabled: false
+              #     title: section-education
+              #     container: section
+              #     components:
+              #     - component: stages
+              #       collection: stages
+              #       filter_by: type
+              #       filter_value: education
+              #       style:
+              #         heading: normal
+              #         separate_roles: true
+              #         layout: narrow
+              #       role:
+              #         period: false
+              #         duration: false
+              #         details: true
+                - section: language-skills
+                  title: section-language-skills
+                  container: section
+                  components:
+                  - component: skills
+                    collection: skills
+                    filter_by: type
+                    filter_value: language
+                    details: true
+                    # level_bar: true
+                    style:
+                      layout:
+                      - inline
+                      # - narrow
+                      # - shallow
+
       two-pager:
 
         style:
           # inline_separator: "·"
           # inline_separator: "•"
           layout:
-            - inline
             - shallow
+            # - inline
 
         parts:
           # Everything is in one part

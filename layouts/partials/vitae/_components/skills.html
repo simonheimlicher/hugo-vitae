@@ -13,18 +13,7 @@
   "layout" (dict
     "shallow" "shallow"
     "narrow" "narrow"
-  )
-  "icon" (dict
-    "false" false
-    "true" true
-  )
-  "text" (dict
-    "false" false
-    "true" true
-  )
-  "qrcode" (dict
-    "false" false
-    "true" true
+    "inline" "inline"
   )
 ) -}}
 
@@ -37,10 +26,46 @@
   {{- warnf "%s[%s]: After style-class:\nmergedStyle=%v" $page $template
       (jsonify (dict "indent" "  ") $mergedStyle) }}
 {{- end }}
+
+{{- $mergedStyleNew := false }}
+{{- with .MergedStyleNew }}
+  {{- $validStylesNew := (dict
+    "layout" (slice
+      "shallow"
+      "narrow"
+      (dict "inline"
+        (dict
+          "level_bar" false
+        )
+      )
+    )
+    "level_bar" "ANY_BOOL"
+    "details" "ANY_BOOL"
+  ) -}}
+
+  {{- $mergedStyleNew = partial "vitae/_functions/style-merged" (dict
+    "Template" $template
+    "MergedStyle" .
+    "ValidStyles" $validStylesNew
+  ) -}}
+  {{- if $debug }}
+    {{- warnf "%s[%s]: .MergedStyleNew=%v\n.ValidStylesNew=%v\n\nAfter style-merged:\nmergedStyle=%v\nmergedStyleNew=%v" $page $template
+        (jsonify (dict "indent" "  ") .MergedStyleNew)
+        (jsonify (dict "indent" "  ") $validStylesNew)
+        (jsonify (dict "indent" "  ") $mergedStyle)
+        (jsonify (dict "indent" "  ") $mergedStyleNew) -}}
+  {{- end }}
+  {{- $mergedStyle = $mergedStyleNew }}
+{{- end }}
+
 {{- $style := $mergedStyle.Style }}
 {{- $styleClassList := $mergedStyle.StyleClass }}
 
 {{- $topLevelClass := delimit (append $styleClassList (slice $componentClass $childClass) ) " " }}
+
+{{- $styleLevelBar := default false $style.level_bar }}
+{{- $styleDetails := default false $style.details }}
+{{- $styleLayoutInline := (not (not ((intersect (slice "inline") $style.layout)))) }}
 
 {{- $filterField := default "type" $component.filter_by -}}
 {{- $filterMatch := default "language" $component.filter_value -}}
@@ -54,7 +79,7 @@
   {{- $classPrefix := printf "%s skill" $filterMatch }}
   <div class="{{ $classPrefix }}_container {{ $topLevelClass }}">
   {{- range $skillIdx, $skill := $skillList }}
-    {{- if (in (slice "inline") $style.layout) }}
+    {{- if $styleLayoutInline }}
     <div class="{{- $classPrefix }}_item">
     {{- end }}
       <div class="{{- $classPrefix }}_name">
@@ -63,14 +88,14 @@
       {{- with .level }}
       <div class="{{- $classPrefix }}_level">
         <span class="{{- $classPrefix }}_level_description">{{- .description }}</span>
-        {{- if default true $component.level_bar }}
+        {{- if $styleLevelBar }}
           <div class="{{- $classPrefix }}_level_bar">
             <span class="{{- $classPrefix }}_level_bar_tab" style="width: {{ .value }}%">&nbsp;</span>
           </div>
         {{- end }}
       </div>
       {{- end }}
-      {{- if default true $component.details }}
+      {{- if $styleDetails }}
         {{- $detailFields := slice "certificates" "details" }}
         <div class="{{- $classPrefix }}_details">
           {{- range $k := $detailFields }}
@@ -87,7 +112,7 @@
           {{- end }}
         </div>
       {{- end }}
-    {{- if in (slice "inline") $style.layout }}
+    {{- if $styleLayoutInline }}
     </div>
     {{- end }}
   {{- end }}

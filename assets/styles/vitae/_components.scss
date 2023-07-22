@@ -1745,7 +1745,7 @@ html[data-mode="dim"] {
     &.skill {
       &_container {
         display: grid;
-        gap: 0 var(--inner_padding_4-2);
+        gap: var(--row_gap) var(--column_gap);
         align-items: baseline;
         font-size: var(--font-size-normal);
         &.style_layout_inline {
@@ -1757,6 +1757,12 @@ html[data-mode="dim"] {
             align-items: baseline;
             gap: var(--inner_padding_4-2) var(--inner_padding_4-2);
           }
+        }
+        &.style_layout_shallow {
+          --row_gap: var(--inner_margin_8-1);
+        }
+        &.style_layout_narrow {
+          --column_gap: var(--inner_margin_4-1);
         }
       }
     }
