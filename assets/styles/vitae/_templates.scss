@@ -290,7 +290,7 @@
       &.style_layout_inline {
         --page_header_height_fraction: 1 / 7;
       }
-      &.style_ats_true {
+      &.style_ats, &.style_ats_true {
         --page_header_height_fraction: 1 / 8;
       }
     }

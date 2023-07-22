@@ -85,7 +85,8 @@
       (jsonify (dict "indent" "  ") $mergedStyle) -}}
 {{- end }}
 
-{{- if $debug }}
+{{- $mergedStyleNew := false }}
+{{- with .MergedStyleNew }}
   {{- $validStylesNew := (dict
     "ats" (dict
       "true" (dict
@@ -141,17 +142,22 @@
     "separate_roles" "ANY_BOOL"
   ) -}}
 
-  {{- $mergedStyleNew := partial "vitae/_functions/style-merged" (dict
+  {{- $mergedStyleNew = partial "vitae/_functions/style-merged" (dict
     "Template" $template
-    "MergedStyle" .MergedStyle
+    "MergedStyle" .
     "ValidStyles" $validStylesNew
   ) -}}
   {{- if $debug }}
-    {{- warnf "%s[%s]: After style-merged:\nmergedStyleNew=%v\nmergedStyle=%v" $page $template
-        (jsonify (dict "indent" "  ") $mergedStyleNew)
-        (jsonify (dict "indent" "  ") $mergedStyle) -}}
+    {{- warnf "%s[%s]: .MergedStyleNew=%v\n.ValidStylesNew=%v\n\nAfter style-merged:\nmergedStyle=%v\nmergedStyleNew=%v" $page $template
+        (jsonify (dict "indent" "  ") .MergedStyleNew)
+        (jsonify (dict "indent" "  ") $validStylesNew)
+        (jsonify (dict "indent" "  ") $mergedStyle)
+        (jsonify (dict "indent" "  ") $mergedStyleNew) -}}
+    {{/* {{- warnf "%s[%s]: After style-merged:\nmergedStyle=%v\nmergedStyleNew=%v" $page $template
+        (jsonify (dict "indent" "  ") (merge $mergedStyle (dict "ValidStyles" nil)))
+        (jsonify (dict "indent" "  ") (merge $mergedStyleNew (dict "ValidStyles" nil))) -}} */}}
   {{- end }}
-  {{/* {{- $mergedStyle = $mergedStyleNew }} */}}
+  {{- $mergedStyle = $mergedStyleNew }}
 {{- end }}
 
 {{- $style := $mergedStyle.Style }}

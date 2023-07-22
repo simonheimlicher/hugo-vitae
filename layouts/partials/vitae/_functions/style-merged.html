@@ -26,7 +26,8 @@
 {{- $inducedPath := default slice .InducedPath }}
 
 {{- $debug := false }}
-{{- $debug = or $debug (and (strings.HasSuffix "vitae/_components/index" $callingTemplate) (not (not (findRE `^/([^/]+-demo/)?devel/$` page.RelPermalink) ) ) ) -}}
+{{/* {{- $debug = or $debug (and (strings.HasSuffix $callingTemplate "_components/index") (not (not (findRE `^/([^/]+-demo/)?devel/$` page.RelPermalink) ) ) ) -}} */}}
+{{/* {{- $debug = or $debug (and (strings.HasSuffix $callingTemplate "executive") (not (not (findRE `^/([^/]+-demo/)?devel/$` page.RelPermalink) ) ) ) -}} */}}
 {{- $warnPrefix := printf "%s[%s->%s]: " page $callingTemplate $template }}
 {{- $debugPrefix := $warnPrefix }}
 {{- $debugPrefix = $template }}
@@ -108,7 +109,7 @@
           {{- end }}
           {{- $mergeParams := (dict
             "Template" $template
-            "Style" $resultStyle
+            "Style" (index $resultStyle $key)
             "ValidStyles" $validValuesForKey
             "AddStyle" $mergedStyleSub.Style
             "StylePath" (append $key $stylePath)
@@ -317,15 +318,18 @@
   {{- $inducedPath := default slice .InducedPath }}
 
   {{- $debug := false }}
-  {{/* {{- $debug = or $debug .Debug }} */}}
+  {{- $debug = or $debug .Debug }}
 
   {{- $warnPrefix := printf "%s[%s->%s]: " page $callingTemplate $template }}
   {{- $debugPrefix := $warnPrefix }}
-  {{- $debugPrefix = printf "%v->%v%v%v%v" $callingTemplate $template
-    (cond (gt (len $stylePath) 0) (printf "stylePath=%v" $stylePath) "")
-    (cond (and (gt (len $stylePath) 0) (gt (len $inducedPath) 0)) " | " "")
-    (cond (gt (len $inducedPath) 0) (printf "inducedPath=%v" $inducedPath) "") }}
-  {{- with $debugPrefix }}{{- $debugPrefix = printf "%v: " $debugPrefix }}{{ end }}
+  {{- with printf "%v%v%v"
+      (cond (gt (len $stylePath) 0) (printf "stylePath=%v" $stylePath) "")
+      (cond (and (gt (len $stylePath) 0) (gt (len $inducedPath) 0)) " | " "")
+      (cond (gt (len $inducedPath) 0) (printf "inducedPath=%v" $inducedPath) "") }}
+    {{- $debugPrefix = printf "%v %v: " $debugPrefix . }}
+  {{- else }}
+    {{- $debugPrefix = printf "%v: " $debugPrefix }}
+  {{- end }}
 
   {{- $resultingValueList := slice }}
   {{- $validValuesForKey := index $validStyles $key }}
@@ -459,15 +463,18 @@
   {{- $inducedPath := default slice .InducedPath }}
 
   {{- $debug := false }}
-  {{/* {{- $debug = or $debug .Debug }} */}}
+  {{- $debug = or $debug .Debug }}
 
   {{- $warnPrefix := printf "%s[%s->%s]: " page $callingTemplate $template }}
   {{- $debugPrefix := $warnPrefix }}
-  {{- $debugPrefix = printf "%v->%v%v%v%v" $callingTemplate $template
-    (cond (gt (len $stylePath) 0) (printf "stylePath=%v" $stylePath) "")
-    (cond (and (gt (len $stylePath) 0) (gt (len $inducedPath) 0)) " | " "")
-    (cond (gt (len $inducedPath) 0) (printf "inducedPath=%v" $inducedPath) "") }}
-  {{- with $debugPrefix }}{{- $debugPrefix = printf "%v: " $debugPrefix }}{{ end }}
+  {{- with printf "%v%v%v"
+      (cond (gt (len $stylePath) 0) (printf "stylePath=%v" $stylePath) "")
+      (cond (and (gt (len $stylePath) 0) (gt (len $inducedPath) 0)) " | " "")
+      (cond (gt (len $inducedPath) 0) (printf "inducedPath=%v" $inducedPath) "") }}
+    {{- $debugPrefix = printf "%v %v: " $debugPrefix . }}
+  {{- else }}
+    {{- $debugPrefix = printf "%v: " $debugPrefix }}
+  {{- end }}
 
   {{- if $debug }}
     {{- warnf "%vresulting_value called with value=%v\n with validValuesForKey=%v"
@@ -833,7 +840,8 @@
                   $debugPrefix $key $value $value $validationSpec $validationTypeSpec }}
             {{- end }}
 
-            {{- if ne (printf "%T" $validationSpec) "<nil>" }}
+            {{- if ne (printf "%T" $validationTypeSpec) "<nil>" }}
+
               {{/* valueType indicates, how to deal with the value of the param */}}
               {{- $valueType := printf "%T" $value }}
 
@@ -866,8 +874,8 @@
                       (jsonify (dict "indent" "  ") $validationTypeSpec) -}}
                 {{- end }}
               {{- else }}
-                {{- errorf "%vkey=%v: value=%v has wrong valueType=%v not found in valid_types=%v from validationTypeSpec=%v"
-                    $debugPrefix $key $value $valueType $validationTypeSpec.valid_types
+                {{- errorf "%vkey=%v: value=%v with validationSpec=%v has wrong valueType=%v not found in valid_types=%v from validationTypeSpec=%v"
+                    $debugPrefix $key $value $validationSpec $valueType $validationTypeSpec.valid_types
                     (jsonify (dict "indent" "  ") $validationTypeSpec) -}}
               {{- end }}
             {{- else }}

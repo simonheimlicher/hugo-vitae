@@ -66,7 +66,7 @@
   }
 
   .view-print {
-    .style_ats_true {
+    .style_ats, .style_ats_true {
       // Disable ligatures as application tracking systems (ATS) are not able to extract text from the PDF
       --font-variant-ligatures: none;
       --font-variant-numeric: normal;

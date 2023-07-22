@@ -428,13 +428,14 @@ vitae:
                   collection: stages
                   filter_by: type
                   filter_value: professional
-                  # style:
-                  #   layout:
-                  #     - shallow
-                  #     - narrow
-                  #   inline:
-                  #     header: true
-                  #     role: true
+                  style:
+                    inline:
+                      header: true
+                      role: true
+                      content: true
+                    # layout:
+                    #   - shallow
+                    #   - narrow
 
       two-pager:
 

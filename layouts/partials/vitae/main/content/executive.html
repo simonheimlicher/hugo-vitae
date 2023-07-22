@@ -10,8 +10,8 @@
 {{- $vitaeStyle := $pp.VitaeStyle }}
 
 {{- $debug := false }}
-{{/* {{- $debug = or $debug (not (not (findRE `^/([^/]+-demo/)?devel` $page.RelPermalink) ) ) -}} */}}
-
+{{- $debug = or $debug (not (not (findRE `^/([^/]+-demo/)?devel` $page.RelPermalink) ) ) -}}
+{{- $useStyleMerged := and true $debug }}
 {{- $validStyles := (dict
   "ats" (dict
     "ANY_BOOL" true
@@ -60,6 +60,48 @@
 {{- end }}
 {{- $style := $mergedStyle.Style }}
 {{- $styleClassList := $mergedStyle.StyleClass }}
+
+
+{{- $mergedStyleNew := false }}
+{{- if $useStyleMerged }}
+  {{- $validStylesNew := (dict
+    "ats" "ANY_BOOL"
+    "inline_separator" "ANY_STRING"
+    "role_header_separator" "ANY_STRING"
+    "stage_meta_separator" "ANY_STRING"
+    "layout" (slice "shallow" "narrow" "inline")
+    "display" (dict
+      "grid" "grid"
+    )
+    "timeline" (dict
+      "false" false
+      "true" "column"
+    )
+    "heading" (dict
+      "normal" "normal"
+      "larger-1" "larger-1"
+      "larger-2" "larger-2"
+    )
+    "logo" (dict
+      "false" false
+      "true" "left"
+      "left" "left"
+    )
+  ) -}}
+
+  {{- $mergedStyleNew = partial "vitae/_functions/style-merged" (dict
+    "Style" $vitaeStyle
+    "ValidStyles" $validStylesNew
+    "Template" $template
+  ) -}}
+  {{- if $debug }}
+    {{- warnf "%s[%s]: After style-merged:\nmergedStyle=%v\nmergedStyleNew=%v" $page $template
+        (jsonify (dict "indent" "  ") (merge $mergedStyle (dict "ValidStyles" "OMITTED")))
+        (jsonify (dict "indent" "  ") (merge $mergedStyleNew (dict "ValidStyles" "OMITTED"))) -}}
+  {{- end }}
+  {{- $style = $mergedStyle.Style }}
+  {{- $styleClassList = $mergedStyle.StyleClass }}
+{{- end }}
 
 
 <!-- Pagination
@@ -141,6 +183,7 @@ PaginationPage: a printed page that is part of a Part
         "Page" $page
         "Config" $vitaeTemplate
         "MergedStyle" $mergedStyle
+        "MergedStyleNew" $mergedStyleNew
         "ChildClass" $childClass
         "Data" $vitaeData
         "Sections" $slot.sections

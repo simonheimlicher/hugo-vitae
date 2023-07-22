@@ -796,7 +796,7 @@ html[data-mode="dim"] {
         &.role_single .role_period {
           opacity: 0;
         }
-        &.style_separate_roles_true {
+        &.style_separate_roles, &.style_separate_roles_true {
           align-items: start;
           .organization_header {
             grid-column: 1;
@@ -1541,7 +1541,7 @@ html[data-mode="dim"] {
      * Inline style HEADER
      */
 
-     &.style_layout_inline, &.style_inline_header_true {
+     &.style_layout_inline, &.style_inline_header, &.style_inline_header_true {
       // @extend .style_layout_shallow;
       // --padding_organization_between: var(--inner_padding_4-3);
       // --padding_role_between: var(--inner_padding_4-3);
@@ -1568,7 +1568,7 @@ html[data-mode="dim"] {
      * Inline style Content
      */
 
-     &.style_layout_inline, &.style_inline_content_true {
+     &.style_layout_inline, &.style_inline_content, &.style_inline_content_true {
       .stage {
         &_main {
           flex-direction: row;
@@ -1602,7 +1602,7 @@ html[data-mode="dim"] {
      * Inline style Role
      */
 
-     &.style_inline_role_true {
+     &.style_inline_role, &.style_inline_role_true {
       .stage {
         &_main {
           flex-direction: row;
