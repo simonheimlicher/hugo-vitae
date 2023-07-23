@@ -95,9 +95,14 @@
     "Template" $template
   ) -}}
   {{- if $debug }}
-    {{- warnf "%s[%s]: After style-merged:\nmergedStyle=%v\nmergedStyleNew=%v" $page $template
+    {{- warnf "%s[%s]: vitaeStyle=%v\nvalidStylesNew=%v\n\nAfter style-merged:\nmergedStyle=%v\nmergedStyleNew=%v" $page $template
+        (jsonify (dict "indent" "  ") $vitaeStyle)
+        (jsonify (dict "indent" "  ") $validStylesNew)
+        (jsonify (dict "indent" "  ") $mergedStyle)
+        (jsonify (dict "indent" "  ") $mergedStyleNew) -}}
+    {{/* {{- warnf "%s[%s]: After style-merged:\nmergedStyle=%v\nmergedStyleNew=%v" $page $template
         (jsonify (dict "indent" "  ") (merge $mergedStyle (dict "ValidStyles" "OMITTED")))
-        (jsonify (dict "indent" "  ") (merge $mergedStyleNew (dict "ValidStyles" "OMITTED"))) -}}
+        (jsonify (dict "indent" "  ") (merge $mergedStyleNew (dict "ValidStyles" "OMITTED"))) -}} */}}
   {{- end }}
   {{- $style = $mergedStyle.Style }}
   {{- $styleClassList = $mergedStyle.StyleClass }}
