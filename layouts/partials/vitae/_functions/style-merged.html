@@ -26,9 +26,12 @@
 {{- $inducedPath := default slice .InducedPath }}
 
 {{- $debug := false }}
-{{/* {{- $debug = or $debug (and (strings.HasSuffix $callingTemplate "executive") (not (not (findRE `^/([^/]+-demo/)?devel/$` page.RelPermalink) ) ) ) -}} */}}
-{{/* {{- $debug = or $debug (and (strings.HasSuffix $callingTemplate "_components/index") (not (not (findRE `^/([^/]+-demo/)?devel/$` page.RelPermalink) ) ) ) -}} */}}
-{{/* {{- $debug = or $debug (and (strings.HasSuffix $callingTemplate "_components/skills") (not (not (findRE `^/([^/]+-demo/)?devel/$` page.RelPermalink) ) ) ) -}} */}}
+{{- if not (not (findRE `^/([^/]+-demo/)?devel/$` page.RelPermalink)) }}
+  {{- $debugCallingTemplates := slice "executive" "_components/index" "_components/skills" }}
+  {{- range $debugCallingTemplates }}
+    {{- $debug = or $debug (and (strings.HasSuffix $callingTemplate . ) ) -}}
+  {{- end }}
+{{- end }}
 {{- $warnPrefix := printf "%s[%s->%s]: " page $callingTemplate $template }}
 {{- $debugPrefix := $warnPrefix }}
 {{- $debugPrefix = $template }}
@@ -203,8 +206,8 @@
                 We call $template with Style = resultingValue
                 But we still use ValidStyles = validStyles because the
                 resultingValue applies to the top-level validStyles */}}
-            {{- $subValidStyles := index $validStyles $key }}
-            {{- if ne (printf "%T" $subValidStyles) "<nil>" }}
+            {{- $validValuesForKey := index $validStyles $key }}
+            {{- if ne (printf "%T" $validValuesForKey) "<nil>" }}
               {{- $subParams := (dict
                 "Template" $callingTemplate
                 "Style" $resultingValue
@@ -222,26 +225,95 @@
 
               {{- with $mergedStyleSub := partial $template $subParams }}
 
+                {{- $addStyle = $mergedStyleSub.Style }}
+                {{- if $debug }}
+                  {{- warnf "%vkey=%v: addStyle=%v\nfrom result of induced call: mergedStyleSub=%v"
+                      $debugPrefix $key (jsonify (dict "indent" "  ") $addStyle)
+                      (jsonify (dict "indent" "  ") $paramValue)
+                      (jsonify (dict "indent" "  ") $mergedStyleSub) }}
+                {{- end }}
                 {{- if $mergeInducingParamValue }}
-                  {{- if reflect.IsSlice $subValidStyles }}
-                    {{- $addStyle = merge (dict $key (slice $paramValue)) $mergedStyleSub.Style }}
+
+                  {{- $addStyleParamValue := $addStyle }}
+                  {{- $validStylesParamValue := $validStyles }}
+                  {{- if reflect.IsSlice $validValuesForKey }}
+                    {{- if $debug }}
+                      {{- warnf "%vkey=%v: validValuesForKey is SLICE=%v\nmergedStyleSub.Style=%v"
+                          $debugPrefix $key
+                          (jsonify (dict "indent" "  ") $validValuesForKey)
+                          (jsonify (dict "indent" "  ") $mergedStyleSub.Style) }}
+                    {{- end }}
+                    {{- $addStyleParamValue = merge (dict $key (slice $paramValue)) $mergedStyleSub.Style }}
+                    {{/* {{- range $validValue := $validValuesForKey }}
+                      {{- if reflect.IsMap . }}
+                        {{- range $innverValidKey, $innerValidValue := $validValue }}
+                          {{- if eq $innverValidKey $paramValue }}
+                            {{- if $debug }}
+                              {{- warnf "%vkey=%v: found innverValidKey=%v [type=%T]"
+                                  $debugPrefix $key $innverValidKey $innverValidKey }}
+                            {{- end }}
+                            {{- if eq (printf "%T" $innverValidKey) "bool" }}
+                              {{- $validStylesParamValue = merge (dict $key "ANY_BOOL") $validStylesParamValue }}
+                            {{- end }}
+                          {{- else }}
+                            {{- if $debug }}
+                              {{- warnf "%vkey=%v: ignoring innverValidKey=%v [type=%T]"
+                                  $debugPrefix $key $innverValidKey $innverValidKey }}
+                            {{- end }}
+                          {{- end }}
+                        {{- end }}
+                      {{- else }}
+                        {{- if eq $validValue $paramValue }}
+                          {{- if $debug }}
+                            {{- warnf "%vkey=%v: found validKey=%v [type=%T]"
+                                $debugPrefix $key $validValue $validValue }}
+                          {{- end }}
+                          {{- if eq (printf "%T" $validValue) "bool" }}
+                            {{- $validStylesParamValue = merge (dict $key "ANY_BOOL") $validStylesParamValue }}
+                          {{- end }}
+                        {{- else }}
+                          {{- if $debug }}
+                            {{- warnf "%vkey=%v: ignoring validKey=%v [type=%T]"
+                                $debugPrefix $key $validValue $validValue }}
+                          {{- end }}
+                        {{- end }}
+                      {{- end }}
+                    {{- end }} */}}
+                  {{- else if reflect.IsMap $validValuesForKey }}
+                    {{- if $debug }}
+                      {{- warnf "%vkey=%v: validValuesForKey is MAP=%v\nmergedStyleSub.Style=%v"
+                          $debugPrefix $key
+                          (jsonify (dict "indent" "  ") $validValuesForKey)
+                          (jsonify (dict "indent" "  ") $mergedStyleSub.Style) }}
+                    {{- end }}
+                    {{- $addStyleParamValue = merge (dict $key $paramValue) $mergedStyleSub.Style }}
+                    {{/* {{- range $validKey, $validValue := $validValuesForKey }}
+                      {{- if eq $validKey $paramValue }}
+                        {{- if $debug }}
+                          {{- warnf "%vkey=%v: found validKey=%v [type=%T]"
+                              $debugPrefix $key $validKey }}
+                        {{- end }}
+                        {{- if eq (printf "%T" $validKey) "bool" }}
+                          {{- $validStylesParamValue = merge (dict $key "ANY_BOOL") $validStylesParamValue }}
+                        {{- end }}
+                      {{- end }}
+                    {{- end }} */}}
                   {{- else }}
-                    {{- $addStyle = merge (dict $key $paramValue) $mergedStyleSub.Style }}
+                    {{- if $debug }}
+                      {{- errorf "%vkey=%v: validValuesForKey is unexpected SCALAR=%v\nmergedStyleSub.Style=%v"
+                          $debugPrefix $key
+                          (jsonify (dict "indent" "  ") $validValuesForKey)
+                          (jsonify (dict "indent" "  ") $mergedStyleSub.Style) }}
+                    {{- end }}
                   {{- end }}
                   {{- if $debug }}
-                    {{- warnf "%vkey=%v: addStyle=%v\nincluding paramValue=%v\nand result of induced call: mergedStyleSub=%v"
-                        $debugPrefix $key (jsonify (dict "indent" "  ") $addStyle)
-                        (jsonify (dict "indent" "  ") $paramValue)
-                        (jsonify (dict "indent" "  ") $mergedStyleSub) }}
+                    {{- warnf "%vkey=%v: Including inducing paramValue=%v\nresulted in addStyleParamValue=%v\nvalidStylesParamValue=%v"
+                        $debugPrefix $key $paramValue
+                        (jsonify (dict "indent" "  ") $addStyleParamValue)
+                        (jsonify (dict "indent" "  ") $validStylesParamValue) }}
                   {{- end }}
-                {{- else }}
-                  {{- $addStyle = $mergedStyleSub.Style }}
-                  {{- if $debug }}
-                    {{- warnf "%vkey=%v: addStyle=%v\nnot including paramValue=%v\nbut result of induced call: mergedStyleSub=%v"
-                        $debugPrefix $key (jsonify (dict "indent" "  ") $addStyle)
-                        (jsonify (dict "indent" "  ") $paramValue)
-                        (jsonify (dict "indent" "  ") $mergedStyleSub) }}
-                  {{- end }}
+                  {{- $addStyle = $addStyleParamValue }}
+                  {{- $validStylesParamValue = $validStyles }}
                 {{- end }}
 
               {{- else }}
@@ -249,9 +321,9 @@
                     $debugPrefix $key (jsonify (dict "indent" "  ") $mergedStyleSub) }}
               {{- end }}
             {{- else }}
-              {{- errorf "%vkey=%v: cannot make induced call with resultingValue=%v as key=%v yielded subValidStyles=%v"
+              {{- errorf "%vkey=%v: cannot make induced call with resultingValue=%v as key=%v yielded validValuesForKey=%v"
                   $debugPrefix $resultingValue $key (jsonify (dict "indent" "  ") $resultingValue)
-                  $key $subValidStyles }}
+                  $key $validValuesForKey }}
             {{- end }}
           {{- end }}
 
