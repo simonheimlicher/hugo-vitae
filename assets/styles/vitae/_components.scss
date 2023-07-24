@@ -339,7 +339,11 @@ html[data-mode="dim"] {
       flex-direction: column;
       // row-gap: 0.5em;
       height: min-content;
-
+      &::after {
+        content: "";
+        height: var(--section-gap_vertical);
+        // border: 1px solid red;
+      }
       .headline {
         padding: 0;
         margin: 0;
@@ -381,42 +385,41 @@ html[data-mode="dim"] {
 
     .portrait {
       &_figure {
+        position: relative;
         z-index: 1;
         // grid-row: 1 / span 3;
         grid-row: 1;
         grid-column: 1 / span all;
+        @include full-bleed_page(top, both);
       }
 
       &_img {
+        position: absolute;
+        top: 0;
+        left: 0;
         margin: 0;
         padding: 0;
         width: 100%;
-        // max-width: 100%;
         height: 100%;
-        // max-height: calc( var(--page_height) * var(--page_header_height_fraction) + var(--page_margin_top) );
         object-fit: cover;
         object-position: center center;
         border-radius: 0;
       }
     }
-    @at-root {
-      .vitae .view-print .component_header .portrait_figure {
-        @include full-bleed_page(top, both);
-      }
-      // .vitae .view-print .component_header {
-      //   @include full-bleed_page(top, both, true);
-      // }
-    }
     &.style_layout_inline {
+      .overlay {
+        &::after {
+          content: none;
+        }
+      }
       .portrait {
         &_figure {
           grid-column: 5;
           margin: 0;
         }
         &_img {
-          // height: calc( var(--page_height) * var(--page_header_height_fraction) );
           height: 100%;
-          max-height: calc( var(--page_height) * var(--page_header_height_fraction) );
+          // max-height: calc( var(--page_height) * var(--page_header_height_fraction) );
         }
       }
     }

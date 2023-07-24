@@ -225,6 +225,9 @@
     $margin_top: var(--page_margin_top);
   }  @else if $vertical == 'bottom' {
     $margin_bottom: var(--page_margin_bottom);
+  }  @else if $vertical == 'both' {
+    $margin_top: var(--page_margin_top);
+    $margin_bottom: var(--page_margin_bottom);
   }
 
   @if $horizontal == 'right' {
