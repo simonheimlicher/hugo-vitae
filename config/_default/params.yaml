@@ -855,22 +855,39 @@ vitae:
                 components:
                 - component: panels
                   collection: profile
-              - section: awards
-                title: section-awards
-                # container: section
-                components:
-                - component: awards
-                  details: false
-                  filter_by: type
-                  filter_value: award
-              - section: certificates
-                title: section-certificates
-                # container: section
-                components:
-                - component: awards
-                  details: false
-                  filter_by: type
-                  filter_value: certificate
+                  style:
+                    dt_columns: 3
+              - section: awards-certificates
+                # container: div
+                style:
+                  column-width_main: 6
+                sections:
+                - section: awards
+                  title: section-awards
+                  container: section
+                  components:
+                  - component: awards
+                    details: false
+                    filter_by: type
+                    filter_value: award
+                    style:
+                      logo: false
+                      heading: normal
+                      layout:
+                        - shallow
+                        # - inline # no effect
+                - section: certificates
+                  title: section-certificates
+                  container: section
+                  components:
+                  - component: awards
+                    details: false
+                    filter_by: type
+                    filter_value: certificate
+                    style:
+                      logo: false
+                      heading: normal
+                      layout: narrow
               - section: experience
                 title: section-experience
                 components:
