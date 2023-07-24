@@ -11,14 +11,14 @@
 {{- $collection := default .Component.component .Component.collection }}
 
 {{- $validStyles := (dict
-  "layout" (dict
-    "narrow" "narrow"
-    "inline" "inline"
-  )
   "ats" (dict
     "true" (dict
       "layout" "inline"
     )
+  )
+  "layout" (dict
+    "narrow" "narrow"
+    "inline" "inline"
   )
   "heading" (dict
     "normal" "normal"
@@ -46,15 +46,15 @@
 {{- with .MergedStyleNew }}
   {{- $validStylesNew := (dict
     "_template" $template
-    "layout" (slice
-      "shallow"
-      "narrow"
-      "inline"
-    )
     "ats" (dict
       "true" (dict
         "layout" (slice "inline")
       )
+    )
+    "layout" (slice
+      "shallow"
+      "narrow"
+      "inline"
     )
     "heading" (dict
       "normal" "normal"

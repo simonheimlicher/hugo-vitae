@@ -10,6 +10,11 @@
 {{/* {{- $debug = or $debug (not (not (findRE `^/([^/]+-demo/)?devel` $page.RelPermalink) ) ) -}} */}}
 
 {{- $validStyles := (dict
+  "layout" (dict
+    "shallow" "shallow"
+    "narrow" "narrow"
+    "inline" "inline"
+  )
   "font-size" (dict
     "normal" "normal"
     "smaller-2" "smaller-2"
@@ -30,6 +35,10 @@
 {{- with .MergedStyleNew }}
   {{- $validStylesNew := (dict
     "_template" $template
+    "layout" (slice
+      "shallow"
+      "inline"
+    )
     "font-size" (dict
       "normal" "normal"
       "smaller-2" "smaller-2"

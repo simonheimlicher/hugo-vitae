@@ -13,6 +13,11 @@
 {{/* {{- $debug = or $debug (not (not (findRE `^/([^/]+-demo/)?preview` $page.RelPermalink) ) ) -}} */}}
 
 {{- $validStyles := (dict
+  "ats" (dict
+    "true" (dict
+      "layout" (slice "inline")
+    )
+  )
   "layout" (dict
     "shallow" "shallow"
     "narrow" "narrow"
@@ -46,6 +51,11 @@
 {{- with .MergedStyleNew }}
   {{- $validStylesNew := (dict
     "_template" $template
+    "ats" (dict
+      "true" (dict
+        "layout" "inline"
+      )
+    )
     "layout" (slice
       "shallow"
       "narrow"
