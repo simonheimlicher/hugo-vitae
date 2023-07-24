@@ -30,6 +30,7 @@
 {{- $mergedStyleNew := false }}
 {{- with .MergedStyleNew }}
   {{- $validStylesNew := (dict
+    "_template" $template
     "layout" (slice
       "shallow"
       "narrow"

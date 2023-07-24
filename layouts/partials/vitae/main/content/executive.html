@@ -5,13 +5,15 @@
 
 {{ partial "html-comment" (printf "BEGIN '%s'" $template) }}
 
+{{- $vitaeDefaultTemplate := $pp.VitaeDefaultTemplate }}
 {{- $vitaeTemplate := $pp.VitaeTemplate }}
 {{- $vitaeData := $pp.VitaeData }}
 {{- $vitaeStyle := $pp.VitaeStyle }}
 
 {{- $debug := false }}
-{{- $debug = or $debug (not (not (findRE `^/([^/]+-demo/)?devel` $page.RelPermalink) ) ) -}}
-{{- $useStyleMerged := and true $debug }}
+{{/* {{- $debug = or $debug (not (not (findRE `^/([^/]+-demo/)?devel` $page.RelPermalink) ) ) -}} */}}
+{{/* {{- $useStyleMerged := and true $debug }} */}}
+{{- $useStyleMerged := true }}
 {{- $validStyles := (dict
   "ats" (dict
     "ANY_BOOL" true
@@ -42,6 +44,11 @@
     "larger-1" "larger-1"
     "larger-2" "larger-2"
   )
+  "font-size" (dict
+    "normal" "normal"
+    "smaller-1" "smaller-1"
+    "smaller-2" "smaller-2"
+  )
   "logo" (dict
     "false" false
     "true" "left"
@@ -61,10 +68,12 @@
 {{- $style := $mergedStyle.Style }}
 {{- $styleClassList := $mergedStyle.StyleClass }}
 
-
 {{- $mergedStyleNew := false }}
+{{- $validStylesNew := false }}
+
 {{- if $useStyleMerged }}
-  {{- $validStylesNew := (dict
+  {{- $validStylesNew = (dict
+    "_template" $template
     "ats" "ANY_BOOL"
     "inline_separator" "ANY_STRING"
     "role_header_separator" "ANY_STRING"
@@ -81,6 +90,11 @@
       "normal" "normal"
       "larger-1" "larger-1"
       "larger-2" "larger-2"
+    )
+    "font-size" (dict
+      "normal" "normal"
+      "smaller-1" "smaller-1"
+      "smaller-2" "smaller-2"
     )
     "logo" (dict
       "false" false
@@ -128,18 +142,51 @@ PaginationPage: a printed page that is part of a Part
   {{- range $slotIndex, $slotParams := $part.slots }}
     {{- $slot := false }}
     {{- $slotName := $slotParams.slot }}
+    {{/* If the params for this slot have a key `sections`, use the sections
+         listed in there as the content of the slot */}}
+    {{- partial "html-comment" (printf "Slot %v\nslotParams:\n%v" $slotName (jsonify (dict "indent" "  ") $slotParams)) }}
     {{- with $slotParams.sections }}
       {{- $slot = $slotParams }}
-    {{- else }}
-      {{- if not $style.ats }}
-        {{- with $vitaeTemplate.shared }}
-          {{- with index . $slotParams.shared }}
-            {{- $slot = . }}
-            {{/* {{- warnf "%s[%s]: vitaeTemplate.shared.%v=%v" $page $template $slotParams.shared $vitaeTemplate.shared }} */}}
+    {{- end }}
+    {{/* If the params for this slot have a key `shared`, add the sections
+         listed in the params being referred to */}}
+    {{- with $slotParamsShared := $slotParams.shared }}
+      {{- if $style.ats }}
+        {{/* If we are targetting Applicant Tracking Systems (ATS),
+            we do not include any shared slots such as headers or footers */}}
+        {{- if $debug }}
+          {{- warnf "%s[%s]: style.ats=%v: not including shared section vitaeTemplate.shared.%v"
+              $page $template $style.ats $slotParamsShared }}
           {{- end }}
+      {{- else }}
+        {{/* Initialize the slot with the default variant of the template */}}
+        {{- with index $vitaeDefaultTemplate.shared $slotParamsShared }}
+          {{- $slot = merge $slotParams . }}
+          {{- if $debug }}
+            {{- partial "html-comment" (printf "<h2>vitaeDefaultTemplate.shared.%s</h2><pre>%v</pre>"
+                $slotParamsShared (jsonify (dict "indent" "  ") .)) }}
+            {{- partial "html-comment" (printf "<h2>slot after merging vitaeDefaultTemplate.shared.%s</h2><pre>%v</pre>"
+                $slotParamsShared (jsonify (dict "indent" "  ") $slot)) }}
+            {{- warnf "%s[%s]: slot=%v including vitaeDefaultTemplate.shared.%v=%v"
+                $page $template (jsonify (dict "indent" "  ") $slot)
+                $slotParamsShared
+                (jsonify (dict "indent" "  ") $vitaeDefaultTemplate.shared) }}
+          {{- end }}
+        {{- end }}
+        {{- with index $vitaeTemplate.shared $slotParamsShared }}
+          {{- $slot = merge $slotParams . }}
+          {{- if $debug }}
+            {{- partial "html-comment" (printf "slot after merging vitaeTemplate.shared.%s\n%v"
+                $slotParamsShared (jsonify (dict "indent" "  ") $slot)) }}
+            {{- warnf "%s[%s]: vitaeTemplate.shared.%v=%v" $page $template $slotParamsShared $vitaeTemplate.shared }}
+          {{- end }}
+        {{- end }}
+        {{- if not $slot }}
+          {{- errorf "%s[%s]: shared template not found for vitaeTemplate.shared.%v=%v" $page $template $slotParamsShared $vitaeTemplate.shared }}
         {{- end }}
       {{- end }}
     {{- end }}
+
     {{- with $slot }}
       {{- with $slot.pagination_container_class }}
         {{- $partClassList = append . $partClassList }}
@@ -151,22 +198,23 @@ PaginationPage: a printed page that is part of a Part
 
   <div class="{{ delimit $partClassList ` `}}">
     {{- range $slotIndex, $slot := $partSlots }}
-      {{/* {{- partial "html-comment" (printf "[%s]: slot[%T] name=%s:\n%v"
-          $template $slot $slot.slot (jsonify (dict "indent" "  ") $slot) ) }} */}}
+      {{ partial "html-comment" (printf "[%s]: slot[%T] name=%s:\n%v"
+          $template $slot $slot.slot (jsonify (dict "indent" "  ") $slot) ) }}
       {{/* {{- warnf "%s[%s]: slot=%v" $page $template $slot.slot }} */}}
       {{/* {{- warnf "%s[%s]: shared=%v" $page $template $slot.shared }} */}}
       {{- $paginationPolicy := $slot.pagination_policy | default $part.pagination_policy | default `break` }}
       {{- $paginationOrder := $slot.pagination_order | default $slotIndex }}
       {{- $container := default "div" .container }}
       {{- with $container }}
-        {{- $containerClass := slice (printf "slot_%s" $slot.slot) $pp.PaginationContainerClass }}
+        {{- $containerClass := slice (printf "slot_%s slot" $slot.slot) $pp.PaginationContainerClass }}
         {{- with $slot.container_class }}
           {{- $containerClass = append . $containerClass }}
         {{- end }}
+
         {{- $mergedSlotStyle := false }}
-        {{- with $slot.style }}
+        {{- with $slotStyle := $slot.style }}
           {{- $mergedSlotStyle = partial "vitae/_functions/style-class" (dict
-            "Style" .
+            "Style" $slotStyle
             "ValidStyles" $validStyles
             "Template" $template
           ) -}}
@@ -174,6 +222,24 @@ PaginationPage: a printed page that is part of a Part
             {{- warnf "%s[%s]: After style-class:\nmergedSlotStyle=%v" $page $template
                 (jsonify (dict "indent" "  ") $mergedSlotStyle) }}
           {{- end }}
+
+          {{- $mergedSlotStyleNew := false }}
+          {{- if $useStyleMerged }}
+            {{- $mergedSlotStyleNew = partial "vitae/_functions/style-merged" (dict
+              "Style" $slotStyle
+              "ValidStyles" $validStylesNew
+              "Template" $template
+            ) -}}
+            {{- if $debug }}
+              {{- warnf "%s[%s]: slotStyle=%v\nvalidStylesNew=%v\n\nAfter style-merged:\nmergedSlotStyle=%v\nmergedSlotStyleNew=%v" $page $template
+                  (jsonify (dict "indent" "  ") $slotStyle)
+                  (jsonify (dict "indent" "  ") $validStylesNew)
+                  (jsonify (dict "indent" "  ") $mergedSlotStyle)
+                  (jsonify (dict "indent" "  ") $mergedSlotStyleNew) -}}
+            {{- end }}
+            {{- $mergedSlotStyle = $mergedSlotStyleNew }}
+          {{- end }}
+
           {{- with $mergedSlotStyle.StyleClass }}
             {{- $containerClass = append . $containerClass }}
           {{- end }}

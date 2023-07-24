@@ -18,6 +18,7 @@
 {{- end }}
 
 {{- $validStyles := (dict
+  "_template" $template
   "ats" (dict
     "true" (dict
       "layout" (slice
@@ -565,7 +566,7 @@
 
       {{- $mergedSectionStyleNew := partial "vitae/_functions/style-merged" (dict
         "Template" $template
-        "Style" .style
+        "Style" $section.style
         "ValidStyles" $validSectionStyles
         ) -}}
       {{- if $debug }}

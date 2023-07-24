@@ -41,6 +41,36 @@
   {{- warnf "%s[%s]: After style-class:\nmergedStyle=%v" $page $template
       (jsonify (dict "indent" "  ") $mergedStyle) }}
 {{- end }}
+
+{{- $mergedStyleNew := false }}
+{{- with .MergedStyleNew }}
+  {{- $validStylesNew := (dict
+    "_template" $template
+    "layout" (slice
+      "shallow"
+      "narrow"
+      "inline"
+    )
+    "icon" "ANY_BOOL"
+    "text" "ANY_BOOL"
+    "qrcode" "ANY_BOOL"
+  ) -}}
+
+  {{- $mergedStyleNew = partial "vitae/_functions/style-merged" (dict
+    "Template" $template
+    "MergedStyle" .
+    "ValidStyles" $validStylesNew
+  ) -}}
+  {{- if $debug }}
+    {{- warnf "%s[%s]: .MergedStyleNew=%v\n.ValidStylesNew=%v\n\nAfter style-merged:\nmergedStyle=%v\nmergedStyleNew=%v" $page $template
+        (jsonify (dict "indent" "  ") . )
+        (jsonify (dict "indent" "  ") $validStylesNew)
+        (jsonify (dict "indent" "  ") $mergedStyle)
+        (jsonify (dict "indent" "  ") $mergedStyleNew) -}}
+  {{- end }}
+  {{- $mergedStyle = $mergedStyleNew }}
+{{- end }}
+
 {{- $style := $mergedStyle.Style }}
 {{- $styleClassList := $mergedStyle.StyleClass }}
 

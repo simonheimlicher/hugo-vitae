@@ -23,12 +23,12 @@
 {{- $styleClassPrefix := default "style" .StyleClassPrefix }}
 
 {{- $debug := false }}
-{{/* {{- $debug = or $debug (and (strings.HasSuffix "vitae/_components/stages" $callingTemplate) (not (not (findRE `^/([^/]+-demo/)?ats/$` page.RelPermalink) ) ) ) -}} */}}
+{{/* {{- $debug = or $debug (and (strings.HasSuffix "vitae/_components/index" $callingTemplate) (not (not (findRE `^/([^/]+-demo/)?devel/$` page.RelPermalink) ) ) ) -}} */}}
 {{- $warnPrefix := printf "%s[%s->%s]: " page $callingTemplate $template }}
 {{- $debugPrefix := $warnPrefix }}
 {{/* {{- $debugPrefix := "" }} */}}
 
-{{- if and false $debug }}
+{{- if and true $debug }}
   {{- warnf "%v\nstyle=%v\nvalidStyles=%v\nfrom .MergedStyle=%v" $debugPrefix
       (jsonify (dict "indent" "  ") $style)
       (jsonify (dict "indent" "  ") $validStyles)

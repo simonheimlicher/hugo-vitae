@@ -27,24 +27,37 @@
 {{- $vitaeParamRoot := split (default "vitae" ($page.Param "VitaeRoot")) "." }}
 {{- $vitaeTemplateVariantPath := "variants" }}
 {{- $vitaeStylePath := "style" }}
-
+{{- $vitaeDefaultTemplateName := "executive" }}
+{{- $vitaeDefaultVariantName := "default" }}
 {{- $vitaeParams := $page.Param (delimit $vitaeParamRoot ".") }}
 
-{{- $vitaeTemplateName := default "executive" $vitaeParams.template }}
-{{- $vitaeVariantName := default "default" $vitaeParams.variant }}
+{{- $vitaeTemplateName := default $vitaeDefaultTemplateName $vitaeParams.template }}
+{{- $vitaeVariantName := default $vitaeDefaultVariantName $vitaeParams.variant }}
 
 {{- $vitaeBaseTemplateRoot := append $vitaeTemplateName $vitaeParamRoot }}
+{{- $vitaeDefaultTemplateRoot := append (slice $vitaeTemplateName $vitaeTemplateVariantPath $vitaeDefaultVariantName) $vitaeParamRoot }}
 {{- $vitaeTemplateRoot := append (slice $vitaeTemplateName $vitaeTemplateVariantPath $vitaeVariantName) $vitaeParamRoot }}
 
 {{- $vitaeStyleRoot := append $vitaeStylePath $vitaeParamRoot }}
 
 {{- /* Initialize all params from site.Params */ -}}
+{{- $vitaeDefaultTemplate := merge (index site.Params $vitaeBaseTemplateRoot) (dict $vitaeTemplateVariantPath nil) }}
 {{- $vitaeTemplate := merge (index site.Params $vitaeBaseTemplateRoot) (dict $vitaeTemplateVariantPath nil) }}
 {{- if $debug }}
   {{- with $vitaeTemplate.style }}
     {{- warnf "%s[%s]: site.Params.%s.style=%s" $page $template
         (delimit $vitaeBaseTemplateRoot `.`) (jsonify (dict "indent" "  ") .) }}
   {{- end }}
+{{- end }}
+
+{{- with index site.Params $vitaeDefaultTemplateRoot }}
+  {{- if $debug }}
+    {{- with .style }}
+      {{- warnf "%s[%s]: site.Params.%s.style=%s" $page $template
+          (delimit $vitaeTemplateRoot `.`) (jsonify (dict "indent" "  ") .) }}
+    {{- end }}
+  {{- end }}
+  {{- $vitaeDefaultTemplate = merge $vitaeDefaultTemplate . }}
 {{- end }}
 
 {{- with index site.Params $vitaeTemplateRoot }}
@@ -185,6 +198,7 @@ vitae:
         "PrintView" $printView
         "PrintControl" $printControl
         "VitaeTemplate" $vitaeTemplate
+        "VitaeDefaultTemplate" $vitaeDefaultTemplate
         "VitaeData" $vitaeData
         "VitaeStyle" $vitaeStyle
         "PartClass" $partClass

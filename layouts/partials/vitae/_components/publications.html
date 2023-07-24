@@ -22,6 +22,34 @@
   {{- warnf "%s[%s]: After style-class:\nmergedStyle=%v" $page $template
       (jsonify (dict "indent" "  ") $mergedStyle) }}
 {{- end }}
+
+{{- $mergedStyleNew := false }}
+{{- with .MergedStyleNew }}
+  {{- $validStylesNew := (dict
+    "_template" $template
+    "abbreviate" (dict
+      "first_name" "first_name"
+    )
+    "font-size" (dict
+      "smaller-1" "smaller-1"
+    )
+  ) -}}
+
+  {{- $mergedStyleNew = partial "vitae/_functions/style-merged" (dict
+    "Template" $template
+    "MergedStyle" .
+    "ValidStyles" $validStylesNew
+  ) -}}
+  {{- if $debug }}
+    {{- warnf "%s[%s]: .MergedStyleNew=%v\n.ValidStylesNew=%v\n\nAfter style-merged:\nmergedStyle=%v\nmergedStyleNew=%v" $page $template
+        (jsonify (dict "indent" "  ") . )
+        (jsonify (dict "indent" "  ") $validStylesNew)
+        (jsonify (dict "indent" "  ") $mergedStyle)
+        (jsonify (dict "indent" "  ") $mergedStyleNew) -}}
+  {{- end }}
+  {{- $mergedStyle = $mergedStyleNew }}
+{{- end }}
+
 {{- $style := $mergedStyle.Style }}
 {{- $styleClassList := $mergedStyle.StyleClass }}
 
@@ -35,7 +63,7 @@
 
 {{- $inlineSeparatorStr := default "•" $style.inline_separator }}
 
-{{- if in (slice "compact" "narrow") $style.layout }}
+{{- if (not (not ((intersect (slice "compact" "narrow") $style.layout)))) }}
   {{- $headingContainer = "span" }}
   {{- $titleSeparatorStr = $inlineSeparatorStr}}
   {{- $fieldSeparatorStr = $inlineSeparatorStr }}

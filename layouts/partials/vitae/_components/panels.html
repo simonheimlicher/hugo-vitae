@@ -22,7 +22,7 @@
     "narrow" "narrow"
     "inline" "inline"
   )
-  "font_size" (dict
+  "font-size" (dict
     "larger-1" "larger-1"
   )
   "heading" (dict
@@ -42,6 +42,50 @@
   {{- warnf "%s[%s]: After style-class:\nmergedStyle=%v" $page $template
       (jsonify (dict "indent" "  ") $mergedStyle) }}
 {{- end }}
+
+{{- $mergedStyleNew := false }}
+{{- with .MergedStyleNew }}
+  {{- $validStylesNew := (dict
+    "_template" $template
+    "ats" (dict
+      "true" (dict
+        "layout" (slice
+          "shallow"
+          "inline"
+        )
+      )
+    )
+    "layout" (slice
+      "shallow"
+      "narrow"
+      "inline"
+    )
+    "font-size" (dict
+      "larger-1" "larger-1"
+    )
+    "heading" (dict
+      "normal" "normal"
+    )
+    "dt_columns" (dict
+      "ANY_INT" true
+    )
+  ) -}}
+
+  {{- $mergedStyleNew = partial "vitae/_functions/style-merged" (dict
+    "Template" $template
+    "MergedStyle" .
+    "ValidStyles" $validStylesNew
+  ) -}}
+  {{- if $debug }}
+    {{- warnf "%s[%s]: .MergedStyleNew=%v\n.ValidStylesNew=%v\n\nAfter style-merged:\nmergedStyle=%v\nmergedStyleNew=%v" $page $template
+        (jsonify (dict "indent" "  ") . )
+        (jsonify (dict "indent" "  ") $validStylesNew)
+        (jsonify (dict "indent" "  ") $mergedStyle)
+        (jsonify (dict "indent" "  ") $mergedStyleNew) -}}
+  {{- end }}
+  {{- $mergedStyle = $mergedStyleNew }}
+{{- end }}
+
 {{- $style := $mergedStyle.Style }}
 {{- $styleClassList := $mergedStyle.StyleClass }}
 

@@ -19,6 +19,20 @@
     --page_header_height_fraction: 1 / 8;
   }
 
+  .style_font-size_larger-1 {
+    font-size: var(--font-size-smaller-2);
+  }
+  .style_font-size_normal {
+    font-size: var(--font-size-normal);
+  }
+  .style_font-size_smaller-1 {
+    font-size: var(--font-size-smaller-2);
+  }
+  .style_font-size_smaller-2 {
+    font-size: var(--font-size-smaller-2);
+  }
+
+
   .section {
     &-title {
       position: relative;
