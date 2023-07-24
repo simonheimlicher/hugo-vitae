@@ -401,15 +401,15 @@ vitae:
                         content: "{total-pages}"
                         align: end
 
-      devel_:
+      devel:
         style:
           # ats: true
-          inline_separator: "INLINE"
-          role_header_separator: "ROLE_HEADER"
-          stage_meta_separator: "STAGE_META"
+          # inline_separator: "INLINE"
+          # role_header_separator: "ROLE_HEADER"
+          # stage_meta_separator: "STAGE_META"
           # layout:
-          #   - inline
           #   - shallow
+          #   - inline
           # logo: false
         parts:
           # Front page
@@ -570,7 +570,7 @@ vitae:
             - slot: footer
               shared: footer
 
-      devel:
+      devel_:
         style:
           # ats: true
           # inline_separator: "INLINE"
@@ -907,6 +907,10 @@ vitae:
                     - field: date_of_birth
                     - field: citizenship
                       title: fragment_citizenship
+                  style:
+                    layout:
+                      - inline
+                      - shallow
             - slot: main
               pagination_policy: break
               sections:
