@@ -1748,7 +1748,7 @@ html[data-mode="dim"] {
     &.skill {
       &_container {
         display: grid;
-        gap: var(--row_gap) var(--column_gap);
+        gap: calc(var(--row_gap)/2) calc(var(--column_gap)/2);
         align-items: baseline;
         font-size: var(--font-size-normal);
         &.style_layout_inline {

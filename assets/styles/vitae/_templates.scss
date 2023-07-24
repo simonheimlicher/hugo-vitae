@@ -1,5 +1,6 @@
 /* ----- Section elements ------ */
 
+$num-columns: 12;
 .vitae {
   .view-print {
     --section-title_margin_bottom: var(--inner_margin_4-2);
@@ -102,6 +103,13 @@
         flex-direction: column;
         gap: var(--inner_margin_4-1) 0;
       }
+      @for $cols from 1 through $num-columns {
+        &.style_column-width_main_#{$cols} {
+          --main_column_width: #{$cols};
+          --aside_column_width: calc(var(--num_columns) - var(--main_column_width));
+          --aside_column: calc(var(--main_column) + var(--main_column_width));
+        }
+      }
     }
   }
 }
@@ -110,7 +118,7 @@
 
 .vitae.layout-executive {
 
-  --num_columns: 12;
+  --num_columns: #{$num-columns};
   // --main_column_width: 6;
   --main_column_width: 8;
   --aside_column_width: calc(var(--num_columns) - var(--main_column_width));
@@ -311,7 +319,7 @@
 
     // Part appendix
     &_appendix {
-      --num_columns: 12;
+      --num_columns: $num-columns;
       --main_column: 1;
       --main_column_width: 7;
       --aside_column: calc(var(--main_column) + var(--main_column_width));

@@ -537,11 +537,16 @@
   {{- end }}
 {{- end }}
 
-{{- $topLevelClass := false }}
-{{- with $mergedStyleNew }}
-  {{- $topLevelClass = delimit (append $mergedStyleNew.StyleClass (slice "MergedStyleNew" $componentClass $childClass) ) " " }}
+{{- $topLevelClass := (slice $componentClass) }}
+{{- with $mergedStyleNew.StyleClass }}
+  {{- $topLevelClass = append . $topLevelClass }}
 {{- else }}
-  {{- $topLevelClass = delimit (append $mergedStyle.StyleClass (slice $componentClass $childClass) ) " " }}
+  {{- with $mergedStyle.StyleClass }}
+    {{- $topLevelClass = append . $topLevelClass }}
+  {{- end }}
+{{- end }}
+{{- with $childClass }}
+  {{- $topLevelClass = append $childClass $topLevelClass }}
 {{- end }}
 
 {{- range $sectionIndex, $section := where $sections "enabled" "ne" false }}
@@ -675,15 +680,62 @@
     {{- end }}
   {{- end }}
   {{- with $section.sections }}
-    {{- if and false $debug }}
+    {{- $panelClass := append $topLevelClass (slice "section-panel" (printf "section-panel_%s" $sectionName) ) }}
+    {{- with $mergedStyleNew }}
+      {{- $validSectionPanelStyles := (dict
+        "column-width_main" "ANY_INT"
+      ) -}}
+
+      {{- $mergedSectionPanelStyleNew := partial "vitae/_functions/style-merged" (dict
+        "Template" $template
+        "Style" $section.style
+        "ValidStyles" $validSectionPanelStyles
+        ) -}}
+      {{- if $debug }}
+        {{- warnf "%s[%s]: section=%s: After style-merged: mergedSectionPanelStyleNew=%v"
+            $page $template $sectionName
+            (jsonify (dict "indent" "  ") $mergedSectionPanelStyleNew) }}
+      {{- end }}
+      {{- with $mergedSectionPanelStyleNew.StyleClass }}
+        {{- if $debug }}
+          {{- warnf "%s[%s]: section=%s: Append  [type=%T] mergedSectionPanelStyleNew.StyleClass=%v\nto [type=%T] panelClass=%v"
+              $page $template $sectionName
+              $mergedSectionPanelStyleNew.StyleClass (jsonify (dict "indent" "  ") $mergedSectionPanelStyleNew.StyleClass)
+              $panelClass (jsonify (dict "indent" "  ") $panelClass) }}
+        {{- end }}
+        {{- $panelClass = append $mergedSectionPanelStyleNew.StyleClass $panelClass }}
+      {{- end }}
+
+
+    {{- else }}
+
+      {{- $validSectionPanelStyles := (dict
+        "column-width_main" (dict "ANY_INT" true)
+      ) -}}
+
+      {{- $mergedSectionPanelStyle := partial "vitae/_functions/style-class" (dict
+        "Template" $template
+        "Style" .style
+        "ValidStyles" $validSectionPanelStyles
+        ) -}}
+      {{- if and false $debug }}
+        {{- warnf "%s[%s]: section=%s: After style-class: mergedSectionPanelStyle=%v"
+            $page $template $sectionName
+            (jsonify (dict "indent" "  ") $mergedSectionPanelStyle) }}
+      {{- end }}
+      {{- with $mergedSectionPanelStyle.StyleClass }}
+        {{- $panelClass = append . $panelClass }}
+      {{- end }}
+    {{- end }}
+
+    {{- if and true $debug }}
       {{- warnf "%s[%s]: Calling %s with Sections:\n%v" $page $template $template
         (jsonify (dict "indent" "  ") .) -}}
       {{- end }}
-    {{- $panelClass := append $topLevelClass (slice "section-panel" (printf "section-panel_%s" $sectionName) ) }}
     {{- with $section.panel_class }}
       {{- $panelClass = append . $panelClass }}
     {{- end }}
-    <div class="{{ delimit $panelClass " " }}">
+    <div class="{{ delimit $panelClass ` ` }}">
       {{- partial "vitae/_components/index" (dict
         "Page" $page
         "Config" $vitaeTemplate
