@@ -51,7 +51,7 @@ $num-columns: 12;
     &-gap {
       &_vertical:not(:first-child):not(:last-child) {
         display: block;
-        flex: 1 1 auto;
+        flex: 0.5 1 auto;
         min-height: var(--section-gap_vertical);
         width: 100%;
         // @media screen {
@@ -280,12 +280,14 @@ $num-columns: 12;
 
       --page_header_height_fraction: 1 / 6;
 
-      .slot_header {
-        margin-bottom: var(--inner_margin_4-2);
-      }
       .slot_main {
         display: flex;
         flex-direction: column;
+        &::before {
+          content: "";
+          height: var(--section-gap_vertical);
+          // border: 1px solid red;
+        }
         &.grid {
           display: grid;
           // grid-template-rows: minmax(min-content, max-content) 1fr

@@ -312,7 +312,6 @@ html[data-mode="dim"] {
   /* ----- Component HEADER ------ */
   &_header {
     --portrait_width: calc( 1 * var(--page_height) * var(--page_header_height_fraction));
-    // overflow: hidden;
     height: 100%;
     display: grid;
     grid-template-columns: var(--portrait_width) var(--column_gap) minmax(0px, max-content) var(--column_gap) var(--portrait_width);
@@ -332,12 +331,10 @@ html[data-mode="dim"] {
     }
     .overlay {
       z-index: 2;
-      // grid-row: 1 / span 2;
       grid-row: 1;
       grid-column: 3 / span 3;
       display: flex;
       flex-direction: column;
-      // row-gap: 0.5em;
       height: min-content;
       &::after {
         content: "";
@@ -416,10 +413,6 @@ html[data-mode="dim"] {
         &_figure {
           grid-column: 5;
           margin: 0;
-        }
-        &_img {
-          height: 100%;
-          // max-height: calc( var(--page_height) * var(--page_header_height_fraction) );
         }
       }
     }
@@ -1643,8 +1636,9 @@ html[data-mode="dim"] {
         display: inline;
       }
       --padding_organization_between: var(--inner_padding_4-1);
-      --padding_role_first: var(--inner_padding_8-1);
-      --padding_role_between: var(--inner_padding_8-1);
+      --padding_role_first: var(--inner_padding_4-1);
+      --padding_role_between: var(--inner_padding_4-1);
+      --padding_stage_content_between: var(--inner_padding_4-1);
       --padding_stage_meta: 0;
     }
 
