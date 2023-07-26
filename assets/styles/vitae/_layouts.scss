@@ -387,6 +387,10 @@
   --line-width_separator: calc(0.025 * var(--rem));;
   --line-width_separator_heading: calc(0.05 * var(--rem));;
 
+  --column_gap: var(--inner_margin_4-3);
+  --row_gap: var(--inner_margin_4-1);
+  --section-gap_vertical: var(--inner_margin_4-4);
+
   .view-print {
     @include font-size-scale(var(--em));
     @include inner_margin_padding(var(--inner_margin), var(--inner_padding));

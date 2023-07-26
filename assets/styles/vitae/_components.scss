@@ -311,7 +311,8 @@ html[data-mode="dim"] {
 
   /* ----- Component HEADER ------ */
   &_header {
-    --portrait_width: calc( 1 * var(--page_height) * var(--page_header_height_fraction));
+    // --portrait_width: calc( 1 * var(--page_height) * var(--page_header_height_fraction));
+    --portrait_width: 25%;
     height: 100%;
     display: grid;
     grid-template-columns: var(--portrait_width) var(--column_gap) minmax(0px, max-content) var(--column_gap) var(--portrait_width);
@@ -387,7 +388,9 @@ html[data-mode="dim"] {
         // grid-row: 1 / span 3;
         grid-row: 1;
         grid-column: 1 / span all;
-        @include full-bleed_page(top, both);
+        @at-root .vitae .view-print .component_header .portrait_figure {
+          @include full-bleed_page(top, both);
+        }
       }
 
       &_img {
