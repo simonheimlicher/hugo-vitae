@@ -153,7 +153,9 @@
               </dt>
             {{- end }}
             {{- with $definitionItem.content }}
-              {{- if $styleLayoutInline }}
+              {{- if not $styleLayoutInline }}
+                <dd>
+              {{- end }}
                 {{- if reflect.IsSlice . }}
                   <ul>
                   {{- range . }}
@@ -165,16 +167,8 @@
                 {{- else }}
                     {{ page.RenderString $optInline . }}
                 {{- end }}
-            {{- else }}
-                {{- $ddList := . }}
-                {{- if not (reflect.IsSlice $ddList) }}
-                  {{- $ddList = slice $ddList }}
-                {{- end }}
-                {{- range $ddList }}
-                  <dd>
-                  {{ page.RenderString $optInline . }}
-                  </dd>
-                {{- end }}
+              {{- if not $styleLayoutInline }}
+                </dd>
               {{- end }}
             {{- end }}
           {{- end }}
