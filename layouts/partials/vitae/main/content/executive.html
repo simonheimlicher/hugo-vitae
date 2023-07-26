@@ -122,6 +122,8 @@
   {{- $styleClassList = $mergedStyle.StyleClass }}
 {{- end }}
 
+{{- $slotSeparator := "section-gap_vertical" }}
+{{- $sectionSeparator := $slotSeparator }}
 
 <!-- Pagination
 Part: an independent section of one or more printed pages
@@ -205,6 +207,11 @@ PaginationPage: a printed page that is part of a Part
       {{- $paginationPolicy := $slot.pagination_policy | default $part.pagination_policy | default `break` }}
       {{- $paginationOrder := $slot.pagination_order | default $slotIndex }}
       {{- $container := default "div" .container }}
+      {{- with $slotSeparator }}
+        {{- if gt $slotIndex 0 }}
+          <div class="{{ . }}"></div>
+        {{- end }}
+      {{- end }}
       {{- with $container }}
         {{- $containerClass := slice (printf "slot_%s slot" $slot.slot) $pp.PaginationContainerClass }}
         {{- with $slot.container_class }}
@@ -258,7 +265,7 @@ PaginationPage: a printed page that is part of a Part
         "ChildClass" $childClass
         "Data" $vitaeData
         "Sections" $slot.sections
-        "SectionSeparator" "section-gap_vertical"
+        "SectionSeparator" $sectionSeparator
       )) -}}
       {{- with $container }}
         {{ printf `</%s>` . | safeHTML }}

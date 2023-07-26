@@ -177,7 +177,8 @@ $num-columns: 12;
         }
         */
 
-        margin-top: calc(max(var(--row_gap), var(--section-title_margin_top_between)));
+        // FIXME: Use div $slotSeparator instead
+        // margin-top: calc(max(var(--row_gap), var(--section-title_margin_top_between)));
 
         display: flex;
         flex-direction: column;
