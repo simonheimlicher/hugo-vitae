@@ -259,7 +259,7 @@ PaginationPage: a printed page that is part of a Part
       {{- $childClass := default "" .child_class }}
       {{- partial "vitae/_components/index" (merge $pp (dict
         "Page" $page
-        "Config" $vitaeTemplate
+        "Template" $vitaeTemplate
         "MergedStyle" $mergedStyle
         "MergedStyleNew" $mergedStyleNew
         "ChildClass" $childClass

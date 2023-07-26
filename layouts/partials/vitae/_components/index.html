@@ -1,6 +1,6 @@
 {{- $page := .Page -}}
 {{- $headingLevel := default 3 .HeadingLevel }}
-{{- $vitaeTemplate := .Config }}
+{{- $vitaeTemplate := .Template }}
 {{- $vitaeData := .Data }}
 {{- $sections := .Sections }}
 {{- $sectionSeparator := .SectionSeparator }}
@@ -656,7 +656,7 @@
 
     {{- $componentPartialParams := (dict
       "Page" $page
-      "Config" $vitaeTemplate
+      "Template" $vitaeTemplate
       "Media" $media
       "Component" $component
       "MergedStyle" $mergedComponentStyle
@@ -738,7 +738,7 @@
     <div class="{{ delimit $panelClass ` ` }}">
       {{- partial "vitae/_components/index" (dict
         "Page" $page
-        "Config" $vitaeTemplate
+        "Template" $vitaeTemplate
         "Media" $media
         "MergedStyle" $mergedStyle
         "MergedStyleNew" $mergedStyleNew
