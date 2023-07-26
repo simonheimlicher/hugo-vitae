@@ -673,7 +673,7 @@ html[data-mode="dim"] {
     }
 
     // Padding before stage_content
-    &.stage_content .stage_main {
+    &.stage_content + .stage_content .stage_main {
       // outline: 1px solid yellow;
       padding-top: var(--padding_stage_content_between);
     }
@@ -812,6 +812,13 @@ html[data-mode="dim"] {
         font-style: italic;
       }
     }
+
+    // &.stage_content {
+    //   .stage_header h5 {
+    //     font-size: var(--font-size-heading-role);
+    //     font-weight: var(--font-weight);
+    //   }
+    // }
 
     /*
      * Timeline style COLUMN
@@ -1282,6 +1289,9 @@ html[data-mode="dim"] {
             var(--grid_period-column_width)
             var(--grid_separator-column_width)
             minmax(0px, max-content);
+          // margin-left: calc(0px
+          //   - var(--tl-col_timeline-column_width)
+          //   - var(--grid_separator-column_width));
         }
         &_header {
           .stage {
@@ -1588,6 +1598,18 @@ html[data-mode="dim"] {
             }
             &_main {
               grid-column: 3 / span all;
+              /*
+              ul:first-child li:first-child {
+                background-color: beige;
+                font-size: var(--font-size-larger-1);
+                margin-left: 0;
+                padding-left: 0;
+                padding-bottom: var(--inner_padding_8-1);
+                &::marker {
+                  content: none;
+                }
+              }
+              */
             }
           }
         }
@@ -1635,7 +1657,7 @@ html[data-mode="dim"] {
         // display: inline-block;
         display: inline;
       }
-      --padding_organization_between: var(--inner_padding_4-1);
+      --padding_organization_between: var(--inner_padding_4-3);
       --padding_role_first: var(--inner_padding_4-1);
       --padding_role_between: var(--inner_padding_4-1);
       --padding_stage_content_between: var(--inner_padding_4-1);
@@ -1667,6 +1689,11 @@ html[data-mode="dim"] {
       // --padding_organization_between: var(--inner_padding_4-3);
       // --padding_role_first: var(--inner_padding_4-0);
       // --padding_role_between: var(--inner_padding_4-1);
+      &.style_layout_shallow, &.style_layout_compact {
+        --padding_role_first: var(--inner_padding_8-1);
+        --padding_role_between: var(--inner_padding_8-0);
+        --padding_organization_between: var(--inner_padding_8-3);
+      }
     }
   }
 
@@ -1918,7 +1945,19 @@ html[data-mode="dim"] {
         }
       }
     }
-  }
+    &.style_heading_normal {
+      .publication_title {
+        font-size: var(--font-size-normal);
+        // font-weight: var(--font-weight);
+      }
+    }
+    &.style_font-size_smaller-1 {
+      font-size: var(--font-size-smaller-1);
+    }
+    &.style_font-size_smaller-2 {
+      font-size: var(--font-size-smaller-2);
+    }
+}
 
   /*
    * Component FOOTER
