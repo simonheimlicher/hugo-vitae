@@ -9,6 +9,7 @@
 {{- $vitaeTemplate := $pp.VitaeTemplate }}
 {{- $vitaeData := $pp.VitaeData }}
 {{- $vitaeStyle := $pp.VitaeStyle }}
+{{- $vitaeParams := $pp.VitaeParams }}
 
 {{- $debug := false }}
 {{/* {{- $debug = or $debug (not (not (findRE `^/([^/]+-demo/)?devel` $page.RelPermalink) ) ) -}} */}}
@@ -129,7 +130,34 @@
 Part: an independent section of one or more printed pages
 PaginationPage: a printed page that is part of a Part
 -->
-{{- range $partIndex, $part := where $vitaeTemplate.parts "enabled" "ne" false }}
+
+{{- /* Section params can be overriden from front matter under $vitaeSectionsRoot:
+    ---
+    vitae:
+      sections:
+        patents-publications:
+          enabled: false
+    ---
+*/ -}}
+{{- $originalParts := $vitaeTemplate.parts }}
+{{- $parts := $originalParts }}
+{{- with $vitaeParams.parts }}
+  {{- $parts = slice }}
+  {{- warnf "%s[%s]: vitaeParams.parts=%v" $page $template
+      (jsonify (dict "indent" "  ") $vitaeParams.parts) }}
+  {{- range $originalPart := $originalParts }}
+    {{- with index $vitaeParams.parts .part }}
+      {{- $part := merge $originalPart . }}
+      {{- $parts = append $part $parts }}
+      {{- warnf "%s[%s]: applied vitaeParams.parts.%v=%v\nto part=%v" $page $template
+          $part.part (jsonify (dict "indent" "  ") . ) (jsonify (dict "indent" "  ") $part ) }}
+    {{- else }}
+      {{- $parts = append $originalPart $parts }}
+    {{- end }}
+  {{- end }}
+{{- end }}
+
+{{- range $partIndex, $part := where $parts "enabled" "ne" false }}
   <!-- Initially, all content is placed within one Pagination Page
   When rendering the print preview with `print-view.js`,
   this DOM node is cloned and the content is distributed across as many
@@ -257,6 +285,32 @@ PaginationPage: a printed page that is part of a Part
         $pp.PaginationPolicyAttr $paginationPolicy | safeHTML }}
       {{- end }}
       {{- $childClass := default "" .child_class }}
+
+      {{- /* Section params can be overriden from front matter under $vitaeSectionsRoot:
+          ---
+          vitae:
+            sections:
+              patents-publications:
+                enabled: false
+          ---
+      */ -}}
+      {{- $originalSections := $slot.sections }}
+      {{- $sections := $originalSections }}
+      {{- with $vitaeParams.sections }}
+        {{- $sections = slice }}
+        {{- warnf "%s[%s]: vitaeParams.sections=%v" $page $template
+            (jsonify (dict "indent" "  ") $vitaeParams.sections) }}
+        {{- range $originalSection := $slot.sections }}
+          {{- with index $vitaeParams.sections .section }}
+            {{- $section := merge $originalSection . }}
+            {{- $sections = append $section $sections }}
+            {{- warnf "%s[%s]: applied vitaeParams.sections.%v=%v\nto section=%v" $page $template
+                $section.section (jsonify (dict "indent" "  ") . ) (jsonify (dict "indent" "  ") $section ) }}
+          {{- else }}
+            {{- $sections = append $originalSection $sections }}
+          {{- end }}
+        {{- end }}
+      {{- end }}
       {{- partial "vitae/_components/index" (merge $pp (dict
         "Page" $page
         "Template" $vitaeTemplate
@@ -264,7 +318,7 @@ PaginationPage: a printed page that is part of a Part
         "MergedStyleNew" $mergedStyleNew
         "ChildClass" $childClass
         "Data" $vitaeData
-        "Sections" $slot.sections
+        "Sections" $sections
         "SectionSeparator" $sectionSeparator
       )) -}}
       {{- with $container }}

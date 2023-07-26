@@ -27,6 +27,7 @@
 {{- $vitaeParamRoot := split (default "vitae" ($page.Param "VitaeRoot")) "." }}
 {{- $vitaeTemplateVariantPath := "variants" }}
 {{- $vitaeStylePath := "style" }}
+{{- $vitaeSectionsPath := "sections" }}
 {{- $vitaeDefaultTemplateName := "executive" }}
 {{- $vitaeDefaultVariantName := "default" }}
 {{- $vitaeParams := $page.Param (delimit $vitaeParamRoot ".") }}
@@ -39,6 +40,7 @@
 {{- $vitaeTemplateRoot := append (slice $vitaeTemplateName $vitaeTemplateVariantPath $vitaeVariantName) $vitaeParamRoot }}
 
 {{- $vitaeStyleRoot := append $vitaeStylePath $vitaeParamRoot }}
+{{- $vitaeSectionsRoot := append $vitaeSectionsPath $vitaeParamRoot }}
 
 {{- /* Initialize all params from site.Params */ -}}
 {{- $vitaeDefaultTemplate := merge (index site.Params $vitaeBaseTemplateRoot) (dict $vitaeTemplateVariantPath nil) }}
@@ -95,7 +97,7 @@
 {{- $vitaeStyle := index $vitaeTemplate $vitaeStylePath }}
 {{- $vitaeTemplate = merge $vitaeTemplate (dict $vitaeStylePath nil) }}
 
-{{- /* Style params can be specified in front matter under $vitaeStyleRoot:
+{{- /* Style params can be overridden from front matter under $vitaeStyleRoot:
 ---
 vitae:
   style:
@@ -201,6 +203,7 @@ vitae:
         "VitaeDefaultTemplate" $vitaeDefaultTemplate
         "VitaeData" $vitaeData
         "VitaeStyle" $vitaeStyle
+        "VitaeParams" $vitaeParams
         "PartClass" $partClass
         "PartClassPrefix" $partClassPrefix
         "PaginationPageClass" $paginationPageClass

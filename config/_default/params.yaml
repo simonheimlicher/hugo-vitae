@@ -19,7 +19,8 @@ vitae:
         parts:
 
           # Front page
-          - template: front-page
+          - part: front-page
+            template: front-page
             # enabled: false
             pagination_policy: first
 
@@ -151,7 +152,8 @@ vitae:
 
 
           # Career timeline
-          - template: main
+          - part: experience
+            template: main
             # enabled: false
             pagination_policy: break
             slots:
@@ -229,8 +231,9 @@ vitae:
               shared: footer
 
           # Appendix
-          # - template: appendix
-          - template: main
+          - part: patents-publications
+            # template: appendix
+            template: main
             enabled: false
             pagination_policy: first
             slots:
@@ -308,7 +311,8 @@ vitae:
 
         parts:
           # Everything is in one part
-          - template: main
+          - part: main
+            template: main
             # enabled: false
             slots:
             - slot: header
@@ -458,7 +462,8 @@ vitae:
               shared: footer
 
           # Appendix
-          - template: appendix
+          - part: patents-publications
+            template: appendix
             enabled: false
             pagination_policy: first
             slots:
@@ -493,7 +498,8 @@ vitae:
           # logo: false
         parts:
           # Front page
-          - template: front-page
+          - part: front-page
+            template: front-page
             # enabled: false
             pagination_policy: first
             slots:
@@ -574,7 +580,8 @@ vitae:
                     description: false
                     skills: false
                     achievements: false
-          - template: main
+          - part: main
+            template: main
             # enabled: false
             pagination_policy: first
             slots:
@@ -665,7 +672,8 @@ vitae:
           # logo: false
         parts:
           # Front page
-          - template: front-page
+          - part: front-page
+            template: front-page
             # enabled: false
             pagination_policy: first
             slots:
@@ -746,7 +754,8 @@ vitae:
                     skills: false
                     achievements: false
 
-          - template: main
+          - part: main
+            template: main
             # enabled: false
             pagination_policy: first
             slots:
@@ -903,8 +912,9 @@ vitae:
               shared: footer
 
           # Appendix
-          # - template: appendix
-          - template: main
+          - part: appendix
+            template: main
+            # template: appendix
             # enabled: false
             pagination_policy: first
             slots:
@@ -936,7 +946,8 @@ vitae:
               shared: footer
 
           # # Education
-          # - template: main
+          # - part: education
+          #   template: main
           #   # enabled: false
           #   pagination_policy: break
           #   slots:
