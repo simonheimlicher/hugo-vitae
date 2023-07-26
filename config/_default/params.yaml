@@ -46,7 +46,7 @@ vitae:
               #   display: grid
               sections:
               - section: personal-profile
-                # title: section-personal-profile
+                title: section-personal-profile
                 container: section
                 components:
                 - component: panels
@@ -201,24 +201,30 @@ vitae:
                     filter_value: language
                     details: true
                     level_bar: false
-              # - section: patents-publications
-              #   sections:
-              #   - section: patent-selection
-              #     title: section-patents
-              #     container: section
-              #     components:
-              #     - component: publications
-              #       collection: publications
-              #       filter_by: kind
-              #       filter_value: patent
-              #   - section: publication-selection
-              #     title: section-publications
-              #     container: section
-              #     components:
-              #     - component: publications
-              #       collection: publications
-              #       filter_by: kind
-              #       filter_value: publication
+              - section: patents-publications
+                sections:
+                - section: publication-selection
+                  title: section-publications
+                  container: section
+                  components:
+                  - component: publications
+                    collection: publications
+                    filter_by: kind
+                    filter_value: publication
+                    style:
+                      heading: normal
+                      layout: inline
+                - section: patent-selection
+                  title: section-patents
+                  container: section
+                  components:
+                  - component: publications
+                    collection: publications
+                    filter_by: kind
+                    filter_value: patent
+                    style:
+                      heading: normal
+                      layout: inline
             - slot: footer
               shared: footer
 
