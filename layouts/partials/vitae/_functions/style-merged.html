@@ -324,8 +324,13 @@
 
     {{- else }}
 
-      {{- warnf `%vkey=%v: Ignoring unknown key with value=%v: no entry in validStyles=%v`
-        $errorPrefix $key (jsonify (dict "indent" "  ") $value)
+      {{- $errorDict := printf `"%v": "%v"` $key $value }}
+      {{- if or (reflect.IsMap $value) (reflect.IsSlice $value) }}
+        {{- $errorDict = printf "\n%v" (jsonify (dict "indent" "  ") (dict $key $value)) }}
+      {{- end }}
+
+      {{- warnf "%vIgnoring unknown style:%v\nNo entry for this key exists in validStyles=%v"
+        $errorPrefix $errorDict
         (jsonify (dict "indent" "  ") $validStyles) }}
 
     {{- end }}
