@@ -816,12 +816,15 @@ html[data-mode="dim"] {
       }
     }
 
-    // &.stage_content {
-    //   .stage_header h5 {
-    //     font-size: var(--font-size-heading-role);
-    //     font-weight: var(--font-weight);
-    //   }
-    // }
+    &.stage_content {
+      .stage_body {
+        grid-column: 3 / span all;
+      }
+      // .stage_header h5 {
+      //   font-size: var(--font-size-heading-role);
+      //   font-weight: var(--font-weight);
+      // }
+    }
 
     /*
      * Timeline style COLUMN
@@ -1551,9 +1554,9 @@ html[data-mode="dim"] {
      */
 
      &.style_layout_inline, &.style_inline_header, &.style_inline_header_true {
-      // @extend .style_layout_shallow;
-      // --padding_organization_between: var(--inner_padding_4-3);
-      // --padding_role_between: var(--inner_padding_4-3);
+      .organization_title, .role_title {
+        display: inline;
+      }
       .stage {
         &_main {
           flex-direction: row;
@@ -1568,13 +1571,10 @@ html[data-mode="dim"] {
           // }
         }
       }
-      .organization_title, .role_title {
-        display: inline;
-      }
     }
 
     /*
-     * Inline style Content
+     * Inline style CONTENT
      */
 
      &.style_layout_inline, &.style_inline_content, &.style_inline_content_true {
@@ -1620,7 +1620,7 @@ html[data-mode="dim"] {
     }
 
     /*
-     * Inline style Role
+     * Inline style ROLE
      */
 
      &.style_inline_role, &.style_inline_role_true {

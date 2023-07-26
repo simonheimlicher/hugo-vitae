@@ -478,70 +478,98 @@
         {{- $containerClass = "" }}
       {{- end }}
 
-      {{- if default true $component.role.achievements }}
-        {{- with $role.achievements }}
-          {{- range $achievementIndex, $achievement := . }}
-            {{- with $containerClass }}
-              <div class="{{ $containerClass }} {{ $topLevelClass }}">
-              {{- if $style.timeline }}
-                <div class="stage_timeline"></div>
-              {{- end }}
-            {{- end }}
-            {{- if $inlineContent }}
-              <div class="role_achievement_main stage_main{{ with (and (not $containerClass) $topLevelClass) }} {{ . }}{{ end }}">
-                {{- $bullets := false }}
-                {{- with $achievement.lead }}
-                  {{- $bullets = . }}
-                {{- else }}
-                  {{- with $achievement.title }}
-                    {{- $bullets = . }}
-                  {{- end }}
-                {{- end }}
-                {{- with $bullets }}
-                  {{- if strings.Contains . `**` }}
-                    {{- $bullets = . }}
-                  {{- else }}
-                    {{- $bullets = printf "**%s**" . -}}
-                  {{- end }}
-                {{- end }}
-                {{- with $achievement.content }}
-                  {{- if reflect.IsSlice . }}
-                    {{- /* If .lead exists, it must express the same as the first item in .content */ -}}
-                    {{- if $achievement.lead }}
-                      {{- $bullets = append (last (sub (len .) 1) .) (slice $bullets) -}}
-                    {{- else }}
-                      {{- $bullets = append . (slice $bullets) -}}
-                    {{- end }}
-                  {{- else }}
-                    {{- if $bullets }}
-                      {{- $bullets = printf "* %s\n%s" $bullets . -}}
-                    {{- else }}
-                      {{- $bullets = . }}
-                    {{- end }}
-                  {{- end }}
-                {{- end }}
-                {{- with $bullets }}
-                  {{- partial "render_string_slice" . }}
-                {{- end }}
-              </div>
-            {{- else }}
-              <div class="role_achievement_header stage_header{{ with (and (not $containerClass) $topLevelClass) }} {{ . }}{{ end }}">
-                <h{{ add $headingLevel 2 }} class="role_achievement_title">
-                  {{-  page.RenderString $achievement.title -}}
-                </h{{ add $headingLevel 2 }}>
-                {{- /* <pre>{{ jsonify (dict "indent" "  ") . }}</pre> */ -}}
-              </div>
-              <div class="role_achievement_main stage_main{{ with (and (not $containerClass) $topLevelClass) }} {{ . }}{{ end }}">
-                {{- with $achievement.content }}
-                  {{- partial "render_string_slice" . }}
-                {{- end }}
-              </div>
-            {{- end }}
-            {{- with $containerClass }}
-              </div>
-            {{- end }}
+      {{- $show := (dict
+        "summary" false
+        "achievements" false
+      ) -}}
+
+      {{- with and (default true $component.role.summary) $role.summary }}
+        {{- $show = merge $show (dict "summary" true) }}
+      {{- else }}
+        {{ with and (default true $component.role.achievements) $role.achievements }}
+          {{- $show = merge $show (dict "achievements" true) }}
+        {{- end }}
+      {{- end }}
+
+      {{- with and $show.summary $role.summary }}
+        {{- with $containerClass }}
+          <div class="{{ $containerClass }} {{ $topLevelClass }}">
+          {{- if $style.timeline }}
+            <div class="stage_timeline"></div>
           {{- end }}
         {{- end }}
+        <div class="role_summary stage_body{{ with (and (not $containerClass) $topLevelClass) }} {{ . }}{{ end }}">
+          {{- partial "render_string_slice" . }}
+        </div>
+        {{- with $containerClass }}
+          </div>
+        {{- end }}
+      {{- end }}
+
+
+      {{- with and $show.achievements $role.achievements }}
+        {{- range $achievementIndex, $achievement := . }}
+          {{- with $containerClass }}
+            <div class="{{ $containerClass }} {{ $topLevelClass }}">
+            {{- if $style.timeline }}
+              <div class="stage_timeline"></div>
+            {{- end }}
+          {{- end }}
+          {{- if $inlineContent }}
+            <div class="role_achievement_main stage_main{{ with (and (not $containerClass) $topLevelClass) }} {{ . }}{{ end }}">
+              {{- $bullets := false }}
+              {{- with $achievement.lead }}
+                {{- $bullets = . }}
+              {{- else }}
+                {{- with $achievement.title }}
+                  {{- $bullets = . }}
+                {{- end }}
+              {{- end }}
+              {{- with $bullets }}
+                {{- if strings.Contains . `**` }}
+                  {{- $bullets = . }}
+                {{- else }}
+                  {{- $bullets = printf "**%s**" . -}}
+                {{- end }}
+              {{- end }}
+              {{- with $achievement.content }}
+                {{- if reflect.IsSlice . }}
+                  {{- /* If .lead exists, it must express the same as the first item in .content */ -}}
+                  {{- if $achievement.lead }}
+                    {{- $bullets = append (last (sub (len .) 1) .) (slice $bullets) -}}
+                  {{- else }}
+                    {{- $bullets = append . (slice $bullets) -}}
+                  {{- end }}
+                {{- else }}
+                  {{- if $bullets }}
+                    {{- $bullets = printf "* %s\n%s" $bullets . -}}
+                  {{- else }}
+                    {{- $bullets = . }}
+                  {{- end }}
+                {{- end }}
+              {{- end }}
+              {{- with $bullets }}
+                {{- partial "render_string_slice" . }}
+              {{- end }}
+            </div>
+          {{- else }}
+            <div class="role_achievement_header stage_header{{ with (and (not $containerClass) $topLevelClass) }} {{ . }}{{ end }}">
+              <h{{ add $headingLevel 2 }} class="role_achievement_title">
+                {{-  page.RenderString $achievement.title -}}
+              </h{{ add $headingLevel 2 }}>
+              {{- /* <pre>{{ jsonify (dict "indent" "  ") . }}</pre> */ -}}
+            </div>
+            <div class="role_achievement_main stage_main{{ with (and (not $containerClass) $topLevelClass) }} {{ . }}{{ end }}">
+              {{- with $achievement.content }}
+                {{- partial "render_string_slice" . }}
+              {{- end }}
+            </div>
+          {{- end }}
+          {{- with $containerClass }}
+            </div>
+          {{- end }}
+        {{- end }}
+
       {{- end }}
     {{- end }}
   {{- end }}
