@@ -82,6 +82,7 @@ vitae:
                     logo: false
                   organization:
                     period: true
+                    description: false
                     details: false
                     remark: true
                   role:
@@ -168,7 +169,7 @@ vitae:
                   filter_value: professional
                   unit:
                     limit: 1
-                    type: false
+                    type: true
                   style:
                     timeline: column
                     inline:

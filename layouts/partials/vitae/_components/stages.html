@@ -478,20 +478,62 @@
         {{- $containerClass = "" }}
       {{- end }}
 
-      {{- $show := (dict
+      {{- $showOrg := (dict
+        "description" false
+        "summary" false
+      ) -}}
+
+      {{- with and (default true $component.organization.description) $org.description }}
+        {{- $showOrg = merge $showOrg (dict "description" true) }}
+      {{- end }}
+      {{ with and (default (not $showOrg.summary) $component.organization.summary) $org.summary }}
+        {{- $showOrg = merge $showOrg (dict "summary" true) }}
+      {{- end }}
+
+      {{- with and $showOrg.description $org.description }}
+        {{- with $containerClass }}
+          <div class="{{ $containerClass }} {{ $topLevelClass }}">
+          {{- if $style.timeline }}
+            <div class="stage_timeline"></div>
+          {{- end }}
+        {{- end }}
+        <div class="org_description stage_details stage_body{{ with (and (not $containerClass) $topLevelClass) }} {{ . }}{{ end }}">
+          {{- partial "render_string_slice" . }}
+        </div>
+        {{- with $containerClass }}
+          </div>
+        {{- end }}
+      {{- end }}
+
+      {{- with and $showOrg.summary $org.summary }}
+        {{- with $containerClass }}
+          <div class="{{ $containerClass }} {{ $topLevelClass }}">
+          {{- if $style.timeline }}
+            <div class="stage_timeline"></div>
+          {{- end }}
+        {{- end }}
+        <div class="org_summary stage_body{{ with (and (not $containerClass) $topLevelClass) }} {{ . }}{{ end }}">
+          {{- partial "render_string_slice" . }}
+        </div>
+        {{- with $containerClass }}
+          </div>
+        {{- end }}
+      {{- end }}
+
+
+      {{- $showRole := (dict
         "summary" false
         "achievements" false
       ) -}}
 
       {{- with and (default true $component.role.summary) $role.summary }}
-        {{- $show = merge $show (dict "summary" true) }}
-      {{- else }}
-        {{ with and (default true $component.role.achievements) $role.achievements }}
-          {{- $show = merge $show (dict "achievements" true) }}
-        {{- end }}
+        {{- $showRole = merge $showRole (dict "summary" true) }}
+      {{- end }}
+      {{ with and (default (not $showRole.summary) $component.role.achievements) $role.achievements }}
+        {{- $showRole = merge $showRole (dict "achievements" true) }}
       {{- end }}
 
-      {{- with and $show.summary $role.summary }}
+      {{- with and $showRole.summary $role.summary }}
         {{- with $containerClass }}
           <div class="{{ $containerClass }} {{ $topLevelClass }}">
           {{- if $style.timeline }}
@@ -506,8 +548,7 @@
         {{- end }}
       {{- end }}
 
-
-      {{- with and $show.achievements $role.achievements }}
+      {{- with and $showRole.achievements $role.achievements }}
         {{- range $achievementIndex, $achievement := . }}
           {{- with $containerClass }}
             <div class="{{ $containerClass }} {{ $topLevelClass }}">

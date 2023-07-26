@@ -792,7 +792,7 @@ html[data-mode="dim"] {
             }
           }
         }
-        &.role_single .role_period {
+        &.organization_header.stage_header_period + .role_header.role_single .role_period {
           opacity: 0;
         }
         &.style_separate_roles, &.style_separate_roles_true {
@@ -809,11 +809,6 @@ html[data-mode="dim"] {
     &.stage_meta, &.stage_header .stage_meta {
       // background: var(--RGB_slider_bg);
       font-size: var(--font-size_stage_header_meta);
-      .stage_details {
-        // font-size: var(--font-size-normal);
-        font-size: var(--font-size-smaller-1);
-        font-style: italic;
-      }
     }
 
     &.stage_content {
@@ -824,6 +819,12 @@ html[data-mode="dim"] {
       //   font-size: var(--font-size-heading-role);
       //   font-weight: var(--font-weight);
       // }
+    }
+
+    .stage_details {
+      // font-size: var(--font-size-normal);
+      font-size: var(--font-size-smaller-1);
+      font-style: italic;
     }
 
     /*
@@ -1305,7 +1306,8 @@ html[data-mode="dim"] {
               grid-column: 1;
             }
             &_main {
-              grid-column: 3 / span all;
+              // grid-column: 3 / span all;
+              grid-column: 5;
             }
             &_logo {
               grid-column: 1;
