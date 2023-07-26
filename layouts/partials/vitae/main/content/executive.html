@@ -149,8 +149,10 @@ PaginationPage: a printed page that is part of a Part
     {{- with index $vitaeParams.parts .part }}
       {{- $part := merge $originalPart . }}
       {{- $parts = append $part $parts }}
-      {{- warnf "%s[%s]: applied vitaeParams.parts.%v=%v\nto part=%v" $page $template
-          $part.part (jsonify (dict "indent" "  ") . ) (jsonify (dict "indent" "  ") $part ) }}
+      {{- if $debug }}
+        {{- warnf "%s[%s]: applied vitaeParams.parts.%v=%v\nto part=%v" $page $template
+            $part.part (jsonify (dict "indent" "  ") . ) (jsonify (dict "indent" "  ") $part ) }}
+      {{- end }}
     {{- else }}
       {{- $parts = append $originalPart $parts }}
     {{- end }}
@@ -296,21 +298,78 @@ PaginationPage: a printed page that is part of a Part
       */ -}}
       {{- $originalSections := $slot.sections }}
       {{- $sections := $originalSections }}
+
       {{- with $vitaeParams.sections }}
-        {{- $sections = slice }}
-        {{- warnf "%s[%s]: vitaeParams.sections=%v" $page $template
-            (jsonify (dict "indent" "  ") $vitaeParams.sections) }}
-        {{- range $originalSection := $slot.sections }}
-          {{- with index $vitaeParams.sections .section }}
-            {{- $section := merge $originalSection . }}
-            {{- $sections = append $section $sections }}
-            {{- warnf "%s[%s]: applied vitaeParams.sections.%v=%v\nto section=%v" $page $template
-                $section.section (jsonify (dict "indent" "  ") . ) (jsonify (dict "indent" "  ") $section ) }}
-          {{- else }}
-            {{- $sections = append $originalSection $sections }}
-          {{- end }}
+
+        {{/* The keys in this map identify sections within this part
+             to which we apply the params pointed to by the keys */}}
+
+        {{- if $debug }}
+          {{- warnf "%s[%s]: vitaeParams.sections=%v" $page $template
+              (jsonify (dict "indent" "  ") . ) }}
         {{- end }}
+
+        {{- $sections = slice }}
+        {{- range $originalSection := $slot.sections }}
+
+          {{- with index $vitaeParams.sections .section }}
+
+            {{- $section := merge $originalSection . }}
+
+            {{- with $originalComponents := $originalSection.components }}
+
+              {{- with index $vitaeParams.sections $section.section "components" }}
+                {{/* The keys in this map identify components within this section
+                    to which we apply the params pointed to by the keys */}}
+
+                {{- if $debug }}
+                  {{- warnf "%s[%s]: vitaeParams.sections.%v.components=%v" $page $template
+                      $section.section (jsonify (dict "indent" "  ") . ) }}
+                {{- end }}
+
+                {{- $components := slice }}
+                {{- range $originalComponent := $originalComponents }}
+
+                  {{- with index $vitaeParams.sections $section.section "components" .component }}
+
+                    {{- $component := merge $originalComponent . }}
+                    {{- $components = append $component $components }}
+                    {{- if $debug }}
+                      {{- warnf "%s[%s]: applied vitaeParams.sections.%v.components.%v=%v\nto component=%v" $page $template
+                          $section.section $component.component
+                          (jsonify (dict "indent" "  ") . ) (jsonify (dict "indent" "  ") $component ) }}
+                      {{- end }}
+
+                  {{- else }}
+
+                    {{- $components = append $originalComponent $components }}
+
+                  {{- end }}
+
+                {{- end }}
+
+                {{- $section = merge $section (dict "components" $components) }}
+
+              {{- end }}
+
+            {{- end }}
+
+            {{- $sections = append $section $sections }}
+            {{- if $debug }}
+              {{- warnf "%s[%s]: applied vitaeParams.sections.%v=%v\nto section=%v" $page $template
+                  $section.section (jsonify (dict "indent" "  ") . ) (jsonify (dict "indent" "  ") $section ) }}
+            {{- end }}
+
+          {{- else }}
+
+            {{- $sections = append $originalSection $sections }}
+
+          {{- end }}
+
+        {{- end }}
+
       {{- end }}
+
       {{- partial "vitae/_components/index" (merge $pp (dict
         "Page" $page
         "Template" $vitaeTemplate
