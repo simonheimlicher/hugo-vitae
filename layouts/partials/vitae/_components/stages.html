@@ -25,7 +25,6 @@
       "inline" (dict
         "header" true
         "content" true
-        "role" true
       )
     )
   )
@@ -92,7 +91,6 @@
         "inline" (dict
           "header" true
           "content" true
-          "role" true
         )
       )
     )
@@ -218,9 +216,9 @@
   {{- end }}
 {{- end }}
 
-{{- $inlineHeader = $style.inline.header | default (eq $style.ats true) | default false }}
-{{- $inlineContent = $style.inline.content | default (eq $style.ats true) | default false }}
-{{- $inlineRoleHeader = $style.inline.role | default (eq $style.ats true) | default false }}
+{{- $inlineHeader = default false $style.inline.header }}
+{{- $inlineContent = default false $style.inline.content }}
+{{- $inlineRoleHeader = default false $style.inline.role }}
 {{- $roleMetaInHeader := $inlineHeader }}
 {{- $organizationMetaInHeader := $inlineHeader }}
 
