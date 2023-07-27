@@ -646,12 +646,13 @@
 
   {{- else }}
 
+    {{- $resultingValue := $value }}
+
     {{- if $debug }}
       {{- warnf "%vvalidValuesForKey is SCALAR: resultingValue=%v == value=%v in validValuesForKey=%v"
           $debugPrefix $resultingValue $value (jsonify (dict "indent" "  ") $validValuesForKey) }}
     {{- end }}
 
-    {{- $resultingValue := $value }}
     {{- $paramToResultingValue = merge $paramToResultingValue (dict
       "ResultingValue" $resultingValue
     ) }}
