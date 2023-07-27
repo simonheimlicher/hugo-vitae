@@ -54,7 +54,6 @@ vitae:
                   collection: profile
                   style:
                     dt_columns: 3
-                    # heading: normal
               - section: career-summary
                 title: section-career-summary
                 container: section
@@ -77,7 +76,7 @@ vitae:
                       header: true
                       role: true
                     timeline: column
-                    heading: normal
+                    font-size: normal
                     date: year
                     logo: false
                   organization:
@@ -187,7 +186,8 @@ vitae:
                     filter_by: type
                     filter_value: education
                     style:
-                      heading: normal
+                      heading:
+                        font-size: normal
                       separate_roles: true
                       layout: narrow
                     role:
@@ -423,7 +423,8 @@ vitae:
                     filter_by: type
                     filter_value: education
                     style:
-                      heading: normal
+                      heading:
+                        font-size: normal
                       separate_roles: true
                       layout: narrow
                     role:
@@ -501,7 +502,7 @@ vitae:
           # Front page
           - part: front-page
             template: front-page
-            # enabled: false
+            enabled: false
             pagination_policy: first
             slots:
             - slot: header
@@ -566,7 +567,8 @@ vitae:
                       header: true
                       role: true
                     timeline: column
-                    heading: normal
+                    heading:
+                      font-size: normal
                     date: year
                     logo: false
                   organization:
@@ -581,9 +583,36 @@ vitae:
                     description: false
                     skills: false
                     achievements: false
-          - part: main
+          # Career timeline
+          - part: experience
             template: main
             # enabled: false
+            pagination_policy: break
+            slots:
+            - slot: main
+              sections:
+              - section: experience
+                title: section-experience
+                components:
+                - component: stages
+                  collection: stages
+                  filter_by: type
+                  filter_value: education
+                  unit:
+                    limit: 1
+                    type: false
+                  # style:
+                  #   heading:
+                  #     font-size: normal
+                    # timeline: column
+                    # separate_roles: true
+                    # inline:
+                    #   header: true
+                      # role: true
+                      # content: true
+          - part: main
+            template: main
+            enabled: false
             pagination_policy: first
             slots:
             - slot: header
@@ -636,7 +665,8 @@ vitae:
                     filter_by: type
                     filter_value: education
                     style:
-                      heading: normal
+                      heading:
+                        font-size: normal
                       separate_roles: true
                       layout: narrow
                     role:
@@ -739,7 +769,8 @@ vitae:
                       header: true
                       role: true
                     timeline: column
-                    heading: normal
+                    heading:
+                      font-size: normal
                     date: year
                     logo: false
                   organization:
@@ -804,7 +835,8 @@ vitae:
                     filter_by: type
                     filter_value: education
                     style:
-                      heading: normal
+                      heading:
+                        font-size: normal
                       separate_roles: true
                       layout: narrow
                     role:
@@ -874,7 +906,8 @@ vitae:
                     filter_by: type
                     filter_value: education
                     style:
-                      heading: normal
+                      heading:
+                        font-size: normal
                       separate_roles: true
                       layout: narrow
                     role:

@@ -13,28 +13,39 @@
 {{- $styleClass := slice }}
 
 {{- with .MergedStyle }}
-  {{- with $parentStyle = .Style }}
-    {{- $style = merge $style . }}
+  {{- with .Style }}
+    {{- $style = . }}
+    {{- $parentStyle = . }}
   {{- end }}
-  {{- with $parentValidStyles = .ValidStyles }}
-    {{- $validStyles = merge $validStyles . }}
+  {{- with .ValidStyles }}
+    {{- $validStyles = . }}
+    {{- $parentValidStyles = . }}
   {{- end }}
 {{- end }}
+
 {{- with .Style }}
   {{- $style = merge $style . }}
 {{- end }}
 {{- with .ValidStyles }}
   {{- $validStyles = . }}
 {{- end }}
+
+{{- with .ParentStyle }}
+  {{- $parentStyle = . }}
+{{- end }}
+{{- with .ParentValidStyles }}
+  {{- $parentValidStyles = . }}
+{{- end }}
+
 {{- $stylePath := default slice .StylePath }}
 {{- $inducedPath := default slice .InducedPath }}
 
 {{- $debug := false }}
-{{/* {{- if not (not (findRE `^/([^/]+-demo/)?devel/$` page.RelPermalink)) }}
+{{/* {{- if not (not (findRE `^/([^/]+-demo/)?$` page.RelPermalink)) }}
   {{- $debugCallingTemplates := slice "executive" "_components/index" "_components/skills" }}
-  {{- $debugCallingTemplates = slice "_components/header" }}
+  {{- $debugCallingTemplates = slice "testcase" }}
   {{- range $debugCallingTemplates }}
-    {{- $debug = or $debug (and (strings.HasSuffix $callingTemplate . ) ) -}}
+    {{- $debug = or $debug (and (strings.Contains (index $templateChain 0) . ) ) -}}
   {{- end }}
 {{- end }} */}}
 {{- $debugPrefix := delimit $templateChain "->" }}
@@ -42,17 +53,19 @@
     (cond (gt (len $stylePath) 0) (printf "stylePath=%v" $stylePath) "")
     (cond (and (gt (len $stylePath) 0) (gt (len $inducedPath) 0)) " | " "")
     (cond (gt (len $inducedPath) 0) (printf "inducedPath=%v" $inducedPath) "") }}
-  {{- $debugPrefix = printf "%v %v]: " $debugPrefix . }}
+  {{- $debugPrefix = printf "%v %v: " $debugPrefix . }}
 {{- else }}
-  {{- $debugPrefix = printf "%v]: " $debugPrefix }}
+  {{- $debugPrefix = printf "%v: " $debugPrefix }}
 {{- end }}
-{{- $errorPrefix := printf "%s[%s" page $debugPrefix }}
+{{- $errorPrefix := printf "%s%s" page $debugPrefix }}
 {{- $warnPrefix := $errorPrefix }}
 
 {{- if $debug }}
-  {{- warnf "%vstyle-merged called with style=%v\nvalidStyles=%v" $debugPrefix
+  {{- warnf "%vstyle-merged called with style=%v\nvalidStyles=%v\nparentStyle=%v\nparentValidStyles=%v" $debugPrefix
       (jsonify (dict "indent" "  ") $style)
-      (jsonify (dict "indent" "  ") $validStyles) }}
+      (jsonify (dict "indent" "  ") $validStyles)
+      (jsonify (dict "indent" "  ") $parentStyle)
+      (jsonify (dict "indent" "  ") $parentValidStyles) }}
 {{- end }}
 
 {{/* validationType:
@@ -93,7 +106,14 @@
 
     {{- $paramToResultingValueList := slice }}
 
-    {{- $validValuesForKey := index $resultValidStyles $key }}
+    {{/* {{- $validValuesForKey := index $resultValidStyles $key }} */}}
+    {{- $keyPath := append $key $stylePath }}
+    {{- $validValuesForKey := index $resultValidStyles $keyPath }}
+    {{/* {{- warnf "%vresultValidStyles=%v\nindex resultValidStyles key=%v %v\nindex resultValidStyles keyPath=%v %v"
+        $debugPrefix (jsonify (dict "indent" "  ") $resultValidStyles)
+        $key  (jsonify (dict "indent" "  ") (index $resultValidStyles $key) )
+        $keyPath  (jsonify (dict "indent" "  ") (index $resultValidStyles $keyPath) ) }} */}}
+
     {{- if ne (printf "%T" $validValuesForKey) "<nil>" }}
 
       {{/* If the value is a map, it applies to params nested deeper
@@ -103,17 +123,19 @@
 
         {{- $subParams := (dict
           "TemplateChain" $templateChain
+          "ParentStyle" $parentStyle
+          "ParentValidStyles" $parentValidStyles
           "Style" $value
-          "ValidStyles" $validValuesForKey
-          "StylePath" (append $key $stylePath)
+          "ValidStyles" $resultValidStyles
+          "StylePath" $keyPath
           "InducedPath" $inducedPath
           "Debug" $debug
         ) }}
 
         {{- if $debug }}
-          {{- warnf "%vkey=%v: value is map=%v\nRecursive call with style=%v"
+          {{- warnf "%vkey=%v: value is map=%v\nRecursive call with subParams=%v"
               $debugPrefix $key (jsonify (dict "indent" "  ") $value)
-              (jsonify (dict "indent" "  ") $subParams.Style) }}
+              (jsonify (dict "indent" "  ") $subParams) }}
         {{- end }}
 
         {{- with $mergedStyleSub := partial $template $subParams }}
@@ -124,16 +146,16 @@
           {{- end }}
           {{- $mergeParams := (dict
             "TemplateChain" $templateChain
-            "Style" (index $resultStyle $key)
-            "ValidStyles" $validValuesForKey
+            "Style" $resultStyle
+            "ValidStyles" $resultValidStyles
             "AddStyle" $mergedStyleSub.Style
-            "StylePath" (append $key $stylePath)
+            "StylePath" slice
             "Debug" $debug
           ) }}
           {{- $subResultStyle := partial "merge_deep" $mergeParams }}
-          {{- $resultStyle = merge $resultStyle (dict $key $subResultStyle) }}
+          {{- $resultStyle = merge $resultStyle $subResultStyle }}
           {{- if $debug }}
-            {{- warnf "%vkey=%v: merge_deep call with mergeParams=%v\nreturned subResultStyle=%v\nresultStyle=%v"
+            {{- warnf "%vkey=%v: merge styles after recursive call: merge_deep call with mergeParams=%v\nreturned subResultStyle=%v\nresultStyle=%v"
                 $debugPrefix $key (jsonify (dict "indent" "  ") ($mergeParams))
                 (jsonify (dict "indent" "  ") $subResultStyle)
                 (jsonify (dict "indent" "  ") $resultStyle) }}
@@ -156,7 +178,7 @@
                 "Debug" $debug
               ) }}
               {{- $paramToResultingValueListSub := partial "resulting_value_list" $resultingValueListParams }}
-              {{- if $debug }}
+              {{- if and false $debug }}
                 {{- warnf "%vkey=%v: call to resulting_value_list returned paramToResultingValueListSub=%v"
                     $debugPrefix $key (jsonify (dict "indent" "  ") $paramToResultingValueListSub) }}
               {{- end }}
@@ -185,7 +207,7 @@
           {{- if ne (printf "%T" $paramToResultingValueListSub) "<nil>" }}
             {{- if gt (len $paramToResultingValueListSub) 0 }}
               {{- $paramToResultingValueList = append $paramToResultingValueListSub $paramToResultingValueList }}
-              {{- if $debug }}
+              {{- if and false $debug }}
                 {{- warnf "%vkey=%v: call to resulting_value_list returned paramToResultingValueListSub=%v"
                     $debugPrefix $key (jsonify (dict "indent" "  ") $paramToResultingValueListSub) }}
               {{- end }}
@@ -197,7 +219,7 @@
 
       {{- range $paramToResultingValue := $paramToResultingValueList }}
 
-        {{- if $debug }}
+        {{- if and false $debug }}
           {{- warnf "%vkey=%v: value=%v [type=%T] returnSlice=%v: process paramToResultingValue=%v"
               $debugPrefix $key $value $value $returnSlice
               (jsonify (dict "indent" "  ") $paramToResultingValue) }}
@@ -221,45 +243,53 @@
                 We call $template with Style = resultingValue
                 But we still use ValidStyles = validStyles because the
                 resultingValue applies to the top-level validStyles */}}
-            {{- $validValuesForKey := index $resultValidStyles $key }}
+            {{- $keyPath := append $key $stylePath }}
+            {{- $validValuesForKey := index $resultValidStyles $keyPath }}
+
             {{- if ne (printf "%T" $validValuesForKey) "<nil>" }}
               {{- $subParams := (dict
                 "TemplateChain" $templateChain
+                "ParentStyle" $parentStyle
+                "ParentValidStyles" $parentValidStyles
                 "Style" $resultingValue
                 "ValidStyles" $resultValidStyles
-                "StylePath" $stylePath
+                "StylePath" slice
                 "InducedPath" (append $key $inducedPath)
                 "Debug" $debug
               ) }}
               {{- if $debug }}
-                {{- warnf "%vkey=%v: resultingValue is MAP=%v\nInduced call with subParams=%v"
-                    $debugPrefix $key (jsonify (dict "indent" "  ") $resultingValue)
+                {{- warnf "%vkey=%v: value=%v [type=%T] -> resultingValue MAP=%v\nInduced call with subParams=%v"
+                    $debugPrefix $key $value $value (jsonify (dict "indent" "  ") $resultingValue)
                     (jsonify (dict "indent" "  ") $subParams) }}
               {{- end }}
 
               {{- with $mergedStyleSub := partial $template $subParams }}
 
                 {{- if ne (printf "%T" $mergedStyleSub) "<nil>" }}
-                  {{- $addStyle = $mergedStyleSub.Style }}
+                  {{- $addStyle = index $mergedStyleSub.Style $stylePath }}
                   {{- if $debug }}
                     {{- warnf "%vkey=%v: addStyle=%v\nfrom result of induced call: mergedStyleSub=%v"
                         $debugPrefix $key (jsonify (dict "indent" "  ") $addStyle)
-                        (jsonify (dict "indent" "  ") $paramValue)
                         (jsonify (dict "indent" "  ") $mergedStyleSub) }}
                   {{- end }}
 
                   {{- if $mergeInducingParamValue }}
 
-                    {{- with $parentValidValuesForKey := index $parentValidStyles $key }}
-                      {{- $resultStyle = merge $resultStyle (dict $key (index $parentStyle $key) ) }}
-                      {{- $resultValidStyles = merge $resultValidStyles (dict $key $parentValidValuesForKey) }}
-                      {{- if $debug }}
-                        {{- warnf "%vkey=%v: mergeInducingParamValue with paramValue=%v\nparentValidValuesForKey=%v\nyielded style=%v\nvalidStyles=%v"
-                            $debugPrefix $key (jsonify (dict "indent" "  ") $paramValue)
-                            (jsonify (dict "indent" "  ") $parentValidValuesForKey)
-                            (jsonify (dict "indent" "  ") $resultStyle)
-                            (jsonify (dict "indent" "  ") $resultValidStyles) }}
-                      {{- end }}
+                    {{- $parentValidValuesForKey := index $parentValidStyles $keyPath }}
+                    {{- if $debug }}
+                      {{- warnf "%vkey=%v: value=%v [type=%T] keyPath=%v mergeInducingParamValue with paramValue=%v\nparentValidStyles=%v\nparentValidValuesForKey=%v\nyielded style=%v\nvalidStyles=%v"
+                          $debugPrefix $key $value $value $keyPath (jsonify (dict "indent" "  ") $paramValue)
+                          (jsonify (dict "indent" "  ") $parentValidStyles)
+                          (jsonify (dict "indent" "  ") $parentValidValuesForKey)
+                          (jsonify (dict "indent" "  ") $resultStyle)
+                          (jsonify (dict "indent" "  ") $resultValidStyles) }}
+                    {{- end }}
+
+                    {{- with $parentValidValuesForKey }}
+                      {{/* {{- $resultStyle = merge $resultStyle (dict $key (index $parentStyle $key) ) }} */}}
+                      {{- $resultStyle = merge (dict $keyPath (index $parentStyle $keyPath) ) $resultStyle }}
+                      {{/* {{- $resultValidStyles = merge $resultValidStyles (dict $key $parentValidValuesForKey) }} */}}
+                      {{- $resultValidStyles = merge (dict $keyPath $parentValidValuesForKey) $resultValidStyles }}
                     {{- end }}
                   {{- end }}
 
@@ -275,7 +305,7 @@
 
             {{- else }}
               {{- errorf "%vkey=%v: cannot make induced call with resultingValue=%v as key=%v yielded validValuesForKey=%v"
-                  $errorPrefix $resultingValue $key (jsonify (dict "indent" "  ") $resultingValue)
+                  $errorPrefix $key (jsonify (dict "indent" "  ") $resultingValue)
                   $key $validValuesForKey }}
             {{- end }}
           {{- end }}
@@ -286,8 +316,8 @@
 
             {{- if $returnSlice }}
               {{- if $debug }}
-                {{- warnf "%vkey=%v: turn resultingValue %v into a slice as value is a slice=%v [type=%T]"
-                    $debugPrefix $key $resultingValue $value $value }}
+                {{- warnf "%vkey=%v: value=%v [type=%T] -> resultingValue=%v: turn into a slice as value is a slice"
+                    $debugPrefix $key $value $value $resultingValue }}
               {{- end }}
               {{- $resultingValue = slice $resultingValue }}
             {{- end }}
@@ -360,7 +390,7 @@
   "StyleClass" $styleClass
 ) -}}
 
-{{- if and $styleClass $debug }}
+{{- if $debug }}
   {{- warnf "%vEnd of style-merged: Returning mergedStyle=%v" $debugPrefix
       (jsonify (dict "indent" "  ") $mergedStyle) }}
 {{- end }}
@@ -371,7 +401,7 @@
 
 {{- define "partials/resulting_value_list.html" }}
   {{- $template := "resulting_value_list" }}
-  {{- $templateChain := .TemplateChain }}
+  {{- $templateChain := append $template .TemplateChain }}
   {{- $key := .Key }}
   {{- $value := .Value }}
   {{- $validStyles := .ValidStyles }}
@@ -379,23 +409,31 @@
   {{- $inducedPath := default slice .InducedPath }}
 
   {{- $debug := false }}
-  {{- $debug = or $debug .Debug }}
+  {{/* {{- $debug = or $debug .Debug }} */}}
 
   {{- $debugPrefix := delimit $templateChain "->" }}
   {{- with printf "%v%v%v"
       (cond (gt (len $stylePath) 0) (printf "stylePath=%v" $stylePath) "")
       (cond (and (gt (len $stylePath) 0) (gt (len $inducedPath) 0)) " | " "")
       (cond (gt (len $inducedPath) 0) (printf "inducedPath=%v" $inducedPath) "") }}
-    {{- $debugPrefix = printf "%v %v]: " $debugPrefix . }}
+    {{- $debugPrefix = printf "%v %v: " $debugPrefix . }}
   {{- else }}
-    {{- $debugPrefix = printf "%v]: " $debugPrefix }}
+    {{- $debugPrefix = printf "%v: " $debugPrefix }}
   {{- end }}
-  {{- $errorPrefix := printf "%s[%s" page $debugPrefix }}
+  {{- $errorPrefix := printf "%s%s" page $debugPrefix }}
   {{- $warnPrefix := $errorPrefix }}
 
-  {{- $resultingValueList := slice }}
   {{- $paramToResultingValueList := slice }}
-  {{- $validValuesForKey := index $validStyles $key }}
+  {{/* {{- $validValuesForKey := index $validStyles $key }} */}}
+  {{- $keyPath := $key }}
+  {{- with $stylePath }}
+    {{- $keyPath = append $key $stylePath }}
+  {{- end }}
+  {{- $validValuesForKey := index $validStyles $keyPath }}
+  {{/* {{- warnf "%vvalidStyles=%v\nindex validStyles key=%v %v\nindex validStyles keyPath=%v %v"
+      $debugPrefix (jsonify (dict "indent" "  ") $validStyles)
+      $key  (jsonify (dict "indent" "  ") (index $validStyles $key) )
+      $keyPath  (jsonify (dict "indent" "  ") (index $validStyles $keyPath) ) }} */}}
   {{- if $debug }}
     {{- warnf "%vresulting_value_list called with value=%v\n with validValuesForKey=%v"
         $debugPrefix (jsonify (dict "indent" "  ") $value)
@@ -428,7 +466,6 @@
                 $debugPrefix $key $innerKey (jsonify (dict "indent" "  ") $validValuesForKey) }}
           {{- end }}
         {{- end }}
-        {{- $resultingValueList = append $resultingValue $resultingValueList }}
         {{- $paramToResultingValueList = append (dict "ParamValue" $innerValue "ResultingValue" $resultingValue) $paramToResultingValueList }}
       {{- else }}
         {{- errorf "%vkey=%v: Invalid value=%v [type=%T]: innerKey=%v not found in validValuesForKey=%v"
@@ -438,8 +475,8 @@
     {{- end }}
 
     {{- if $debug }}
-      {{- warnf "%vkey=%v: resultingValueList=%v\nparamToResultingValueList=%v\nFrom MAP value=%v [type=%T]"
-          $debugPrefix $key $resultingValueList $paramToResultingValueList $value $value }}
+      {{- warnf "%vkey=%v: paramToResultingValueList=%v\nFrom MAP value=%v [type=%T]"
+          $debugPrefix $key $paramToResultingValueList $value $value }}
     {{- end }}
 
   {{- else if reflect.IsSlice $value }}
@@ -478,8 +515,8 @@
       {{- end }}
     {{- end }}
     {{- if $debug }}
-      {{- warnf "%vkey=%v: resultingValueList=%v\nparamToResultingValueList=%v\nFrom SLICE value=%v [type=%T]"
-          $debugPrefix $key $resultingValueList $paramToResultingValueList $value $value }}
+      {{- warnf "%vkey=%v: paramToResultingValueList=%v\nFrom SLICE value=%v [type=%T]"
+          $debugPrefix $key $paramToResultingValueList $value $value }}
     {{- end }}
 
   {{- else }}
@@ -515,17 +552,16 @@
     {{- end }}
 
     {{- if $debug }}
-      {{- warnf "%vkey=%v: resultingValueList=%v\nparamToResultingValueList=%v\nFrom  SCALAR value=%v [type=%T]"
-          $debugPrefix $key $resultingValueList $paramToResultingValueList $value $value }}
+      {{- warnf "%vkey=%v: paramToResultingValueList=%v\nFrom  SCALAR value=%v [type=%T]"
+          $debugPrefix $key $paramToResultingValueList $value $value }}
     {{- end }}
 
   {{- end }}
 
   {{- if $debug }}
-    {{- warnf "%vReturning paramToResultingValueList=%v\nOriginally would have returned resultingValueList=%v"
+    {{- warnf "%vReturning paramToResultingValueList=%v"
       $debugPrefix
-      (jsonify (dict "indent" "  ") $paramToResultingValueList)
-      (jsonify (dict "indent" "  ") $resultingValueList) }}
+      (jsonify (dict "indent" "  ") $paramToResultingValueList) }}
   {{- end }}
 
   {{- return $paramToResultingValueList }}
@@ -534,7 +570,7 @@
 
 {{- define "partials/resulting_value.html" }}
   {{- $template := "resulting_value" }}
-  {{ $templateChain := .TemplateChain }}
+  {{- $templateChain := append $template .TemplateChain }}
   {{- $key := .Key }}
   {{- $value := .Value }}
   {{- $validValuesForKey := .ValidValuesForKey }}
@@ -542,18 +578,18 @@
   {{- $inducedPath := default slice .InducedPath }}
 
   {{- $debug := false }}
-  {{- $debug = or $debug .Debug }}
+  {{/* {{- $debug = or $debug .Debug }} */}}
 
   {{- $debugPrefix := delimit $templateChain "->" }}
   {{- with printf "%v%v%v"
       (cond (gt (len $stylePath) 0) (printf "stylePath=%v" $stylePath) "")
       (cond (and (gt (len $stylePath) 0) (gt (len $inducedPath) 0)) " | " "")
       (cond (gt (len $inducedPath) 0) (printf "inducedPath=%v" $inducedPath) "") }}
-    {{- $debugPrefix = printf "%v %v]: " $debugPrefix . }}
+    {{- $debugPrefix = printf "%v %v: " $debugPrefix . }}
   {{- else }}
-    {{- $debugPrefix = printf "%v]: " $debugPrefix }}
+    {{- $debugPrefix = printf "%v: " $debugPrefix }}
   {{- end }}
-  {{- $errorPrefix := printf "%s[%s" page $debugPrefix }}
+  {{- $errorPrefix := printf "%s%s" page $debugPrefix }}
   {{- $warnPrefix := $errorPrefix }}
 
   {{- if $debug }}
@@ -603,7 +639,7 @@
             {{- if eq $innerKey $value }}
               {{- if $debug }}
                 {{- warnf "%vAppend innerValue=%v with innerKey=%v == value=%v to $resultingValue=%v"
-                    $debugPrefix $value $innerValue $innerKey $resultingValue }}
+                    $debugPrefix $innerValue $innerKey $value $resultingValue }}
               {{- end }}
               {{- $valueAdded = true }}
               {{- $resultingValue = append $innerValue $resultingValue }}
@@ -673,7 +709,7 @@
 
 {{- define "partials/merge_deep.html" }}
   {{- $template := "merge_deep" }}
-  {{ $templateChain := .TemplateChain }}
+    {{- $templateChain := append $template .TemplateChain }}
   {{- $style := .Style }}
   {{- $validStyles := .ValidStyles }}
   {{- $addStyle := .AddStyle }}
@@ -688,11 +724,11 @@
       (cond (gt (len $stylePath) 0) (printf "stylePath=%v" $stylePath) "")
       (cond (and (gt (len $stylePath) 0) (gt (len $inducedPath) 0)) " | " "")
       (cond (gt (len $inducedPath) 0) (printf "inducedPath=%v" $inducedPath) "") }}
-    {{- $debugPrefix = printf "%v %v]: " $debugPrefix . }}
+    {{- $debugPrefix = printf "%v %v: " $debugPrefix . }}
   {{- else }}
-    {{- $debugPrefix = printf "%v]: " $debugPrefix }}
+    {{- $debugPrefix = printf "%v: " $debugPrefix }}
   {{- end }}
-  {{- $errorPrefix := printf "%s[%s" page $debugPrefix }}
+  {{- $errorPrefix := printf "%s%s" page $debugPrefix }}
   {{- $warnPrefix := $errorPrefix }}
 
   {{- if $debug }}
@@ -701,45 +737,42 @@
         (jsonify (dict "indent" "  ") $style) (jsonify (dict "indent" "  ") $validStyles) }}
   {{- end }}
 
-  {{- $resultStyle := $style }}
+  {{- $resultStyle := dict }}
 
   {{- range $key, $value := $addStyle }}
+    {{- $keyPath := append $key $stylePath }}
     {{- if reflect.IsMap $value }}
-      {{- $subStyle := default dict (index $style $key) }}
-      {{- $subValidStyles := index $validStyles $key }}
       {{- $subParams := (dict
         "TemplateChain" $templateChain
-        "Style" $subStyle
-        "ValidStyles" $subValidStyles
+        "Style" $style
+        "ValidStyles" $validStyles
         "AddStyle"  $value
-        "StylePath" $stylePath
+        "StylePath" $keyPath
         "InducedPath" $inducedPath
         "Debug" $debug
       ) }}
+
       {{- if $debug }}
-        {{- warnf "%vkey=%v: value is a map: recursive call with subParams=%v"
+        {{- warnf "%vkey=%v: value in addStyle is a map: recursive call with subParams=%v"
             $debugPrefix $key
             (jsonify (dict "indent" "  ") ($subParams)) }}
       {{- end }}
 
       {{- with $mergedStyleSub := partial $template $subParams }}
-        {{- $resultStyle = merge $resultStyle (dict $key $mergedStyleSub) }}
+        {{- $resultStyle = merge $resultStyle (index $mergedStyleSub $stylePath) }}
         {{- if $debug }}
-          {{- warnf "%vkey=%v: recursive call with subParams=%v\nmerged to resultStyle=%v"
+          {{- warnf "%vkey=%v: recursive call due to value being a map with subParams=%v\nreturned mergedStyleSub=%v\nmerged to resultStyle=%v"
               $debugPrefix $key
               (jsonify (dict "indent" "  ") ($subParams))
+              (jsonify (dict "indent" "  ") ($mergedStyleSub))
               (jsonify (dict "indent" "  ") $resultStyle) }}
         {{- end }}
       {{- end }}
 
     {{- else }}
 
-      {{/* If the value in the base map, i.e., $style, for this key is a slice,
-           we add the value from the update map, i.e., $addStyle, to the slice.
-           Otherwise, we overwrite the value
-      */}}
+      {{- $validValuesForKey := index $validStyles $keyPath }}
 
-      {{- $validValuesForKey := index $validStyles $key }}
       {{- if ne (printf "%T" $validValuesForKey) "<nil>" }}
         {{- $returnSlice := reflect.IsSlice $validValuesForKey }}
         {{- $baseValue := index $style $key }}
@@ -750,51 +783,47 @@
                 $errorPrefix $key $validValuesForKey $baseValue
                 (jsonify (dict "indent" "  ") $style) }}
 
-          {{- else if reflect.IsSlice $baseValue }}
-
-            {{/* Given that the base value is a slice, we assume that
-                  a SCLICE is expected to be returned */}}
-
-            {{- if not $returnSlice }}
-              {{- errorf "%vkey=%v: validValuesForKey=%v is not a slice, hence baseValue=%v must not be a slice either in style=%v"
-                  $errorPrefix $key $validValuesForKey $baseValue
-                  (jsonify (dict "indent" "  ") $style) }}
-            {{- end  }}
-
-            {{/* Append value to baseValue */}}
-            {{- $valueList := $value }}
-            {{- if not (reflect.IsSlice $valueList) }}
-              {{- $valueList = slice $value }}
-            {{- end }}
-            {{- if and false $debug }}
-              {{- warnf "%vkey=%v: union valueList=%v[%T] to baseValue=%v[%T] in resultStyle=%v"
-                  $debugPrefix $key $valueList $valueList $baseValue $baseValue
-                  (jsonify (dict "indent" "  ") $resultStyle) }}
-            {{- end }}
-            {{- $resultStyle = merge $resultStyle (dict $key (union $valueList $baseValue)) }}
-            {{- if $debug }}
-              {{- warnf "%vkey=%v: added valueList=%v to baseValue=%v in resultStyle=%v"
-                  $debugPrefix $key $valueList $baseValue
-                  (jsonify (dict "indent" "  ") $resultStyle) }}
-            {{- end }}
-
           {{- else }}
 
-            {{/* Given that the base value is a scalar, we assume that
-                  a SCALAR is expected to be returned */}}
-
-            {{/* validValuesForKey requires a scalar */}}
             {{- if reflect.IsSlice $value }}
-              {{- $value = index $value 0 }}
-            {{- end }}
 
-            {{/* Overwrite baseValue with value */}}
-            {{- $resultStyle = merge $resultStyle (dict $key $value) }}
+              {{- if not $returnSlice }}
+                {{- errorf "%vkey=%v: validValuesForKey=%v is not a slice, hence value=%v must not be a slice either in addStyle=%v"
+                    $errorPrefix $key $validValuesForKey $value
+                    (jsonify (dict "indent" "  ") $addStyle) }}
+              {{- end  }}
 
-            {{- if $debug }}
-              {{- warnf "%vkey=%v: validValuesForKey=%v: baseValue=%v overwritten by value=%v in resultStyle=%v"
-                  $debugPrefix $key $validValuesForKey $baseValue $value
-                  (jsonify (dict "indent" "  ") $resultStyle) }}
+              {{/* Append value to baseValue */}}
+              {{- $baseValueList := $baseValue }}
+              {{- if not (reflect.IsSlice $baseValueList) }}
+                {{- $baseValueList = slice $baseValue }}
+              {{- end }}
+              {{- if $debug }}
+                {{- warnf "%vkey=%v: union value=%v[%T] to baseValueList=%v[%T] in resultStyle=%v"
+                    $debugPrefix $key $value $value $baseValueList $baseValueList
+                    (jsonify (dict "indent" "  ") $resultStyle) }}
+              {{- end }}
+              {{- $resultStyle = merge $resultStyle (dict $key (union $value $baseValueList)) }}
+              {{- if $debug }}
+                {{- warnf "%vkey=%v: added value=%v to baseValueList=%v in resultStyle=%v"
+                    $debugPrefix $key $value $baseValueList
+                    (jsonify (dict "indent" "  ") $resultStyle) }}
+              {{- end }}
+
+            {{- else }}
+
+              {{/* Given that the base value is a scalar, we assume that
+                    a SCALAR is expected to be returned */}}
+
+              {{/* Overwrite baseValue with value */}}
+              {{- $resultStyle = merge $resultStyle (dict $key $value) }}
+
+              {{- if $debug }}
+                {{- warnf "%vkey=%v: validValuesForKey=%v: baseValue=%v overwritten by value=%v in resultStyle=%v"
+                    $debugPrefix $key $validValuesForKey $baseValue $value
+                    (jsonify (dict "indent" "  ") $resultStyle) }}
+              {{- end }}
+
             {{- end }}
 
           {{- end }}
@@ -841,19 +870,32 @@
     {{- end }}
   {{- end }}
 
-  {{- if $debug }}
-    {{- warnf "%vReturning resultStyle=%v"
-        $debugPrefix
-        (jsonify (dict "indent" "  ") $resultStyle) }}
+  {{- $mergedResultStyle := false }}
+  {{- with $stylePath }}
+    {{- $mergedResultStyle = merge $style (dict $stylePath $resultStyle) }}
+  {{- else }}
+    {{- $mergedResultStyle = merge $style $resultStyle }}
   {{- end }}
-  {{- return $resultStyle }}
+
+  {{- if $debug }}
+    {{- warnf "%vMerging resultStyle=%v\nto style=%v\nat stylePath=%v yielded mergedResultStyle=%v"
+        $debugPrefix
+        (jsonify (dict "indent" "  ") $resultStyle)
+        (jsonify (dict "indent" "  ") $style) $stylePath
+        (jsonify (dict "indent" "  ") $mergedResultStyle) }}
+
+      {{- warnf "%vReturning mergedResultStyle=%v"
+        $debugPrefix
+        (jsonify (dict "indent" "  ") $mergedResultStyle) }}
+  {{- end }}
+  {{- return $mergedResultStyle }}
 {{- end }}
 
 {{- /* ***************************************************************** */ -}}
 
 {{- define "partials/style_class" }}
   {{- $template := "style_class" }}
-  {{ $templateChain := .TemplateChain }}
+    {{- $templateChain := append $template .TemplateChain }}
   {{- $style := .Style }}
   {{- $validStyles := .ValidStyles }}
   {{- $stylePath := default slice .StylePath }}
@@ -863,7 +905,7 @@
   {{- $validationType := .ValidationType }}
 
   {{- $debug := false }}
-  {{- $debug = or $debug .Debug }}
+  {{/* {{- $debug = or $debug .Debug }} */}}
 
   {{- $debugPrefix := delimit $templateChain "->" }}
   {{- with printf "%v%v%v"

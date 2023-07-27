@@ -11,15 +11,6 @@
 
 {{- $style := default dict .Style }}
 {{- $validStyles := (dict
-  "layout" (dict
-    "shallow" "shallow"
-    "narrow" "narrow"
-    "inline" (dict
-      "inline" (dict
-        "header" true
-      )
-    )
-  )
   "ats" (dict
     "true" (dict
       "inline" (dict
@@ -28,16 +19,21 @@
       )
     )
   )
+  "layout" (slice
+    "shallow"
+    "narrow"
+    (dict
+      "inline" (dict
+        "inline" (dict
+          "header" true
+        )
+      )
+    )
+  )
   "inline" (dict
-    "header" (dict
-      "ANY_BOOL" true
-    )
-    "content" (dict
-      "ANY_BOOL" true
-    )
-    "role" (dict
-      "ANY_BOOL" true
-    )
+    "header" "ANY_BOOL"
+    "content" "ANY_BOOL"
+    "role" "ANY_BOOL"
   )
   "date" (dict
     "year" "year"
@@ -50,10 +46,38 @@
     "column" "column"
     "dot-dash" "dot-dash"
   )
-  "heading" (dict
+  "font-size" (dict
     "normal" "normal"
-    "larger-2" "larger-2"
+    "larger-1" "larger-1"
     "smaller-1" "smaller-1"
+  )
+  "heading" (dict
+    "font-size" (dict
+      "normal" (dict
+        "heading" (dict
+          "organization" (dict
+            "font-size" "normal"
+          )
+          "role" (dict
+            "font-size" "normal"
+          )
+        )
+      )
+    )
+    "organization" (dict
+      "font-size" (dict
+        "normal" "normal"
+        "larger-2" "larger-2"
+        "smaller-1" "smaller-1"
+      )
+    )
+    "role" (dict
+      "font-size" (dict
+        "normal" "normal"
+        "larger-2" "larger-2"
+        "smaller-1" "smaller-1"
+      )
+    )
   )
   "logo" (dict
     "false" false
@@ -61,100 +85,50 @@
     "left" "left"
   )
   "label" (dict
-    "unit" (dict
-      "ANY_BOOL" true
-    )
-    "function" (dict
-      "ANY_BOOL" true
-    )
+    "unit" "ANY_BOOL"
+    "function" "ANY_BOOL"
   )
-  "separate_roles" (dict
-    "ANY_BOOL" true
-  )
+  "separate_roles" "ANY_BOOL"
 ) -}}
 
-{{- $mergedStyle := partial "vitae/_functions/style-class" (dict
-  "Template" $template
-  "MergedStyle" .MergedStyle
-  "ValidStyles" $validStyles
-  ) -}}
-{{- if and false $debug }}
-  {{- warnf "%s[%s]: After style-class:\nmergedStyle=%v" $page $template
-      (jsonify (dict "indent" "  ") $mergedStyle) -}}
-{{- end }}
-
-{{- $mergedStyleNew := false }}
-{{- with .MergedStyleNew }}
-  {{- $validStylesNew := (dict
-    "ats" (dict
-      "true" (dict
-        "inline" (dict
-          "header" true
-          "content" true
-        )
-      )
-    )
-    "layout" (slice
-      "shallow"
-      "narrow"
-      (dict
-        "inline" (dict
-          "inline" (dict
-            "header" true
+{{- if $debug }}
+  {{- $validStyles = (dict
+    "heading" (dict
+      "font-size" (dict
+        "normal" (dict
+          "heading" (dict
+            "organization" (dict
+              "font-size" "normal"
+            )
+            "role" (dict
+              "font-size" "normal"
+            )
           )
         )
       )
+      "organization" (dict
+        "font-size" (dict
+          "normal" "normal"
+          "larger-2" "larger-2"
+          "smaller-1" "smaller-1"
+        )
+      )
+      "role" (dict
+        "font-size" (dict
+          "normal" "normal"
+          "larger-2" "larger-2"
+          "smaller-1" "smaller-1"
+        )
+      )
     )
-    "inline" (dict
-      "header" "ANY_BOOL"
-      "content" "ANY_BOOL"
-      "role" "ANY_BOOL"
-    )
-    "date" (dict
-      "year" "year"
-      "month" "month"
-      "true" "default"
-    )
-    "timeline" (dict
-      "false" false
-      "true" "column"
-      "column" "column"
-      "dot-dash" "dot-dash"
-    )
-    "heading" (dict
-      "normal" "normal"
-      "larger-2" "larger-2"
-      "smaller-1" "smaller-1"
-    )
-    "logo" (dict
-      "false" false
-      "true" "left"
-      "left" "left"
-    )
-    "label" (dict
-      "unit" "ANY_BOOL"
-      "function" "ANY_BOOL"
-    )
-    "separate_roles" "ANY_BOOL"
-  ) -}}
-
-  {{- $mergedStyleNew = partial "vitae/_functions/style-merged" (dict
-    "Template" $template
-    "MergedStyle" .
-    "ValidStyles" $validStylesNew
-  ) -}}
-  {{- if $debug }}
-    {{- warnf "%s[%s]: .MergedStyleNew=%v\n.ValidStylesNew=%v\n\nAfter style-merged:\nmergedStyle=%v\nmergedStyleNew=%v" $page $template
-        (jsonify (dict "indent" "  ") .MergedStyleNew)
-        (jsonify (dict "indent" "  ") $validStylesNew)
-        (jsonify (dict "indent" "  ") $mergedStyle)
-        (jsonify (dict "indent" "  ") $mergedStyleNew) -}}
-    {{/* {{- warnf "%s[%s]: After style-merged:\nmergedStyle=%v\nmergedStyleNew=%v" $page $template
-        (jsonify (dict "indent" "  ") (merge $mergedStyle (dict "ValidStyles" nil)))
-        (jsonify (dict "indent" "  ") (merge $mergedStyleNew (dict "ValidStyles" nil))) -}} */}}
-  {{- end }}
-  {{- $mergedStyle = $mergedStyleNew }}
+  )
+-}}
 {{- end }}
+{{- $mergedStyle := partial "vitae/_functions/style-merged" (dict
+  "Template" $template
+  "MergedStyle" .MergedStyle
+  "ValidStyles" $validStyles
+) -}}
 
 {{- $style := $mergedStyle.Style }}
 {{- $styleClassList := $mergedStyle.StyleClass }}
@@ -245,7 +219,7 @@
 "PeriodDurationParams" $periodDurationParams
 ) -}}
 
-{{- $showOrganizationPeriod := default true $component.organization.period }}
+{{- $showOrganizationPeriod := default false $component.organization.period }}
 {{- $showOrganizationDuration := default false $component.organization.duration }}
 {{- if $separateRoles }}
   {{- $showOrganizationPeriod = false }}

@@ -13,73 +13,27 @@
 {{/* {{- $debug = or $debug (not (not (findRE `^/([^/]+-demo/)?preview` $page.RelPermalink) ) ) -}} */}}
 
 {{- $validStyles := (dict
+  "_template" $template
   "ats" (dict
     "true" (dict
-      "layout" (slice "inline")
+      "layout" "inline"
     )
   )
-  "layout" (dict
-    "shallow" "shallow"
-    "narrow" "narrow"
-    "inline" "inline"
+  "layout" (slice
+    "shallow"
+    "narrow"
+    "inline"
   )
-  "icon" (dict
-    "false" false
-    "true" true
-  )
-  "text" (dict
-    "false" false
-    "true" true
-  )
-  "qrcode" (dict
-    "false" false
-    "true" true
-  )
+  "icon" "ANY_BOOL"
+  "text" "ANY_BOOL"
+  "qrcode" "ANY_BOOL"
 ) -}}
 
-{{- $mergedStyle := partial "vitae/_functions/style-class" (dict
+{{- $mergedStyle := partial "vitae/_functions/style-merged" (dict
   "Template" $template
   "MergedStyle" .MergedStyle
   "ValidStyles" $validStyles
-  ) -}}
-{{- if $debug }}
-  {{- warnf "%s[%s]: After style-class:\nmergedStyle=%v" $page $template
-      (jsonify (dict "indent" "  ") $mergedStyle) }}
-{{- end }}
-
-{{- $mergedStyleNew := false }}
-{{- with .MergedStyleNew }}
-  {{- $validStylesNew := (dict
-    "_template" $template
-    "ats" (dict
-      "true" (dict
-        "layout" "inline"
-      )
-    )
-    "layout" (slice
-      "shallow"
-      "narrow"
-      "inline"
-    )
-    "icon" "ANY_BOOL"
-    "text" "ANY_BOOL"
-    "qrcode" "ANY_BOOL"
-  ) -}}
-
-  {{- $mergedStyleNew = partial "vitae/_functions/style-merged" (dict
-    "Template" $template
-    "MergedStyle" .
-    "ValidStyles" $validStylesNew
-  ) -}}
-  {{- if $debug }}
-    {{- warnf "%s[%s]: .MergedStyleNew=%v\n.ValidStylesNew=%v\n\nAfter style-merged:\nmergedStyle=%v\nmergedStyleNew=%v" $page $template
-        (jsonify (dict "indent" "  ") . )
-        (jsonify (dict "indent" "  ") $validStylesNew)
-        (jsonify (dict "indent" "  ") $mergedStyle)
-        (jsonify (dict "indent" "  ") $mergedStyleNew) -}}
-  {{- end }}
-  {{- $mergedStyle = $mergedStyleNew }}
-{{- end }}
+) -}}
 
 {{- $style := $mergedStyle.Style }}
 {{- $styleClassList := $mergedStyle.StyleClass }}

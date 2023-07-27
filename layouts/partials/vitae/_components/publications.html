@@ -8,65 +8,39 @@
 {{- $debug := false }}
 {{/* {{- $debug = or $debug (not (not (findRE `^/([^/]+-demo/)?devel` $page.RelPermalink) ) ) -}} */}}
 
+{{- $defaultStyle := (dict "abbreviate" (dict "first_name" true)) }}
 {{- $validStyles := (dict
+  "_template" $template
   "abbreviate" (dict
-  "first_name" "first_name")
+    "first_name" "ANY_BOOL"
+  )
+  "ats" (dict
+    "true" (dict
+      "layout" (slice
+        "inline"
+      )
+    )
+  )
+  "heading" (dict
+    "normal" "normal"
+  )
+  "font-size" (dict
+    "normal" "normal"
+    "smaller-1" "smaller-1"
+  )
+  "layout" (slice
+    "shallow"
+    "narrow"
+    "inline"
+  )
 ) -}}
 
-{{- $mergedStyle := partial "vitae/_functions/style-class" (dict
+{{- $mergedStyle := partial "vitae/_functions/style-merged" (dict
   "Template" $template
   "MergedStyle" .MergedStyle
   "ValidStyles" $validStyles
-  ) -}}
-{{- if $debug }}
-  {{- warnf "%s[%s]: After style-class:\nmergedStyle=%v" $page $template
-      (jsonify (dict "indent" "  ") $mergedStyle) }}
-{{- end }}
-
-{{- $mergedStyleNew := false }}
-{{- $defaultStyle := (dict "abbreviate" (dict "first_name" true)) }}
-{{- with .MergedStyleNew }}
-  {{- $validStylesNew := (dict
-    "_template" $template
-    "abbreviate" (dict
-      "first_name" "ANY_BOOL"
-    )
-    "ats" (dict
-      "true" (dict
-        "layout" (slice
-          "inline"
-        )
-      )
-    )
-    "heading" (dict
-      "normal" "normal"
-    )
-    "font-size" (dict
-      "normal" "normal"
-      "smaller-1" "smaller-1"
-    )
-    "layout" (slice
-      "shallow"
-      "narrow"
-      "inline"
-    )
-  ) -}}
-
-  {{- $mergedStyleNew = partial "vitae/_functions/style-merged" (dict
-    "Template" $template
-    "MergedStyle" .
-    "ValidStyles" $validStylesNew
-    "Style" $defaultStyle
-  ) -}}
-  {{- if $debug }}
-    {{- warnf "%s[%s]: .MergedStyleNew=%v\n.ValidStylesNew=%v\n\nAfter style-merged:\nmergedStyle=%v\nmergedStyleNew=%v" $page $template
-        (jsonify (dict "indent" "  ") . )
-        (jsonify (dict "indent" "  ") $validStylesNew)
-        (jsonify (dict "indent" "  ") $mergedStyle)
-        (jsonify (dict "indent" "  ") $mergedStyleNew) -}}
-  {{- end }}
-  {{- $mergedStyle = $mergedStyleNew }}
-{{- end }}
+  "Style" $defaultStyle
+) -}}
 
 {{- $style := $mergedStyle.Style }}
 {{- $styleClassList := $mergedStyle.StyleClass }}

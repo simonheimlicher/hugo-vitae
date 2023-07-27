@@ -10,7 +10,7 @@
 {{- $template := "vitae/_components/index" }}
 
 {{- $debug := false }}
-{{/* {{- $debug = or $debug (not (not (findRE `^/([^/]+-demo/)?devel/$` $page.RelPermalink) ) ) -}} */}}
+{{/* {{- $debug = or $debug (not (not (findRE `^/([^/]+-demo/)?$` $page.RelPermalink) ) ) -}} */}}
 
 {{- if and false $debug }}
   {{- warnf "%s[%s]: .MergedStyle=%v" $page $template
@@ -18,7 +18,6 @@
 {{- end }}
 
 {{- $validStyles := (dict
-  "_template" $template
   "ats" (dict
     "true" (dict
       "layout" (slice
@@ -27,53 +26,25 @@
       )
     )
   )
-  "layout" (dict
-    "inline" "inline"
-    "shallow" "shallow"
-  )
+  "layout" (slice "inline" "shallow")
 ) -}}
-
-{{- $mergedStyle := partial "vitae/_functions/style-class" (dict
+{{- $mergedStyle := partial "vitae/_functions/style-merged" (dict
   "Template" $template
   "MergedStyle" .MergedStyle
   "ValidStyles" $validStyles
-  ) -}}
-{{- if and false $debug }}
-  {{- warnf "%s[%s]: After style-class:\nmergedStyle=%v" $page $template
-      (jsonify (dict "indent" "  ") $mergedStyle) }}
-{{- end }}
-
-{{- $mergedStyleNew := false }}
-{{- with .MergedStyleNew }}
-  {{- $validStylesNew := (dict
-    "ats" (dict
-      "true" (dict
-        "layout" (slice
-          "shallow"
-          "inline"
-        )
-      )
-    )
-    "layout" (slice "inline" "shallow")
-  ) -}}
-
-  {{- $mergedStyleNew = partial "vitae/_functions/style-merged" (dict
-    "Template" $template
-    "MergedStyle" .
-    "ValidStyles" $validStylesNew
-  ) -}}
-  {{- if $debug }}
-    {{- warnf "%s[%s]: After style-merged:\nmergedStyle=%v\nmergedStyleNew=%v" $page $template
-        (jsonify (dict "indent" "  ") (merge $mergedStyle (dict "ValidStyles" "OMITTED")))
-        (jsonify (dict "indent" "  ") (merge $mergedStyleNew (dict "ValidStyles" "OMITTED"))) -}}
-  {{- end }}
-{{- end }}
+) -}}
 
 {{- $testSet := slice }}
-{{/* {{- $testSet = slice 11 }} */}}
+{{/* {{- $testSet = slice "all" }} */}}
+{{/* {{- $testSet = slice 1 2 }} */}}
 {{- if $testSet }}
 
   {{- $testCases := (slice
+    (dict
+      "Style" (dict "inline_separator" "A0Z")
+      "ValidStyles" (dict "inline_separator" "ANY_STRING")
+    )
+
     (dict
       "Style" (dict "layout" "narrow")
       "ValidStyles" (dict "layout" "narrow")
@@ -113,11 +84,6 @@
     )
 
     (dict
-      "Style" (dict "inline_separator" " ||| ")
-      "ValidStyles" (dict "inline_separator" "ANY_STRING")
-    )
-
-    (dict
       "Style" (dict
         "ats" true
       )
@@ -135,18 +101,17 @@
           "shallow"
           "narrow"
         )
-        "inline" (slice
-          "header"
-          "content"
-          "role"
-        )
-        "inline_separator" "ANY_STRING"
       )
     )
 
     (dict
-      "Style" (dict
-        "ats" true
+      "MergedStyle" (dict
+        "Style" (dict
+          "ats" true
+        )
+        "ValidStyles" (dict
+          "ats" "ANY_BOOL"
+        )
       )
       "ValidStyles" (dict
         "ats" (dict
@@ -168,10 +133,78 @@
           )
           "shallow"
           "narrow"
+          )
+          "inline" (slice
+            "header"
+            "content"
+            "role"
+        )
+      )
+    )
+
+    (dict
+      "MergedStyle" (dict
+        "Style" (dict
+          "layout" "compact"
+        )
+        "ValidStyles" (dict
+          "layout" (slice "narrow" "shallow" "compact")
+        )
+      )
+      "ValidStyles" (dict
+        "layout" (slice
+          (dict
+            "inline" (dict
+              "inline" (slice
+                "content"
+                "role"
+              )
+            )
+          )
+          "shallow"
+          "narrow"
             (dict "compact" (dict
               "layout" (slice
                 "shallow"
                 "narrow"
+              )
+            )
+          )
+        )
+        "inline" (slice
+          "header"
+          "content"
+          "role"
+        )
+      )
+    )
+
+    (dict
+      "MergedStyle" (dict
+        "Style" (dict
+          "layout" "squeezed"
+        )
+        "ValidStyles" (dict
+          "layout" "squeezed"
+        )
+      )
+      "ValidStyles" (dict
+        "layout" (slice
+          (dict
+            "inline" (dict
+              "inline" (slice
+                "content"
+                "role"
+              )
+            )
+          )
+          "shallow"
+          "narrow"
+            (dict "squeezed" (dict
+              "layout" (slice
+                "shallow"
+                "narrow"
+                "inline"
               )
             )
           )
@@ -302,6 +335,7 @@
       "Style" (dict
         "ats" true
         "inline_separator" "•"
+        "heading" "larger-2"
         "layout" (slice
           "inline"
           "shallow"
@@ -328,11 +362,123 @@
           "left" "left"
           "true" "left"
         )
-        "role_header_separator" "ANY_STRING"
-        "stage_meta_separator" "ANY_STRING"
-        "timeline" (dict
-          "false" false
-          "true" "column"
+      )
+    )
+
+    (dict
+      "Style" (dict
+        "heading" (dict
+          "font-size" "larger-2"
+        )
+      )
+      "ValidStyles" (dict
+        "heading" (dict
+          "font-size" (dict
+            "normal" "normal"
+            "larger-2" "larger-2"
+            "smaller-1" "smaller-1"
+          )
+        )
+      )
+    )
+
+    (dict
+      "Style" (dict
+        "heading" (dict
+          "organization" (dict
+            "font-size" "larger-2"
+          )
+        )
+      )
+      "ValidStyles" (dict
+        "heading" (dict
+          "organization" (dict
+            "font-size" (dict
+              "normal" "normal"
+              "larger-2" "larger-2"
+              "smaller-1" "smaller-1"
+            )
+          )
+        )
+      )
+    )
+
+    (dict
+      "Style" (dict
+        "heading" (dict
+          "organization" (dict
+            "font-size" "larger-2"
+          )
+          "role" (dict
+            "font-size" "smaller-1"
+          )
+        )
+      )
+      "ValidStyles" (dict
+        "heading" (dict
+          "organization" (dict
+            "font-size" (dict
+              "normal" "normal"
+              "larger-2" "larger-2"
+              "smaller-1" "smaller-1"
+            )
+          )
+          "role" (dict
+            "font-size" (dict
+              "normal" "normal"
+              "larger-2" "larger-2"
+              "smaller-1" "smaller-1"
+            )
+          )
+        )
+      )
+    )
+
+    (dict
+      "MergedStyle" (dict
+        "Style" (dict
+          "heading" (dict
+            "font-size" "normal"
+          )
+        )
+        "ValidStyles" (dict
+          "heading" (dict
+            "font-size" (dict
+              "normal" "normal"
+              "larger-2" "larger-2"
+              "smaller-1" "smaller-1"
+            )
+          )
+        )
+      )
+      "ValidStyles" (dict
+        "heading" (dict
+          "font-size" (dict
+            "normal" (dict
+              "heading" (dict
+                "organization" (dict
+                  "font-size" "normal"
+                )
+                "role" (dict
+                  "font-size" "normal"
+                )
+              )
+            )
+          )
+          "organization" (dict
+            "font-size" (dict
+              "normal" "normal"
+              "larger-2" "larger-2"
+              "smaller-1" "smaller-1"
+            )
+          )
+          "role" (dict
+            "font-size" (dict
+              "normal" "normal"
+              "larger-2" "larger-2"
+              "smaller-1" "smaller-1"
+            )
+          )
         )
       )
     )
@@ -405,7 +551,6 @@
             "header" true
             "role" true
           )
-          "inline_separator" "•"
           "layout" (slice
             "inline"
             "shallow"
@@ -429,7 +574,6 @@
             "larger-2" "larger-2"
             "normal" "normal"
           )
-          "inline_separator" "ANY_STRING"
           "layout" (slice
             "inline"
             "shallow"
@@ -438,12 +582,6 @@
             "false" false
             "left" "left"
             "true" "left"
-          )
-          "role_header_separator" "ANY_STRING"
-          "stage_meta_separator" "ANY_STRING"
-          "timeline" (dict
-            "false" false
-            "true" "column"
           )
         )
       )
@@ -457,11 +595,6 @@
             )
           )
         )
-        "date" (dict
-          "month" "month"
-          "true" "default"
-          "year" "year"
-        )
         "heading" (dict
           "larger-2" "larger-2"
           "normal" "normal"
@@ -471,10 +604,6 @@
           "content" "ANY_BOOL"
           "header" "ANY_BOOL"
           "role" "ANY_BOOL"
-        )
-        "label" (dict
-          "function" "ANY_BOOL"
-          "unit" "ANY_BOOL"
         )
         "layout" (slice
           "shallow"
@@ -493,13 +622,6 @@
           "left" "left"
           "true" "left"
         )
-        "separate_roles" "ANY_BOOL"
-        "timeline" (dict
-          "column" "column"
-          "dot-dash" "dot-dash"
-          "false" false
-          "true" "column"
-        )
       )
     )
 
@@ -514,36 +636,42 @@
 
   {{- $mergedStyleTestCase := dict }}
 
-  {{/* {{- $testSet = seq 0 (sub (len $testCases) 1) }} */}}
   {{- if $debug }}
-    {{- range $testID := $testSet }}
+
+    {{- if eq (index $testSet 0) "all" }}
+      {{- $testSet = seq 0 (sub (len $testCases) 1) }}
+    {{- end }}
+
+    {{- warnf "//BEGIN\n{\n  \"test_cases\": [\n" }}
+    {{- range $testIndex, $testID := $testSet }}
 
       {{- with $testCase := index $testCases . }}
 
         {{- $mergedStyleTestCase = partial "vitae/_functions/style-merged" (dict
-          "Template" $template
+          "Template" (printf "%v %d" "testcase" $testID)
           "MergedStyle" .MergedStyle
           "Style" .Style
           "ValidStyles" .ValidStyles
         ) -}}
-        {{- warnf "%s[%s]: TEST %d: After style-merged: mergedStyleTestCase=%v\n\nCalled with testCase=%v" $page $template
-            $testID
-            (jsonify (dict "indent" "  ") $mergedStyleTestCase)
-            (jsonify (dict "indent" "  ") $testCase) -}}
+        {{- $jsonOpts := (dict "indent" "  " "prefix" "      " "noHTMLEscape" true) }}
+        {{- warnf "// TEST %d:\n    {\n      \"test_id\": %d,\n      \"input\": %v,\n      \"result\": %v\n    }%v"
+             $testID $testID (jsonify $jsonOpts $testCase)
+            (jsonify $jsonOpts $mergedStyleTestCase)
+            (cond (lt $testIndex (sub (len $testSet) 1)) "," "") -}}
 
+      {{- else }}
+        {{- errorf "%s[%s]: TEST %d: invalid testID=%v" $page $template $testID $testID }}
       {{- end }}
 
     {{- end }}
+    {{- warnf "// END\n  ]\n}\n" }}
+
   {{- end }}
 {{- end }}
 
 {{- $topLevelClass := (slice $componentClass) }}
-{{- with $mergedStyleNew.StyleClass }}
+{{- with $mergedStyle.StyleClass }}
   {{- $topLevelClass = append . $topLevelClass }}
-{{- else }}
-  {{- with $mergedStyle.StyleClass }}
-    {{- $topLevelClass = append . $topLevelClass }}
-  {{- end }}
 {{- end }}
 {{- with $childClass }}
   {{- $topLevelClass = append $childClass $topLevelClass }}
@@ -561,50 +689,25 @@
     {{- end }}
   {{- end }}
   {{- if $sectionContainer }}
-    {{- with $mergedStyleNew }}
-      {{- $validSectionStyles := (dict
-        "title" (dict
-          "left" "left"
-          "inline" "left"
-        )
+    {{- $validSectionStyles := (dict
+      "title" (dict
+        "left" "left"
+        "inline" "left"
+      )
+    ) -}}
+
+    {{- $mergedSectionStyle := partial "vitae/_functions/style-merged" (dict
+      "Template" $template
+      "Style" $section.style
+      "ValidStyles" $validSectionStyles
       ) -}}
-
-      {{- $mergedSectionStyleNew := partial "vitae/_functions/style-merged" (dict
-        "Template" $template
-        "Style" $section.style
-        "ValidStyles" $validSectionStyles
-        ) -}}
-      {{- if $debug }}
-        {{- warnf "%s[%s]: section=%s: After style-merged: mergedSectionStyleNew=%v"
-            $page $template $sectionName
-            (jsonify (dict "indent" "  ") $mergedSectionStyleNew) }}
-      {{- end }}
-      {{- with $mergedSectionStyleNew.StyleClass }}
-        {{- $sectionClassList = append . $sectionClassList }}
-      {{- end }}
-
-    {{- else }}
-
-      {{- $validSectionStyles := (dict
-        "title" (dict
-          "left" "left"
-          "inline" "left"
-        )
-      ) -}}
-
-      {{- $mergedSectionStyle := partial "vitae/_functions/style-class" (dict
-        "Template" $template
-        "Style" .style
-        "ValidStyles" $validSectionStyles
-        ) -}}
-      {{- if and false $debug }}
-        {{- warnf "%s[%s]: section=%s: After style-class: mergedSectionStyle=%v"
-            $page $template $sectionName
-            (jsonify (dict "indent" "  ") $mergedSectionStyle) }}
-      {{- end }}
-      {{- with $mergedSectionStyle.StyleClass }}
-        {{- $sectionClassList = append . $sectionClassList }}
-      {{- end }}
+    {{- if $debug }}
+      {{- warnf "%s[%s]: section=%s: After style-merged: mergedSectionStyle=%v"
+          $page $template $sectionName
+          (jsonify (dict "indent" "  ") $mergedSectionStyle) }}
+    {{- end }}
+    {{- with $mergedSectionStyle.StyleClass }}
+      {{- $sectionClassList = append . $sectionClassList }}
     {{- end }}
 
     {{ printf `<%s class="%s section">` $sectionContainer (delimit $sectionClassList ` `) | safeHTML }}
@@ -624,9 +727,9 @@
     {{- $componentContainer := default "" .container }}
 
     {{- if $componentContainer }}
-      {{- with $mergedStyleNew }}
+      {{- with $mergedStyle }}
         {{/* FIXME Should probably call style-merged to merge the styles */}}
-        {{- printf `<%s class="component-container_%s component-container{{ with $mergedStyleNew.StyleClass }} {{ . }}{{ end }}">` $componentContainer $componentName | safeHTML }}
+        {{- printf `<%s class="component-container_%s component-container{{ with $mergedStyle.StyleClass }} {{ . }}{{ end }}">` $componentContainer $componentName | safeHTML }}
       {{- else }}
         {{- printf `<%s class="component-container_%s component-container{{ with $mergedStyle.StyleClass }} {{ . }}{{ end }}">` $componentContainer $componentName | safeHTML }}
       {{- end }}
@@ -644,14 +747,6 @@
       {{- $mergedComponentStyle = merge $mergedComponentStyle (dict "Style" (merge $mergedStyle.Style .)) }}
     {{- end }}
 
-    {{- $mergedComponentStyleNew := false }}
-    {{- with $mergedStyleNew }}
-      {{- $mergedComponentStyleNew = $mergedStyleNew }}
-      {{- with $component.style }}
-        {{- $mergedComponentStyleNew = merge $mergedComponentStyleNew (dict "Style" (merge $mergedStyleNew.Style .)) }}
-      {{- end }}
-    {{- end }}
-
     {{- $componentPartial := printf "vitae/_components/%s" $componentName }}
 
     {{- $componentPartialParams := (dict
@@ -660,19 +755,12 @@
       "Media" $media
       "Component" $component
       "MergedStyle" $mergedComponentStyle
-      "MergedStyleNew" $mergedComponentStyleNew
+      "MergedStyle" $mergedComponentStyle
       "Index" $componentIndex
       "ChildClass" $childClass
       "Container" false
       "Data" $vitaeData
     ) -}}
-    {{- if $mergedStyleNew }}
-      {{- $mergedComponentStyleNew := $mergedStyleNew }}
-      {{- with $component.style }}
-        {{- $mergedComponentStyleNew = merge $mergedComponentStyleNew (dict "Style" (merge $mergedStyleNew.Style .)) }}
-      {{- end }}
-      {{- $componentPartialParams = merge $componentPartialParams (dict "MergedStyleNew" $mergedComponentStyleNew) }}
-    {{- end }}
 
     {{- partial $componentPartial $componentPartialParams -}}
     {{- with $componentContainer }}
@@ -681,51 +769,28 @@
   {{- end }}
   {{- with $section.sections }}
     {{- $panelClass := append $topLevelClass (slice "section-panel" (printf "section-panel_%s" $sectionName) ) }}
-    {{- with $mergedStyleNew }}
-      {{- $validSectionPanelStyles := (dict
-        "column-width_main" "ANY_INT"
-      ) -}}
+    {{- $validSectionPanelStyles := (dict
+      "column-width_main" "ANY_INT"
+    ) -}}
 
-      {{- $mergedSectionPanelStyleNew := partial "vitae/_functions/style-merged" (dict
-        "Template" $template
-        "Style" $section.style
-        "ValidStyles" $validSectionPanelStyles
-        ) -}}
+    {{- $mergedSectionPanelStyle := partial "vitae/_functions/style-merged" (dict
+      "Template" $template
+      "Style" $section.style
+      "ValidStyles" $validSectionPanelStyles
+      ) -}}
+    {{- if $debug }}
+      {{- warnf "%s[%s]: section=%s: After style-merged: mergedSectionPanelStyle=%v"
+          $page $template $sectionName
+          (jsonify (dict "indent" "  ") $mergedSectionPanelStyle) }}
+    {{- end }}
+    {{- with $mergedSectionPanelStyle.StyleClass }}
       {{- if $debug }}
-        {{- warnf "%s[%s]: section=%s: After style-merged: mergedSectionPanelStyleNew=%v"
+        {{- warnf "%s[%s]: section=%s: Append  [type=%T] mergedSectionPanelStyle.StyleClass=%v\nto [type=%T] panelClass=%v"
             $page $template $sectionName
-            (jsonify (dict "indent" "  ") $mergedSectionPanelStyleNew) }}
+            $mergedSectionPanelStyle.StyleClass (jsonify (dict "indent" "  ") $mergedSectionPanelStyle.StyleClass)
+            $panelClass (jsonify (dict "indent" "  ") $panelClass) }}
       {{- end }}
-      {{- with $mergedSectionPanelStyleNew.StyleClass }}
-        {{- if $debug }}
-          {{- warnf "%s[%s]: section=%s: Append  [type=%T] mergedSectionPanelStyleNew.StyleClass=%v\nto [type=%T] panelClass=%v"
-              $page $template $sectionName
-              $mergedSectionPanelStyleNew.StyleClass (jsonify (dict "indent" "  ") $mergedSectionPanelStyleNew.StyleClass)
-              $panelClass (jsonify (dict "indent" "  ") $panelClass) }}
-        {{- end }}
-        {{- $panelClass = append $mergedSectionPanelStyleNew.StyleClass $panelClass }}
-      {{- end }}
-
-
-    {{- else }}
-
-      {{- $validSectionPanelStyles := (dict
-        "column-width_main" (dict "ANY_INT" true)
-      ) -}}
-
-      {{- $mergedSectionPanelStyle := partial "vitae/_functions/style-class" (dict
-        "Template" $template
-        "Style" .style
-        "ValidStyles" $validSectionPanelStyles
-        ) -}}
-      {{- if and false $debug }}
-        {{- warnf "%s[%s]: section=%s: After style-class: mergedSectionPanelStyle=%v"
-            $page $template $sectionName
-            (jsonify (dict "indent" "  ") $mergedSectionPanelStyle) }}
-      {{- end }}
-      {{- with $mergedSectionPanelStyle.StyleClass }}
-        {{- $panelClass = append . $panelClass }}
-      {{- end }}
+      {{- $panelClass = append $mergedSectionPanelStyle.StyleClass $panelClass }}
     {{- end }}
 
     {{- if and true $debug }}
@@ -741,7 +806,7 @@
         "Template" $vitaeTemplate
         "Media" $media
         "MergedStyle" $mergedStyle
-        "MergedStyleNew" $mergedStyleNew
+        "MergedStyle" $mergedStyle
         "ChildClass" $childClass
         "Data" $vitaeData
         "Sections" .

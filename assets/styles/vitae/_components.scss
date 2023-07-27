@@ -577,7 +577,8 @@ html[data-mode="dim"] {
   &_stages {
 
     --font-size-heading-organization: var(--font-size-larger-1);
-    --font-weight-heading-organization: var(--font-weight-strong);
+    // --font-weight-heading-organization: var(--font-weight-strong);
+    --font-weight-heading-organization: var(--font-weight);
     --font-size-heading-role: var(--font-size-larger-1);
     --font-weight-heading-role: var(--font-weight-strong);
     // --font-weight-heading-role: var(--font-weight);
@@ -748,6 +749,11 @@ html[data-mode="dim"] {
           &.organization_header {
             .date_period {
               font-weight: var(--font-weight-heading-organization);
+            }
+          }
+          &.role_header {
+            .date_period {
+              font-weight: var(--font-weight-heading-role);
             }
           }
         }
@@ -1670,34 +1676,57 @@ html[data-mode="dim"] {
     }
 
     /*
-     * Heading style LARGER-2
+     * Style FONT-SIZE
      */
 
-    &.style_heading_larger-2 {
-      --font-size-heading-organization: var(--font-size-larger-2);
-      --font-size-heading-role: var(--font-size-larger-2);
-    }
-
-    /*
-     * Heading style NORMAL
-     */
-
-     &.style_heading_normal {
+     &.style_font-size_normal {
       --font-size-heading-organization: var(--font-size-normal);
-      --font-weight-heading-organization: var(--font-weight);
       --font-size-heading-role: var(--font-size-normal);
-      // --font-weight-heading-role: var(--font-weight);
-      --font-size_stage_header_main: var(--font-size-normal);
       --font-size_date_period: var(--font-size-normal);
-      // --font-weight-heading-organization: var(--font-weight);
-      // --font-weight-heading-role: var(--font-weight);
-      // --padding_organization_between: var(--inner_padding_4-3);
-      // --padding_role_first: var(--inner_padding_4-0);
-      // --padding_role_between: var(--inner_padding_4-1);
       &.style_layout_shallow, &.style_layout_compact {
         --padding_role_first: var(--inner_padding_8-1);
         --padding_role_between: var(--inner_padding_8-0);
         --padding_organization_between: var(--inner_padding_8-3);
+      }
+    }
+    &.style_font-size_larger-1 {
+      --font-size-heading-organization: var(--font-size-larger-1);
+      --font-size-heading-role: var(--font-size-larger-1);
+    }
+    &.style_font-size_smaller-1 {
+      --font-size-heading-organization: var(--font-size-smaller-1);
+      --font-size-heading-role: var(--font-size-smaller-1);
+      --font-size_date_period: var(--font-size-smaller-1);
+    }
+
+     /*
+     * Heading style FONT-SIZE
+     */
+
+    &.style_heading_organization_font-size_larger-2 {
+      --font-size-heading-organization: var(--font-size-larger-2);
+    }
+    &.style_heading_organization_font-size_normal {
+      --font-size-heading-organization: var(--font-size-normal);
+     }
+
+    &.style_heading_role_font-size_larger-2 {
+      --font-size-heading-role: var(--font-size-larger-2);
+    }
+    &.style_heading_role_font-size_normal {
+      --font-size-heading-role: var(--font-size-normal);
+     }
+
+    &.style_heading_organization_font-size_normal {
+      &.style_layout_shallow, &.style_layout_compact {
+        --padding_organization_between: var(--inner_padding_8-3);
+      }
+    }
+
+    &.style_heading_role_font-size_normal {
+      &.style_layout_shallow, &.style_layout_compact {
+        --padding_role_first: var(--inner_padding_8-1);
+        --padding_role_between: var(--inner_padding_8-0);
       }
     }
   }

@@ -10,10 +10,10 @@
 {{/* {{- $debug = or $debug (not (not (findRE `^/([^/]+-demo/)?devel` $page.RelPermalink) ) ) -}} */}}
 
 {{- $validStyles := (dict
-  "layout" (dict
-    "shallow" "shallow"
-    "narrow" "narrow"
-    "inline" "inline"
+  "_template" $template
+  "layout" (slice
+    "shallow"
+    "inline"
   )
   "font-size" (dict
     "normal" "normal"
@@ -21,44 +21,11 @@
   )
 ) -}}
 
-{{- $mergedStyle := partial "vitae/_functions/style-class" (dict
+{{- $mergedStyle := partial "vitae/_functions/style-merged" (dict
   "Template" $template
   "MergedStyle" .MergedStyle
   "ValidStyles" $validStyles
-  ) -}}
-{{- if $debug }}
-  {{- warnf "%s[%s]: After style-class:\nmergedStyle=%v" $page $template
-      (jsonify (dict "indent" "  ") $mergedStyle) }}
-{{- end }}
-
-{{- $mergedStyleNew := false }}
-{{- with .MergedStyleNew }}
-  {{- $validStylesNew := (dict
-    "_template" $template
-    "layout" (slice
-      "shallow"
-      "inline"
-    )
-    "font-size" (dict
-      "normal" "normal"
-      "smaller-2" "smaller-2"
-    )
-  ) -}}
-
-  {{- $mergedStyleNew = partial "vitae/_functions/style-merged" (dict
-    "Template" $template
-    "MergedStyle" .
-    "ValidStyles" $validStylesNew
-  ) -}}
-  {{- if $debug }}
-    {{- warnf "%s[%s]: .MergedStyleNew=%v\n.ValidStylesNew=%v\n\nAfter style-merged:\nmergedStyle=%v\nmergedStyleNew=%v" $page $template
-        (jsonify (dict "indent" "  ") . )
-        (jsonify (dict "indent" "  ") $validStylesNew)
-        (jsonify (dict "indent" "  ") $mergedStyle)
-        (jsonify (dict "indent" "  ") $mergedStyleNew) -}}
-  {{- end }}
-  {{- $mergedStyle = $mergedStyleNew }}
-{{- end }}
+) -}}
 
 {{- $style := $mergedStyle.Style }}
 {{- $styleClassList := $mergedStyle.StyleClass }}

@@ -13,26 +13,13 @@
 
 {{- $debug := false }}
 {{/* {{- $debug = or $debug (not (not (findRE `^/([^/]+-demo/)?devel` $page.RelPermalink) ) ) -}} */}}
-{{/* {{- $useStyleMerged := and true $debug }} */}}
-{{- $useStyleMerged := true }}
 {{- $validStyles := (dict
-  "ats" (dict
-    "ANY_BOOL" true
-  )
-  "inline_separator" (dict
-    "ANY_STRING" true
-  )
-  "role_header_separator" (dict
-    "ANY_STRING" true
-  )
-  "stage_meta_separator" (dict
-    "ANY_STRING" true
-  )
-  "layout" (dict
-    "shallow" "shallow"
-    "narrow" "narrow"
-    "inline" "inline"
-  )
+  "_template" $template
+  "ats" "ANY_BOOL"
+  "inline_separator" "ANY_STRING"
+  "role_header_separator" "ANY_STRING"
+  "stage_meta_separator" "ANY_STRING"
+  "layout" (slice "shallow" "narrow" "inline")
   "display" (dict
     "grid" "grid"
   )
@@ -57,71 +44,13 @@
   )
 ) -}}
 
-{{- $mergedStyle := partial "vitae/_functions/style-class" (dict
+{{- $mergedStyle := partial "vitae/_functions/style-merged" (dict
   "Style" $vitaeStyle
   "ValidStyles" $validStyles
   "Template" $template
 ) -}}
-{{- if $debug }}
-  {{- warnf "%s[%s]: After style-class:\nmergedStyle=%v" $page $template
-      (jsonify (dict "indent" "  ") $mergedStyle) }}
-{{- end }}
 {{- $style := $mergedStyle.Style }}
 {{- $styleClassList := $mergedStyle.StyleClass }}
-
-{{- $mergedStyleNew := false }}
-{{- $validStylesNew := false }}
-
-{{- if $useStyleMerged }}
-  {{- $validStylesNew = (dict
-    "_template" $template
-    "ats" "ANY_BOOL"
-    "inline_separator" "ANY_STRING"
-    "role_header_separator" "ANY_STRING"
-    "stage_meta_separator" "ANY_STRING"
-    "layout" (slice "shallow" "narrow" "inline")
-    "display" (dict
-      "grid" "grid"
-    )
-    "timeline" (dict
-      "false" false
-      "true" "column"
-    )
-    "heading" (dict
-      "normal" "normal"
-      "larger-1" "larger-1"
-      "larger-2" "larger-2"
-    )
-    "font-size" (dict
-      "normal" "normal"
-      "smaller-1" "smaller-1"
-      "smaller-2" "smaller-2"
-    )
-    "logo" (dict
-      "false" false
-      "true" "left"
-      "left" "left"
-    )
-  ) -}}
-
-  {{- $mergedStyleNew = partial "vitae/_functions/style-merged" (dict
-    "Style" $vitaeStyle
-    "ValidStyles" $validStylesNew
-    "Template" $template
-  ) -}}
-  {{- if $debug }}
-    {{- warnf "%s[%s]: vitaeStyle=%v\nvalidStylesNew=%v\n\nAfter style-merged:\nmergedStyle=%v\nmergedStyleNew=%v" $page $template
-        (jsonify (dict "indent" "  ") $vitaeStyle)
-        (jsonify (dict "indent" "  ") $validStylesNew)
-        (jsonify (dict "indent" "  ") $mergedStyle)
-        (jsonify (dict "indent" "  ") $mergedStyleNew) -}}
-    {{/* {{- warnf "%s[%s]: After style-merged:\nmergedStyle=%v\nmergedStyleNew=%v" $page $template
-        (jsonify (dict "indent" "  ") (merge $mergedStyle (dict "ValidStyles" "OMITTED")))
-        (jsonify (dict "indent" "  ") (merge $mergedStyleNew (dict "ValidStyles" "OMITTED"))) -}} */}}
-  {{- end }}
-  {{- $style = $mergedStyle.Style }}
-  {{- $styleClassList = $mergedStyle.StyleClass }}
-{{- end }}
 
 {{- $slotSeparator := "section-gap_vertical" }}
 {{- $sectionSeparator := $slotSeparator }}
@@ -250,32 +179,11 @@ PaginationPage: a printed page that is part of a Part
 
         {{- $mergedSlotStyle := false }}
         {{- with $slotStyle := $slot.style }}
-          {{- $mergedSlotStyle = partial "vitae/_functions/style-class" (dict
+          {{- $mergedSlotStyle = partial "vitae/_functions/style-merged" (dict
             "Style" $slotStyle
             "ValidStyles" $validStyles
             "Template" $template
           ) -}}
-          {{- if $debug }}
-            {{- warnf "%s[%s]: After style-class:\nmergedSlotStyle=%v" $page $template
-                (jsonify (dict "indent" "  ") $mergedSlotStyle) }}
-          {{- end }}
-
-          {{- $mergedSlotStyleNew := false }}
-          {{- if $useStyleMerged }}
-            {{- $mergedSlotStyleNew = partial "vitae/_functions/style-merged" (dict
-              "Style" $slotStyle
-              "ValidStyles" $validStylesNew
-              "Template" $template
-            ) -}}
-            {{- if $debug }}
-              {{- warnf "%s[%s]: slotStyle=%v\nvalidStylesNew=%v\n\nAfter style-merged:\nmergedSlotStyle=%v\nmergedSlotStyleNew=%v" $page $template
-                  (jsonify (dict "indent" "  ") $slotStyle)
-                  (jsonify (dict "indent" "  ") $validStylesNew)
-                  (jsonify (dict "indent" "  ") $mergedSlotStyle)
-                  (jsonify (dict "indent" "  ") $mergedSlotStyleNew) -}}
-            {{- end }}
-            {{- $mergedSlotStyle = $mergedSlotStyleNew }}
-          {{- end }}
 
           {{- with $mergedSlotStyle.StyleClass }}
             {{- $containerClass = append . $containerClass }}
@@ -374,7 +282,6 @@ PaginationPage: a printed page that is part of a Part
         "Page" $page
         "Template" $vitaeTemplate
         "MergedStyle" $mergedStyle
-        "MergedStyleNew" $mergedStyleNew
         "ChildClass" $childClass
         "Data" $vitaeData
         "Sections" $sections
