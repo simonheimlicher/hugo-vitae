@@ -500,7 +500,7 @@ html[data-mode="dim"] {
       dl {
         display: flex;
         flex-direction: column;
-        gap: var(--padding_role_between) 0;
+        gap: var(--margin_role_between) 0;
         align-items: start;
         hyphens: manual;
         dt {
@@ -594,15 +594,15 @@ html[data-mode="dim"] {
 
     --organization_logo_width: calc(1.5 * var(--rem));
 
-    --padding_organization_between: var(--inner_padding_4-6);
-    --padding_organization_first: var(--inner_padding_4-0);
-    --padding_role_between: var(--inner_padding_4-6);
-    --padding_role_first: var(--inner_padding_4-1);
+    --margin_organization_between: var(--inner_padding_4-6);
+    --margin_organization_first: var(--inner_padding_4-0);
+    --margin_role_between: var(--inner_padding_4-6);
+    --margin_role_first: var(--inner_padding_4-1);
 
     --padding_stage_meta: var(--inner_padding_4-0);
 
-    --padding_stage_content_between: var(--inner_padding_4-4);
-    --padding_stage_content_first: var(--inner_padding_4-1);
+    --margin_stage_content_between: var(--inner_padding_4-4);
+    --margin_stage_content_first: var(--inner_padding_4-1);
 
     --grid_period-column_width: 10em;
     --grid_separator-column_width: var(--inner_margin_4-2);
@@ -673,28 +673,28 @@ html[data-mode="dim"] {
     // Padding before stage_meta when style.layout != inline
     &.stage_header + .stage_meta .stage_main {
       // outline: 1px solid red;
-      padding-top: var(--padding_stage_meta);
+      margin-top: var(--margin_stage_meta);
     }
 
     // Padding before stage_content
-    &.stage_content + .stage_content .stage_main {
+    &.stage_content + .stage_content .stage_header, &.stage_content + .stage_content .stage_main {
       // outline: 1px solid yellow;
-      padding-top: var(--padding_stage_content_between);
+      margin-top: var(--margin_stage_content_between);
     }
     &.stage_header, &.stage_meta {
-      & + .stage_content .stage_main {
-        padding-top: var(--padding_stage_content_first);
+      & + .stage_content .stage_header, & + .stage_content .stage_main {
+        margin-top: var(--margin_stage_content_first);
       }
     }
 
     // Header for organizations
     &.organization_header {
       .stage_main {
-        padding-top: var(--padding_organization_between);
+        margin-top: var(--margin_organization_between);
       }
       &.org_first {
         .stage_main {
-          padding-top: var(--padding_organization_first);
+          margin-top: var(--margin_organization_first);
         }
       }
     }
@@ -704,7 +704,7 @@ html[data-mode="dim"] {
     // &.stage_header, &.stage_meta, &.stage_content {
     //   &:has(+ .organization_header) {
     //     .stage_main {
-    //       padding-bottom: calc(var(--padding_organization_between));
+    //       padding-bottom: calc(var(--margin_organization_between));
     //     }
     //   }
     // }
@@ -712,17 +712,17 @@ html[data-mode="dim"] {
     // Header for roles at organizations
     &.role_header {
       .stage_main {
-        padding-top: var(--padding_role_between);
+        margin-top: var(--margin_role_between);
       }
     }
     // &.role_header ~ .role_header {
     //   .stage_main {
-    //     padding-top: var(--padding_role_between);
+    //     padding-top: var(--margin_role_between);
     //   }
     // }
     &.organization_header, &.stage_meta {
       & + .role_header .stage_main {
-        padding-top: var(--padding_role_first);
+        margin-top: var(--margin_role_first);
       }
     }
     &.stage {
@@ -1068,7 +1068,7 @@ html[data-mode="dim"] {
       }
 
       @mixin timeline_column_header_organization(
-        $padding-top: var(--padding_organization_between),
+        $padding-top: var(--margin_organization_between),
         $line-before: true,
         $line-after: true
       ) {
@@ -1123,13 +1123,13 @@ html[data-mode="dim"] {
           /* Replaced by equivalent call to timeline_column_header_organization below
           @include timeline_column_header(
             0px,
-            calc(var(--padding_organization_between) + var(--tl-col_header_org_offset)),
+            calc(var(--margin_organization_between) + var(--tl-col_header_org_offset)),
             0px,
-            calc(100% - var(--padding_organization_between) - var(--tl-col_header_org_offset)),
+            calc(100% - var(--margin_organization_between) - var(--tl-col_header_org_offset)),
             calc(var(--tl-col_timeline-column_width) / 2),
             null,
             calc(var(--font-size-heading-organization) * var(--line-height-heading)),
-            var(--padding_organization_between),
+            var(--margin_organization_between),
             var(--tl-col_stage-marker_background),
             var(--tl-col_stage-marker_organization_outline),
             var(--tl-col_stage-marker_organization_width),
@@ -1137,7 +1137,7 @@ html[data-mode="dim"] {
             null
           );
           */
-          @include timeline_column_header_organization(var(--padding_organization_between));
+          @include timeline_column_header_organization(var(--margin_organization_between));
           &.org_first {
             // --tl-col_timeline_color: red;
             /* Replaced by equivalent call to timeline_column_header_organization below
@@ -1145,11 +1145,11 @@ html[data-mode="dim"] {
               0px,
               0px,
               0px,
-              calc(100% - var(--padding_organization_first) - var(--tl-col_header_org_offset)),
+              calc(100% - var(--margin_organization_first) - var(--tl-col_header_org_offset)),
               calc(var(--tl-col_timeline-column_width) / 2),
               null,
               calc(var(--font-size-heading-organization) * var(--line-height-heading)),
-              var(--padding_organization_first),
+              var(--margin_organization_first),
               var(--tl-col_stage-marker_background),
               var(--tl-col_stage-marker_organization_outline),
               var(--tl-col_stage-marker_organization_width),
@@ -1158,20 +1158,20 @@ html[data-mode="dim"] {
             );
             */
             @include timeline_column_header_organization(
-              var(--padding_organization_first), false, true);
+              var(--margin_organization_first), false, true);
           }
           &.org_last {
             // --tl-col_timeline_color: yellow;
             /* Replaced by equivalent call to timeline_column_header_organization below
             @include timeline_column_header(
               0px,
-              calc(var(--padding_organization_between) + var(--tl-col_header_org_offset)),
+              calc(var(--margin_organization_between) + var(--tl-col_header_org_offset)),
               0px,
               0px,
               calc(var(--tl-col_timeline-column_width) / 2),
               null,
               calc(var(--font-size-heading-organization) * var(--line-height-heading)),
-              var(--padding_organization_between),
+              var(--margin_organization_between),
               var(--tl-col_stage-marker_background),
               var(--tl-col_stage-marker_organization_outline),
               var(--tl-col_stage-marker_organization_width),
@@ -1180,7 +1180,7 @@ html[data-mode="dim"] {
             );
             */
 
-            @include timeline_column_header_organization(var(--padding_organization_between), true, false);
+            @include timeline_column_header_organization(var(--margin_organization_between), true, false);
           }
         }
 
@@ -1189,38 +1189,38 @@ html[data-mode="dim"] {
             // --tl-col_timeline_color: blue;
             @include timeline_column_header(
               0px,
-              calc(var(--padding_role_between)),
+              calc(var(--margin_role_between)),
               0px,
               100%,
               calc(var(--tl-col_timeline-column_width) / 2),
               null,
               calc(var(--font-size-heading-role) * var(--line-height-heading)),
-              var(--padding_role_between)
+              var(--margin_role_between)
             );
           }
           // .stage_main {
-          //   padding-top: var(--padding_role_between);
+          //   padding-top: var(--margin_role_between);
           // }
           &.role_first {
             // --tl-col_timeline_color: orange;
             @include timeline_column_header(
               0px,
-              calc(var(--padding_role_first)),
+              calc(var(--margin_role_first)),
               0px,
               100%,
               calc(var(--tl-col_timeline-column_width) / 2),
               null,
               calc(var(--font-size-heading-role) * var(--line-height-heading)),
-              var(--padding_role_first)
+              var(--margin_role_first)
             );
           }
           &.role_single:not(.org_last) {
             // --tl-col_timeline_color: yellow;
             @include timeline_column_header(
               0px,
-              calc(var(--padding_role_first)),
+              calc(var(--margin_role_first)),
               0px,
-              calc(100% - var(--padding_role_first)),
+              calc(100% - var(--margin_role_first)),
               calc(var(--tl-col_timeline-column_width) / 2)
             );
           }
@@ -1232,7 +1232,7 @@ html[data-mode="dim"] {
       // &.stage_header, &.stage_meta, &.stage_content {
       //   &:has(+ .organization_header) {
       //     .stage_main {
-      //       padding-bottom: calc(var(--padding_organization_between));
+      //       padding-bottom: calc(var(--margin_organization_between));
       //     }
       //   }
       // }
@@ -1284,12 +1284,12 @@ html[data-mode="dim"] {
       }
       // &.role_header ~ .role_header {
       //   .stage_main {
-      //     padding-top: calc(var(--padding_role_between));
+      //     padding-top: calc(var(--margin_role_between));
       //   }
       // }
       // &.organization_header + .role_header, &.stage_meta + .role_header {
       //   .stage_main {
-      //     padding-top: calc(var(--padding_role_first));
+      //     padding-top: calc(var(--margin_role_first));
       //   }
       // }
       &.stage {
@@ -1668,10 +1668,10 @@ html[data-mode="dim"] {
         // display: inline-block;
         display: inline;
       }
-      --padding_organization_between: var(--inner_padding_4-3);
-      --padding_role_first: var(--inner_padding_4-1);
-      --padding_role_between: var(--inner_padding_4-1);
-      --padding_stage_content_between: var(--inner_padding_4-1);
+      --margin_organization_between: var(--inner_padding_4-3);
+      --margin_role_first: var(--inner_padding_4-1);
+      --margin_role_between: var(--inner_padding_4-1);
+      --margin_stage_content_between: var(--inner_padding_4-1);
       --padding_stage_meta: 0;
     }
 
@@ -1684,9 +1684,9 @@ html[data-mode="dim"] {
       --font-size-heading-role: var(--font-size-normal);
       --font-size_date_period: var(--font-size-normal);
       &.style_layout_shallow, &.style_layout_compact {
-        --padding_role_first: var(--inner_padding_8-1);
-        --padding_role_between: var(--inner_padding_8-0);
-        --padding_organization_between: var(--inner_padding_8-3);
+        --margin_role_first: var(--inner_padding_8-1);
+        --margin_role_between: var(--inner_padding_8-0);
+        --margin_organization_between: var(--inner_padding_8-3);
       }
     }
     &.style_font-size_larger-1 {
@@ -1719,14 +1719,14 @@ html[data-mode="dim"] {
 
     &.style_heading_organization_font-size_normal {
       &.style_layout_shallow, &.style_layout_compact {
-        --padding_organization_between: var(--inner_padding_8-3);
+        --margin_organization_between: var(--inner_padding_8-3);
       }
     }
 
     &.style_heading_role_font-size_normal {
       &.style_layout_shallow, &.style_layout_compact {
-        --padding_role_first: var(--inner_padding_8-1);
-        --padding_role_between: var(--inner_padding_8-0);
+        --margin_role_first: var(--inner_padding_8-1);
+        --margin_role_between: var(--inner_padding_8-0);
       }
     }
   }
