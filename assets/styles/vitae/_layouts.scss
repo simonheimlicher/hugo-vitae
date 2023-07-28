@@ -437,10 +437,10 @@
       & > h2, & > h3, & > div {
         &:first-child {
           & {
-            --padding_organization_between: 0px;
-            --padding_organization_first: 0px;
-            --padding_role_between: 0px;
-            --padding_role_first: 0px;
+            --margin_organization_between: 0px;
+            --margin_organization_first: 0px;
+            --margin_role_between: 0px;
+            --margin_role_first: 0px;
             margin-top: 0;
             padding-top: 0;
           }
@@ -448,22 +448,22 @@
       }
       h1, h2, h3, h4, h5, h6 {
         &.component_first {
-          padding-top: 0;
+          margin-top: 0;
           @include flush-top-heading;
         }
       }
       .component_first {
-        padding-top: 0;
+        margin-top: 0;
         h1, h2, h3, h4, h5, h6 {
           &:first-of-type {
-            padding-top: 0;
+            margin-top: 0;
             @include flush-top-heading;
           }
         }
         & > p:first-of-type,
         & > li:first-of-type,
         & > dl:first-of-type {
-          padding-top: 0;
+          margin-top: 0;
           @include flush-top;
         }
       }
@@ -546,12 +546,12 @@
       h5,
       h6 {
         &.component_first {
-          padding-top: 0;
+          margin-top: 0;
           @include flush-top-heading;
         }
       }
       .component_first {
-        padding-top: 0;
+        margin-top: 0;
         h1,
         h2,
         h3,
@@ -559,13 +559,13 @@
         h5,
         h6 {
           &:first-of-type {
-            padding-top: 0;
+            margin-top: 0;
             @include flush-top-heading;
           }
         }
         & > p:first-of-type,
         & > li:first-of-type {
-          padding-top: 0;
+          margin-top: 0;
           @include flush-top;
         }
       }

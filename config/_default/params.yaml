@@ -77,21 +77,25 @@ vitae:
                       role: true
                     timeline: column
                     font-size: normal
-                    # heading:
-                    #   organization:
-                    #     font-size: larger-1
-                    #   role:
+                    heading:
+                      organization:
+                        font-weight: strong
+                        # font-size: larger-1
+                      role:
+                        font-weight: normal
                     #     font-size: normal
                     date: year
                     logo: false
                   organization:
-                    period: false
+                    period: true
+                    appendix: false
+                    dimension: false
                     description: false
                     details: false
-                    remark: true
                   role:
                     period: true
-                    # appendix: true
+                    appendix: false
+                    dimension: false
                     details: false
                     summary: false
                     description: false
@@ -173,7 +177,7 @@ vitae:
                   filter_value: professional
                   unit:
                     limit: 1
-                    type: true
+                    type: false
                   style:
                     timeline: column
                     inline:
@@ -1040,7 +1044,6 @@ vitae:
             organization_duration: true
             role_duration: true
             timeline_for_single_role: true
-            responsibilities_deprecated: true
             results: true
             headings: true
             skills: false

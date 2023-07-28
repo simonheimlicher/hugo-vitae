@@ -843,7 +843,7 @@ html[data-mode="dim"] {
         margin-left: calc(0px - var(--grid_separator-column_width));
         padding-left: calc(var(--grid_separator-column_width));
         border-left: var(--line-width_separator_heading) solid var(--border-color-faint);
-        padding-top: 0;
+        margin-top: 0;
         // border-top-left-radius: 0.5em;
         // border-bottom-left-radius: 0.5em;
       }
@@ -863,6 +863,96 @@ html[data-mode="dim"] {
       // font-size: var(--font-size-normal);
       font-size: var(--font-size-smaller-1);
       font-style: italic;
+    }
+
+    .stage_dimension {
+      ul {
+        display: flex;
+        align-items: baseline;
+        flex-wrap: wrap;
+        flex-direction: row;
+        gap: var(--row_gap) calc(1 * var(--column_gap));
+        li {
+          list-style: none;
+          margin: 0;
+          padding: 0;
+          // width: 100%;
+          width: auto;
+          display: flex;
+          flex-direction: row;
+          align-items: baseline;
+          flex-wrap: nowrap;
+          // flex: 1 1 auto;
+          // &:first-child {
+          //   margin: 0;
+          //   &::before {
+          //     content: none;
+          //   }
+          // }
+        }
+        // li ~ li {
+        //   margin: 0 0 0 auto;
+        //   // FIXME: inline separator oes not work yet
+        //   &::before {
+        //     content: '•';
+        //     display: inline-block;
+        //     // margin-right: calc(var(--inline-list-item-separation) / 3.0 - 0.5ch);
+        //     margin-right: auto;
+        //     // width: var(--inline-list-sep-width);
+        //     width: auto;
+        //     text-align: center;
+        //   }
+        // }
+      }
+      dl {
+        // --column-gap: 1em;
+        // --dt-width: calc( (100% - var(--column-gap)) / 2);
+        // --dt-padding-left: calc(var(--dt-width) + var(--column-gap));
+        // --dd-width: calc(100% - var(--dt-width) - var(--column-gap));
+        // display: flex;
+        // flex-direction: row;
+        // flex-wrap: wrap;
+        width: auto;
+        display: flex;
+        flex-direction: row;
+        align-items: baseline;
+        flex-wrap: nowrap;
+        gap: var(--row_gap) calc(var(--column_gap) / 2);
+        // flex: 1 1 auto;
+      }
+      // dl > * {
+      //   padding-top: 0.5em;
+      // }
+      dt {
+        display: inline-block;
+        // width: var(--dt-width);
+        // font-weight: var(--font-weight-strong);
+        font-weight: var(--font-weight);
+        font-style: italic;
+        text-align: left;
+        width: max-content;
+      }
+      dd {
+        display: inline-block;
+        // width: var(--dd-width);
+        font-weight: var(--font-weight-strong);
+        // padding-left: var(--column-gap);
+        margin-left: 0;
+        width: auto;
+        flex: 1 1 auto;
+      }
+      dd + dd {
+        width: 100%;
+        padding-left: calc(var(--dt-padding-left));
+      }
+      dt + dt {
+        padding-right: var(--dd-width);
+      }
+      // dt + dt + dd {
+      //   margin-top: -1.625em;
+      //   /* own height including padding */
+      //   padding-left: calc(var(--dt-padding-left));
+      // }
     }
 
     /*
@@ -1618,7 +1708,7 @@ html[data-mode="dim"] {
       //     font-weight: var(--font-weight-heading-organization);
       //   }
       // }
-      &.role_header {
+      &.role_header.role_single {
         .role_period .date_period {
           // font-size: var(--font-size-heading-role);
           font-size: var(--font-size-heading-organization);
@@ -1726,7 +1816,33 @@ html[data-mode="dim"] {
         --margin_role_between: var(--inner_padding_8-0);
       }
     }
+
+    /*
+     * Heading style FONT-WEIGHT
+     */
+
+     &.style_heading_organization_font-weight_normal {
+      --font-weight-heading-organization: var(--font-weight);
+    }
+    &.style_heading_organization_font-weight_strong {
+      --font-weight-heading-organization: var(--font-weight-strong);
+    }
+    &.style_heading_organization_font-weight_light {
+      --font-weight-heading-organization: var(--font-weight-light);
+    }
+
+    &.style_heading_role_font-weight_normal {
+      --font-weight-heading-role: var(--font-weight);
+    }
+    &.style_heading_role_font-weight_strong {
+      --font-weight-heading-role: var(--font-weight-strong);
+    }
+    &.style_heading_role_font-weight_light {
+      --font-weight-heading-role: var(--font-weight-light);
+    }
+
   }
+
 
   /*
    * Component AWARDS
@@ -1752,7 +1868,7 @@ html[data-mode="dim"] {
             // font-weight: var(--font-weight-strong);
             &:first-of-type {
               margin-top: 0;
-              padding-top: 0;
+              margin-top: 0;
             }
           }
           &_organization {
