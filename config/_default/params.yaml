@@ -370,24 +370,6 @@ vitae:
                     timeline: column
                     inline:
                       header: true
-                    # logo: left
-                    # label:
-                    #   unit: false
-                    #   function: false
-                  function: false
-                  organization:
-                    period: true
-                    # duration: true
-                    details: true
-                  role:
-                    headings: false
-                    period: true
-                    duration: false
-                    details: true
-                    summary: false
-                    description: false
-                    skills: false
-                    achievements: true
               - section: awards-certificates
                 # container: div
                 style:
