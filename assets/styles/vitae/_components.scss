@@ -314,6 +314,7 @@ html[data-mode="dim"] {
     // --portrait_width: calc( 1 * var(--page_height) * var(--page_header_height_fraction));
     --portrait_width: 25%;
     height: 100%;
+    position: relative;
     display: grid;
     grid-template-columns: var(--portrait_width) var(--column_gap) minmax(0px, max-content) var(--column_gap) var(--portrait_width);
     font-size: var(--font-size-normal);
@@ -383,7 +384,7 @@ html[data-mode="dim"] {
 
     .portrait {
       &_figure {
-        position: relative;
+        position: absolute;
         z-index: 1;
         // grid-row: 1 / span 3;
         grid-row: 1;
@@ -391,10 +392,14 @@ html[data-mode="dim"] {
         @at-root .vitae .view-print .component_header .portrait_figure {
           @include full-bleed_page(top, both);
         }
+        height: calc(100% + var(--page_margin_top));
+        width: calc(100% + var(--page_margin_left) + var(--page_margin_right));
       }
 
       &_img {
-        position: absolute;
+        // FIXME: If setting image `position: absolute`, Chrome will
+        // scale it differently in print preview
+        // position: absolute;
         top: 0;
         left: 0;
         margin: 0;
@@ -416,7 +421,9 @@ html[data-mode="dim"] {
         &_figure {
           grid-column: 5;
           margin: 0;
-        }
+          height: 100%;
+          width: 100%;
+          }
       }
     }
   }
