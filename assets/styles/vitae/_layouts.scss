@@ -8,6 +8,7 @@
 // Inexplicable empty space on print from Chrome: https://stackoverflow.com/questions/35001518/inexplicable-empty-space-on-print-from-chrome
 // Inexplicable margin between elements on print in Chrome, but not in Firefox: https://stackoverflow.com/questions/71550887/inexplicable-margin-between-elements-on-print-in-chrome-but-not-in-firefox
 // Reference for @page: https://www.princexml.com/samples/catalog/PrinceCatalogue.html
+// https://excessivelyadequate.com/posts/print.html
 
 // Using table footer to have footer repeating on every page:
 // https://stackoverflow.com/a/69136303/617559
@@ -160,6 +161,10 @@
 @media print {
   .vitae {
     --bg: var(--print-bg);
+
+    // Disable browser adjustment of low-contrast elements in print mode.
+    -webkit-print-color-adjust: exact;  /* Chrome/Safari/Edge/Opera */
+    color-adjust: exact;  /* Firefox */
 
     .pagination-page {
       padding: 0mm;
