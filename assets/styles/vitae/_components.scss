@@ -693,7 +693,7 @@ html[data-mode="dim"] {
       margin-top: var(--margin_stage_content_between);
     }
     &.stage_header, &.stage_meta {
-      & + .stage_content .stage_header, & + .stage_content .stage_main {
+      & + .stage_content .stage_body, & + .stage_content .stage_header, & + .stage_content .stage_main {
         margin-top: var(--margin_stage_content_first);
       }
     }
@@ -731,7 +731,7 @@ html[data-mode="dim"] {
     //     padding-top: var(--margin_role_between);
     //   }
     // }
-    &.organization_header, &.stage_meta {
+    &.organization_header, &.stage_meta, &.stage_dimension {
       & + .role_header .stage_main {
         margin-top: var(--margin_role_first);
       }
@@ -785,7 +785,6 @@ html[data-mode="dim"] {
           var(--grid_period-column_width)
           var(--grid_separator-column_width)
           minmax(0px, max-content);
-        font-size: var(--font-size_stage_body);
         .stage {
           &_timeline {
             grid-column: 1;
@@ -833,6 +832,7 @@ html[data-mode="dim"] {
 
     &.stage_content {
       .stage_body {
+        font-size: var(--font-size_stage_body);
         grid-column: 3 / span all;
       }
       .stage_header {
@@ -1659,6 +1659,9 @@ html[data-mode="dim"] {
           flex-direction: row;
           justify-content: flex-start;
           align-items: baseline;
+          margin-left: 0;
+          padding-left: 0;
+          border-left: none;
           // &.organization_header_main, &.role_header_main {
           //   display: flex;
           //   flex-direction: row;
@@ -1896,7 +1899,6 @@ html[data-mode="dim"] {
             }
             &_item {
               display: flex;
-              flex-direction: column;
               align-items: baseline;
               column-gap: var(--inner_margin_4-1);
             }
@@ -2113,6 +2115,7 @@ html[data-mode="dim"] {
     &.footer {
       &_container {
         width: 100%;
+        color: var(--text-color-faint);
         font-size: var(--font-size-smaller-1);
         @include upper-caps;
         font-weight: var(--font-weight-light);
