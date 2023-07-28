@@ -592,7 +592,8 @@ html[data-mode="dim"] {
     --font-weight-heading-role: var(--font-weight-strong);
     // --font-weight-heading-role: var(--font-weight);
 
-    --font-size_stage_header_main: var(--font-size-larger-1);
+    --font-size_stage_body: var(--font-size-normal);
+    --font-size_stage_header_main: calc(max(var(--font-size-heading-organization), var(--font-size-heading-role)));
     --font-size_stage_header_meta: var(--font-size-normal);
     --font-size_date_duration: var(--font-size_stage_header_meta);
 
@@ -613,10 +614,11 @@ html[data-mode="dim"] {
     --margin_stage_content_between: var(--inner_padding_4-4);
     --margin_stage_content_first: var(--inner_padding_4-2);
 
-    --grid_period-column_width: 10em;
     --grid_separator-column_width: var(--inner_margin_4-2);
 
     position: relative;
+    font-size: var(--font-size_stage_header_main);
+    --grid_period-column_width: 10em;
 
     // Periods of time such as "Mar 2022-Jul 2023"
     .stage_period {
@@ -757,11 +759,13 @@ html[data-mode="dim"] {
           }
           &.organization_header {
             .date_period {
+              font-size: var(--font-size-heading-organization);
               font-weight: var(--font-weight-heading-organization);
             }
           }
           &.role_header {
             .date_period {
+              font-size: var(--font-size-heading-role);
               font-weight: var(--font-weight-heading-role);
             }
           }
@@ -781,6 +785,7 @@ html[data-mode="dim"] {
           var(--grid_period-column_width)
           var(--grid_separator-column_width)
           minmax(0px, max-content);
+        font-size: var(--font-size_stage_body);
         .stage {
           &_timeline {
             grid-column: 1;
@@ -843,7 +848,8 @@ html[data-mode="dim"] {
         // border-bottom-left-radius: 0.5em;
       }
       .stage_header {
-        align-self: center;
+        // FIXME: align-self: center leads to problems when stage items are flex'ing
+        // align-self: center;
         h5 {
           margin: 0;
           padding: 0;
@@ -993,8 +999,8 @@ html[data-mode="dim"] {
           $height-after: 0px,
           $left: null,
           $right: null,
-          $line-height: calc(var(--line-height) * var(--font-size-heading-role)),
           $padding-top: 0px,
+          $line-height: calc(var(--line-height) * max(var(--font-size-heading-role), var(--font-size_stage_header_main))),
           $marker-background: var(--bg),
           $marker-outline: var(--tl-col_stage-marker_outline),
           $marker-width: var(--tl-col_stage-marker_width),
@@ -1115,8 +1121,8 @@ html[data-mode="dim"] {
           $height-after,
           calc(var(--tl-col_timeline-column_width) / 2),
           null,
-          calc(var(--font-size-heading-organization) * var(--line-height-heading)),
           $padding-top,
+          calc(var(--font-size-heading-organization) * var(--line-height-heading)),
           var(--tl-col_stage-marker_background),
           var(--tl-col_stage-marker_organization_outline),
           var(--tl-col_stage-marker_organization_width),
@@ -1146,66 +1152,14 @@ html[data-mode="dim"] {
         --tl-col_header_org_offset: var(--font-size-heading-organization) * var(--line-height-heading) / 2 - var(--tl-col_stage-marker_organization_height) / 2 - var(--fuzz_factor) * var(--tl-col_stage-marker_organization_outline_width);
         &.organization_header {
           // --tl-col_timeline_color: purple;
-          /* Replaced by equivalent call to timeline_column_header_organization below
-          @include timeline_column_header(
-            0px,
-            calc(var(--margin_organization_between) + var(--tl-col_header_org_offset)),
-            0px,
-            calc(100% - var(--margin_organization_between) - var(--tl-col_header_org_offset)),
-            calc(var(--tl-col_timeline-column_width) / 2),
-            null,
-            calc(var(--font-size-heading-organization) * var(--line-height-heading)),
-            var(--margin_organization_between),
-            var(--tl-col_stage-marker_background),
-            var(--tl-col_stage-marker_organization_outline),
-            var(--tl-col_stage-marker_organization_width),
-            var(--tl-col_stage-marker_organization_height),
-            null
-          );
-          */
           @include timeline_column_header_organization(var(--margin_organization_between));
           &.org_first {
             // --tl-col_timeline_color: red;
-            /* Replaced by equivalent call to timeline_column_header_organization below
-            @include timeline_column_header(
-              0px,
-              0px,
-              0px,
-              calc(100% - var(--margin_organization_first) - var(--tl-col_header_org_offset)),
-              calc(var(--tl-col_timeline-column_width) / 2),
-              null,
-              calc(var(--font-size-heading-organization) * var(--line-height-heading)),
-              var(--margin_organization_first),
-              var(--tl-col_stage-marker_background),
-              var(--tl-col_stage-marker_organization_outline),
-              var(--tl-col_stage-marker_organization_width),
-              var(--tl-col_stage-marker_organization_height),
-              null,
-            );
-            */
             @include timeline_column_header_organization(
               var(--margin_organization_first), false, true);
           }
           &.org_last {
             // --tl-col_timeline_color: yellow;
-            /* Replaced by equivalent call to timeline_column_header_organization below
-            @include timeline_column_header(
-              0px,
-              calc(var(--margin_organization_between) + var(--tl-col_header_org_offset)),
-              0px,
-              0px,
-              calc(var(--tl-col_timeline-column_width) / 2),
-              null,
-              calc(var(--font-size-heading-organization) * var(--line-height-heading)),
-              var(--margin_organization_between),
-              var(--tl-col_stage-marker_background),
-              var(--tl-col_stage-marker_organization_outline),
-              var(--tl-col_stage-marker_organization_width),
-              var(--tl-col_stage-marker_organization_height),
-              null
-            );
-            */
-
             @include timeline_column_header_organization(var(--margin_organization_between), true, false);
           }
         }
@@ -1220,7 +1174,6 @@ html[data-mode="dim"] {
               100%,
               calc(var(--tl-col_timeline-column_width) / 2),
               null,
-              calc(var(--font-size-heading-role) * var(--line-height-heading)),
               var(--margin_role_between)
             );
           }
@@ -1236,7 +1189,6 @@ html[data-mode="dim"] {
               100%,
               calc(var(--tl-col_timeline-column_width) / 2),
               null,
-              calc(var(--font-size-heading-role) * var(--line-height-heading)),
               var(--margin_role_first)
             );
           }
@@ -1658,6 +1610,22 @@ html[data-mode="dim"] {
      */
 
      &.style_inline_role, &.style_inline_role_true {
+      &.stage_header .stage_main {
+        grid-column: 5 / span all;
+      }
+      // &.organization_header {
+      //   .date_period {
+      //     font-weight: var(--font-weight-heading-organization);
+      //   }
+      // }
+      &.role_header {
+        .role_period .date_period {
+          // font-size: var(--font-size-heading-role);
+          font-size: var(--font-size-heading-organization);
+          // font-weight: var(--font-weight-heading-role);
+          font-weight: var(--font-weight-heading-organization);
+        }
+      }
       .stage {
         &_main {
           flex-direction: row;
@@ -1708,7 +1676,6 @@ html[data-mode="dim"] {
      &.style_font-size_normal {
       --font-size-heading-organization: var(--font-size-normal);
       --font-size-heading-role: var(--font-size-normal);
-      --font-size_stage_header_main:  var(--font-size-normal);
       &.style_layout_shallow {
         --margin_role_first: var(--inner_padding_4-1);
         --margin_role_between: var(--inner_padding_8-1);
@@ -1716,13 +1683,14 @@ html[data-mode="dim"] {
       }
     }
     &.style_font-size_larger-1 {
+      --font-size_stage_body: var(--font-size-larger-1);
       --font-size-heading-organization: var(--font-size-larger-1);
       --font-size-heading-role: var(--font-size-larger-1);
     }
     &.style_font-size_smaller-1 {
+      --font-size_stage_body: var(--font-size-smaller-1);
       --font-size-heading-organization: var(--font-size-smaller-1);
       --font-size-heading-role: var(--font-size-smaller-1);
-      --font-size_stage_header_main: var(--font-size-smaller-1);
     }
 
      /*
@@ -1731,6 +1699,9 @@ html[data-mode="dim"] {
 
     &.style_heading_organization_font-size_larger-2 {
       --font-size-heading-organization: var(--font-size-larger-2);
+    }
+    &.style_heading_organization_font-size_larger-1 {
+      --font-size-heading-organization: var(--font-size-larger-1);
     }
     &.style_heading_organization_font-size_normal {
       --font-size-heading-organization: var(--font-size-normal);

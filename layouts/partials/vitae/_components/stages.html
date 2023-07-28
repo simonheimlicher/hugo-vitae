@@ -67,6 +67,7 @@
     "organization" (dict
       "font-size" (dict
         "normal" "normal"
+        "larger-1" "larger-1"
         "larger-2" "larger-2"
         "smaller-1" "smaller-1"
       )
@@ -74,6 +75,7 @@
     "role" (dict
       "font-size" (dict
         "normal" "normal"
+        "larger-1" "larger-1"
         "larger-2" "larger-2"
         "smaller-1" "smaller-1"
       )
@@ -171,10 +173,6 @@
     "month" "Jan 2006"
 ) -}}
 
-{{- $inlineHeader := false }}
-{{- $inlineContent := false }}
-{{- $inlineRoleHeader := false }}
-
 {{- $dateFormat := $defaultDateFormat.default }}
 {{- with $component.date_format }}
   {{- $dateFormat = string $component.date_format }}
@@ -190,9 +188,9 @@
   {{- end }}
 {{- end }}
 
-{{- $inlineHeader = default false $style.inline.header }}
-{{- $inlineContent = default false $style.inline.content }}
-{{- $inlineRoleHeader = default false $style.inline.role }}
+{{- $inlineHeader := default false $style.inline.header }}
+{{- $inlineContent := default false $style.inline.content }}
+{{- $inlineRoleHeader := default false $style.inline.role }}
 {{- $roleMetaInHeader := $inlineHeader }}
 {{- $organizationMetaInHeader := $inlineHeader }}
 
@@ -216,7 +214,7 @@
   "InlineSeparatorStr" $inlineSeparatorStr
   "RoleHeaderSeparatorStr" $roleHeaderSeparatorStr
   "StageMetaSeparatorStr" $stageMetaSeparatorStr
-"PeriodDurationParams" $periodDurationParams
+  "PeriodDurationParams" $periodDurationParams
 ) -}}
 
 {{- $showOrganizationPeriod := default false $component.organization.period }}
@@ -275,6 +273,9 @@
     {{- $singleRole := eq (len $roleList) 1}}
     {{- $roleHeaderInOrganizationHeader := and $singleRole $inlineRoleHeader }}
 
+    {{- $showRolePeriodInOrganizationHeader := (and $showRolePeriod $roleHeaderInOrganizationHeader) }}
+    {{- $showRoleDurationInOrganizationHeader := (and $showRoleDuration $roleHeaderInOrganizationHeader) }}
+
     {{- $logoImageRoot := "images/organization-logos" }}
     {{- $logoImageResource := false }}
     {{- if eq "left" $style.logo }}
@@ -298,10 +299,10 @@
       {{- $organizationHeaderClassList = append "stage_header" $organizationHeaderClassList }}
     {{- end }}
 
-    {{- if $showOrganizationPeriod }}
+    {{- if or $showOrganizationPeriod $showRolePeriodInOrganizationHeader }}
       {{- $organizationHeaderClassList = append (printf "%s_period" $stageHeaderClassPrefix) $organizationHeaderClassList }}
     {{- end }}
-    {{- if $showOrganizationDuration }}
+    {{- if or $showOrganizationDuration $showRoleDurationInOrganizationHeader }}
       {{- $organizationHeaderClassList = append (printf "%s_duration" $stageHeaderClassPrefix) $organizationHeaderClassList }}
     {{- end }}
     {{- if $logoImageResource }}
@@ -317,10 +318,11 @@
         "Style" $style
         "Container" $organizationHeaderContainer
         "TopLevelClass" $topLevelClass
-        "PeriodDurationParams" (merge $periodDurationParams (dict
-          "ShowPeriod" $showOrganizationPeriod
-          "ShowDuration" $showOrganizationDuration
-        ))
+        "PeriodDurationParams" $periodDurationParams
+        "ShowOrganizationPeriod" $showOrganizationPeriod
+        "ShowOrganizationDuration" $showOrganizationDuration
+        "ShowRolePeriod" $showRolePeriodInOrganizationHeader
+        "ShowRoleDuration" $showRoleDurationInOrganizationHeader
         "RoleHeaderInOrganizationHeader" $roleHeaderInOrganizationHeader
         "OrganizationMetaInHeader" $organizationMetaInHeader
         "RoleMetaInHeader" $roleMetaInHeader
@@ -406,10 +408,9 @@
           "Style" $style
           "Container" $roleHeaderContainer
           "TopLevelClass" $topLevelClass
-          "PeriodDurationParams" (merge $periodDurationParams (dict
-            "ShowPeriod" (and $showRolePeriod (not $roleHeaderInOrganizationHeader))
-            "ShowDuration" (and $showRoleDuration (not $roleHeaderInOrganizationHeader))
-          ))
+          "PeriodDurationParams" $periodDurationParams
+          "ShowRolePeriod" (and $showRolePeriod (not $roleHeaderInOrganizationHeader))
+          "ShowRoleDuration" (and $showRoleDuration (not $roleHeaderInOrganizationHeader))
           "RoleMetaInHeader" $roleMetaInHeader
           "Organization" $org
           "Role" $role
@@ -590,6 +591,8 @@
   {{- end }}
 {{- end }}
 
+{{- /* ***************************************************************** */ -}}
+
 {{- define "partials/organization_header.html" }}
   {{- $template := "vitae/_components/stages/organization_header" }}
   {{- $page := .Page -}}
@@ -609,13 +612,16 @@
   {{- $debug := false }}
   {{- $debug = or $debug (not (not (findRE `^/([^/]+-demo/)?preview` $page.RelPermalink) ) ) -}}
 
-  {{- $showOrganizationPeriod := .PeriodDurationParams.ShowPeriod }}
-  {{- $showOrganizationDuration := .PeriodDurationParams.ShowDuration }}
+  {{- $showOrganizationPeriod := .ShowOrganizationPeriod }}
+  {{- $showOrganizationDuration := .ShowOrganizationDuration }}
+  {{- $showRolePeriod := .ShowRolePeriod }}
+  {{- $showRoleDuration := .ShowRoleDuration }}
 
   {{- $showOrganizationRemark := default false $component.organization.remark }}
 
   {{- $roleList := $org.roles }}
   {{- $numRoles := (len $roleList) }}
+  {{- $singleRole := eq (len $roleList) 1}}
 
   {{- $logoImageResource := .LogoImageResource }}
 
@@ -630,8 +636,21 @@
       <div class="organization_period stage_period">
           {{- partial
             "vitae/_functions/date-period-duration" (merge $.PeriodDurationParams (dict
-            "PeriodList" .
-          )
+              "ShowPeriod" $showOrganizationPeriod
+              "ShowDuration" $showOrganizationDuration
+              "PeriodList" .
+            )
+        ) -}}</div>
+    {{- end }}
+  {{- else if and $roleHeaderInOrganizationHeader $singleRole }}
+    {{- with $org.roles }}
+      <div class="role_period stage_period">
+          {{- partial
+            "vitae/_functions/date-period-duration" (merge $.PeriodDurationParams (dict
+              "ShowPeriod" $showRolePeriod
+              "ShowDuration" $showRoleDuration
+              "PeriodList" .
+            )
         ) -}}</div>
     {{- end }}
   {{- end }}
@@ -657,10 +676,9 @@
     {{- $roleHeaderParams := (merge $ (dict
         "Container" false
         "TopLevelClass" false
-        "PeriodDurationParams" (merge $.PeriodDurationParams (dict
-          "ShowPeriod" false
-          "ShowDuration" false
-        ))
+        "PeriodDurationParams" $.PeriodDurationParams
+        "ShowRolePeriod" false
+        "ShowRoleDuration" false
         "RoleMetaInHeader" $.RoleMetaInHeader
         "Organization" $org
         "Role" $role
@@ -713,6 +731,8 @@
   {{ partial "html-comment" (printf "%s: END organization_header" $template ) }}
 {{- end }}
 
+{{- /* ***************************************************************** */ -}}
+
 {{- define "partials/role_header.html" }}
   {{- $template := "vitae/_components/stages/role_header" }}
   {{- $page := .Page -}}
@@ -731,8 +751,8 @@
   {{- $debug := false }}
   {{- /* $debug = or $debug (not (not (findRE `^/([^/]+-demo/)?preview` $page.RelPermalink) ) ) */ -}}
 
-  {{- $showRolePeriod := .PeriodDurationParams.ShowPeriod }}
-  {{- $showRoleDuration := .PeriodDurationParams.ShowDuration }}
+  {{- $showRolePeriod := .ShowRolePeriod }}
+  {{- $showRoleDuration := .ShowRoleDuration }}
 
   {{- $roleList := $org.roles }}
   {{- $numRoles := (len $roleList) }}
@@ -750,9 +770,9 @@
       <div class="role_period stage_period">
         {{- partial
           "vitae/_functions/date-period-duration" (merge $.PeriodDurationParams (dict
-          "PeriodList" .
-          "ShowPeriod" $showRolePeriod
-          "ShowDuration" $showRoleDuration
+            "PeriodList" .
+            "ShowPeriod" $showRolePeriod
+            "ShowDuration" $showRoleDuration
           )
         ) -}}</div>
     {{- end }}
@@ -794,6 +814,8 @@
   {{- end }}
   {{ partial "html-comment" (printf "%s: END   role_header" $template ) }}
 {{- end }}
+
+{{- /* ***************************************************************** */ -}}
 
 {{- define "partials/stage_meta.html" }}
   {{- $style := .Style }}
@@ -1000,6 +1022,8 @@
     {{- end }}
   {{- end }}
 {{- end }}
+
+{{- /* ***************************************************************** */ -}}
 
 {{- define "partials/render_string_slice.html" }}
               {{- if reflect.IsSlice . }}

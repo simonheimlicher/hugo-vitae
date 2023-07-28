@@ -77,10 +77,15 @@ vitae:
                       role: true
                     timeline: column
                     font-size: normal
+                    # heading:
+                    #   organization:
+                    #     font-size: larger-1
+                    #   role:
+                    #     font-size: normal
                     date: year
                     logo: false
                   organization:
-                    period: true
+                    period: false
                     description: false
                     details: false
                     remark: true
