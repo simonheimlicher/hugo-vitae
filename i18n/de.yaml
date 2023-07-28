@@ -15,7 +15,7 @@ period-duration-days:
 grade-point-average:
   other: Notenschnitt
 section-experience:
-  other: Erfahrung
+  other: Berufserfahrung
 section-education:
   other: Ausbildung
 section-language-skills:
@@ -49,7 +49,7 @@ private-data-requires-javascript:
 section-awards:
   other: Auszeichnungen
 section-career-summary:
-  other: Laufbahn
+  other: Berufliche Stationen
 section-personal-profile:
   other: Profil
 section-key-achievements:
