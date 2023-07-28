@@ -389,11 +389,13 @@ html[data-mode="dim"] {
         // grid-row: 1 / span 3;
         grid-row: 1;
         grid-column: 1 / span all;
+        height: 100%;
+        width: 100%;
         @at-root .vitae .view-print .component_header .portrait_figure {
           @include full-bleed_page(top, both);
+          height: calc(100% + var(--page_margin_top));
+          width: calc(100% + var(--page_margin_left) + var(--page_margin_right));
         }
-        height: calc(100% + var(--page_margin_top));
-        width: calc(100% + var(--page_margin_left) + var(--page_margin_right));
       }
 
       &_img {
