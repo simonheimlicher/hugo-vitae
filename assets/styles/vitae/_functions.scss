@@ -1,6 +1,6 @@
 @use 'sass:math';
-@use "sass:list";
-@use "sass:map";
+@use 'sass:list';
+@use 'sass:map';
 
 @function round-dec($value, $fractionDigits: 0) {
   $power: math.pow(10, $fractionDigits);
@@ -57,11 +57,11 @@
 }
 
 @mixin wrap() {
-  padding: 0 $screenViewBodyPaddingNarrow;
-  padding: env(safe-area-inset-top) calc(#{$screenViewBodyPaddingNarrow} + env(safe-area-inset-right)) env(safe-area-inset-bottom) calc(#{$screenViewBodyPaddingNarrow} + env(safe-area-inset-left));
+  padding: 0 $screenViewInnerPaddingMobile;
+  padding: env(safe-area-inset-top) calc(#{$screenViewInnerPaddingMobile} + env(safe-area-inset-right)) env(safe-area-inset-bottom) calc(#{$screenViewInnerPaddingMobile} + env(safe-area-inset-left));
   @media screen and (min-width: $screenViewBreakpointWidthNarrow) {
-    padding: 0 $screenViewBodyPadding;
-    padding: env(safe-area-inset-top) calc(#{$screenViewBodyPadding} + env(safe-area-inset-right)) env(safe-area-inset-bottom) calc(#{$screenViewBodyPadding} + env(safe-area-inset-left));
+    padding: 0 $screenViewInnerPaddingNarrow;
+    padding: env(safe-area-inset-top) calc(#{$screenViewInnerPaddingNarrow} + env(safe-area-inset-right)) env(safe-area-inset-bottom) calc(#{$screenViewInnerPaddingNarrow} + env(safe-area-inset-left));
   }
 }
 
@@ -99,7 +99,7 @@
   }
 }
 
-@mixin list-style($padding-vertical: $screenViewBodyPaddingNarrow / 2, $indent: $list-style-indent) {
+@mixin list-style($padding-vertical: $screenViewInnerPaddingNarrow / 2, $indent: $list-style-indent) {
   ul, ol {
     list-style: disc outside none; // initial;
     padding: $padding-vertical 0;

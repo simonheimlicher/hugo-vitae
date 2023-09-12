@@ -1,5 +1,3 @@
-@use 'sass:math';
-
 // Styles that define the Vitae layouts
 // NOTE: This includes styles for all media types
 
@@ -413,7 +411,7 @@
   // --border-color-faint: var(--text-color-faint);
 
   .view-print {
-    @include link-lvhfa-reset;
+    @include link-lvhfa-inherit;
 
     .pagination-page {
       padding: var(--page_margin_top) var(--page_margin_right) var(--page_margin_bottom) var(--page_margin_left);
