@@ -365,10 +365,13 @@
       @include font-size-scale(var(--em));
     }
 
-    --list-style_margin: var(--inner_margin_4-0);
-    --list-style_padding: var(--inner_padding_4-1);
-    --list-style_indent: 0;
-    @include list-style_indented(var(--list-style_margin), var(--list-style_padding), var(--list-style_indent));
+    --list-style_list_margin_left: var(--inner_margin_4-0);
+    --list-style_list_padding_left: 0;
+    --list-style_item_margin_between: var(--inner_margin_4-0);
+    --list-style_item_padding_between: var(--inner_padding_4-1);
+    @include list-style_indented(
+      var(--list-style_list_margin_left), var(--list-style_list_padding_left),
+      var(--list-style_item_margin_between), var(--list-style_item_padding_between));
   }
 
   $props: (
@@ -402,6 +405,7 @@
     @include inner_margin_padding(var(--inner_margin), var(--inner_padding), 8, 1);
     --column_gap: var(--inner_margin_4-3);
     --row_gap: var(--inner_margin_4-1);
+    --slot-gap_vertical: var(--inner_margin_4-8);
     --section-gap_vertical: var(--inner_margin_4-4);
   }
 
@@ -595,20 +599,39 @@
 .vitae[data-print-preview-status="done"] {
   &.layout-executive .view-print .pagination-page {
     // .pagination-container[data-pagination-policy="break"] {
+    // FIXME: Explicit slot gaps don't work well with pagination
+    // .slot-gap_vertical {
+    //   .slot_content ~ & {
+    //     outline-color: blue;
+    //     min-height: var(--slot-gap_vertical);
+    //     flex: 10 1 auto;
+    //   }
+    //   & + .slot_chrome {
+    //     outline: 1px solid rgba(255, 0, 0, 1);
+    //     min-height: 0px;
+    //     height: 0px;
+    //     flex: 0;
+    //   }
+    // }
+    .section-gap_vertical:not(:first-child) {
+      // outline-color: pink;
+      // min-height: var(--section-gap_vertical);
+      flex: 5 1 auto;
+    }
+    // .section-gap_vertical:not(:has(+ .section, +.section-panel)) {
+    //   outline-color: orange;
+    // }
     .pagination-container {
       &.slot_main {
         height: 100%;
-        .section {
-          &-gap {
-            &_vertical:not(:first-child):not(:last-child) {
-              min-height: calc(var(--section-gap_vertical) / 4);
-            }
-          }
-        }
       }
       // FIXME: Do not allow flex of stage_header to avoid issues with timeline
       .stage_header {
         flex: 0 0 auto;
+        // 2023-07-29: Seems to be okay for timeline: column
+        &.style_timeline_column {
+          flex: 1 0 auto;
+        }
       }
       // .stage_header:has( + .stage_header) {
       //   flex: 0.25 0 auto;

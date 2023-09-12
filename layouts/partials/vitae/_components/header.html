@@ -88,29 +88,31 @@
     {{- end }}
   {{- end }}
   <div class="overlay">
-  {{- with or $component.headline .headline }}
-      <h{{ $headingLevel }} class="headline content-title">
-      <span class="name">{{- .name | page.RenderString }}</span>
-      {{- with .role }}
-        <span class="role">{{. | page.RenderString }}</span>
+    <div class="overlay_content">
+    {{- with or $component.headline .headline }}
+        <h{{ $headingLevel }} class="headline content-title">
+        <span class="name">{{- .name | page.RenderString }}</span>
+        {{- with .role }}
+          <span class="role">{{. | page.RenderString }}</span>
+        {{- end -}}
+        </h{{ $headingLevel }}>
+      {{- with .degree }}
+        <p class="degree">{{. | page.RenderString }}</p>
       {{- end -}}
-      </h{{ $headingLevel }}>
-    {{- with .degree }}
-      <p class="degree">{{. | page.RenderString }}</p>
     {{- end -}}
-  {{- end -}}
-  {{- with $component.fragments }}
-    <div class="fragment_container">
-      {{- range $fragment := . }}
-        {{- $fragmentName := .fragment }}
-        {{- $fragmentConfig := merge (index $config $fragmentName) . }}
-        {{- $partial := printf "vitae/fragments/%s" $fragmentName}}
-        {{/* {{- warnf "%s[%s]: component=%v: Calling fragment=%s with .Config=%v"
-            $page $template $component $fragmentName $fragmentConfig -}} */}}
-        {{- partial $partial (merge $componentArgs (dict "Fragment" $fragmentName "Config" $fragmentConfig ))  }}
-      {{- end }}
+    {{- with $component.fragments }}
+      <div class="details">
+        {{- range $fragment := . }}
+          {{- $fragmentName := .fragment }}
+          {{- $fragmentConfig := merge (index $config $fragmentName) . }}
+          {{- $partial := printf "vitae/fragments/%s" $fragmentName}}
+          {{/* {{- warnf "%s[%s]: component=%v: Calling fragment=%s with .Config=%v"
+              $page $template $component $fragmentName $fragmentConfig -}} */}}
+          {{- partial $partial (merge $componentArgs (dict "Fragment" $fragmentName "Config" $fragmentConfig ))  }}
+        {{- end }}
+      </div>
+    {{- end }}
     </div>
-  {{- end }}
   </div>
 {{- end }}
 </div>

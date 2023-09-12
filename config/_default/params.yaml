@@ -37,6 +37,15 @@ vitae:
                   #   font-size: larger-1
                   fragments:
                   - fragment: contact
+                    fields:
+                    - field: street
+                      separator: SEP
+                    - field: po_box
+                      separator: SEP
+                    - field: zip
+                    - field: city
+                      separator: ", "
+                    - field: country
                   - fragment: personal
                     fields:
                     - field: date_of_birth
@@ -191,6 +200,7 @@ vitae:
                   container: section
                   components:
                   - component: stages
+                    container: div
                     collection: stages
                     filter_by: type
                     filter_value: education
@@ -214,6 +224,7 @@ vitae:
                     details: true
                     level_bar: false
               - section: patents-publications
+                enabled: false
                 sections:
                 - section: publication-selection
                   title: section-publications

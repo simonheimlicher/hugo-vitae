@@ -205,6 +205,9 @@
 {{- $organizationMetaInHeader := $inlineHeader }}
 
 {{- $homeCountry := default "USA" .Data.features.contact.print.address.country }}
+{{- if $style.ats }}
+  {{- $homeCountry = "NonExistingCountry" }}
+{{- end }}
 
 {{- $periodDurationParams := (dict
   "DurationFirst" $durationFirst
@@ -306,7 +309,7 @@
     {{- $topLevelClass := strings.TrimLeft " " (delimit (append $styleClassList (slice $orgClass $timelineOrgClass $componentClass $childClass)) " ") }}
 
     {{- if not $separateRoles }}
-      {{- $organizationHeaderClassList = append "stage_header" $organizationHeaderClassList }}
+      {{- $organizationHeaderClassList = append (slice "stage_header" "column_header") $organizationHeaderClassList }}
     {{- end }}
 
     {{- if or $showOrganizationPeriod $showRolePeriodInOrganizationHeader }}
@@ -408,7 +411,7 @@
         {{- end }}
 
         {{- if not $separateRoles }}
-          {{- $roleHeaderClassList = append (slice "stage_header" $topLevelClass) $roleHeaderClassList }}
+          {{- $roleHeaderClassList = append (slice "stage_header" "column_header" $topLevelClass) $roleHeaderClassList }}
         {{- end }}
 
         {{- if $showRolePeriod }}
@@ -477,9 +480,9 @@
         {{- end }}
       {{- end }}
 
-      {{- $containerClass := "stage_content" }}
+      {{- $overviewContainerClass := "stage_overview" }}
       {{- if in (slice "dot-dash") $style.timeline }}
-        {{- $containerClass = "" }}
+        {{- $overviewContainerClass = "" }}
       {{- end }}
 
       {{- $showRole := (dict
@@ -489,7 +492,7 @@
         "achievements" false
       ) -}}
 
-      {{- with and (default true $component.role.dimension) $role.dimension }}
+      {{- with and (default (not $style.ats) $component.role.dimension) $role.dimension }}
         {{- $showRole = merge $showRole (dict "dimension" true) }}
       {{- end }}
       {{- with and (default true $component.role.description) $role.description }}
@@ -503,48 +506,54 @@
       {{- end }}
 
       {{- with and $showRole.dimension $role.dimension }}
-        {{- with $containerClass }}
-          <div class="{{ $containerClass }} {{ $topLevelClass }}">
+        {{- with $overviewContainerClass }}
+          <div class="{{ $overviewContainerClass }} {{ $topLevelClass }}">
           {{- if $style.timeline }}
-            <div class="stage_timeline"></div>
+            <div class="stage_timeline column_timeline"></div>
           {{- end }}
         {{- end }}
-        <div class="role_dimension stage_dimension stage_body{{ with (and (not $containerClass) $topLevelClass) }} {{ . }}{{ end }}">
+        <div class="role_dimension stage_dimension stage_body column_body{{ with (and (not $overviewContainerClass) $topLevelClass) }} {{ . }}{{ end }}">
           {{- partial "render_string_slice" . }}
         </div>
-        {{- with $containerClass }}
+        {{- with $overviewContainerClass }}
           </div>
         {{- end }}
       {{- end }}
 
       {{- with and $showRole.description $role.description }}
-        {{- with $containerClass }}
-          <div class="{{ $containerClass }} {{ $topLevelClass }}">
+        {{- with $overviewContainerClass }}
+          <div class="{{ $overviewContainerClass }} {{ $topLevelClass }}">
           {{- if $style.timeline }}
-            <div class="stage_timeline"></div>
+            <div class="stage_timeline column_timeline"></div>
           {{- end }}
         {{- end }}
-        <div class="role_description stage_description stage_details stage_body{{ with (and (not $containerClass) $topLevelClass) }} {{ . }}{{ end }}">
+        <div class="role_description stage_description stage_details stage_body column_body{{ with (and (not $overviewContainerClass) $topLevelClass) }} {{ . }}{{ end }}">
           {{- partial "render_string_slice" . }}
         </div>
-        {{- with $containerClass }}
+        {{- with $overviewContainerClass }}
           </div>
         {{- end }}
       {{- end }}
 
       {{- with and $showRole.summary $role.summary }}
-        {{- with $containerClass }}
-          <div class="{{ $containerClass }} {{ $topLevelClass }}">
+        {{- with $overviewContainerClass }}
+          <div class="{{ $overviewContainerClass }} {{ $topLevelClass }}">
           {{- if $style.timeline }}
-            <div class="stage_timeline"></div>
+            <div class="stage_timeline column_timeline"></div>
           {{- end }}
         {{- end }}
-        <div class="role_summary stage_summary stage_body{{ with (and (not $containerClass) $topLevelClass) }} {{ . }}{{ end }}">
+        <div class="role_summary stage_summary stage_body column_body{{ with (and (not $overviewContainerClass) $topLevelClass) }} {{ . }}{{ end }}">
           {{- partial "render_string_slice" . }}
         </div>
-        {{- with $containerClass }}
+        {{- with $overviewContainerClass }}
           </div>
         {{- end }}
+      {{- end }}
+
+
+      {{- $containerClass := "stage_content" }}
+      {{- if in (slice "dot-dash") $style.timeline }}
+        {{- $containerClass = "" }}
       {{- end }}
 
       {{- with and $showRole.achievements $role.achievements }}
@@ -552,14 +561,16 @@
           {{- with $containerClass }}
             <div class="{{ $containerClass }} {{ $topLevelClass }}">
             {{- if $style.timeline }}
-              <div class="stage_timeline"></div>
+              <div class="stage_timeline column_timeline"></div>
             {{- end }}
           {{- end }}
           {{- if $inlineContent }}
-            <div class="role_achievement_main stage_main{{ with (and (not $containerClass) $topLevelClass) }} {{ . }}{{ end }}">
+            <div class="role_achievement_main stage_body column_main{{ with (and (not $containerClass) $topLevelClass) }} {{ . }}{{ end }}">
               {{- $bullets := false }}
-              {{- with $achievement.lead }}
-                {{- $bullets = . }}
+              {{- if $style.ats }}
+                {{- with $achievement.lead }}
+                  {{- $bullets = . }}
+                {{- end }}
               {{- else }}
                 {{- with $achievement.title }}
                   {{- $bullets = . }}
@@ -578,7 +589,12 @@
                   {{- if $achievement.lead }}
                     {{- $bullets = append (last (sub (len .) 1) .) (slice $bullets) -}}
                   {{- else }}
-                    {{- $bullets = append . (slice $bullets) -}}
+                    {{- if $bullets }}
+                      {{- $bullets = append . (slice $bullets) -}}
+                    {{- else }}
+                      {{- $bullets = printf "**%v**" (index (first 1 .) 0) -}}
+                      {{- $bullets = append (last (sub (len .) 1) .) (slice $bullets) -}}
+                    {{- end }}
                   {{- end }}
                 {{- else }}
                   {{- if $bullets }}
@@ -593,13 +609,13 @@
               {{- end }}
             </div>
           {{- else }}
-            <div class="role_achievement_header stage_header{{ with (and (not $containerClass) $topLevelClass) }} {{ . }}{{ end }}">
+            <div class="role_achievement_header stage_header column_header{{ with (and (not $containerClass) $topLevelClass) }} {{ . }}{{ end }}">
               <h{{ add $headingLevel 2 }} class="role_achievement_title">
                 {{-  page.RenderString $achievement.title -}}
               </h{{ add $headingLevel 2 }}>
               {{- /* <pre>{{ jsonify (dict "indent" "  ") . }}</pre> */ -}}
             </div>
-            <div class="role_achievement_main stage_main{{ with (and (not $containerClass) $topLevelClass) }} {{ . }}{{ end }}">
+            <div class="role_achievement_main stage_body column_main{{ with (and (not $containerClass) $topLevelClass) }} {{ . }}{{ end }}">
               {{- with $achievement.content }}
                 {{- partial "render_string_slice" . }}
               {{- end }}
@@ -653,12 +669,12 @@
   {{ partial "html-comment" (printf "%s: BEGIN organization_header" $template ) }}
 
   {{- if and (not (in (slice "left") $style.logo)) (in (slice "dot-dash" "column") $style.timeline) }}
-      <div class="{{ printf `timeline_%s_marker stage_timeline` $style.timeline }}"></div>
+      <div class="{{ printf `timeline_%s_marker stage_timeline column_timeline` $style.timeline }}"></div>
   {{- end }}
 
   {{- if or $showOrganizationPeriod $showOrganizationDuration }}
     {{- with $org.roles }}
-      <div class="organization_period stage_period">
+      <div class="organization_period stage_period column_period">
           {{- partial
             "vitae/_functions/date-period-duration" (merge $.PeriodDurationParams (dict
               "ShowPeriod" $showOrganizationPeriod
@@ -669,7 +685,7 @@
     {{- end }}
   {{- else if and $roleHeaderInOrganizationHeader $singleRole }}
     {{- with $org.roles }}
-      <div class="role_period stage_period">
+      <div class="role_period stage_period column_period">
           {{- partial
             "vitae/_functions/date-period-duration" (merge $.PeriodDurationParams (dict
               "ShowPeriod" $showRolePeriod
@@ -680,7 +696,7 @@
     {{- end }}
   {{- end }}
   {{- with $container }}
-    {{ printf `<%s class="%s">` $container "organization_header_main stage_main" | safeHTML }}
+    {{ printf `<%s class="%s">` $container "organization_header_main stage_body column_main" | safeHTML }}
   {{- end }}
   <h{{ $headingLevel }} class="organization_title">
   {{- if $org.website }}
@@ -792,12 +808,12 @@
 
   {{ partial "html-comment" (printf "%s: BEGIN role_header" $template ) }}
   {{- if and (not $roleHeaderInOrganizationHeader) (in (slice "dot-dash" "column") $style.timeline) (or $style.logo (not (eq $numRoles 1))) }}
-    <div class="{{ printf `timeline_%s_marker stage_timeline` $style.timeline }}"></div>
+    <div class="{{ printf `timeline_%s_marker stage_timeline column_timeline` $style.timeline }}"></div>
   {{- end }}
 
   {{- if or $showRolePeriod $showRoleDuration }}
     {{- with $role.period }}
-      <div class="role_period stage_period">
+      <div class="role_period stage_period column_period">
         {{- partial
           "vitae/_functions/date-period-duration" (merge $.PeriodDurationParams (dict
             "PeriodList" .
@@ -809,7 +825,7 @@
   {{- end }}
 
   {{- with $container }}
-    {{ printf `<%s class="%s">` $container "role_header_main stage_main" | safeHTML }}
+    {{ printf `<%s class="%s">` $container "role_header_main stage_body column_main" | safeHTML }}
   {{- end }}
   <h{{ add 1 $headingLevel }} class="role_title{{ if $role.supertitle }} supertitle{{ end }}{{ if $role.subtitle }} subtitle{{ end }}">
     {{- with $role.supertitle }}
@@ -868,7 +884,7 @@
     "summary" false
   ) -}}
 
-  {{- with and (default true (index $component $stageType "dimension")) $org.dimension }}
+  {{- with and (default (not $style.ats) (index $component $stageType "dimension")) $org.dimension }}
     {{- $show = merge $show (dict "dimension" true) }}
   {{- end }}
   {{- with and (default true (index $component $stageType "description")) $org.description }}
@@ -878,52 +894,52 @@
     {{- $show = merge $show (dict "summary" true) }}
   {{- end }}
 
-  {{- $containerClass := "stage_content" }}
+  {{- $overviewContainerClass := "stage_overview" }}
   {{- if in (slice "dot-dash") $style.timeline }}
-    {{- $containerClass = "" }}
+    {{- $overviewContainerClass = "" }}
   {{- end }}
 
   {{- with and $show.dimension $org.dimension }}
-    {{- with $containerClass }}
-      <div class="{{ $containerClass }} {{ $topLevelClass }}">
+    {{- with $overviewContainerClass }}
+      <div class="{{ $overviewContainerClass }} {{ $topLevelClass }}">
       {{- if $style.timeline }}
-        <div class="stage_timeline"></div>
+        <div class="stage_timeline column_timeline"></div>
       {{- end }}
     {{- end }}
-    <div class="org_dimension stage_dimension stage_body{{ with (and (not $containerClass) $topLevelClass) }} {{ . }}{{ end }}">
+    <div class="org_dimension stage_dimension stage_body column_body{{ with (and (not $overviewContainerClass) $topLevelClass) }} {{ . }}{{ end }}">
       {{- partial "render_string_slice" . }}
     </div>
-    {{- with $containerClass }}
+    {{- with $overviewContainerClass }}
       </div>
     {{- end }}
   {{- end }}
 
   {{- with and $show.description $org.description }}
-    {{- with $containerClass }}
-      <div class="{{ $containerClass }} {{ $topLevelClass }}">
+    {{- with $overviewContainerClass }}
+      <div class="{{ $overviewContainerClass }} {{ $topLevelClass }}">
       {{- if $style.timeline }}
-        <div class="stage_timeline"></div>
+        <div class="stage_timeline column_timeline"></div>
       {{- end }}
     {{- end }}
-    <div class="org_description stage_description stage_details stage_body{{ with (and (not $containerClass) $topLevelClass) }} {{ . }}{{ end }}">
+    <div class="org_description stage_description stage_details stage_body column_body{{ with (and (not $overviewContainerClass) $topLevelClass) }} {{ . }}{{ end }}">
       {{- partial "render_string_slice" . }}
     </div>
-    {{- with $containerClass }}
+    {{- with $overviewContainerClass }}
       </div>
     {{- end }}
   {{- end }}
 
   {{- with and $show.summary $org.summary }}
-    {{- with $containerClass }}
-      <div class="{{ $containerClass }} {{ $topLevelClass }}">
+    {{- with $overviewContainerClass }}
+      <div class="{{ $overviewContainerClass }} {{ $topLevelClass }}">
       {{- if $style.timeline }}
-        <div class="stage_timeline"></div>
+        <div class="stage_timeline column_timeline"></div>
       {{- end }}
     {{- end }}
-    <div class="org_summary stage_summary stage_body{{ with (and (not $containerClass) $topLevelClass) }} {{ . }}{{ end }}">
+    <div class="org_summary stage_summary stage_body column_body{{ with (and (not $overviewContainerClass) $topLevelClass) }} {{ . }}{{ end }}">
       {{- partial "render_string_slice" . }}
     </div>
-    {{- with $containerClass }}
+    {{- with $overviewContainerClass }}
       </div>
     {{- end }}
   {{- end }}
@@ -1123,7 +1139,7 @@
       {{- end }}
       {{- with $topLevelClass }}
         <div class="{{ printf `%s_meta stage_meta` $stageType }} {{ . }}">
-          <div class="stage_main">
+          <div class="stage_main column_main">
       {{- else }}
         <span class="{{ printf `%s_meta stage_meta` $stageType }}">
       {{- end }}

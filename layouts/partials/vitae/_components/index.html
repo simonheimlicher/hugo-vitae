@@ -2,6 +2,7 @@
 {{- $headingLevel := default 3 .HeadingLevel }}
 {{- $vitaeTemplate := .Template }}
 {{- $vitaeData := .Data }}
+{{- $vitaeParams := .VitaeParams }}
 {{- $sections := .Sections }}
 {{- $sectionSeparator := .SectionSeparator }}
 {{- $childClass := default "" .ChildClass }}
@@ -724,12 +725,16 @@
   {{- range $componentIndex, $component := $section.components }}
     {{- $componentName := $component.component }}
 
-    {{- $componentContainer := default "" .container }}
+    {{- $componentContainer := default false .container }}
 
     {{- if $componentContainer }}
       {{- with $mergedStyle }}
         {{/* FIXME Should probably call style-merged to merge the styles */}}
-        {{- printf `<%s class="component-container_%s component-container{{ with $mergedStyle.StyleClass }} {{ . }}{{ end }}">` $componentContainer $componentName | safeHTML }}
+        {{- $componentClassList := slice (printf "component-container_%s component-container" $componentName) }}
+        {{ with $mergedStyle.StyleClass }}
+          {{ $componentClassList = append . $componentClassList }}
+        {{ end }}
+        {{- printf `<%s class="%s">` $componentContainer (delimit $componentClassList ` `) | safeHTML }}
       {{- else }}
         {{- printf `<%s class="component-container_%s component-container{{ with $mergedStyle.StyleClass }} {{ . }}{{ end }}">` $componentContainer $componentName | safeHTML }}
       {{- end }}
@@ -751,14 +756,14 @@
 
     {{- $componentPartialParams := (dict
       "Page" $page
+      "Params" $vitaeParams
       "Template" $vitaeTemplate
       "Media" $media
       "Component" $component
       "MergedStyle" $mergedComponentStyle
-      "MergedStyle" $mergedComponentStyle
       "Index" $componentIndex
       "ChildClass" $childClass
-      "Container" false
+      "SingleContainer" $componentContainer
       "Data" $vitaeData
     ) -}}
 
@@ -768,7 +773,7 @@
     {{- end }}
   {{- end }}
   {{- with $section.sections }}
-    {{- $panelClass := append $topLevelClass (slice "section-panel" (printf "section-panel_%s" $sectionName) ) }}
+    {{- $panelClass := append $topLevelClass (slice "section-panel" (printf "section-panel_%s" $sectionName) "section" ) }}
     {{- $validSectionPanelStyles := (dict
       "column-width_main" "ANY_INT"
     ) -}}
@@ -805,7 +810,6 @@
         "Page" $page
         "Template" $vitaeTemplate
         "Media" $media
-        "MergedStyle" $mergedStyle
         "MergedStyle" $mergedStyle
         "ChildClass" $childClass
         "Data" $vitaeData

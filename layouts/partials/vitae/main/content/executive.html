@@ -1,15 +1,23 @@
-{{- $pp := . }}
 {{- $page := .Page }}
 {{- $templateName := "executive" }}
 {{- $template := printf "vitae/main/content/%s" $templateName }}
 
 {{ partial "html-comment" (printf "BEGIN '%s'" $template) }}
 
-{{- $vitaeDefaultTemplate := $pp.VitaeDefaultTemplate }}
-{{- $vitaeTemplate := $pp.VitaeTemplate }}
-{{- $vitaeData := $pp.VitaeData }}
-{{- $vitaeStyle := $pp.VitaeStyle }}
-{{- $vitaeParams := $pp.VitaeParams }}
+{{- $vitaeDefaultTemplate := .VitaeDefaultTemplate }}
+{{- $vitaeTemplate := .VitaeTemplate }}
+{{- $vitaeData := .VitaeData }}
+{{- $vitaeStyle := .VitaeStyle }}
+{{- $vitaeParams := .VitaeParams }}
+
+{{- /* Params to be passed on to partials (read-only)
+FIXME: Consolidate keys, e.g. .VitaeParams and .Params */ -}}
+{{- $pp := merge . (dict
+  "Page" $page
+  "Params" $vitaeParams
+  "Data" $vitaeData
+  "Template" $vitaeTemplate
+) -}}
 
 {{- $debug := false }}
 {{/* {{- $debug = or $debug (not (not (findRE `^/([^/]+-demo/)?devel` $page.RelPermalink) ) ) -}} */}}
@@ -52,8 +60,9 @@
 {{- $style := $mergedStyle.Style }}
 {{- $styleClassList := $mergedStyle.StyleClass }}
 
-{{- $slotSeparator := "section-gap_vertical" }}
-{{- $sectionSeparator := $slotSeparator }}
+{{- $slotSeparator := "slot-gap_vertical" }}
+{{- $slotSeparator = false }}
+{{- $sectionSeparator := "section-gap_vertical" }}
 
 <!-- Pagination
 Part: an independent section of one or more printed pages
@@ -72,8 +81,10 @@ PaginationPage: a printed page that is part of a Part
 {{- $parts := $originalParts }}
 {{- with $vitaeParams.parts }}
   {{- $parts = slice }}
-  {{- warnf "%s[%s]: vitaeParams.parts=%v" $page $template
-      (jsonify (dict "indent" "  ") $vitaeParams.parts) }}
+  {{- if $debug }}
+    {{- warnf "%s[%s]: vitaeParams.parts=%v" $page $template
+        (jsonify (dict "indent" "  ") $vitaeParams.parts) -}}
+  {{- end }}
   {{- range $originalPart := $originalParts }}
     {{- with index $vitaeParams.parts .part }}
       {{- $part := merge $originalPart . }}
@@ -165,30 +176,40 @@ PaginationPage: a printed page that is part of a Part
       {{/* {{- warnf "%s[%s]: shared=%v" $page $template $slot.shared }} */}}
       {{- $paginationPolicy := $slot.pagination_policy | default $part.pagination_policy | default `break` }}
       {{- $paginationOrder := $slot.pagination_order | default $slotIndex }}
+
+      {{- $slotType := cond (in (slice "header" "main") $slot.slot) "content" "chrome" }}
       {{- $container := default "div" .container }}
+
+      {{- $mergedSlotStyle := $mergedStyle }}
+      {{- with $slotStyle := $slot.style }}
+        {{- $mergedSlotStyle = partial "vitae/_functions/style-merged" (dict
+          "MergedStyle" $style
+          "Style" $slotStyle
+          "ValidStyles" $validStyles
+          "Template" $template
+        ) -}}
+      {{- end }}
+
       {{- with $slotSeparator }}
+        {{- $slotSeparatorClass := slice . }}
+        {{- with $mergedSlotStyle }}
+          {{- $slotSeparatorClass = append .StyleClass $slotSeparatorClass }}
+        {{- end }}
         {{- if gt $slotIndex 0 }}
-          <div class="{{ . }}"></div>
+          <div class="{{ delimit $slotSeparatorClass ` ` }}"></div>
         {{- end }}
       {{- end }}
+
       {{- with $container }}
-        {{- $containerClass := slice (printf "slot_%s slot" $slot.slot) $pp.PaginationContainerClass }}
+        {{- $containerClass := slice (printf "slot_%s slot_%s" $slot.slot $slotType) $pp.PaginationContainerClass }}
         {{- with $slot.container_class }}
           {{- $containerClass = append . $containerClass }}
         {{- end }}
 
-        {{- $mergedSlotStyle := false }}
-        {{- with $slotStyle := $slot.style }}
-          {{- $mergedSlotStyle = partial "vitae/_functions/style-merged" (dict
-            "Style" $slotStyle
-            "ValidStyles" $validStyles
-            "Template" $template
-          ) -}}
-
-          {{- with $mergedSlotStyle.StyleClass }}
-            {{- $containerClass = append . $containerClass }}
-          {{- end }}
+        {{- with $mergedSlotStyle }}
+          {{- $containerClass = append .StyleClass $containerClass }}
         {{- end }}
+
         {{ printf `<%s class="%s" %s="%d" %s="%s">` $container
         (delimit $containerClass ` `)
         $pp.PaginationOrderAttr $paginationOrder
@@ -279,11 +300,8 @@ PaginationPage: a printed page that is part of a Part
       {{- end }}
 
       {{- partial "vitae/_components/index" (merge $pp (dict
-        "Page" $page
-        "Template" $vitaeTemplate
         "MergedStyle" $mergedStyle
         "ChildClass" $childClass
-        "Data" $vitaeData
         "Sections" $sections
         "SectionSeparator" $sectionSeparator
       )) -}}

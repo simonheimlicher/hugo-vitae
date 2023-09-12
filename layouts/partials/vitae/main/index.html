@@ -7,7 +7,7 @@
 {{- $template := "vitae/main/index" }}
 
 {{- $debug := false }}
-{{/* {{- $debug = or $debug (not (not (findRE `^/([^/]+-demo/)?preview` $page.RelPermalink) ) ) -}} */}}
+{{/* {{- $debug = or $debug (not (not (findRE `^/([^/]+-demo/)?profile` $page.RelPermalink) ) ) -}} */}}
 
 {{/* {{ partial "html-comment" (printf "[%s]: PartialParams:%v" $template $pp) }} */}}
 
@@ -19,7 +19,10 @@
 {{- $media := ($page.Param "Media") | default (cond (or $printPreview $printView $printControl) "print" "screen") }}
 {{/* Hugo output format overrides configuration if and only if it is print */}}
 {{- $outputFormat := default "HTML" (partial "claris/_functions/output-format" $page).Name }}
-{{- $media = cond (eq $outputFormat "print") "print" $media }}
+{{- if eq $outputFormat "print" }}
+  {{- $printView = true }}
+  {{- $media = "print" }}
+{{- end }}
 {{- if $debug }}
     {{ warnf "%s[%s]: media=%v [printPreview=%v printView=%v printControl=%v]"  $page $template $media $printPreview $printView $printControl }}
 {{- end }}
@@ -137,7 +140,8 @@ vitae:
   {{- $vitaeData = partial "vitae/_functions/resources-merged" (dict "Page" $page "resource" $bundleDataPath) }}
 
   {{- if not $vitaeData }}
-    {{/* {{ warnf "%s[%s]: No resource matching %s found in page bundle or in parent page bundle"  $page $template $bundleDataPath }} */}}
+    {{- warnf "%s[%s]: No resource found at path=%s found in page bundle=%v or in parent page bundle=%v"
+        $page $template $bundleDataPath $page $page.Parent }}
     {{- $vitaeData = index site.Data $vitaeDataRoot }}
     {{- if $vitaeData }}
       {{- if (isset $vitaeData site.Language.Lang) }}
@@ -232,8 +236,8 @@ vitae:
       </div>
     </div>
   {{- else }}
-    {{- errorf "%s[%s]: Invalid vitaeDataRoot=%v"
-        $page $template $vitaeDataRoot }}
+    {{- errorf "%s[%s]: Valid vitaeTemplate from site.Params:%v yielded invalid vitaeDataRoot=%v"
+        $page $template $vitaeBaseTemplateRoot $vitaeDataRoot }}
   {{- end }}
 {{- else }}
   {{- errorf "%s[%s]: Invalid vitaeTemplateRoot=%v [vitaeTemplateName=%v or vitaeVariantName=%v]"

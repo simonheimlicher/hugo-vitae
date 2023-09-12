@@ -7,12 +7,18 @@
 {{/* {{- warnf "%s[%s]: outputFormat:%s" $page $template $outputFormat }} */}}
 {{- $obfuscatedLink := "partials/claris/_components/obfuscated-link.html" }}
 
-{{- $addressFields := default (slice
-  (dict "street" "SEP")
-  (dict "zip" " ")
-  (dict "city" ", ")
-  (dict "country" "")
-) .AddressFields }}
+{{- $fields := default (slice
+  (dict "field" "street" "separator" " ")
+  (dict "field" "po_box" "separator" " ")
+  (dict "field" "zip" "separator" "SEP")
+  (dict "field" "city" "separator" ", ")
+  (dict "field" "country" "separator" "")
+) $config.fields }}
+
+{{- with index .Params.fragments $fragment "fields" }}
+  {{- warnf "%v" (jsonify (dict "indent" "  ") . ) }}
+  {{- $fields = . }}
+{{- end }}
 
 {{- $contactIcons := true }}
 {{- $inlineSeparatorStr := default "•" $style.inline_separator }}
@@ -20,7 +26,7 @@
 {{/* {{- $inlineSeparatorStr := "<br>" }} */}}
 
 {{- /* warnf "%s[%s]: .Fragment=%s .Config=%s .Data=%s" $page $template $fragment $config .Data.features.contact */ -}}
-{{- with (index .Data.features.contact $media) }}
+{{- with default .Data.features.contact (index .Data.features.contact $media) }}
   {{- with $config.title }}
     <h2 class="contact_title section-title">{{- default . (T .) -}}</h2>
   {{- end }}
@@ -66,12 +72,12 @@
       {{ partial "fa-icon" "map" }}
       {{- end -}}
       <div class="fragment_item-text">
-        {{- range $fieldSpec := $addressFields }}
-          {{- range $field, $sep := $fieldSpec }}
-            {{- with (index $address $field) }}
-              {{- if (eq $sep "SEP") }}{{ $sep = printf " %s " $inlineSeparatorStr }}{{- end }}
-                <span class="address-{{ $field }}">{{ printf "%v%v" . $sep | safeHTML }}</span>
-              {{- end }}
+        {{- range $fieldSpec := $fields }}
+          {{- $field := .field }}
+          {{- $sep := .separator }}
+          {{- with (index $address $field) }}
+            {{- if (eq $sep "SEP") }}{{ $sep = printf " %s " $inlineSeparatorStr }}{{- end }}
+              <span class="address-{{ $field }}">{{ printf "%v%v" . $sep | safeHTML }}</span>
             {{- end }}
           {{- end }}
       </div>
