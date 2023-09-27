@@ -3,13 +3,13 @@
 {{- $template := "vitae/head/title" }}
 {{- $debug := false }}
 {{- /* {{- $debug = page.Scratch.Get "clarisdebug" }} */ -}}
-{{- /* {{- $debug = or $debug (not (not (findRE `profile` $page.RelPermalink) ) ) }} */ -}}
+{{- /* $debug = or $debug (not (not (findRE `^/([^/]+-demo/)?` $page.RelPermalink) ) ) */ -}}
 
 {{- with $page }}
   {{- $title := .Title | .RenderString | plainify }}
   {{- $subtitle := "" }}
   {{- $supertitle := "" }}
-  {{- $fulltitle := "" }}
+  {{- $headline := "" }}
   {{- $role := (.Page.Param "role") | markdownify | plainify }}
   {{- $titleDateFormat := "2006-01-02"}}
 
@@ -38,34 +38,36 @@
         {{- end }}
       {{- end }}
     {{- end }}
-    {{- $fulltitle = $title }}
+    {{- $headline = $title }}
     {{- if and $title (ne (trim (lower site.Title) "") (trim (lower $title) "")) }}
       {{- if $role }}
         {{- if eq .Layout "letter" }}
-          {{- $fulltitle = printf "%s %s" (T "application-for-position") $role }}
+          {{- $headline = printf "%s %s" (T "application-for-position") $role }}
         {{- else if eq .Layout "resume" }}
           {{- $title = printf "%s %s" (T "resume-for-position") $role }}
         {{- end }}
       {{- end }}
     {{- end }}
     {{- with .Page.Param "titleSeparator" }}
-      {{ $fulltitle = printf "%s %s %s" $fulltitle (safeHTML .) site.Title }}
+      {{ $headline = printf "%s %s %s" $headline (safeHTML .) site.Title }}
     {{- end }}
   {{- else }}
     {{- $title = site.Title }}
-    {{- $fulltitle = $title }}
+    {{- $headline = $title }}
   {{- end }}
 
   {{- $titleVariant = (dict
     "title" $title
     "subtitle" $subtitle
     "supertitle" $supertitle
-    "fulltitle" $fulltitle
+    "headline" $headline
     ) }}
   {{- if $debug }}
-    {{- warnf "%s[%s]: .Kind=%s title=%s supertitle=%v fulltitle=%s from .Singular=%v .Plural=%v .Section=%v .Title=%v"
-        $page $template .Kind $titleVariant.title $titleVariant.supertitle $titleVariant.fulltitle
+    {{- warnf "%s[%s]: .Kind=%s title=%s supertitle=%v headline=%s from .Singular=%v .Plural=%v .Section=%v .Title=%v"
+        $page $template .Kind $titleVariant.title $titleVariant.supertitle $titleVariant.headline
         .Data.Singular .Data.Plural .Section .Title }}
   {{- end }}
+{{- else }}
+  {{- errorf "%s[%s]: Missing argument .Page=%v" $page $template $page }}
 {{- end }}
 {{- return $titleVariant }}
