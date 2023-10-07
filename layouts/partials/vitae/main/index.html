@@ -12,7 +12,10 @@
 {{/* {{ partial "html-comment" (printf "[%s]: PartialParams:%v" $template $pp) }} */}}
 
 {{- $type := default (default "vitae" $page.Type) ($page.Param "Type") }}
-{{- $layout := default (default "profile" $page.Layout) ($page.Param "Layout") }}
+{{- $layout := default (default "template" $page.Layout) ($page.Param "Layout") }}
+{{- if eq $layout "executive" }}
+  {{- $layout = "template" }}
+{{- end }}
 {{- $printPreview := default false ($page.Param "PrintPreview") }}
 {{- $printView := default false ($page.Param "PrintView") }}
 {{- $printControl := default false ($page.Param "PrintControl") }}
@@ -28,6 +31,7 @@
 {{- end }}
 
 {{- $vitaeParamRoot := split (default "vitae" ($page.Param "VitaeRoot")) "." }}
+{{- $vitaeTemplatePath := "templates" }}
 {{- $vitaeTemplateVariantPath := "variants" }}
 {{- $vitaeStylePath := "style" }}
 {{- $vitaeSectionsPath := "sections" }}
@@ -38,9 +42,9 @@
 {{- $vitaeTemplateName := default $vitaeDefaultTemplateName $vitaeParams.template }}
 {{- $vitaeVariantName := default $vitaeDefaultVariantName $vitaeParams.variant }}
 
-{{- $vitaeBaseTemplateRoot := append $vitaeTemplateName $vitaeParamRoot }}
-{{- $vitaeDefaultTemplateRoot := append (slice $vitaeTemplateName $vitaeTemplateVariantPath $vitaeDefaultVariantName) $vitaeParamRoot }}
-{{- $vitaeTemplateRoot := append (slice $vitaeTemplateName $vitaeTemplateVariantPath $vitaeVariantName) $vitaeParamRoot }}
+{{- $vitaeBaseTemplateRoot := append (slice $vitaeTemplatePath $vitaeTemplateName) $vitaeParamRoot }}
+{{- $vitaeDefaultTemplateRoot := append (slice $vitaeTemplatePath $vitaeTemplateName $vitaeTemplateVariantPath $vitaeDefaultVariantName) $vitaeParamRoot }}
+{{- $vitaeTemplateRoot := append (slice $vitaeTemplatePath $vitaeTemplateName $vitaeTemplateVariantPath $vitaeVariantName) $vitaeParamRoot }}
 
 {{- $vitaeStyleRoot := append $vitaeStylePath $vitaeParamRoot }}
 {{- $vitaeSectionsRoot := append $vitaeSectionsPath $vitaeParamRoot }}
@@ -121,8 +125,8 @@ vitae:
 
 {{- with $vitaeTemplate }}
 
-  {{- if $debug }}
-    {{- warnf "%s[%s]: RelPermalink=%s\ntemplate.variant '%s.%s'=%v"
+  {{- if and false $debug }}
+    {{- warnf "%s[%s]: RelPermalink=%s\ntemplate=%s variant=%s:\n%v"
         $page $template $page.RelPermalink
         $vitaeTemplateName $vitaeVariantName
         (jsonify (dict "indent" "  ") $vitaeTemplate)
@@ -218,6 +222,8 @@ vitae:
         "OriginalInnerClass" $originalInnerClass
         ) $pp }}
 
+    {{- $templatePartial := (path.Join $pp.Type $mainContentPrefix "template") }}
+
     {{ partial "html-comment" (printf "[%s]: BEGIN [layout=%v media=%v printPreview=%v printView=%v printControl=%v]\nstyle="
         $template $pp.Layout $pp.Media $pp.PrintPreview $pp.PrintView $pp.PrintControl)
         (jsonify (dict "indent" "  ") $vitaeTemplate.style) -}}
@@ -228,10 +234,10 @@ vitae:
       {{- end }}
       <div id="originalContainer" class="view-{{ cond $pp.PrintPreview "print" "screen" }}">
         <div id="contentContainer" class="{{- $originalInnerClass }}">
-          {{- if and false $debug }}
-            {{- warnf "%s[%s]: Calling partial %s with pp:\n%v" $page $template (path.Join $pp.Type $pp.Layout) ((merge $pp (dict "Page" "OMITTED")) | jsonify (dict "indent" "  ")) }}
+          {{- if $debug }}
+            {{- warnf "%s[%s]: Calling partial %s with pp:\n%v" $page $template $templatePartial ((merge $pp (dict "Page" "OMITTED")) | jsonify (dict "indent" "  ")) }}
           {{- end }}
-          {{- partial (path.Join $pp.Type $mainContentPrefix $pp.Layout) $pp }}
+          {{- partial $templatePartial $pp }}
         </div>
       </div>
     </div>

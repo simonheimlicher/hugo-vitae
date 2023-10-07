@@ -595,7 +595,7 @@
 
 // Adapt layout after pagination
 .vitae[data-print-preview-status="done"] {
-  &.layout-executive .view-print .pagination-page {
+  &.layout-template .view-print .pagination-page {
     // .pagination-container[data-pagination-policy="break"] {
     // FIXME: Explicit slot gaps don't work well with pagination
     // .slot-gap_vertical {

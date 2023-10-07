@@ -42,7 +42,7 @@
 
 {{- $debug := false }}
 {{/* {{- if not (not (findRE `^/([^/]+-demo/)?$` page.RelPermalink)) }}
-  {{- $debugCallingTemplates := slice "executive" "_components/index" "_components/skills" }}
+  {{- $debugCallingTemplates := slice "template" "_components/index" "_components/skills" }}
   {{- $debugCallingTemplates = slice "testcase" }}
   {{- range $debugCallingTemplates }}
     {{- $debug = or $debug (and (strings.Contains (index $templateChain 0) . ) ) -}}
