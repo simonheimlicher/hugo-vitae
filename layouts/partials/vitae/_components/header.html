@@ -23,6 +23,8 @@
     "larger-1" "larger-1"
     "smaller-1" "smaller-1"
   )
+  "icon" "ANY_BOOL"
+  "label" "ANY_BOOL"
 ) -}}
 
 {{- $mergedStyle := partial "vitae/_functions/style-merged" (dict
@@ -89,10 +91,10 @@
   {{- end }}
   <div class="overlay">
     <div class="overlay_content">
-    {{- with or $component.headline .headline }}
+    {{- with and  (not (eq $component.headline false)) .headline }}
         <h{{ $headingLevel }} class="headline content-title">
         <span class="name">{{- .name | page.RenderString }}</span>
-        {{- with .role }}
+        {{- with and (not (eq $component.role false)) .role }}
           <span class="role">{{. | page.RenderString }}</span>
         {{- end -}}
         </h{{ $headingLevel }}>

@@ -68,7 +68,17 @@ stage_unit_type_team:
   other: team
 stage_unit_type_business_area:
   other: business area
+fragment_phone_label:
+  other: mobile
+fragment_email_label:
+  other: email
+fragment_address_label:
+  other: address
+# fragment_date_of_birth_prefix:
+#   other: born
+fragment_date_of_birth_label:
+  other: date of birth
 fragment_citizenship_prefix:
   other: citizen of
-fragment_nationality_prefix:
-  other: "nationality:"
+fragment_nationality_label:
+  other: "nationality"

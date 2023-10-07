@@ -5,80 +5,154 @@
 {{- $style := .MergedStyle.Style }}
 {{- $template := "partials/vitae/fragments/personal" }}
 {{- $media := .Media }}
+{{- $debug := false }}
+{{- /* $debug = or $debug (not (not (findRE `^/([^/]+-demo/)?preview` $page.RelPermalink) ) ) */ -}}
+{{/* {{- warnf "%s[%s]: media=%s .Fragment=%s .Config=%s" $page $template $media $fragment $config -}} */}}
+{{- if $debug }}
+  {{- warnf "%s[%s]: .Fragment=%s .Config=%s .Data=%s" $page $template $fragment $config $data -}}
+{{- end }}
+
 {{/* {{- warnf "%s[%s]: outputFormat:%s" $page $template $outputFormat }} */}}
 
-{{- $classPrefix := "fragment_personal" }}
+{{- $validStyles := (dict
+  "_template" $template
+  "ats" (dict
+    "true" (dict
+      "layout" "inline"
+    )
+  )
+  "layout" (slice
+    "shallow"
+    "narrow"
+    "inline"
+  )
+  "icon" "ANY_BOOL"
+  "label" "ANY_BOOL"
+  "qrcode" "ANY_BOOL"
+) -}}
+
+{{- $mergedStyle := partial "vitae/_functions/style-merged" (dict
+  "Template" $template
+  "MergedStyle" .MergedStyle
+  "ValidStyles" $validStyles
+) -}}
+
+{{- $style := $mergedStyle.Style }}
+{{- $styleClassList := $mergedStyle.StyleClass }}
+
+{{- $inlineLayout := (in $style.layout "inline") }}
+{{- $showLabelIcon := default true $style.icon }}
+{{- $showLabelText := default (not $showLabelIcon) $style.label }}
+{{- $qrCode := $style.qrcode }}
 
 {{- $inlineSeparatorStr := default "•" $style.inline_separator }}
 
-{{- $contactIcons := true }}
-{{- $inlineLayout := in (slice "inline") $style.layout }}
+{{- $labelIcon := (dict
+  "date_of_birth" "solid/cake-candles"
+  "citizenship" "solid/globe"
+) -}}
 
-{{- $debug := false }}
-{{/* {{- $debug = or $debug (not (not (findRE `^/([^/]+-demo/)?ats/preview` $page.RelPermalink) ) ) -}} */}}
-{{/* {{- warnf "%s[%s]: media=%s .Fragment=%s .Config=%s" $page $template $media $fragment $config -}} */}}
-{{- /* warnf "%s[%s]: .Fragment=%s .Config=%s .Data=%s" $page $template $fragment $config $data.features.date-of-birth */ -}}
+{{- $fragmentClass := "fragment_personal" }}
 
-{{- with $config.fields }}
-  <div class="{{ $classPrefix }} fragment_item">
-  {{- range $fieldIndex, $field := . }}
-    {{- $fieldName := $field }}
-    {{- if reflect.IsMap $fieldName }}
-      {{- $fieldName = $field.field }}
+{{- with $fragmentData := index $data $fragment }}
+  {{- with $config.fields }}
+    {{- $fragmentDiv := false }}
+    {{- if not $inlineLayout }}
+    {{- $fragmentDiv = true }}
+    <div class="{{ $fragmentClass }} fragment_item">
     {{- end }}
-    {{- $fieldData := false }}
-    {{- with ($fieldData = (index $data $fragment $fieldName)) }}
-      {{- with (index . $media) }}
-        {{- $fieldData = . }}
-      {{- end -}}
-    {{- end }}
-    {{- with $fieldData }}
-      {{- $classPrefix := $fieldName }}
-      {{- if eq $fieldName "date_of_birth" }}
-        {{- with $dateOfBirth := $fieldData.date }}
-          {{- if $contactIcons }}
-            {{ partial "fa-icon" "solid/cake-candles" }}
-          {{- end }}
-          {{- if $inlineLayout }}
+    {{- $textDiv := false }}
+    {{- $fieldCount := 0 }}
+    {{- range $fieldIndex, $field := . }}
+      {{- $fieldName := $field }}
+      {{- if reflect.IsMap $fieldName }}
+        {{- $fieldName = $field.field }}
+      {{- end }}
+      {{- $fieldData := false }}
+      {{- with ($fieldData = (index $fragmentData $fieldName)) }}
+        {{- with (index . $media) }}
+          {{- $fieldData = . }}
+        {{- end -}}
+      {{- end }}
+      {{- with $fieldData }}
+        {{- $classPrefix := $fieldName }}
+        {{- if and (not $fragmentDiv) $inlineLayout }}
+        {{- $fragmentDiv = true }}
+        <div class="{{ $classPrefix }} fragment_item">
+        {{- end }}
+        {{- if and (not $textDiv) (not $showLabelIcon) }}
+          {{- $textDiv = true }}
           <div class="fragment_item-text">
+        {{- end }}
+        {{- $labelText := "" }}
+        {{- $content := "" }}
+        {{- if eq $fieldName "date_of_birth" }}
+          {{- with $fieldData.date }}
+            {{- $content = printf `<time class="%s_date" datetime="%s">%s</time>` $classPrefix (time.Format "2006-01-02" . ) (time.Format "January 2, 2006" . ) }}
+          {{- end }}
+        {{- else if eq $fieldName "citizenship" }}
+          {{- $content = $fieldData.country }}
+        {{- end }}
+        {{- with $content }}
+          {{- if and (not $inlineLayout) (not $showLabelIcon) (gt $fieldCount 0) }}
+            {{- with $inlineSeparatorStr }}
+              {{- safeHTML . -}}
+            {{- end }}
+          {{- end }}
+          {{- with and $showLabelIcon (index $labelIcon $fieldName) }}
+            {{ partial "fa-icon" . }}
+          {{- end }}
+          {{- if and (not $textDiv) (or $showLabelIcon $inlineLayout) }}
+            {{- $textDiv = true }}
+            <div class="fragment_item-text">
           {{- end }}
           {{- with $field.title }}
-            <span class="{{ $classPrefix }}_title">
-              {{- default . (T .) }}
-            </span>
-          {{- end }}
-            <span class="{{ $classPrefix }}_text">
-              <time class="{{ $classPrefix }}_date" datetime="{{ time.Format "2006-01-02" . }}">{{ time.Format "January 2, 2006" . | safeHTML }}</time>
-            </span>
-          {{- if $inlineLayout }}
-          </div>
-          {{- end }}
-        {{- end -}}
-      {{- else if eq $fieldName "citizenship" }}
-        {{- with $country := $fieldData.country }}
-          {{- with $inlineSeparatorStr }}
-            {{- safeHTML . -}}
-          {{- end }}
-          <span class="{{ $classPrefix }}_text">
-            {{- with $field.title }}
-              {{- with T (printf "%s_prefix" . ) }}
-                <span class="{{ $classPrefix }}_prefix">
-                  {{- . | strings.FirstUpper | page.RenderString -}}
+            {{- with T (printf "%s_prefix" . ) }}
+              <span class="{{ $classPrefix }}_prefix">
+                {{- . | strings.FirstUpper | page.RenderString }}
+              </span>
+            {{- else }}
+              {{- with T (printf "%s_label" . ) }}
+                <span class="{{ $classPrefix }}_label">
+                  {{- printf `%s:` (strings.FirstUpper . ) | page.RenderString }}
                 </span>
-              {{ end }}
-            {{- end }}
-            {{- page.RenderString . -}}
-            {{- with $field.title }}
-              {{- with T (printf "%s_suffix" . ) }}
-                <span class="{{ $classPrefix }}_suffix">
-                  {{- page.RenderString . }}
-                </span>
+              {{- else }}
+                {{- with T . }}
+                  <span class="{{ $classPrefix }}_title">
+                    {{- . | strings.FirstUpper | page.RenderString }}
+                  </span>
+                {{- end }}
               {{- end }}
             {{- end }}
+          {{- end }}
+          <span class="{{ $classPrefix }}_text">
+            {{- . | $page.RenderString | safeHTML }}
           </span>
+          {{- with $field.title }}
+            {{- with T (printf "%s_suffix" . ) }}
+              <span class="{{ $classPrefix }}_suffix">
+                {{- page.RenderString . }}
+              </span>
+            {{- end }}
+          {{- end }}
+          {{- $fieldCount = add $fieldCount 1 }}
+        {{- end }}
+        {{- if and $textDiv $inlineLayout }}
+        {{- $textDiv = false }}
+        </div>
         {{- end }}
       {{- end }}
+      {{- if $textDiv }}
+        {{- $textDiv = false }}
+        </div>
+      {{- end }}
+      {{- if and $fragmentDiv $inlineLayout }}
+      {{- $fragmentDiv = false }}
+      </div>
+      {{- end }}
     {{- end }}
-  {{- end }}
-  </div>
+    {{- if $fragmentDiv }}
+    </div>
+    {{- end -}}
+  {{- end -}}
 {{- end -}}

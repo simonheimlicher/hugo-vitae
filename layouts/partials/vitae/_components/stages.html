@@ -152,6 +152,9 @@
 {{- $roleHeaderSeparatorStr := trim $style.role_header_separator `  ` | default "|" }}
 {{- $stageMetaSeparatorStr := trim $style.stage_meta_separator `  ` | default "•" }}
 
+{{- /* FIXME: Allow the style to be defined via `style` */ -}}
+{{- $achievementTitleStrong := false }}
+
 {{- if $debug }}
   {{- warnf "%s[%s]: inlineSeparatorStr=%v [type=%T] roleHeaderSeparatorStr=%v [type=%T] stageMetaSeparatorStr=%v [type=%T]"
       page $template $inlineSeparatorStr $inlineSeparatorStr
@@ -576,7 +579,7 @@
                   {{- $bullets = . }}
                 {{- end }}
               {{- end }}
-              {{- with $bullets }}
+              {{- with and $achievementTitleStrong $bullets }}
                 {{- if strings.Contains . `**` }}
                   {{- $bullets = . }}
                 {{- else }}
