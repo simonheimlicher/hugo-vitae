@@ -228,7 +228,13 @@ vitae:
         $template $pp.Layout $pp.Media $pp.PrintPreview $pp.PrintView $pp.PrintControl)
         (jsonify (dict "indent" "  ") $vitaeTemplate.style) -}}
 
-    <div id="vitaeContainer" class="{{ delimit $containerClass ` ` }}" {{ $printViewVisibleAttr | safeHTMLAttr }}>
+    {{- $partStyleList := slice }}
+    {{/* {{- jsonify (dict "indent" "  " "sortKeys" true) $vitaeTemplate.config | safeJS }} */}}
+    {{- range $key, $value := $vitaeTemplate.properties }}
+      {{- $partStyleList = append (printf "--%v: %v" $key $value) $partStyleList }}
+    {{- end }}
+
+    <div id="vitaeContainer" class="{{ delimit $containerClass ` ` }}" {{ $printViewVisibleAttr | safeHTMLAttr }}{{ with $partStyleList }}{{ printf ` style="%s"` (delimit . `; `) | safeHTMLAttr }}{{ end }}>
       {{- if $includePrintView }}
         {{- partial "vitae/print-preview" (merge $pp (dict "ContainerClass" "view-print")) }}
       {{- end }}

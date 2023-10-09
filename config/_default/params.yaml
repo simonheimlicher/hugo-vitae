@@ -5,22 +5,18 @@ vitae:
     resume:
       variants:
         default:
-          contact:
-            # title: section-contact
-            title: false
-            screen: true
-            print: true
-          links:
-            screen: true
-            print: true
-
+          properties:
+            root_em: 11pt
+            root_page_margin_base_horizontal: 15mm
+            root_page_margin_base_vertical: 15mm
+            root_list-style_item_padding_between: 0;
           style:
             ats: true
+            font-size_section-title: normal
             # inline_separator: "·"
             # inline_separator: "•"
-            layout:
-              - shallow
-              - inline
+            # layout:
+            #   - inline
 
           parts:
             # Everything is in one part
@@ -35,30 +31,32 @@ vitae:
                   components:
                   - component: header
                     portrait: true
-                    degrees: true
+                    degree: false
                     role: false
                     fragments:
-                    - fragment: contact
                     - fragment: personal
                       fields:
+                      - field: address
+                        separator: BLOCK
+                      - field: phone
+                      - field: email
+                        separator: BLOCK
                       - field: date_of_birth
-                        title: fragment_date_of_birth
                       - field: citizenship
-                        title: fragment_citizenship
                     style:
                       icon: false
-                      # layout: inline
+                      layout: inline
               - slot: main
                 pagination_policy: break
                 sections:
-                - section: personal-profile
-                  title: section-personal-profile
-                  # container: section
-                  components:
-                  - component: panels
-                    collection: profile
-                    style:
-                      dt_columns: 3
+                # - section: personal-profile
+                #   title: section-personal-profile
+                #   # container: section
+                #   components:
+                #   - component: panels
+                #     collection: profile
+                #     style:
+                #       dt_columns: 3
                 - section: experience
                   title: section-experience
                   components:
@@ -70,41 +68,43 @@ vitae:
                       limit: 1
                       type: false
                     style:
+                      heading:
+                        font-size: normal
                       # timeline: column
                       inline:
                         header: true
                         content: true
-                - section: awards-certificates
-                  # container: div
-                  style:
-                    column-width_main: 6
-                  sections:
-                  - section: awards
-                    title: section-awards
-                    container: section
-                    components:
-                    - component: awards
-                      details: false
-                      filter_by: type
-                      filter_value: award
-                      style:
-                        logo: false
-                        heading: normal
-                        layout:
-                          - shallow
-                          # - inline # no effect
-                  - section: certificates
-                    title: section-certificates
-                    container: section
-                    components:
-                    - component: awards
-                      details: false
-                      filter_by: type
-                      filter_value: certificate
-                      style:
-                        logo: false
-                        heading: normal
-                        layout: narrow
+                # - section: awards-certificates
+                #   # container: div
+                #   style:
+                #     column-width_main: 6
+                #   sections:
+                #   - section: awards
+                #     title: section-awards
+                #     container: section
+                #     components:
+                #     - component: awards
+                #       details: false
+                #       filter_by: type
+                #       filter_value: award
+                #       style:
+                #         logo: false
+                #         heading: normal
+                #         layout:
+                #           - shallow
+                #           # - inline # no effect
+                #   - section: certificates
+                #     title: section-certificates
+                #     container: section
+                #     components:
+                #     - component: awards
+                #       details: false
+                #       filter_by: type
+                #       filter_value: certificate
+                #       style:
+                #         logo: false
+                #         heading: normal
+                #         layout: narrow
                 - section: education-languages
                   # container: div
                   sections:
@@ -233,7 +233,7 @@ vitae:
                   components:
                   - component: header
                     portrait: true
-                    degrees: true
+                    degree: true
                     tagline: true
                     # style:
                     #   font-size: larger-1
@@ -545,7 +545,7 @@ vitae:
                   components:
                   - component: header
                     portrait: true
-                    degrees: true
+                    degree: true
                     tagline: true
                     fragments:
                     - fragment: contact
@@ -715,7 +715,7 @@ vitae:
                   components:
                   - component: header
                     portrait: true
-                    degrees: true
+                    degree: true
                     tagline: true
                     # style:
                     #   font-size: larger-1
@@ -918,7 +918,7 @@ vitae:
                   components:
                   - component: header
                     portrait: true
-                    degrees: true
+                    degree: true
                     tagline: true
                     # style:
                     #   font-size: larger-1

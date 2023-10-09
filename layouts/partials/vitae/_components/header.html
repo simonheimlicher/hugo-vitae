@@ -91,14 +91,14 @@
   {{- end }}
   <div class="overlay">
     <div class="overlay_content">
-    {{- with and  (not (eq $component.headline false)) .headline }}
+    {{- with and  (not (eq $component.headline false) ) .headline }}
         <h{{ $headingLevel }} class="headline content-title">
         <span class="name">{{- .name | page.RenderString }}</span>
         {{- with and (not (eq $component.role false)) .role }}
           <span class="role">{{. | page.RenderString }}</span>
         {{- end -}}
         </h{{ $headingLevel }}>
-      {{- with .degree }}
+      {{- with and (not (eq $component.degree false) ) .degree }}
         <p class="degree">{{. | page.RenderString }}</p>
       {{- end -}}
     {{- end -}}

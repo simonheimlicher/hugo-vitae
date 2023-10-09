@@ -71,6 +71,7 @@ $num-columns: 12;
     &-title {
       position: relative;
       font-family: var(--font-section-title);
+      font-size: var(--font-size-larger-2);
       @include upper-caps-strong;
       margin: 0 0 var(--section-title_margin_bottom) 0;
       padding: 0;
@@ -132,6 +133,12 @@ $num-columns: 12;
         }
       }
     }
+  }
+  .style_font-size_section-title_larger-1 .section-title{
+    font-size: var(--font-size-larger-1);
+  }
+  .style_font-size_section-title_normal .section-title{
+    font-size: var(--font-size-normal);
   }
 }
 

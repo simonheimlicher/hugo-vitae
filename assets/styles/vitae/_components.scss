@@ -374,8 +374,10 @@ html[data-mode="dim"] {
         font-size: var(--font-size-larger-1);
         @include upper-caps;
       }
-      .headline + .degree {
-        margin-top: var(--inner_margin_4-1);
+      .headline {
+        & + .degree, & + .details {
+          margin-top: var(--inner_margin_4-2);
+        }
       }
       .degree + .details {
         margin-top: var(--inner_margin_4-1);
@@ -444,7 +446,10 @@ html[data-mode="dim"] {
           margin: 0;
           height: 100%;
           width: 100%;
-          }
+        }
+      }
+      .fragment_item {
+        display: inline-block;
       }
     }
   }

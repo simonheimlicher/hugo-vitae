@@ -24,26 +24,28 @@
     --page_width: calc(var(--page_width_base));
     --page_height: calc(var(--page_height_base));
 
-    --page_margin_base_horizontal: #{$printPageMarginHorizontal};
+    // --page_margin_base_horizontal: #{$printPageMarginHorizontal};
+    --page_margin_base_horizontal: var(--root_page_margin_base_horizontal);
     --page_margin_base_center_horizontal: #{$printPageMarginCenterHorizontal};
 
-    --page_margin_base_vertical: #{$printPageMarginVertical};
+    // --page_margin_base_vertical: #{$printPageMarginVertical};
+    --page_margin_base_vertical: var(--root_page_margin_base_vertical);
     --page_margin_base_center_vertical: #{$printPageMarginCenterVertical};
 
     --page_margin_base_left: calc(
-      var(--page_margin_base_center_horizontal) * var(--page_margin_base_horizontal) * 2
+      var(--page_margin_base_center_horizontal) * var(--root_page_margin_base_horizontal) * var(--page_margin_base_horizontal) * 2
     );
 
     --page_margin_base_right: calc(
-      (1 - var(--page_margin_base_center_horizontal)) * var(--page_margin_base_horizontal) * 2
+      (1 - var(--page_margin_base_center_horizontal)) * var(--root_page_margin_base_horizontal) * var(--page_margin_base_horizontal) * 2
     );
 
     --page_margin_base_top: calc(
-      var(--page_margin_base_center_vertical) * var(--page_margin_base_vertical) * 2
+      var(--page_margin_base_center_vertical) * var(--root_page_margin_base_vertical) * var(--page_margin_base_vertical) * 2
     );
 
     --page_margin_base_bottom: calc(
-      (1 - var(--page_margin_base_center_vertical)) * var(--page_margin_base_vertical) * 2
+      (1 - var(--page_margin_base_center_vertical)) * var(--root_page_margin_base_vertical) * var(--page_margin_base_vertical) * 2
     );
 
     --page_margin_left: var(--page_margin_base_left);
@@ -347,26 +349,33 @@
 
 .vitae {
   --rem: var(--rem_base);
+
+  --root_em: 10pt;
+  --root_page_margin_base_horizontal: 25mm;
+  --root_page_margin_base_vertical: 15mm;
+  --root_list-style_item_padding_between: var(--inner_padding_4-1);
+
   --em: var(--em_base);
   @include font-size-scale(var(--em));
 
   .view-print {
-    --rem_base: 10pt;
-    --em_base: 10pt;
+    --rem_base: #{$baseFontSize};
+    // --em_base: #{$baseFontSize};
+    // --em_base: var(--root_em);
 
     --rem: var(--rem_base);
-    --em: var(--em_base);
+    --em: var(--root_em) * var(--em_base);
 
     @media screen {
       --rem: calc(var(--rem_base) * var(--page_scale-factor));
-      --em: calc(var(--em_base) * var(--page_scale-factor));
+      --em: calc(var(--root_em) * var(--em_base) * var(--page_scale-factor));
       @include font-size-scale(var(--em));
     }
 
     --list-style_list_margin_left: var(--inner_margin_4-0);
     --list-style_list_padding_left: 0;
-    --list-style_item_margin_between: var(--inner_margin_4-0);
-    --list-style_item_padding_between: var(--inner_padding_4-1);
+    --list-style_item_margin_between: 0;
+    --list-style_item_padding_between: var(--root_list-style_item_padding_between);
     @include list-style_indented(
       var(--list-style_list_margin_left), var(--list-style_list_padding_left),
       var(--list-style_item_margin_between), var(--list-style_item_padding_between));
@@ -619,6 +628,9 @@
     // .section-gap_vertical:not(:has(+ .section, +.section-panel)) {
     //   outline-color: orange;
     // }
+    .pagination-container:last-child .section-gap_vertical:last-child {
+      display: none;
+    }
     .pagination-container {
       &.slot_main {
         height: 100%;

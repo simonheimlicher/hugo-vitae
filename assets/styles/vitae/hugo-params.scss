@@ -1,4 +1,6 @@
 /* {{- $page := .Page }} */
+/* {{- $config := .Config | default dict }} */
+/* {{- $style := .Style | default dict }} */
 $baseURL: '{{- site.BaseURL}}';
 $contentTypeListID: '{{ printf "%v" .ContentTypeListID }}';
 $contentType: '{{ .ContentType }}';
@@ -19,7 +21,7 @@ $printPageMarginVertical: 15mm;
 
 $printPageMarginCenterVertical: 0.5;
 $printPageMarginCenterHorizontal: 0.5;
-
+$baseFontSize: {{ $style.fontsize | default ($page.Param "fontsize") | default "10pt" }};
 
 {{- $colorPrimaryLit := default "hsl(200, 100%, 50%)" site.Params.colors.colorPrimaryLit }}
 {{- $colorPrimaryDim := default "hsl(200, 100%, 50%)" site.Params.colors.colorPrimaryDim }}

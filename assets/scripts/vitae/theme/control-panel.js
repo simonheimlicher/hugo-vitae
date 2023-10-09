@@ -32,15 +32,15 @@ const controlPanelSettings = {
       // onChange: console.log  // javascript callback on every "input" event
     },
     {
-      cssVar: ['em_base', 'pt'],
+      cssVar: ['em_base', '-%'],
       label: 'Font size',
       labelTitle: 'Adjust base font size',
       type: 'range',
       // Getting the value using getComputedStyle and getPropertyValue does not work in Safari
-      value: 10,
-      min: 7,
-      max: 12,
-      step: 0.1,
+      value: 1,
+      min: 0.7,
+      max: 1.2,
+      step: 0.01,
       // onChange: console.log,
       // onChange: (e, knobData) => console.log(e, knobData, knobData.value),
       // onChange: () => {
@@ -113,14 +113,14 @@ const controlPanelSettings = {
     },
     ['Page margins', true], // if false, group is collapsed by default
     {
-      cssVar: ['page_margin_base_horizontal', 'mm'],
+      cssVar: ['page_margin_base_horizontal', '-%'],
       label: 'Page margin horizontal',
       labelTitle: 'Adjust horizontal page margin',
       type: 'range',
       min: 0,
-      // value: 15,
-      max: 50,
-      step: 1,
+      value: 1,
+      max: 5,
+      step: 0.1,
     },
     {
       cssVar: ['page_margin_base_center_horizontal', '-%'],
@@ -133,14 +133,14 @@ const controlPanelSettings = {
       step: 0.01,
     },
     {
-      cssVar: ['page_margin_base_vertical', 'mm'],
+      cssVar: ['page_margin_base_vertical', '-%'],
       label: 'Page margin vertical',
       labelTitle: 'Adjust vertical page margin',
       type: 'range',
       min: 0,
-      // value: 15,
-      max: 50,
-      step: 1,
+      value: 1,
+      max: 5,
+      step: 0.1,
     },
     {
       cssVar: ['page_margin_base_center_vertical', '-%'],
