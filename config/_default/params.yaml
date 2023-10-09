@@ -68,6 +68,7 @@ vitae:
                       limit: 1
                       type: false
                     style:
+                      period: right
                       heading:
                         font-size: normal
                       # timeline: column

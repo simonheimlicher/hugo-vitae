@@ -1813,6 +1813,32 @@ html[data-mode="dim"] {
     }
 
     /*
+     * Period style RIGHT
+     * For US-style resumes
+     */
+
+     &.style_period_right {
+      &.stage {
+        &_header, &_meta, &_overview, &_content {
+          grid-template-columns:
+            minmax(0px, 1fr)
+            var(--grid_separator-column_width)
+            var(--grid_period-column_width);
+        }
+        &_header {
+          .column {
+            &_period {
+              grid-column: 3;
+            }
+            &_main {
+              grid-column: 1;
+            }
+          }
+        }
+      }
+    }
+
+    /*
      * Style FONT-SIZE
      */
 
