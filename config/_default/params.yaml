@@ -6,16 +6,19 @@ vitae:
       variants:
         default:
           properties:
-            root_em: 11pt
+            root_em: 10.5pt
             root_page_margin_base_horizontal: 15mm
             root_page_margin_base_vertical: 15mm
             root_list-style_item_padding_between: 0;
           style:
-            ats: true
-            font-size_section-title: normal
+            section:
+              heading:
+                font-size: normal
+                rule: true
             # inline_separator: "·"
             # inline_separator: "•"
-            # layout:
+            layout:
+              - shallow
             #   - inline
 
           parts:
@@ -68,6 +71,7 @@ vitae:
                       limit: 1
                       type: false
                     style:
+                      ats: true
                       period: right
                       heading:
                         font-size: normal
@@ -122,7 +126,7 @@ vitae:
                         heading:
                           font-size: normal
                         separate_roles: true
-                        layout: narrow
+                        # layout: narrow
                       role:
                         period: false
                         duration: false
@@ -138,8 +142,8 @@ vitae:
                       details: true
                       level_bar: false
 
-              - slot: footer
-                shared: footer
+              # - slot: footer
+              #   shared: footer
 
             # Appendix
             - part: patents-publications

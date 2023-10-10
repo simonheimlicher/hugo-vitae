@@ -824,6 +824,19 @@ html[data-mode="dim"] {
         display: grid;
         align-items: baseline;
         grid-template-columns:
+          minmax(0px, max-content)
+          var(--grid_separator-column_width)
+          minmax(0px, max-content);
+        .column {
+          &_header {
+            grid-column: 1;
+          }
+          &_main {
+            grid-column: 3;
+          }
+        }
+        &.period_column {
+          grid-template-columns:
           var(--grid_period-column_width)
           var(--grid_separator-column_width)
           minmax(0px, max-content);
@@ -834,6 +847,7 @@ html[data-mode="dim"] {
           &_main {
             grid-column: 3 / span all;
           }
+        }
         }
       }
       &_header {

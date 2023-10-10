@@ -246,6 +246,11 @@
 {{- $showRolePeriod := default true $component.role.period }}
 {{- $showRoleDuration := default false $component.role.duration }}
 
+{{- $periodColumnClass := "period_column" }}
+{{- if not (or $showOrganizationPeriod $showRolePeriod) }}
+  {{- $periodColumnClass = "" }}
+{{- end }}
+
 {{- $filterField := default "type" $component.filter_by -}}
 {{- $filterMatch := default "professional" $component.filter_value -}}
 
@@ -312,7 +317,7 @@
     {{- $organizationHeaderContainer := "div" }}
     {{- $organizationHeaderClassList := slice "organization_header" }}
 
-    {{- $topLevelClass := strings.TrimLeft " " (delimit (append $styleClassList (slice $orgClass $timelineOrgClass $componentClass $childClass)) " ") }}
+    {{- $topLevelClass := strings.TrimLeft " " (delimit (append $styleClassList (slice $orgClass $periodColumnClass $timelineOrgClass $componentClass $childClass)) " ") }}
 
     {{- if not $separateRoles }}
       {{- $organizationHeaderClassList = append (slice "stage_header" "column_header") $organizationHeaderClassList }}
@@ -410,7 +415,7 @@
         {{- $roleHeaderContainer = false }}
       {{- else }}
 
-        {{- $topLevelClass = strings.TrimLeft " " (delimit (append $styleClassList (slice $roleClass $timelineOrgClass $componentClass $childClass)) " ") }}
+        {{- $topLevelClass = strings.TrimLeft " " (delimit (append $styleClassList (slice $roleClass $periodColumnClass $timelineOrgClass $componentClass $childClass)) " ") }}
 
         {{- if and (not $timelineForSingleRole) (ge $roleIdx (sub $numRoles 1) ) }}
           {{- $topLevelClass = strings.TrimLeft " " (delimit (append $styleClassList (slice $roleClass $componentClass $childClass)) " ") }}
