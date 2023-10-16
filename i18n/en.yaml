@@ -82,3 +82,5 @@ fragment_personal_citizenship_prefix:
   other: citizen of
 fragment_personal_nationality_label:
   other: "nationality"
+fragment_personal_links_label:
+  other: "LinkedIn"

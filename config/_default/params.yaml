@@ -7,8 +7,8 @@ vitae:
         default:
           properties:
             root_em: 10.5pt
-            root_page_margin_base_horizontal: 15mm
-            root_page_margin_base_vertical: 15mm
+            root_page_margin_base_horizontal: 0.5in
+            root_page_margin_base_vertical: 0.5in
             root_list-style_item_padding_between: 0;
           style:
             section:
@@ -19,7 +19,7 @@ vitae:
             # inline_separator: "•"
             layout:
               - shallow
-            #   - inline
+            # #   - inline
 
           parts:
             # Everything is in one part
@@ -33,22 +33,31 @@ vitae:
                 - section: header
                   components:
                   - component: header
-                    portrait: true
+                    portrait: false
                     degree: false
                     role: false
                     fragments:
                     - fragment: personal
                       fields:
                       - field: address
-                        separator: BLOCK
                       - field: phone
                       - field: email
                         separator: BLOCK
-                      - field: date_of_birth
-                      - field: citizenship
+                      # - field: citizenship
+                      # - field: nationality
+                      - field: permit
+                      - field: links
+                      # - field: date_of_birth
                     style:
                       icon: false
                       layout: inline
+                      headline:
+                        font-size: larger-3
+                      role:
+                        font-size: larger-2
+                      degree:
+                        font-size: larger-1
+                      align: center
               - slot: main
                 pagination_policy: break
                 sections:
@@ -67,80 +76,134 @@ vitae:
                     collection: stages
                     filter_by: type
                     filter_value: professional
-                    unit:
-                      limit: 1
-                      type: false
+                    unit: false
+                    # unit:
+                    #   limit: 1
+                    #   type: false
                     style:
                       ats: true
-                      period: right
+                      period:
+                        position: right
+                      location:
+                        font-weight: strong
                       heading:
-                        font-size: normal
+                        organization:
+                          font-size: normal
+                        role:
+                          font-size: normal
+                          font-weight: normal
+                          font-style: italic
                       # timeline: column
                       inline:
                         header: true
                         content: true
-                # - section: awards-certificates
-                #   # container: div
-                #   style:
-                #     column-width_main: 6
-                #   sections:
-                #   - section: awards
-                #     title: section-awards
-                #     container: section
-                #     components:
-                #     - component: awards
-                #       details: false
-                #       filter_by: type
-                #       filter_value: award
-                #       style:
-                #         logo: false
-                #         heading: normal
-                #         layout:
-                #           - shallow
-                #           # - inline # no effect
-                #   - section: certificates
-                #     title: section-certificates
-                #     container: section
-                #     components:
-                #     - component: awards
-                #       details: false
-                #       filter_by: type
-                #       filter_value: certificate
-                #       style:
-                #         logo: false
-                #         heading: normal
-                #         layout: narrow
-                - section: education-languages
-                  # container: div
-                  sections:
-                  - section: education
-                    # enabled: false
-                    title: section-education
-                    container: section
-                    components:
-                    - component: stages
-                      collection: stages
-                      filter_by: type
-                      filter_value: education
-                      style:
-                        heading:
-                          font-size: normal
-                        separate_roles: true
-                        # layout: narrow
-                      role:
-                        period: false
-                        duration: false
-                        details: true
-                  - section: language-skills
-                    title: section-language-skills
-                    container: section
-                    components:
-                    - component: skills
-                      collection: skills
-                      filter_by: type
-                      filter_value: language
+                - section: awards
+                  title: Awards & patents
+                  container: section
+                  components:
+                  - component: awards
+                    details: false
+                    filter_by: type
+                    filter_value: award
+                    style:
+                      logo: false
+                      heading:
+                        font-size: normal
+                        font-weight: normal
+                        font-style: italic
+                      layout:
+                        - inline
+                        - shallow
+                - section: education
+                  # enabled: false
+                  title: section-education
+                  container: section
+                  components:
+                  - component: stages
+                    collection: stages
+                    filter_by: type
+                    filter_value: education
+                    role:
+                      period: false
+                      duration: false
+                      date: true
                       details: true
-                      level_bar: false
+                    style:
+                      # heading:
+                      #   organization:
+                      #     font-size: normal
+                      #   role:
+                      #     font-size: normal
+                      #     font-weight: normal
+                      #     font-style: italic
+                      # separate_roles: true
+                      ats: true
+                      period:
+                        position: right
+                      location:
+                        font-weight: strong
+                      heading:
+                        organization:
+                          font-size: normal
+                        role:
+                          font-size: normal
+                          font-weight: normal
+                          font-style: italic
+                      # timeline: column
+                      inline:
+                        header: true
+                        content: true
+                - section: skills
+                  # container: div
+                  title: "Skills & interests"
+                  # sections:
+                  # - section: certificates
+                  #   # title: section-certificates
+                  #   container: section
+                  components:
+                  - component: definitions
+                    style:
+                      heading:
+                        font-size: normal
+                        font-weight: normal
+                        font-style: italic
+                      layout:
+                        - shallow
+                    collections:
+                      - collection: skills
+                        title: Languages
+                        filter_by: type
+                        filter_value: language
+                        fields:
+                          - field: level
+                            elements:
+                              - element: description
+
+                      - collection: interests
+                        title: Interests
+                  # - component: awards
+                  #   container: section
+                  #   details: false
+                  #   filter_by: type
+                  #   filter_value: certificate
+                  #   style:
+                  #     logo: false
+                  #     heading: normal
+                  #     layout: inline
+                  # - section: language-skills
+                  #   # title: section-language-skills
+                  #   container: section
+                  #   components:
+                  # - component: skills
+                  #   container: section
+                  #   collection: skills
+                  #   filter_by: type
+                  #   filter_value: language
+                  #   details: true
+                  #   level_bar: false
+                  #   style:
+                  #     heading: normal
+                  #     # layout: inline
 
               # - slot: footer
               #   shared: footer
@@ -343,7 +406,8 @@ vitae:
                       filter_value: award
                       style:
                         logo: false
-                        heading: normal
+                        heading:
+                          font-size: normal
                         layout:
                           - shallow
                           # - inline # no effect
@@ -357,7 +421,8 @@ vitae:
                       filter_value: certificate
                       style:
                         logo: false
-                        heading: normal
+                        heading:
+                          font-size: normal
                         layout: narrow
                 - section: connect
                   # title: section-connect
@@ -603,7 +668,8 @@ vitae:
                       filter_value: award
                       style:
                         logo: false
-                        heading: normal
+                        heading:
+                          font-size: normal
                         layout:
                           - shallow
                           # - inline # no effect
@@ -841,7 +907,8 @@ vitae:
                       filter_value: award
                       style:
                         logo: false
-                        heading: normal
+                        heading:
+                          font-size: normal
                         layout:
                           - shallow
                           # - inline # no effect
@@ -855,7 +922,8 @@ vitae:
                       filter_value: certificate
                       style:
                         logo: false
-                        heading: normal
+                        heading:
+                          font-size: normal
                         layout: narrow
               - slot: main
                 sections:
@@ -1015,7 +1083,8 @@ vitae:
                       filter_value: award
                       style:
                         logo: false
-                        heading: normal
+                        heading:
+                          font-size: normal
                         layout:
                           - shallow
                           # - inline # no effect
@@ -1029,7 +1098,8 @@ vitae:
                       filter_value: certificate
                       style:
                         logo: false
-                        heading: normal
+                        heading:
+                          font-size: normal
                         layout: narrow
                 - section: education-languages
                   # container: div

@@ -23,9 +23,17 @@
     "inline"
   )
   "heading" (dict
-    "normal" "normal"
-    "larger-1" "larger-1"
-    "smaller-1" "smaller-1"
+    "font-size" (dict
+      "normal" "normal"
+    )
+    "font-weight" (dict
+      "normal" "normal"
+      "strong" "strong"
+    )
+    "font-style" (dict
+      "normal" "normal"
+      "italic" "italic"
+    )
   )
   "logo" (dict
     "false" false
@@ -51,7 +59,11 @@
 
 {{- $optInline := dict "display" "inline" }}
 
-{{- $separatorStr := default "•" (index $style "inline_separator") }}
+{{- $inlineSeparatorStr := default " • " $style.inline_separator }}
+{{- $blockSeparatorStr := default "<br/>" $style.block_separator }}
+
+{{- $outerInlineLayout := (in $style.layout "inline") }}
+{{- $innerInlineLayout := (in $style.layout "shallow") }}
 
 {{- $awardCollection := (index .Data $collection) }}
 {{- with $awardCollection }}
@@ -71,11 +83,13 @@
         {{- with $logoImage }}
           {{- partial "responsive-image" (merge $logoImageParams (dict "resource" .resource)) }}
         {{- end }}
-        <h3 class="{{- $classPrefix }}_title">{{- page.RenderString $optInline .title }}</h3>
+        <h{{ $headingLevel }} class="{{ printf `%s_title` $classPrefix }}">
+          {{- page.RenderString $optInline .title }}
+        </h{{ $headingLevel }}>
       </div>
       {{- with .organization }}
       <div class="{{- $classPrefix }}_organization">
-        <span class="{{- $classPrefix }}_organization_name">{{ page.RenderString $optInline .name }}</span>
+        {{- $inlineSeparatorStr }}<span class="{{- $classPrefix }}_organization_name">{{ page.RenderString $optInline .name }}</span>
         {{- with .description }}
         <span class="{{- $classPrefix }}_organization_description">({{ page.RenderString $optInline . }})</span>
         {{- end }}
@@ -87,7 +101,7 @@
           {{- $i := 0 }}
           {{- range $k := $detailFields }}
             {{- with $v := (index $award $k) }}
-              {{- with and (gt $i 0) $separatorStr }}
+              {{- with and (gt $i 0) $inlineSeparatorStr }}
                 {{ page.RenderString . | safeHTML }}
               {{- end }}
               <span class="{{ $classPrefix }}_{{ $k }}">

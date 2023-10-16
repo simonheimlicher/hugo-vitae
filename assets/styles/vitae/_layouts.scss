@@ -372,7 +372,9 @@
       @include font-size-scale(var(--em));
     }
 
-    --list-style_list_margin_left: var(--inner_margin_4-0);
+    // FIXME: Important to have a value greater than 0 as otherwise, bullets
+    // won't be visible when printing from Chrome to PDF
+    --list-style_list_margin_left: var(--inner_margin_4-2);
     --list-style_list_padding_left: 0;
     --list-style_item_margin_between: 0;
     --list-style_item_padding_between: var(--root_list-style_item_padding_between);

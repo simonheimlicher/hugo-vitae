@@ -1,4 +1,6 @@
 {{- $ret := "" -}}
+{{- $page := default page .Page }}
+{{- $template := "vitae/_functions/date-period-duration" }}
 {{- $lastPeriodEndInitial := time "0000-01-01" }}
 {{- $firstPeriodBegin := time now }}
 {{- $lastPeriodEnd := $lastPeriodEndInitial }}
@@ -13,8 +15,7 @@
 {{- $periodDurationSeparatorStr := " • " }}
 
 {{- if reflect.IsMap $periodList }}
-  {{/* {{- warnf "        date-period-duration: $periodList='%q'" $periodList }} */}}
-  {{- with (index $periodList "PeriodList" )}}
+  {{- with .PeriodList }}
     {{- $periodList = . }}
   {{- end }}
   {{- with .ShowPeriod }}
@@ -45,11 +46,12 @@
       {{- $periodDurationSeparatorStr = "" }}
     {{- end }}
   {{- end }}
-{{/* {{- else }}
-  {{- warnf "        date-period-duration: $periodList='%q'" $periodList }} */}}
 {{- end }}
 
-{{/* {{- if not (reflect.IsMap $periodList) }} */}}
+{{- if not (reflect.IsSlice $periodList) }}
+  {{- $periodList = slice $periodList $periodList }}
+  {{- warnf "%s[%s]: showing date=%v" $page $template (index $periodList 0) }}
+{{- end }}
 {{- if ne (printf "%T" (index $periodList 0)) "map[string]interface {}"  }}
   {{- $periodList = (slice (dict "period" $periodList) ) }}
 {{- end }}

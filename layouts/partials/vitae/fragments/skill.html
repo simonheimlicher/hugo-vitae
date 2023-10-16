@@ -1,0 +1,240 @@
+{{- $page := default page .Page -}}
+{{- $fragment := .Fragment }}
+{{- $config := .Config }}
+{{- $data := .Data }}
+{{- $style := .MergedStyle.Style }}
+{{- $template := "partials/vitae/fragments/skill" }}
+{{- $media := .Media }}
+{{- $debug := false }}
+{{- /* $debug = or $debug (not (not (findRE `^/([^/]+-demo/)?preview` $page.RelPermalink) ) ) */ -}}
+{{- /* warnf "%s[%s]: media=%s .Fragment=%s .Config=%s" $page $template $media $fragment $config */ -}}
+{{- if $debug }}
+  {{- warnf "%s[%s]: .Fragment=%s .Config=%s .Data=%s" $page $template $fragment $config $data -}}
+{{- end }}
+
+{{- $validStyles := (dict
+  "_template" $template
+  "ats" (dict
+    "true" (dict
+      "layout" "inline"
+    )
+  )
+  "layout" (slice
+    "inline"
+    "shallow"
+  )
+) -}}
+
+{{- $mergedStyle := partial "vitae/_functions/style-merged" (dict
+  "Template" $template
+  "MergedStyle" .MergedStyle
+  "ValidStyles" $validStyles
+) -}}
+
+{{- $style := $mergedStyle.Style }}
+{{- $styleClassList := $mergedStyle.StyleClass }}
+
+{{- $inlineLayout := intersect $style.layout (slice "inline" "shallow") }}
+{{- $showLabelIcon := default false $style.icon }}
+{{- $showLabelText := default (not $showLabelIcon) $style.label }}
+{{- $qrCode := $style.qrcode }}
+
+{{- $inlineSeparatorStr := default "•" $style.inline_separator }}
+{{- $blockSeparatorStr := default "<br/>" $style.block_separator }}
+
+{{- $labelIcon := (dict
+) -}}
+
+{{- $obfuscatedLinkPartial := "partials/claris/_components/obfuscated-link.html" }}
+
+{{- $fragmentClass := "fragment_skill" }}
+
+{{- with $fragmentData := $data }}
+  {{- if $debug }}
+    {{- warnf "%s[%s]: fragmentData:\n%v" $page $template (jsonify (dict "indent" "  ") $fragmentData) }}
+  {{- end }}
+  {{- $fragmentContainer := false }}
+  {{- if $inlineLayout }}
+    {{- $fragmentContainer = "span" }}
+  {{- else }}
+  {{- $style }}
+  {{- end }}
+  {{- $fieldTextContainer := false }}
+  {{- $inlineFieldCount := 0 }}
+  {{- $fieldSeparator := false }}
+  {{- range $fieldIndex, $field := $config.Fields }}
+    {{- if $debug }}
+      {{- warnf "%s[%s]: field[%d]: %s" $page $template $fieldIndex $field -}}
+    {{- end }}
+    {{- $fieldName := $field }}
+    {{- if reflect.IsMap $fieldName }}
+      {{- $fieldName = $field.field }}
+    {{- end }}
+    {{- $fieldData := false }}
+    {{- with ($fieldData = (index $fragmentData $fieldName)) }}
+      {{- $fieldData = . }}
+      {{- if reflect.IsMap $fieldData }}
+        {{- with $fieldMedia := .media }}
+          {{- if not (reflect.IsSlice $fieldMedia ) }}
+            {{- $fieldMedia = slice $fieldMedia }}
+          {{- end }}
+          {{- if not (in $fieldMedia $media) }}
+            {{- $fieldData = false }}
+          {{- end }}
+        {{- end -}}
+      {{- end -}}
+    {{- else }}
+      {{- warnf "%s[%s]: missing data for fieldName='%v'[index=%d] in fragmentData:\n%v"
+          $page $template $fieldName $fieldIndex
+          (jsonify (dict "indent" "  ") $fragmentData) -}}
+    {{- end }}
+    {{- with $fieldData }}
+      {{- if $debug }}
+        {{- warnf "%s[%s]: fieldData:\n%v" $page $template (jsonify (dict "indent" "  ") $fieldData) }}
+      {{- end }}
+      {{- $classPrefix := $fieldName }}
+      {{- if and (not $fragmentContainer) (not $inlineLayout) }}
+        {{- $fragmentContainer = "div" }}
+        {{- printf `<%s class="%s fragment_item">` $fragmentContainer $fragmentClass | safeHTML }}
+      {{- end }}
+      {{- if and (not $fieldTextContainer) (not $showLabelIcon) }}
+        {{- $fieldTextContainer = "span" }}
+        {{- printf `<%s class="fragment_item-text">` $fieldTextContainer | safeHTML }}
+      {{- end }}
+      {{- $labelText := "" }}
+      {{- $renderedField := "" }}
+      {{- $partial := printf "render_%s" $fieldName }}
+      {{- if templates.Exists (printf "partials/%s" $partial) }}
+        {{- $renderedField = partial $partial (dict
+          "Page" $page
+          "Config" $config
+          "InlineSeparatorStr" $inlineSeparatorStr
+          "Field" $field
+          "Data" $fieldData
+          "ClassPrefix" $classPrefix
+          "ObfuscatedLinkPartial" $obfuscatedLinkPartial ) }}
+      {{- else }}
+        {{- errorf "%s[%s]: Missing partial %s to render %v"
+            $page $template $partial $fieldName }}
+      {{- end }}
+      {{- with $renderedField }}
+        {{- $content := .content }}
+        {{- with $fieldSeparator }}
+          {{ safeHTML $fieldSeparator }}
+        {{- else }}
+          {{- if and $inlineLayout (not $showLabelIcon) (gt $inlineFieldCount 0) }}
+            {{ safeHTML $inlineSeparatorStr }}
+          {{- end }}
+        {{- end }}
+        {{- with and $showLabelIcon (index $labelIcon $fieldName) }}
+          {{ partial "fa-icon" . }}
+        {{- end }}
+        {{- if and (not $fieldTextContainer) (or $showLabelIcon (not $inlineLayout) ) }}
+          {{- $fieldTextContainer = "div" }}
+          {{- printf `<%s class="fragment_item-text">` $fieldTextContainer | safeHTML }}
+        {{- end }}
+        {{- $title := default (printf "fragment_%s_%s" $fragment $fieldName) $field.title }}
+        {{- with $title }}
+          {{- with T (printf "%s_prefix" . ) -}}
+            <span class="{{ $classPrefix }}_prefix">
+              {{- . | strings.FirstUpper | page.RenderString }}
+            </span>
+          {{- else }}
+            {{- with T (printf "%s_label" . ) -}}
+              <span class="{{ $classPrefix }}_label">
+                {{- printf `%s:` (strings.FirstUpper . ) | page.RenderString }}
+              </span>
+            {{- else }}
+              {{- with T . -}}
+                <span class="{{ $classPrefix }}_title">
+                  {{- . | strings.FirstUpper | page.RenderString }}
+                </span>
+              {{- end }}
+            {{- end }}
+          {{- end }}
+        {{- end -}}
+        <span class="{{ $classPrefix }}_text">
+          {{- with .link }}
+            {{- if templates.Exists $obfuscatedLinkPartial }}
+              {{- if $debug }}
+                {{- warnf "%v: using partial '%s' to render %s" $page $obfuscatedLinkPartial $field -}}
+              {{- end }}
+              {{- $content = partial $obfuscatedLinkPartial (dict "Page" $page "Plain" .) | safeHTML }}
+            {{- else }}
+              {{- errorf "%v: missing partial '%s' to render %s" $page $obfuscatedLinkPartial $field -}}
+              {{- $content = printf `<a href="%s">%s</a>` . . | safeHTML }}
+            {{- end }}
+          {{- end }}
+          {{- $content | page.RenderString | safeHTML -}}
+        </span>
+        {{- with $field.title }}
+          {{- with T (printf "%s_suffix" . ) -}}
+            <span class="{{ $classPrefix }}_suffix">
+              {{- page.RenderString . }}
+            </span>
+          {{- end }}
+        {{- end }}
+        {{- $inlineFieldCount = add $inlineFieldCount 1 }}
+        {{- with $fieldSeparator = $field.separator }}
+          {{- if (eq $field.separator "INLINE") }}
+            {{- $fieldSeparator = $inlineSeparatorStr }}
+          {{- else if (eq $field.separator "BLOCK") }}
+            {{- $fieldSeparator = $blockSeparatorStr }}
+            {{- $inlineFieldCount = 0 }}
+          {{- end }}
+        {{- else }}
+          {{- $fieldSeparator = false }}
+        {{- end }}
+      {{- end }}
+      {{- if and $fieldTextContainer (not $inlineLayout) -}}
+        {{- printf "</%s>" $fragmentContainer | safeHTML }}
+        {{- $fieldTextContainer = false }}
+      {{- end }}
+    {{- end }}
+  {{- end }}
+  {{- if $fieldTextContainer -}}
+    {{- printf "</%s>" $fragmentContainer | safeHTML }}
+    {{- $fieldTextContainer = false }}
+  {{- end }}
+  {{- if $fragmentContainer -}}
+    {{- printf "</%s>" $fragmentContainer | safeHTML }}
+    {{- $fragmentContainer = false }}
+  {{- end -}}
+{{- end -}}
+
+{{- define "partials/render_level" }}
+  {{- $content := "" }}
+  {{- $link := "" }}
+  {{- $page := .Page }}
+  {{- $config := .Config }}
+  {{- $container := default "" .Container }}
+  {{- $inlineSeparatorStr := .InlineSeparatorStr }}
+  {{- $field := .Field }}
+  {{- $data := .Data }}
+  {{- $classPrefix := .ClassPrefix }}
+
+  {{- $levelElements := default (slice
+    (dict "element" "description" "separator" "INLINE")
+    (dict "element" "value" "separator" "")
+  ) $field.elements }}
+
+  {{- with $level := $data }}
+    {{- with $container }}
+      {{- $content = printf `<%s class="%s_content">` . $classPrefix }}
+    {{- end }}
+    {{- range $levelElements }}
+      {{- $element := .element }}
+      {{- $sep := default "" .separator }}
+      {{- with (index $level $element) }}
+        {{- if (eq $sep "INLINE") }}{{ $sep = printf " %s " $inlineSeparatorStr }}{{- end }}
+          {{- $content = printf `%s<span class="level-%s">%v%v</span>`
+              $content $element . $sep }}
+      {{- end }}
+    {{- end }}
+    {{- with $container }}
+      {{- $content = printf `%s</%s>` $content . }}
+    {{- end }}
+  {{- end }}
+  {{- $renderedField := (dict "content" $content) }}
+  {{- return $renderedField }}
+{{- end -}}
