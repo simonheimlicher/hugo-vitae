@@ -104,7 +104,7 @@
     {{- page.RenderString $optInline $title }}
     {{- if $outerInlineLayout -}}
       </h{{ $headingLevel }}>
-    {{- else }}
+    {{- else -}}
       </dt>
     {{- end }}
 
@@ -136,7 +136,7 @@
           {{- end }}
         {{- end }}
         {{- $title = replaceRE `\s*<br>\s*` ` ` $title }}
-        {{- page.RenderString $optInline $title }}:
+        {{- page.RenderString $optInline $title -}}:
 
         {{- $fragmentName := singularize $key }}
         {{- $fragmentPartial := printf "partials/vitae/fragments/%s.html" $fragmentName }}
@@ -146,14 +146,12 @@
           {{- end }}
           {{- $fragmentConfig := (dict
             "Fields" $collection.fields
-          ) }}
-          {{ partial $fragmentPartial (merge $componentArgs (dict "Fragment" $fragmentName "Config" $fragmentConfig "Data" $item)) -}}
+          ) }} {{ partial $fragmentPartial (merge $componentArgs (dict "Fragment" $fragmentName "Config" $fragmentConfig "Data" $item)) -}}
         {{- else }}
           {{- if $debug }}
             {{- warnf "%s[%s] key=%v fragmentPartial=%v not found" $page $template $key $fragmentPartial }}
           {{- end }}
-          {{- with $item.content }}
-            {{ partial "vitae/render-markdown" . -}}
+          {{- with $item.content }} {{ partial "vitae/render-markdown" . -}}
           {{- end }}
         {{- end }}
       {{- end }}

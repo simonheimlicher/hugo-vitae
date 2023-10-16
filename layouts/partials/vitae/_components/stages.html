@@ -606,7 +606,10 @@
             {{- end }}
           {{- end }}
           {{- if not (reflect.IsMap $achievement) }}
-          {{- $achievement = dict "content" $achievement }}
+            {{- if not (reflect.IsSlice $achievement) }}
+              {{- $achievement = slice $achievement }}
+            {{- end }}
+            {{- $achievement = dict "content" $achievement }}
           {{- end }}
           {{- if $inlineContent }}
             <div class="role_achievement_main stage_body column_main{{ with (and (not $containerClass) $topLevelClass) }} {{ . }}{{ end }}">
@@ -628,23 +631,19 @@
                 {{- end }}
               {{- end }}
               {{- with $achievement.content }}
-                {{- if reflect.IsSlice . }}
-                  {{- /* If .lead exists, it must express the same as the first item in .content */ -}}
-                  {{- if $achievement.lead }}
-                    {{- $bullets = append (last (sub (len .) 1) .) (slice $bullets) -}}
-                  {{- else }}
-                    {{- if $bullets }}
-                      {{- $bullets = append . (slice $bullets) -}}
-                    {{- else }}
-                      {{- $bullets = printf "**%v**" (index (first 1 .) 0) -}}
-                      {{- $bullets = append (last (sub (len .) 1) .) (slice $bullets) -}}
-                    {{- end }}
-                  {{- end }}
+                {{- /* If .lead exists, it must express the same as the first item in .content */ -}}
+                {{- if $achievement.lead }}
+                  {{- $bullets = append (last (sub (len .) 1) .) (slice $bullets) -}}
                 {{- else }}
                   {{- if $bullets }}
-                    {{- $bullets = printf "* %s\n%s" $bullets . -}}
+                    {{- $bullets = append . (slice $bullets) -}}
                   {{- else }}
-                    {{- $bullets = . }}
+                    {{- if $achievementTitleStrong }}
+                      {{- $bullets = printf "**%v**" (index (first 1 .) 0) -}}
+                      {{- $bullets = append (last (sub (len .) 1) .) (slice $bullets) -}}
+                    {{- else }}
+                      {{- $bullets = . }}
+                    {{- end }}
                   {{- end }}
                 {{- end }}
               {{- end }}

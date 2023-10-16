@@ -2257,6 +2257,31 @@ html[data-mode="dim"] {
         &.style_layout_shallow {
           row-gap: var(--inner_margin_8-1);
         }
+        /*
+         * Date style RIGHT
+         * For US-style resumes
+         */
+        &.style_date_position_right {
+          .award_item {
+            justify-content: space-between;
+            flex-direction: row-reverse;
+            * {
+              display: inline-block;
+              flex: 1 1 auto;
+            }
+            text-align: center;
+            :nth-child(1) {
+              text-align: right;
+              flex: 1 0 max-content;
+            }
+            :nth-last-child(1) {
+              text-align: left;
+            }
+          }
+          .stage_period {
+            font-style: italic;
+          }
+        }
       }
     }
   }

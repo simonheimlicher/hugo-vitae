@@ -104,8 +104,10 @@ vitae:
                   - component: awards
                     details: false
                     filter_by: type
-                    filter_value: award
+                    filter_value: [award, patent]
                     style:
+                      date:
+                        position: right
                       logo: false
                       heading:
                         font-size: normal
