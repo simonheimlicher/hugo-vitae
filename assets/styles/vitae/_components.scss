@@ -386,6 +386,14 @@ html[data-mode="dim"] {
       margin-top: var(--inner_margin_4-1);
     }
 
+    &.style_layout_shallow {
+      .headline {
+        & + .degree, & + .details {
+          margin-top: var(--inner_margin_4-1);
+        }
+      }
+    }
+
     &.style_headline_font-size_larger-5 {
       .headline {
         font-size: var(--font-size-larger-5);
@@ -922,7 +930,7 @@ html[data-mode="dim"] {
       .stage_body {
         margin-top: var(--margin_organization_between);
       }
-      &.org_first {
+      &.org_first, &.org_single {
         .stage_body {
           margin-top: var(--margin_organization_first);
         }
@@ -940,7 +948,7 @@ html[data-mode="dim"] {
     // }
 
     // Header for roles at organizations
-    &.role_header {
+    &.role_header.role_has_details {
       .stage_body {
         margin-top: var(--margin_role_between);
       }
@@ -951,7 +959,7 @@ html[data-mode="dim"] {
     //   }
     // }
     &.organization_header, &.stage_meta, &.stage_overview {
-      & + .role_header .stage_body {
+      & + .role_header.role_has_details .stage_body {
         margin-top: var(--margin_role_first);
       }
     }
@@ -1489,7 +1497,7 @@ html[data-mode="dim"] {
         &.organization_header {
           // --tl-col_timeline_color: purple;
           @include timeline_column_header_organization(var(--margin_organization_between));
-          &.org_first {
+          &.org_first, &.org_single {
             // --tl-col_timeline_color: red;
             @include timeline_column_header_organization(
               var(--margin_organization_first), false, true);
@@ -2001,10 +2009,10 @@ html[data-mode="dim"] {
         // display: inline-block;
         display: inline;
       }
-      --margin_organization_between: var(--inner_padding_4-3);
-      --margin_role_first: var(--inner_padding_4-1);
-      --margin_role_between: var(--inner_padding_4-1);
-      --margin_stage_content_between: var(--inner_padding_4-1);
+      --margin_organization_between: var(--inner_padding_8-6);
+      --margin_role_first: var(--inner_padding_8-2);
+      --margin_role_between: var(--inner_padding_8-3);
+      --margin_stage_content_between: var(--inner_padding_8-2);
       --padding_stage_meta: 0;
     }
 
@@ -2126,9 +2134,9 @@ html[data-mode="dim"] {
         --margin_organization_first: var(--inner_padding_8-0);
         --margin_organization_between: var(--inner_padding_8-4);
         --margin_role_first: var(--inner_padding_8-0);
-        --margin_role_between: var(--inner_padding_8-3);
+        --margin_role_between: var(--inner_padding_8-2);
         --margin_stage_content_first: var(--inner_padding_8-0);
-        --margin_stage_content_between: var(--inner_padding_8-1);
+        --margin_stage_content_between: var(--inner_padding_8-0);
       }
     }
 

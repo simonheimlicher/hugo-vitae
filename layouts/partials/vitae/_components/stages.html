@@ -258,7 +258,7 @@
   {{- $showOrganizationDuration = false }}
 {{- end }}
 
-{{- $showRoleDate := default true $component.role.date }}
+{{- $showRoleDate := default false $component.role.date }}
 {{- $showRolePeriod := default true $component.role.period }}
 {{- $showRoleDuration := default false $component.role.duration }}
 
@@ -343,6 +343,9 @@
 
     {{- $topLevelClass := strings.TrimLeft " " (delimit (append $styleClassList (slice $orgClass $periodColumnClass $timelineOrgClass $componentClass $childClass)) " ") }}
 
+    {{- if $roleHasDetails }}
+      {{- $organizationHeaderClassList = append (slice "role_has_details") $organizationHeaderClassList }}
+    {{- end }}
     {{- if not $separateRoles }}
       {{- $organizationHeaderClassList = append (slice "stage_header" "column_header") $organizationHeaderClassList }}
     {{- end }}
@@ -434,6 +437,11 @@
 
       {{- end }}
 
+      {{- $roleHasDetails := false }}
+      {{- with $firstRole }}
+        {{- $roleHasDetails = or .dimension .details .summary .description .achievements }}
+      {{- end }}
+
       {{- $roleHeaderContainer := "div" }}
       {{- $roleHeaderClassList := slice "role_header" }}
 
@@ -445,6 +453,10 @@
 
         {{- if and (not $timelineForSingleRole) (ge $roleIdx (sub $numRoles 1) ) }}
           {{- $topLevelClass = strings.TrimLeft " " (delimit (append $styleClassList (slice $roleClass $componentClass $childClass)) " ") }}
+        {{- end }}
+
+        {{- if $roleHasDetails }}
+          {{- $roleHeaderClassList = append (slice "role_has_details") $roleHeaderClassList }}
         {{- end }}
 
         {{- if not $separateRoles }}

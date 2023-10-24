@@ -48,11 +48,28 @@
   {{- end }}
 {{- end }}
 
+{{- /*
+We use this partial to handle list of roles within organizations, where each role has a period.
+
+For this reason, $periodList is a list of maps, each map has a "period" key, which is a list of two dates.
+{
+    "period": [
+      "2021-01-31",
+      "2021-01-31"
+    ]
+  }
+
+However, as a convenience, we also accept a slice of dates, and convert it to a list of maps.
+[
+  "2021-01-31",
+  "2021-01-31"
+]
+*/ -}}
+
 {{- if not (reflect.IsSlice $periodList) }}
-  {{- $periodList = slice $periodList $periodList }}
-  {{- warnf "%s[%s]: showing date=%v" $page $template (index $periodList 0) }}
+  {{- $periodList = (slice (dict "period" $periodList) ) }}
 {{- end }}
-{{- if ne (printf "%T" (index $periodList 0)) "map[string]interface {}"  }}
+{{- if not (reflect.IsMap (index $periodList 0)) }}
   {{- $periodList = (slice (dict "period" $periodList) ) }}
 {{- end }}
 

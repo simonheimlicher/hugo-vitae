@@ -50,7 +50,9 @@ vitae:
                       # - field: date_of_birth
                     style:
                       icon: false
-                      layout: inline
+                      layout:
+                        - inline
+                        - shallow
                       headline:
                         font-size: larger-3
                       role:
