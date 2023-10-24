@@ -5,6 +5,7 @@
 {{- $style := .MergedStyle.Style }}
 {{- $template := "partials/vitae/fragments/personal" }}
 {{- $media := .Media }}
+{{- $fragmentContainer := default false .Container }}
 {{- $debug := false }}
 {{- /* $debug = or $debug (not (not (findRE `^/([^/]+-demo/)?preview` $page.RelPermalink) ) ) */ -}}
 {{/* {{- warnf "%s[%s]: media=%s .Fragment=%s .Config=%s" $page $template $media $fragment $config -}} */}}
@@ -40,7 +41,7 @@
 {{- $styleClassList := $mergedStyle.StyleClass }}
 
 {{- $inlineLayout := (in $style.layout "inline") }}
-{{- $showLabelIcon := default true $style.icon }}
+{{- $showLabelIcon := and (not $inlineLayout) (default true $style.icon) }}
 {{- $showLabelText := default (not $showLabelIcon) $style.label }}
 {{- $qrCode := $style.qrcode }}
 
@@ -48,8 +49,9 @@
 {{- $blockSeparatorStr := default "<br/>" $style.block_separator }}
 
 {{- $labelIcon := (dict
+  "address" "regular/map"
   "phone" "solid/phone"
-  "email" "solid/envelope"
+  "email" "regular/envelope"
   "date_of_birth" "solid/cake-candles"
   "citizenship" "solid/globe"
 ) -}}
@@ -60,21 +62,23 @@
 
 {{- with $fragmentData := index $data $fragment }}
   {{- with $config.fields }}
-    {{- $fragmentContainer := false }}
     {{- if $inlineLayout }}
       {{- $fragmentContainer = "span" }}
-      {{- printf `<%s class="%s fragment_item">` $fragmentContainer $fragmentClass | safeHTML }}
     {{- end }}
-    {{- $fieldTextContainer := false }}
+    {{- with $fragmentContainer }}
+      {{- printf `<%s class="%s">` . $fragmentClass | safeHTML }}
+    {{- end }}
+
     {{- $inlineFieldCount := 0 }}
     {{- $fieldSeparator := false }}
+
     {{- range $fieldIndex, $field := . }}
       {{- $fieldName := $field }}
       {{- if reflect.IsMap $fieldName }}
         {{- $fieldName = $field.field }}
       {{- end }}
 
-      {{- $displayItems := slice }}
+      {{- $fieldItems := slice }}
 
       {{- with ($fieldData := (index $fragmentData $fieldName)) }}
         {{- /* $fieldName }}: {{ jsonify (dict "indent" "  ") $fieldData | safeHTML */ -}}
@@ -96,24 +100,23 @@
             {{- end }}
           {{- end -}}
           {{- with $item }}
-            {{- $displayItems = append $item $displayItems }}
+            {{- $fieldItems = append $item $fieldItems }}
           {{- end }}
         {{- end }}
       {{- end }}
 
-      {{- with $displayItems }}
-        {{- range $fieldData := $displayItems }}
+      {{- with $fieldItems }}
+        {{- $fieldContainer := "div" }}
+        {{- $classPrefix := $fieldName }}
+        {{- if $inlineLayout }}
+          {{- $fieldContainer = false }}
+        {{- end }}
+        {{- with $fieldContainer }}
+          {{- printf `<%s class="%s fragment_item">` . $fragmentClass | safeHTML }}
+        {{- end }}
+        {{- range $fieldData := $fieldItems }}
           {{- /* $fieldName }}: {{ jsonify (dict "indent" "  ") $fieldData | safeHTML */ -}}
-          {{- $classPrefix := $fieldName }}
-          {{- if and (not $fragmentContainer) (not $inlineLayout) }}
-            {{- $fragmentContainer = "div" }}
-            {{- printf `<%s class="%s fragment_item">` $fragmentContainer $fragmentClass | safeHTML }}
-          {{- end }}
-          {{- if and (not $fieldTextContainer) (not $showLabelIcon) }}
-            {{- $fieldTextContainer = "span" }}
-            {{- printf `<%s class="fragment_item-text">` $fieldTextContainer | safeHTML }}
-          {{- end }}
-          {{- $labelText := "" }}
+
           {{- $renderedField := "" }}
           {{- $partial := printf "render_%s" $fieldName }}
           {{- if templates.Exists (printf "partials/%s" $partial) }}
@@ -129,38 +132,45 @@
             {{- errorf "%s[%s]: Missing partial %s to render %v"
                 $page $template $partial $fieldName }}
           {{- end }}
+
           {{- with $renderedField }}
+            {{- $fieldTextContainer := false }}
+            {{- if $showLabelIcon }}
+              {{- $fieldTextContainer = "div" }}
+            {{- end }}
+
             {{- $content := .content }}
             {{- with $fieldSeparator }}
               {{ safeHTML $fieldSeparator }}
             {{- else }}
-              {{- if and $inlineLayout (not $showLabelIcon) (gt $inlineFieldCount 0) }}
+              {{- if and $inlineLayout (gt $inlineFieldCount 0) }}
                 {{ safeHTML $inlineSeparatorStr }}
               {{- end }}
             {{- end }}
             {{- with and $showLabelIcon (index $labelIcon $fieldName) }}
               {{ partial "fa-icon" . }}
             {{- end }}
-            {{- if and (not $fieldTextContainer) (or $showLabelIcon (not $inlineLayout) ) }}
-              {{- $fieldTextContainer = "div" }}
-              {{- printf `<%s class="fragment_item-text">` $fieldTextContainer }}
-            {{- end }}
-            {{- $title := default (printf "fragment_%s_%s" $fragment $fieldName) $field.title }}
-            {{- with $title }}
-              {{- with T (printf "%s_prefix" . ) }}
-                <span class="{{ $classPrefix }}_prefix">
-                  {{- . | strings.FirstUpper | page.RenderString }}
-                </span>
-              {{- else }}
-                {{- with T (printf "%s_label" . ) }}
-                  <span class="{{ $classPrefix }}_label">
-                    {{- printf `%s:` (strings.FirstUpper . ) | page.RenderString }}
+            {{- if $showLabelText }}
+              {{- with $fieldTextContainer }}
+                {{- printf `<%s class="fragment_item-text">` $fieldTextContainer | safeHTML }}
+              {{- end }}
+              {{- $title := default (printf "fragment_%s_%s" $fragment $fieldName) $field.title }}
+              {{- with $title }}
+                {{- with T (printf "%s_prefix" . ) }}
+                  <span class="{{ $classPrefix }}_prefix">
+                    {{- . | strings.FirstUpper | page.RenderString }}
                   </span>
                 {{- else }}
-                  {{- with T . }}
-                    <span class="{{ $classPrefix }}_title">
-                      {{- . | strings.FirstUpper | page.RenderString }}
+                  {{- with T (printf "%s_label" . ) }}
+                    <span class="{{ $classPrefix }}_label">
+                      {{- printf `%s:` (strings.FirstUpper . ) | page.RenderString }}
                     </span>
+                  {{- else }}
+                    {{- with T . }}
+                      <span class="{{ $classPrefix }}_title">
+                        {{- . | strings.FirstUpper | page.RenderString }}
+                      </span>
+                    {{- end }}
                   {{- end }}
                 {{- end }}
               {{- end }}
@@ -177,11 +187,13 @@
               {{- end }}
               {{- $content | page.RenderString | safeHTML }}
             </span>
-            {{- with $field.title }}
-              {{- with T (printf "%s_suffix" . ) }}
-                <span class="{{ $classPrefix }}_suffix">
-                  {{- page.RenderString . }}
-                </span>
+            {{- if $showLabelText }}
+              {{- with $field.title }}
+                {{- with T (printf "%s_suffix" . ) }}
+                  <span class="{{ $classPrefix }}_suffix">
+                    {{- page.RenderString . }}
+                  </span>
+                {{- end }}
               {{- end }}
             {{- end }}
             {{- $inlineFieldCount = add $inlineFieldCount 1 }}
@@ -195,26 +207,23 @@
             {{- else }}
               {{- $fieldSeparator = false }}
             {{- end }}
-          {{- end }}
-          {{- if and $fieldTextContainer (not $inlineLayout) }}
-            {{- printf "</%s>" $fragmentContainer | safeHTML }}
-            {{- $fieldTextContainer = false }}
+
+            {{- with and (not $inlineLayout) $fieldTextContainer }}
+              {{- printf "</%s>" . | safeHTML }}
+              {{- $fieldTextContainer = false }}
+            {{- end }}
           {{- end }}
         {{- end }}
-        {{- if $fieldTextContainer }}
-          {{- printf "</%s>" $fragmentContainer | safeHTML }}
-          {{- $fieldTextContainer = false }}
-        {{- end }}
-        {{- if and $fragmentContainer (not $inlineLayout) }}
-        {{- printf "</%s>" $fragmentContainer | safeHTML }}
-        {{- $fragmentContainer = false }}
+        {{- with and (not $inlineLayout) $fieldContainer }}
+          {{- printf "</%s>" . | safeHTML }}
+          {{- $fieldContainer = false }}
         {{- end }}
       {{- end }}
     {{- end }}
-    {{- if $fragmentContainer }}
-      {{- printf "</%s>" $fragmentContainer | safeHTML }}
+    {{- with $fragmentContainer }}
+      {{- printf "</%s>" . | safeHTML }}
       {{- $fragmentContainer = false }}
-    {{- end -}}
+    {{- end }}
   {{- end -}}
 {{- end -}}
 

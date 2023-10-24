@@ -378,7 +378,7 @@ html[data-mode="dim"] {
       @include upper-caps;
     }
     .headline {
-      & + .degree, & + .details {
+      & + .details {
         margin-top: var(--inner_margin_4-2);
       }
     }

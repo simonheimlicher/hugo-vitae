@@ -49,6 +49,7 @@ vitae:
                       - field: links
                       # - field: date_of_birth
                     style:
+                      label: false
                       icon: false
                       layout:
                         - inline
@@ -306,25 +307,24 @@ vitae:
                   - component: header
                     portrait: true
                     degree: true
-                    tagline: true
-                    # style:
-                    #   font-size: larger-1
+                    headline: true
                     fragments:
-                    - fragment: contact
-                      fields:
-                      - field: street
-                        separator: SEP
-                      - field: po_box
-                        separator: SEP
-                      - field: zip
-                      - field: city
-                        separator: ", "
-                      - field: country
                     - fragment: personal
                       fields:
+                      - field: phone
+                      - field: email
+                        separator: BLOCK
+                      - field: address
+                        separator: BLOCK
                       - field: date_of_birth
                       - field: citizenship
                         title: fragment_citizenship
+                    style:
+                      label: false
+                      icon: false
+                      layout:
+                        # - inline
+                        - shallow
               - slot: main
                 # style:
                 #   display: grid
@@ -393,7 +393,6 @@ vitae:
                     collection: achievements
                     style:
                       dt_columns: 3
-                      # heading: normal
 
                 - section: awards-certificates
                   # container: div
@@ -620,7 +619,7 @@ vitae:
                   - component: header
                     portrait: true
                     degree: true
-                    tagline: true
+                    headline: true
                     fragments:
                     - fragment: contact
                     - fragment: personal
@@ -628,10 +627,10 @@ vitae:
                       - field: date_of_birth
                       - field: citizenship
                         title: fragment_citizenship
-                    # style:
-                    #   layout:
-                    #     - inline
-                    #     - shallow
+                    style:
+                      layout:
+                        - inline
+                        - shallow
               - slot: main
                 pagination_policy: break
                 sections:
@@ -687,7 +686,8 @@ vitae:
                       filter_value: certificate
                       style:
                         logo: false
-                        heading: normal
+                        heading:
+                          font-size: normal
                         layout: narrow
                 - section: education-languages
                   # container: div
@@ -791,7 +791,7 @@ vitae:
                   - component: header
                     portrait: true
                     degree: true
-                    tagline: true
+                    headline: true
                     # style:
                     #   font-size: larger-1
                     fragments:
@@ -996,7 +996,7 @@ vitae:
                   - component: header
                     portrait: true
                     degree: true
-                    tagline: true
+                    headline: true
                     # style:
                     #   font-size: larger-1
                     fragments:
@@ -1303,7 +1303,7 @@ vitae:
             title: false
             level: 1
             portrait: true
-            tagline: true
+            headline: true
             profile: true
             contact: true
     pages:
@@ -1353,7 +1353,7 @@ vitae:
   letter:
     about:
       portrait: false
-      tagline: true
+      headline: true
       contact: true
     contact:
       title: false
@@ -1389,7 +1389,7 @@ vitae:
           - feature: about
             title: false
             portrait: true
-            tagline: true
+            headline: true
             profile: true
             contact: true
           - feature: links

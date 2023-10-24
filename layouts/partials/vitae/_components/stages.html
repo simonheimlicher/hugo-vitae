@@ -776,7 +776,13 @@
   {{- with and $showOrganizationAppendix $org.appendix }}
     {{- /* <span class="appendix">{{- with $inlineSeparatorStr }} {{ . }} {{ end }}{{ page.RenderString . }}</span> */ -}}
     {{/* Include a newline */}}
-    {{- printf `&nbsp;<%s class="appendix stage_meta">` $childContainer | safeHTML }}({{ page.RenderString . }}){{- printf `</%s>` $childContainer | safeHTML }}
+    {{- with $childContainer }}
+      {{- printf `&nbsp;<%s class="appendix stage_meta">` $childContainer | safeHTML }}
+    {{- end }}
+    ({{ page.RenderString . }})
+    {{- with $childContainer }}
+      {{- printf `</%s>` $childContainer | safeHTML }}
+    {{- end }}
   {{- end -}}
 
   {{- if not $container }}

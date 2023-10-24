@@ -123,13 +123,7 @@
   {{- end }}
   <div class="overlay">
     <div class="overlay_content">
-      {{- partial "headline" (dict
-        "Page" $page
-        "Config" $config
-        "Component" $component
-        "ComponentArgs" $componentArgs
-        "HeadingLevel" $headingLevel
-      ) -}}
+      {{- partial "headline" $componentArgs -}}
     </div>
   </div>
 {{- else }}
