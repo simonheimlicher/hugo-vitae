@@ -502,7 +502,7 @@
         {{ partial "html-comment" (printf "%s: roleHeaderInOrganizationHeader=%v: OPEN role_header"
             $template $roleHeaderInOrganizationHeader ) }}
         <div class="{{ delimit $roleHeaderClassList ` ` }}">
-          {{- partial "role_header.html" $roleHeaderParams -}}
+          {{- partial "role_header.html" $roleHeaderParams }}
         {{ partial "html-comment" (printf "%s: roleHeaderInOrganizationHeader=%v: CLOSE role_header"
             $template $roleHeaderInOrganizationHeader ) }}
         </div>
@@ -808,7 +808,7 @@
     {{ partial "html-comment" (printf "%s: roleHeaderInOrganizationHeader=%v: OPEN role_header"
         $template $roleHeaderInOrganizationHeader ) }}
     <div class="{{ delimit $roleHeaderClassList ` ` }}">
-      {{- partial "role_header.html" $roleHeaderParams -}}
+      {{- partial "role_header.html" $roleHeaderParams }}
     {{ partial "html-comment" (printf "%s: roleHeaderInOrganizationHeader=%v: CLOSE role_header"
         $template $roleHeaderInOrganizationHeader ) }}
     </div>

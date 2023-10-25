@@ -26,6 +26,15 @@
     "inline"
     "shallow"
   )
+  "justify-content" (slice
+    "normal"
+    "center"
+    "flex-start"
+    "flex-end"
+    "space-between"
+    "space-around"
+    "space-evenly"
+  )
   "icon" "ANY_BOOL"
   "label" "ANY_BOOL"
   "qrcode" "ANY_BOOL"
@@ -46,7 +55,7 @@
 {{- $qrCode := $style.qrcode }}
 
 {{- $inlineSeparatorStr := default "•" $style.inline_separator }}
-{{- $blockSeparatorStr := default "<br/>" $style.block_separator }}
+{{- $blockSeparatorStr := default "<br>" $style.block_separator }}
 
 {{- $labelIcon := (dict
   "address" "regular/map"
@@ -57,12 +66,17 @@
 ) -}}
 
 {{- $fragmentClass := "fragment_personal" }}
+{{- $rowClassList := slice $fragmentClass "fragment_row" }}
+{{- $fieldClassList := slice $fragmentClass }}
 
 {{- $obfuscatedLinkPartial := "partials/claris/_components/obfuscated-link.html" }}
 
 {{- with $fragmentData := index $data $fragment }}
   {{- with $config.fields }}
+
+    {{- $rowContainer := "div" }}
     {{- if $inlineLayout }}
+      {{- $rowContainer = "span" }}
       {{- $fragmentContainer = "span" }}
     {{- end }}
     {{- with $fragmentContainer }}
@@ -71,6 +85,13 @@
 
     {{- $inlineFieldCount := 0 }}
     {{- $fieldSeparator := false }}
+
+    {{- if $showLabelIcon }}
+      {{- $fieldClassList = append "fragment_item" $fieldClassList }}
+    {{- end }}
+
+    {{- $rowIsOpen := false }}
+    {{- $rowSeparator := false }}
 
     {{- range $fieldIndex, $field := . }}
       {{- $fieldName := $field }}
@@ -106,13 +127,27 @@
       {{- end }}
 
       {{- with $fieldItems }}
-        {{- $fieldContainer := "div" }}
         {{- $classPrefix := $fieldName }}
-        {{- if $inlineLayout }}
-          {{- $fieldContainer = false }}
+
+        {{- with and (not $rowIsOpen) $rowContainer }}
+          {{- printf `<%s class="%s">` . (delimit $rowClassList ` `) | safeHTML }}
+          {{- $rowIsOpen = true }}
+        {{- end }}
+
+        {{- with $fieldSeparator }}
+          {{ safeHTML $fieldSeparator }}
+        {{- else }}
+          {{- if and $inlineLayout (gt $inlineFieldCount 0) }}
+            {{- safeHTML $inlineSeparatorStr }}
+          {{- end }}
+        {{- end }}
+
+        {{- $fieldContainer := "span" }}
+        {{- if $showLabelIcon }}
+          {{- $fieldContainer = "div" }}
         {{- end }}
         {{- with $fieldContainer }}
-          {{- printf `<%s class="%s fragment_item">` . $fragmentClass | safeHTML }}
+          {{- printf `<%s class="%s">` . (delimit $fieldClassList ` `) | safeHTML }}
         {{- end }}
         {{- range $fieldData := $fieldItems }}
           {{- /* $fieldName }}: {{ jsonify (dict "indent" "  ") $fieldData | safeHTML */ -}}
@@ -140,13 +175,6 @@
             {{- end }}
 
             {{- $content := .content }}
-            {{- with $fieldSeparator }}
-              {{ safeHTML $fieldSeparator }}
-            {{- else }}
-              {{- if and $inlineLayout (gt $inlineFieldCount 0) }}
-                {{ safeHTML $inlineSeparatorStr }}
-              {{- end }}
-            {{- end }}
             {{- with and $showLabelIcon (index $labelIcon $fieldName) }}
               {{ partial "fa-icon" . }}
             {{- end }}
@@ -174,7 +202,7 @@
                   {{- end }}
                 {{- end }}
               {{- end }}
-            {{- end }}
+            {{- end -}}
             <span class="{{ $classPrefix }}_text">
               {{- with .link }}
                 {{- if templates.Exists $obfuscatedLinkPartial }}
@@ -185,7 +213,7 @@
                   {{- $content = printf `<a href="%s">%s</a>` . . | safeHTML }}
                 {{- end }}
               {{- end }}
-              {{- $content | page.RenderString | safeHTML }}
+              {{- $content | page.RenderString | safeHTML -}}
             </span>
             {{- if $showLabelText }}
               {{- with $field.title }}
@@ -197,28 +225,43 @@
               {{- end }}
             {{- end }}
             {{- $inlineFieldCount = add $inlineFieldCount 1 }}
-            {{- with $fieldSeparator = $field.separator }}
-              {{- if (eq $field.separator "INLINE") }}
+            {{- with $field.separator }}
+              {{- if (eq . "INLINE") }}
                 {{- $fieldSeparator = $inlineSeparatorStr }}
-              {{- else if (eq $field.separator "BLOCK") }}
-                {{- $fieldSeparator = $blockSeparatorStr }}
+              {{- else if (eq . "BLOCK") }}
+                {{- with $rowContainer }}
+                  {{- $fieldSeparator = false }}
+                  {{- $rowSeparator = true }}
+                {{- else }}
+                  {{- $fieldSeparator = $blockSeparatorStr }}
+                {{- end }}
                 {{- $inlineFieldCount = 0 }}
               {{- end }}
             {{- else }}
               {{- $fieldSeparator = false }}
             {{- end }}
 
-            {{- with and (not $inlineLayout) $fieldTextContainer }}
+            {{- with and $showLabelText $fieldTextContainer }}
               {{- printf "</%s>" . | safeHTML }}
               {{- $fieldTextContainer = false }}
             {{- end }}
           {{- end }}
         {{- end }}
-        {{- with and (not $inlineLayout) $fieldContainer }}
+        {{- with $fieldContainer }}
           {{- printf "</%s>" . | safeHTML }}
           {{- $fieldContainer = false }}
         {{- end }}
+        {{- with and $rowSeparator $rowContainer }}
+          {{- printf "\n</%s>\n" . | safeHTML }}
+          {{- $rowIsOpen = false }}
+          {{- $rowSeparator = false }}
+        {{- end }}
       {{- end }}
+    {{- end }}
+    {{- with $rowContainer }}
+      {{- printf "</%s>" . | safeHTML }}
+      {{- $rowContainer = false }}
+      {{- $rowSeparator = false }}
     {{- end }}
     {{- with $fragmentContainer }}
       {{- printf "</%s>" . | safeHTML }}
@@ -246,7 +289,7 @@
   ) $config.address.elements }}
 
   {{- with $address := $data.content }}
-    {{- $content = printf `<span class="fragment_item_address fragment_item">` }}
+    {{- $content = printf `<span class="fragment_item-address">` }}
     {{- range $addressElements }}
       {{- $element := .element }}
       {{- $sep := .separator }}

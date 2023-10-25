@@ -49,6 +49,10 @@
     display: flex;
     flex-direction: column;
   }
+  .fragment_row {
+    display: flex;
+    column-gap: 1ch;
+  }
   .contact,
   .fragment,
   .link,
@@ -388,7 +392,10 @@ html[data-mode="dim"] {
 
     &.style_layout_shallow {
       .headline {
-        & + .degree, & + .details {
+        & + .degree {
+          margin-top: var(--inner_margin_4-0);
+        }
+        & + .details {
           margin-top: var(--inner_margin_4-1);
         }
       }
@@ -434,11 +441,49 @@ html[data-mode="dim"] {
         font-size: var(--font-size-larger-1);
       }
     }
-    &.style_align_center {
-      text-align: center;
-    }
-    &.style_align_right {
-      text-align: right;
+    &.style_justify-content {
+      &_center {
+        text-align: center;
+        justify-content: center;
+        .fragment_row {
+          justify-content: center;
+        }
+      }
+      &_flex-start {
+        text-align: left;
+        justify-content: flex-start;
+        .fragment_row {
+          justify-content: flex-start;
+        }
+      }
+      &_flex-end {
+        text-align: right;
+        justify-content: flex-end;
+        .fragment_row {
+          justify-content: flex-end;
+        }
+      }
+      &_space-between {
+        text-align: center;
+        justify-content: space-between;
+        .fragment_row {
+          justify-content: space-between;
+        }
+      }
+      &_space-around {
+        text-align: center;
+        justify-content: space-around;
+        .fragment_row {
+          justify-content: space-around;
+        }
+      }
+      &_space-evenly {
+        text-align: center;
+        justify-content: space-evenly;
+        .fragment_row {
+          justify-content: space-evenly;
+        }
+      }
     }
 
     &.portrait {
@@ -560,6 +605,10 @@ html[data-mode="dim"] {
         width: auto;
         padding-left: var(--column_gap);
         border-left: var(--line-width_separator_heading) solid var(--border-color-faint);
+        ul {
+          margin-left: 0;
+          padding-left: 0;
+        }
       }
     }
     &.style_dt_columns_2 {
@@ -833,6 +882,11 @@ html[data-mode="dim"] {
     font-size: var(--font-size_stage_header_main);
     --grid_period-column_width: 10em;
 
+    ul {
+      margin-left: 0;
+      padding-left: 0;
+    }
+
     // Periods of time such as "Mar 2022-Jul 2023"
     .stage_period {
       font-size: var(--font-size-smaller-1);
@@ -1034,7 +1088,7 @@ html[data-mode="dim"] {
           &_timeline {
             grid-column: 1;
           }
-          &_main {
+          &_body, &_main {
             grid-column: 3 / span all;
           }
         }
@@ -1122,6 +1176,8 @@ html[data-mode="dim"] {
         flex-wrap: wrap;
         flex-direction: row;
         gap: var(--row_gap) calc(1 * var(--column_gap));
+        margin-left: 0;
+        padding-left: 0;
         li {
           list-style: none;
           margin: 0;

@@ -61,7 +61,7 @@
 {{- $optInline := dict "display" "inline" }}
 
 {{- $inlineSeparatorStr := default " • " $style.inline_separator }}
-{{- $blockSeparatorStr := default "<br/>" $style.block_separator }}
+{{- $blockSeparatorStr := default "<br>" $style.block_separator }}
 
 {{- $outerInlineLayout := (in $style.layout "inline") }}
 {{- $innerInlineLayout := (in $style.layout "shallow") }}
@@ -145,7 +145,7 @@
             {{- warnf "%s[%s] key=%v fragmentPartial=%v found" $page $template $key $fragmentPartial }}
           {{- end }}
           {{- $fragmentConfig := (dict
-            "Fields" $collection.fields
+            "fields" $collection.fields
           ) }} {{ partial $fragmentPartial (merge $componentArgs (dict "Fragment" $fragmentName "Config" $fragmentConfig "Data" $item)) -}}
         {{- else }}
           {{- if $debug }}

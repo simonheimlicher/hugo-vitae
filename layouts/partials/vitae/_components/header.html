@@ -48,9 +48,14 @@
       "normal" "normal"
     )
   )
-  "align" (dict
-    "center" "center"
-    "right" "right"
+  "justify-content" (slice
+    "normal"
+    "center"
+    "flex-start"
+    "flex-end"
+    "space-between"
+    "space-around"
+    "space-evenly"
   )
   "icon" "ANY_BOOL"
   "label" "ANY_BOOL"
@@ -123,19 +128,20 @@
   {{- end }}
   <div class="overlay">
     <div class="overlay_content">
-      {{- partial "headline" $componentArgs -}}
+      {{- partial "render_header" $componentArgs -}}
     </div>
   </div>
 {{- else }}
-  {{- partial "headline" $componentArgs -}}
+  {{- partial "render_header" $componentArgs -}}
 {{- end }}
 </div>
 
-{{- define "partials/headline" }}
+{{- define "partials/render_header" }}
   {{- $componentArgs := . }}
   {{- $page := .Page }}
   {{- $template := "vitae/_components/header" }}
   {{- $config := .Config }}
+  {{- $style := .Style }}
   {{- $component := .Component }}
   {{- $headingLevel := default 1 .HeadingLevel }}
 

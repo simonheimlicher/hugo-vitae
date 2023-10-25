@@ -66,7 +66,7 @@
 {{- $optInline := dict "display" "inline" }}
 
 {{- $inlineSeparatorStr := default " • " $style.inline_separator }}
-{{- $blockSeparatorStr := default "<br/>" $style.block_separator }}
+{{- $blockSeparatorStr := default "<br>" $style.block_separator }}
 
 {{- $outerInlineLayout := (in $style.layout "inline") }}
 {{- $innerInlineLayout := (in $style.layout "shallow") }}

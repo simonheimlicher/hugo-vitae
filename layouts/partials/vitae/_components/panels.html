@@ -63,99 +63,105 @@
 
 {{- $panelData := (index .Data (default $component.component $component.collection) ) }}
 {{- with $panelData }}
-  {{- with .content }}
+  {{- if reflect.IsMap . }}
+    {{- with .content }}
+      <div class="panels_content {{ $topLevelClass }}">
+        {{- page.RenderString . }}
+      </div>
+    {{- end }}
+    {{- with $definitionsRaw := .definitions }}
+      {{- $definitions := . }}
+      {{- $classPrefix := "panel" }}
+      {{- with $filterMatch }}
+        {{- if reflect.IsSlice . }}
+          {{- $definitions = where $definitionsRaw $filterField "in" . }}
+          {{- $classPrefix = printf "%s %s" $filterMatch (delimit $classPrefix "_") }}
+        {{- else }}
+          {{- $definitions = where $definitionsRaw $filterField . }}
+          {{- $classPrefix = printf "%s %s" $filterMatch $classPrefix }}
+        {{- end }}
+      {{- end }}
+      {{- with $definitions }}
+        <div class="panels_content {{ $topLevelClass }}">
+          {{- if not $styleLayoutInline }}
+            <dl>
+          {{- end }}
+
+          {{- range $definitionItem := . }}
+
+            {{- with $title := $definitionItem.title }}
+
+              {{- if $styleLayoutInline }}
+                <h{{ $headingLevel }} class="panel_title">
+              {{- else }}
+                <dt>
+              {{- end -}}
+              {{- if $styleLayoutInline }}
+                {{- $title = replaceRE `\s*<br>\s*` ` ` $title }}
+              {{- end -}}
+
+              {{ page.RenderString $optInline $title }}
+
+              {{- if $styleLayoutInline }}
+                </h{{ $headingLevel }}>
+              {{- else }}
+                </dt>
+              {{- end }}
+              {{- with $definitionItem.content }}
+                {{- if not $styleLayoutInline }}
+                  <dd>
+                {{- end }}
+                  {{- if reflect.IsSlice . }}
+                    <ul>
+                    {{- range . }}
+                      <li>
+                        {{ page.RenderString $optInline . }}
+                      </li>
+                    {{- end }}
+                    </ul>
+                  {{- else }}
+                      {{ page.RenderString $optInline . }}
+                  {{- end }}
+                {{- if not $styleLayoutInline }}
+                  </dd>
+                {{- end }}
+              {{- end }}
+            {{- end }}
+          {{- end }}
+          {{- if not $styleLayoutInline }}
+            </dl>
+          {{- end }}
+        </div>
+      {{- end }}
+    {{- end }}
+    {{- with $panelsRaw := .panels }}
+      {{- $panels := . }}
+      {{- $classPrefix := "panel" }}
+      {{- with $filterMatch }}
+        {{- if reflect.IsSlice . }}
+          {{- $panels = where $panelsRaw $filterField "in" . }}
+          {{- $classPrefix = printf "%s %s" $filterMatch (delimit $classPrefix "_") }}
+        {{- else }}
+          {{- $panels = where $panelsRaw $filterField . }}
+          {{- $classPrefix = printf "%s %s" $filterMatch $classPrefix }}
+        {{- end }}
+      {{- end }}
+      {{- with $panels }}
+        {{- partial "claris/_components/panels" (dict
+            "Page" $page
+            "HeadingLevel" $headingLevel
+            "ContainerClass" (delimit (slice "panels_cards" $topLevelClass) " ")
+            "Nested" false
+            "Panels" . )
+          }}
+      {{- end }}
+    {{- end }}
+  {{- else }}
     <div class="panels_content {{ $topLevelClass }}">
       {{- page.RenderString . }}
     </div>
   {{- end }}
-  {{- with $definitionsRaw := .definitions }}
-    {{- $definitions := . }}
-    {{- $classPrefix := "panel" }}
-    {{- with $filterMatch }}
-      {{- if reflect.IsSlice . }}
-        {{- $definitions = where $definitionsRaw $filterField "in" . }}
-        {{- $classPrefix = printf "%s %s" $filterMatch (delimit $classPrefix "_") }}
-      {{- else }}
-        {{- $definitions = where $definitionsRaw $filterField . }}
-        {{- $classPrefix = printf "%s %s" $filterMatch $classPrefix }}
-      {{- end }}
-    {{- end }}
-    {{- with $definitions }}
-      <div class="panels_content {{ $topLevelClass }}">
-        {{- if not $styleLayoutInline }}
-          <dl>
-        {{- end }}
-
-        {{- range $definitionItem := . }}
-
-          {{- with $title := $definitionItem.title }}
-
-            {{- if $styleLayoutInline }}
-              <h{{ $headingLevel }} class="panel_title">
-            {{- else }}
-              <dt>
-            {{- end -}}
-            {{- if $styleLayoutInline }}
-              {{- $title = replaceRE `\s*<br>\s*` ` ` $title }}
-            {{- end -}}
-
-            {{ page.RenderString $optInline $title }}
-
-            {{- if $styleLayoutInline }}
-              </h{{ $headingLevel }}>
-            {{- else }}
-              </dt>
-            {{- end }}
-            {{- with $definitionItem.content }}
-              {{- if not $styleLayoutInline }}
-                <dd>
-              {{- end }}
-                {{- if reflect.IsSlice . }}
-                  <ul>
-                  {{- range . }}
-                    <li>
-                      {{ page.RenderString $optInline . }}
-                    </li>
-                  {{- end }}
-                  </ul>
-                {{- else }}
-                    {{ page.RenderString $optInline . }}
-                {{- end }}
-              {{- if not $styleLayoutInline }}
-                </dd>
-              {{- end }}
-            {{- end }}
-          {{- end }}
-        {{- end }}
-        {{- if not $styleLayoutInline }}
-          </dl>
-        {{- end }}
-      </div>
-    {{- end }}
-  {{- end }}
-  {{- with $panelsRaw := .panels }}
-    {{- $panels := . }}
-    {{- $classPrefix := "panel" }}
-    {{- with $filterMatch }}
-      {{- if reflect.IsSlice . }}
-        {{- $panels = where $panelsRaw $filterField "in" . }}
-        {{- $classPrefix = printf "%s %s" $filterMatch (delimit $classPrefix "_") }}
-      {{- else }}
-        {{- $panels = where $panelsRaw $filterField . }}
-        {{- $classPrefix = printf "%s %s" $filterMatch $classPrefix }}
-      {{- end }}
-    {{- end }}
-    {{- with $panels }}
-      {{- partial "claris/_components/panels" (dict
-          "Page" $page
-          "HeadingLevel" $headingLevel
-          "ContainerClass" (delimit (slice "panels_cards" $topLevelClass) " ")
-          "Nested" false
-          "Panels" . )
-        }}
-    {{- end }}
-  {{- end }}
-  {{- else }}
-    {{- warnf "%s[%s]: Failed to obtain collection $component.component=%v $component.collection=%v"
-        $page $template $component.component $component.collection }}
+{{- else }}
+  {{- warnf "%s[%s]: Failed to obtain collection $component.component=%v $component.collection=%v"
+      $page $template $component.component $component.collection }}
 {{- end }}
