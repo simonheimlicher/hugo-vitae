@@ -2252,6 +2252,10 @@ html[data-mode="dim"] {
         row-gap: var(--inner_margin_4-2);
         // margin-top: var(--inner_margin_4-2);
         .award {
+          &_body {
+            display: flex;
+            flex-direction: row;
+          }
           &_header {
             display: flex;
             flex-direction: row;

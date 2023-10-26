@@ -1,22 +1,20 @@
-{{- $template := "vitae/_components/links" }}
-{{- $page := .Page }}
-{{- $componentArgs := . }}
-
-{{- $mediaType := default "screen" .MediaType }}
+{{- $page := .Page -}}
+{{- $template := "vitae/_components/links" -}}
+{{- $component := .Component }}
 {{- $headingLevel := default 3 .HeadingLevel }}
 {{- $componentClass := default "component_links" .ComponentClass }}
 {{- $childClass := default "" .ChildClass }}
 
-{{- $component := .Component }}
-
 {{- $debug := false }}
-{{/* {{- $debug = or $debug (not (not (findRE `^/([^/]+-demo/)?preview` $page.RelPermalink) ) ) -}} */}}
+{{/* {{- $debug = or $debug (not (not (findRE `^/([^/]+-demo/)?devel` $page.RelPermalink) ) ) -}} */}}
+
+{{- $collection := default .Component.component .Component.collection }}
 
 {{- $validStyles := (dict
   "_template" $template
   "ats" (dict
     "true" (dict
-      "layout" "inline"
+      "layout" (slice "inline")
     )
   )
   "layout" (slice
@@ -46,44 +44,49 @@
 
 {{- $classPrefix := printf "link" }}
 
-{{ if default true (index .Component $mediaType) -}}
+{{- $linkCollection := (index .Data $collection) }}
+{{- with $linkCollection }}
+  {{- $linkList := $linkCollection }}
+
+  {{- $iconImageParams := (dict "Page" $page "width" 512 "figureclass" "link_icon") }}
   <div class="{{ $classPrefix }}_container {{ $topLevelClass }}">
-  {{ with .Data.features.links }}
+  {{- range $linkIdx, $link := $linkList }}
     {{- $last := sub (len .) 1 -}}
-    {{- range $i, $e := . -}}
-      {{- $qrCode := and $qrCodes (default true $e.qrcode) }}
-      <div class="{{ $classPrefix }}_item{{- if $qrCode }} {{ $classPrefix }}_item_with-qrcode{{- end }}{{- with $childClass }} {{ . }}{{- end }}">
-        {{- if $linkIcon }}
-          <a href="{{ $e.url }}" title="Connect via {{ $e.title }}" class="{{ $classPrefix }}_icon">
-            {{- partial "fa-icon" $e.icon }}
-          </a>
-        {{- end }}
-        {{- if $linkText }}
-          <div class="{{ $classPrefix }}_text">
-        {{- end }}
-          <a href="{{ $e.url }}" title="Connect via {{ $e.title }}" class="{{ $classPrefix }}_icon">
-            <span class="{{ $classPrefix }}_{{- $e.title | anchorize -}}">
-              {{- $e.title -}}
-            </span>
-          </a>
-        {{- if $linkText }}
-          <a href="{{ $e.url }}" title="Connect via {{ $e.title }}" class="{{ $classPrefix }}_text">
-            <span class="{{ $classPrefix }}_{{- $e.title | anchorize -}}">
-              {{ $e.url | strings.TrimLeft "https://" | strings.TrimLeft "www." }}
-            </span>
-          </a>
-        </div>
-        {{- end }}
-        {{- if $qrCode }}
-          <div class="{{ $classPrefix }}_qrcode qrcode-link">
-            {{ partial "qrcode-svg" (dict
-              "LinkTitle" (printf "QR code to connect via %v" $e.title)
-              "Content" $e.url)
-            -}}
-          </div>
-        {{- end }}
+    {{- $qrCode := and $qrCodes (default true $link.qrcode) }}
+    <div class="{{ $classPrefix }}_item{{- if $qrCode }} {{ $classPrefix }}_item_with-qrcode{{- end }}{{- with $childClass }} {{ . }}{{- end }}">
+      {{- if $linkIcon }}
+        <a href="{{ $link.url }}" title="Connect via {{ $link.title }}" class="{{ $classPrefix }}_icon">
+          {{- partial "fa-icon" $link.icon }}
+        </a>
+      {{- end }}
+      {{- if $linkText }}
+        <div class="{{ $classPrefix }}_text">
+      {{- end }}
+        <a href="{{ $link.url }}" title="Connect via {{ $link.title }}" class="{{ $classPrefix }}_icon">
+          <span class="{{ $classPrefix }}_{{- $link.title | anchorize -}}">
+            {{- $link.title -}}
+          </span>
+        </a>
+      {{- if $linkText }}
+        <a href="{{ $link.url }}" title="Connect via {{ $link.title }}" class="{{ $classPrefix }}_text">
+          <span class="{{ $classPrefix }}_{{- $link.title | anchorize -}}">
+            {{ $link.url | strings.TrimLeft "https://" | strings.TrimLeft "www." }}
+          </span>
+        </a>
       </div>
-    {{- end }}
+      {{- end }}
+      {{- if $qrCode }}
+        <div class="{{ $classPrefix }}_qrcode qrcode-link">
+          {{ partial "qrcode-svg" (dict
+            "LinkTitle" (printf "QR code to connect via %v" $link.title)
+            "Content" $link.url)
+          -}}
+        </div>
+      {{- end }}
+    </div>
   {{- end }}
   </div>
+{{- /* {{- else }}
+  {{- warnf "%s[%s]: Failed to obtain linkCollection via (index .Data $component.collection) with $component.collection=%v"
+      $page $template $component.collection }} */ -}}
 {{- end }}

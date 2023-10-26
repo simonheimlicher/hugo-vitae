@@ -36,9 +36,11 @@
     "role" "ANY_BOOL"
   )
   "date" (dict
-    "year" "year"
-    "month" "month"
-    "true" "default"
+    "format" (dict
+      "year" "year"
+      "month" "month"
+      "true" "default"
+    )
   )
   "timeline" (dict
     "false" false
@@ -208,7 +210,7 @@
 {{- with $component.date_format }}
   {{- $dateFormat = string $component.date_format }}
 {{- else }}
-  {{- with $style.date }}
+  {{- with $style.date.format }}
     {{- if eq . "year" }}
       {{- $dateFormat = $defaultDateFormat.year }}
     {{- else if eq . "month" }}

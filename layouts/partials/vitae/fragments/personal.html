@@ -95,13 +95,21 @@
 
     {{- range $fieldIndex, $field := . }}
       {{- $fieldName := $field }}
+      {{- $fieldData := false }}
       {{- if reflect.IsMap $fieldName }}
         {{- $fieldName = $field.field }}
+        {{- with .collection }}
+          {{- $fieldData = index $data . }}
+        {{- end }}
+      {{- end }}
+
+      {{- if not $fieldData }}
+        {{- $fieldData = index $fragmentData $fieldName }}
       {{- end }}
 
       {{- $fieldItems := slice }}
 
-      {{- with ($fieldData := (index $fragmentData $fieldName)) }}
+      {{- with $fieldData }}
         {{- /* $fieldName }}: {{ jsonify (dict "indent" "  ") $fieldData | safeHTML */ -}}
 
         {{- $items := $fieldData }}

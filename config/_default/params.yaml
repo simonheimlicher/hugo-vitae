@@ -48,6 +48,7 @@ vitae:
                       #   separator: BLOCK
                       - field: permit
                       - field: links
+                        collection: links
                     style:
                       label: false
                       icon: false
@@ -334,7 +335,6 @@ vitae:
                     filter_by: type
                     filter_value: professional
                     links: false
-                    # date_format: 2006
                     unit:
                       limit: 1
                       type: false
@@ -355,7 +355,8 @@ vitae:
                         role:
                           font-weight: normal
                       #     font-size: normal
-                      date: year
+                      date:
+                        format: year
                       logo: false
                     organization:
                       period: true
@@ -382,39 +383,58 @@ vitae:
                     style:
                       dt_columns: 3
 
-                - section: awards-certificates
-                  # container: div
-                  style:
-                    column-width_main: 6
-                  sections:
-                  - section: awards
-                    title: section-awards
-                    container: section
-                    components:
-                    - component: awards
-                      details: false
-                      filter_by: type
-                      filter_value: award
-                      style:
-                        logo: false
-                        heading:
-                          font-size: normal
-                        layout:
-                          - shallow
-                          # - inline # no effect
-                  - section: certificates
-                    title: section-certificates
-                    container: section
-                    components:
-                    - component: awards
-                      details: false
-                      filter_by: type
-                      filter_value: certificate
-                      style:
-                        logo: false
-                        heading:
-                          font-size: normal
-                        layout: narrow
+                # - section: awards-certificates
+                #   # container: div
+                #   style:
+                #     column-width_main: 6
+                #   sections:
+                #   - section: awards
+                #     title: section-awards
+                #     container: section
+                #     components:
+                #     - component: awards
+                #       details: false
+                #       filter_by: type
+                #       filter_value: award
+                #       style:
+                #         logo: false
+                #         heading:
+                #           font-size: normal
+                #         layout:
+                #           - shallow
+                #           # - inline # no effect
+                #   - section: certificates
+                #     title: section-certificates
+                #     container: section
+                #     components:
+                #     - component: awards
+                #       details: false
+                #       filter_by: type
+                #       filter_value: certificate
+                #       style:
+                #         logo: false
+                #         heading:
+                #           font-size: normal
+                #         layout: narrow
+                - section: awards
+                  title: Awards & patents
+                  container: section
+                  components:
+                  - component: awards
+                    details: false
+                    filter_by: type
+                    filter_value: [award, patent]
+                    style:
+                      logo: false
+                      date:
+                        format: year
+                      heading:
+                        # font-size: normal
+                        font-weight: normal
+                      #   font-style: italic
+                      layout:
+                        - inline
+                        - shallow
                 - section: connect
                   # title: section-connect
                   container: section
@@ -821,7 +841,6 @@ vitae:
                     filter_by: type
                     filter_value: professional
                     links: false
-                    # date_format: 2006
                     unit:
                       limit: 1
                       type: false
@@ -836,7 +855,8 @@ vitae:
                       timeline: column
                       heading:
                         font-size: normal
-                      date: year
+                      date:
+                        format: year
                       logo: false
                     organization:
                       period: true
@@ -1025,7 +1045,6 @@ vitae:
                     filter_by: type
                     filter_value: professional
                     links: false
-                    # date_format: 2006
                     unit:
                       limit: 1
                       type: false
@@ -1040,7 +1059,8 @@ vitae:
                       timeline: column
                       heading:
                         font-size: normal
-                      date: year
+                      date:
+                        format: year
                       logo: false
                     organization:
                       period: true

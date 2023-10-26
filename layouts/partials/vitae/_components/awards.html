@@ -39,6 +39,11 @@
     "position" (dict
       "right" "right"
     )
+    "format" (dict
+      "year" "year"
+      "month" "month"
+      "true" "default"
+    )
   )
   "logo" (dict
     "false" false
@@ -71,6 +76,33 @@
 {{- $outerInlineLayout := (in $style.layout "inline") }}
 {{- $innerInlineLayout := (in $style.layout "shallow") }}
 
+{{- $defaultDateFormat := (dict
+    "default" "Jan 2006"
+    "year" "2006"
+    "month" "Jan 2006"
+) -}}
+
+{{- $dateFormat := $defaultDateFormat.default }}
+{{- with $component.date_format }}
+  {{- $dateFormat = string $component.date_format }}
+{{- else }}
+  {{- with $style.date.format }}
+    {{- if eq . "year" }}
+      {{- $dateFormat = $defaultDateFormat.year }}
+    {{- else if eq . "month" }}
+      {{- $dateFormat = $defaultDateFormat.month }}
+    {{- else }}
+      {{- $dateFormat = $defaultDateFormat.default }}
+    {{- end }}
+  {{- end }}
+{{- end }}
+
+{{- $periodDurationParams := (dict
+  "DateFormat" $dateFormat
+  "Container" "span"
+  "DateContainer" "span"
+) -}}
+
 {{- $awardCollection := (index .Data $collection) }}
 {{- with $awardCollection }}
   {{- $awardList := $awardCollection }}
@@ -90,7 +122,9 @@
     <div class="{{- $classPrefix }}_item">
       {{- with and (ne $component.date false) .date }}
       <div class="{{- $classPrefix }}_date stage_period">
-        <span class="{{- $classPrefix }}_date_text">{{ partial "vitae/_functions/date-period" . }}</span>
+        <span class="{{- $classPrefix }}_date_text">{{
+          partial "vitae/_functions/date-period" (merge $periodDurationParams (dict "Period" .)) | safeHTML
+        }}</span>
       </div>
       {{- end }}
       {{- $logoImage := and (default false $style.logo)  .logo }}
