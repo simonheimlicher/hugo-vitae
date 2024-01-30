@@ -2,7 +2,7 @@ skill:
   one: Skill
   other: Skills
 period-until-present:
-  other: Heute
+  other: ""
 period-duration-years:
   one: 1 Jahr
   other: '{{ .Count }} Jahre'

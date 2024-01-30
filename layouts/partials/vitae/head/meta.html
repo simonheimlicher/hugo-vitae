@@ -1,16 +1,24 @@
-{{- $titleVariant := dict }}
+{{- $contentTypeMetaVariant := dict }}
 {{- $page := page }}
 {{- $template := "vitae/head/title" }}
 {{- $debug := false }}
 {{- /* {{- $debug = page.Scratch.Get "clarisdebug" }} */ -}}
 {{- /* $debug = or $debug (not (not (findRE `^/([^/]+-demo/)?` $page.RelPermalink) ) ) */ -}}
 
+{{- $metaVariant := dict }}
+{{- if reflect.IsMap . }}
+  {{- with .Page }}
+    {{- $page = . }}
+  {{- end }}
+  {{- with .meta }}
+    {{- $metaVariant = .}}
+  {{- end }}
+{{- end }}
+
 {{- with $page }}
-  {{- $title := .Title | .RenderString | plainify }}
-  {{- $subtitle := "" }}
-  {{- $supertitle := "" }}
-  {{- $headline := "" }}
-  {{- $role := (.Page.Param "role") | markdownify | plainify }}
+  {{- $title := $metaVariant.Formatted.Title }}
+  {{- $headline := $metaVariant.Formatted.Headline }}
+  {{- $role := (.Page.Param "role") | $page.RenderString | partial "claris/_functions/sanitize" }}
   {{- $titleDateFormat := "2006-01-02"}}
 
   {{- if $title }}
@@ -38,7 +46,7 @@
         {{- end }}
       {{- end }}
     {{- end }}
-    {{- $headline = $title }}
+    {{- $headline := $title }}
     {{- if and $title (ne (trim (lower site.Title) "") (trim (lower $title) "")) }}
       {{- if $role }}
         {{- if eq .Layout "letter" }}
@@ -48,7 +56,7 @@
         {{- end }}
       {{- end }}
     {{- end }}
-    {{- with .Page.Param "titleSeparator" }}
+    {{- with $page.Param "titleSeparator" }}
       {{ $headline = printf "%s %s %s" $headline (safeHTML .) site.Title }}
     {{- end }}
   {{- else }}
@@ -56,18 +64,18 @@
     {{- $headline = $title }}
   {{- end }}
 
-  {{- $titleVariant = (dict
-    "title" $title
-    "subtitle" $subtitle
-    "supertitle" $supertitle
-    "headline" $headline
-    ) }}
+  {{- $contentTypeMetaVariant = (dict
+    "Formatted" (dict
+      "title" $title
+      "headline" $headline
+    )
+  ) }}
   {{- if $debug }}
     {{- warnf "%s[%s]: .Kind=%s title=%s supertitle=%v headline=%s from .Singular=%v .Plural=%v .Section=%v .Title=%v"
-        $page $template .Kind $titleVariant.title $titleVariant.supertitle $titleVariant.headline
+        $page $template .Kind $contentTypeMetaVariant.title $contentTypeMetaVariant.supertitle $contentTypeMetaVariant.headline
         .Data.Singular .Data.Plural .Section .Title }}
   {{- end }}
 {{- else }}
   {{- errorf "%s[%s]: Missing argument .Page=%v" $page $template $page }}
 {{- end }}
-{{- return $titleVariant }}
+{{- return $contentTypeMetaVariant }}
