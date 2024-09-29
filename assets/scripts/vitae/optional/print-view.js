@@ -393,7 +393,7 @@ const renderPrintPreview = function (conf, reset = false) {
 };
 
 // This function must only be called once
-const init = function (reset) {
+export const initializePrintView = function (reset) {
   const previewTargetElement = document.querySelector('#printPreviewTarget');
   // If there is no previewTargetElement, this means that this page does
   // not render a print view
@@ -549,6 +549,6 @@ const init = function (reset) {
   }
 };
 
-document.addEventListener("DOMContentLoaded", _e => init());
+// document.addEventListener("DOMContentLoaded", _e => initializePrintView());
 
 // console.log('END   vitae/theme/print-view.js');

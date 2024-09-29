@@ -82,7 +82,7 @@ $font-size-scale-factor: math.pow(2.0, math.div(1, 5) );
     padding: 0;
   }
   // font-family: var(--font);
-  @include useFontDefinition(default);
+  // @include useFontDefinition(default);
 
   font-style: var(--font-style);
   font-weight: var(--font-weight);

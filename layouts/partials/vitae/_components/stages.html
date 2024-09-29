@@ -324,7 +324,7 @@
     {{- if eq "left" $style.logo }}
       {{- /* Use urlize to sanitize organization name */ -}}
       {{- $imgAssetID := printf "%s/%s*" $logoImageRoot (anchorize $org.organization) -}}
-      {{- with partial "claris/_functions/resources/images/image-resource" (dict "Page" $page "resource" $imgAssetID) }}
+      {{- with partial "claris/_functions/resources/images/get-process-image" (dict "Page" $page "resource" $imgAssetID) }}
         {{- $logoImageResource = . }}
       {{- else }}
         {{- warnf "%s[%s]: organization=%s: logo '%s' not found"

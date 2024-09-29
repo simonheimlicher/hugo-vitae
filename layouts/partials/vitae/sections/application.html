@@ -25,7 +25,7 @@
     <!-- Use urlize to sanitize organization name -->
     {{- $imgAssetID := printf "%s/%s*" $logoImageRoot (anchorize $org.organization) -}}
     {{/* {{- $logoImageResource := resources.GetMatch $imgAssetID -}} */}}
-    {{- $logoImageResource := partial "claris/_functions/resources/images/image-resource" (dict "Page" $page "resource" $imgAssetID) -}}
+    {{- $logoImageResource := partial "claris/_functions/resources/images/get-process-image" (dict "Page" $page "resource" $imgAssetID) -}}
     {{- if $logoImageResource }}
       {{- $sizeSpec := printf "%dx%d center png"  $logoImageResource.Width  $logoImageResource.Height }}
       {{- $logoImageResource = $logoImageResource.Fill $sizeSpec }}

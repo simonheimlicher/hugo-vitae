@@ -89,7 +89,7 @@
 {{- with $portraitData }}
   {{- $classPrefix := "portrait" }}
   {{- $portraitImageArgs := (dict
-    "resource" .resource
+    "src" .src
     "position" (default "50% 50%" .position)
     "fit" (default "cover" .fit)
     "style" .style
@@ -101,15 +101,15 @@
     "fetchpriority" "high"
   ) }}
   {{- if $debug }}
-    {{- warnf "%s[%s]: Found portrait image resource .version.default.resource=%v in \nportraitImage=%v\nNow calling responsive-image with .resource=%v in portraitImageArgs=%v"
-        $page $template .resource
+    {{- warnf "%s[%s]: Found portrait image resource .version.default.src=%v in \nportraitImage=%v\nNow calling responsive-image with .src=%v in portraitImageArgs=%v"
+        $page $template .src
         (jsonify (dict "indent" "  ") )
-        $portraitImageArgs.resource
+        $portraitImageArgs.src
         (jsonify (dict "indent" "  ") $portraitImageArgs) -}}
   {{- end }}
 
   {{/* {{- partial "responsive-image" (merge $portraitImageArgs (dict "Page" $page)) $portraitImageArgs }} */}}
-  {{- with $imgResource := partial "claris/_functions/resources/images/image-resource" (merge $portraitImageArgs (dict "Page" $page)) $portraitImageArgs }}
+  {{- with $imgResource := partial "claris/_functions/resources/images/get-process-image" (merge $portraitImageArgs (dict "Page" $page)) $portraitImageArgs }}
     <figure class="portrait_figure responsive-image_container">
       <img class="portrait_img" src="{{ .RelPermalink }}"
         width="{{ .Width }}" height="{{ .Height }}"
