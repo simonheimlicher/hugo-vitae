@@ -4,7 +4,8 @@ export const initializeControlPanel = () => {
   const varTargetSelector = '.vitae .view-print'
   const varTarget = document.querySelector(varTargetSelector);
   if (! varTarget) {
-    console.log(`knobs: failed to bind varTarget to varTargetSelector=${varTargetSelector}`);
+    // console.log(`knobs: failed to bind varTarget to varTargetSelector=${varTargetSelector}`);
+    return;
   }
 
   const controlPanelSettings = {
