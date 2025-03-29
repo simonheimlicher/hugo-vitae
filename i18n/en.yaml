@@ -2,7 +2,7 @@ skill:
   one: skill
   other: skills
 period-until-present:
-  other: present
+  other: ""
 period-duration-years:
   one: 1 year
   other: '{{ .Count }} years'
@@ -68,7 +68,19 @@ stage_unit_type_team:
   other: team
 stage_unit_type_business_area:
   other: business area
-fragment_citizenship_prefix:
+fragment_personal_phone_label:
+  other: mobile
+fragment_personal_email_label:
+  other: email
+fragment_personal_address_label:
+  other: address
+# fragment_personal_date_of_birth_prefix:
+#   other: born
+fragment_personal_date_of_birth_label:
+  other: date of birth
+fragment_personal_citizenship_prefix:
   other: citizen of
-fragment_nationality_prefix:
-  other: "nationality:"
+fragment_personal_nationality_label:
+  other: "nationality"
+fragment_personal_links_label:
+  other: "LinkedIn"

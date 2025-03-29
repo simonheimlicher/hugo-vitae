@@ -42,7 +42,7 @@
 
 {{- $debug := false }}
 {{/* {{- if not (not (findRE `^/([^/]+-demo/)?$` page.RelPermalink)) }}
-  {{- $debugCallingTemplates := slice "executive" "_components/index" "_components/skills" }}
+  {{- $debugCallingTemplates := slice "template" "_components/index" "_components/skills" }}
   {{- $debugCallingTemplates = slice "testcase" }}
   {{- range $debugCallingTemplates }}
     {{- $debug = or $debug (and (strings.Contains (index $templateChain 0) . ) ) -}}
@@ -359,9 +359,11 @@
         {{- $errorDict = printf "\n%v" (jsonify (dict "indent" "  ") (dict $key $value)) }}
       {{- end }}
 
-      {{- warnf "%vIgnoring unknown style:%v\nNo entry for this key exists in validStyles=%v"
-        $errorPrefix $errorDict
-        (jsonify (dict "indent" "  ") $validStyles) }}
+      {{- if $debug }}
+        {{- warnf "%vIgnoring unknown style:%v\nNo entry for this key exists in validStyles=%v"
+          $errorPrefix $errorDict
+          (jsonify (dict "indent" "  ") $validStyles) }}
+      {{- end }}
 
     {{- end }}
 

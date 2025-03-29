@@ -1,0 +1,168 @@
+{{- $componentArgs := .}}
+{{- $page := default page .Page -}}
+{{- $template := "vitae/_components/definitions" -}}
+{{- $component := .Component }}
+{{- $style := .Style }}
+{{- $headingLevel := default 3 .HeadingLevel }}
+{{- $componentClass := default (printf "component_%s" $component.component) .ComponentClass }}
+{{- $classPrefix := default $component.component .ClassPrefix }}
+{{- $childClass := default "" .ChildClass }}
+{{- $media := .Media}}
+{{- $data := .Data }}
+
+{{- $debug := false }}
+{{- /* $debug = or $debug (not (not (findRE `^/([^/]+-demo/)?preview` $page.RelPermalink) ) ) */ -}}
+
+{{- $validStyles := (dict
+  "_template" $template
+  "ats" (dict
+    "true" (dict
+      "layout" (slice
+        "shallow"
+        "inline"
+      )
+    )
+  )
+  "layout" (slice
+    "shallow"
+    "narrow"
+    "inline"
+  )
+  "font-size" (dict
+    "larger-1" "larger-1"
+  )
+  "heading" (dict
+    "font-size" (dict
+      "normal" "normal"
+    )
+    "font-weight" (dict
+      "normal" "normal"
+      "strong" "strong"
+    )
+    "font-style" (dict
+      "normal" "normal"
+      "italic" "italic"
+    )
+  )
+  "dt_columns" "ANY_INT"
+) -}}
+
+{{- $mergedStyle := partial "vitae/_functions/style-merged" (dict
+  "Template" $template
+  "MergedStyle" .MergedStyle
+  "ValidStyles" $validStyles
+) -}}
+
+{{- $style := $mergedStyle.Style }}
+{{- $styleClassList := $mergedStyle.StyleClass }}
+
+{{- $topLevelClass := delimit (append $styleClassList (slice $componentClass $childClass) ) " " }}
+
+{{- $optInline := dict "display" "inline" }}
+
+{{- $inlineSeparatorStr := default " • " $style.inline_separator }}
+{{- $blockSeparatorStr := default "<br>" $style.block_separator }}
+
+{{- $outerInlineLayout := (in $style.layout "inline") }}
+{{- $innerInlineLayout := (in $style.layout "shallow") }}
+
+{{- $collectionList := default $component.component $component.collections }}
+{{- if not (reflect.IsSlice $collectionList) }}
+  {{- $collectionList = slice $collectionList }}
+{{- end }}
+
+{{- if not $outerInlineLayout }}
+  <div class="{{ printf `%s_content %s` $classPrefix $topLevelClass }}">
+    <dl>
+{{- end }}
+
+{{- range $collection := $collectionList }}
+  {{- $key := $collection }}
+  {{- $title := $collection }}
+  {{- with and (reflect.IsMap $collection) $collection }}
+    {{- $key = default .type .collection }}
+    {{- $title = default .type .title }}
+  {{- end }}
+  {{- $title = strings.FirstUpper (T $title | default $title) }}
+  {{- $filterField := default "type" .filter_by -}}
+  {{- $filterMatch := default false .filter_value -}}
+
+  {{- if $debug }}
+    {{- warnf "%s[%s] key='%s' title='%s' filterField=%v filterMatch=%v with collection:\n%v"
+        $page $template $key $title $filterField $filterMatch
+        (jsonify (dict "indent" "  ") $collection) }}
+  {{- end }}
+
+  {{- with $definitionData := index $data $key }}
+
+    {{- if $outerInlineLayout }}
+      {{- $title = replaceRE `\s*<br>\s*` ` ` $title }}
+      <h{{ $headingLevel }} class="{{ printf `%s_title` $classPrefix }}">
+    {{- else }}
+      <dt>
+    {{- end -}}
+    {{- page.RenderString $optInline $title }}
+    {{- if $outerInlineLayout -}}
+      </h{{ $headingLevel }}>
+    {{- else -}}
+      </dt>
+    {{- end }}
+
+    {{- $filteredDefinitions := $definitionData }}
+    {{- with $filterMatch }}
+      {{- if reflect.IsSlice . }}
+        {{- $filteredDefinitions = where $definitionData $filterField "in" . }}
+        {{- $classPrefix = printf "%s %s" $filterMatch (delimit $classPrefix "_") }}
+      {{- else }}
+        {{- $filteredDefinitions = where $definitionData $filterField "eq" . }}
+        {{- $classPrefix = printf "%s %s" $filterMatch $classPrefix }}
+      {{- end }}
+    {{- end }}
+
+    {{- if not $outerInlineLayout }}
+      <dd>
+    {{- end }}
+    {{- range $itemIndex, $item := $filteredDefinitions }}
+      {{- if $debug }}
+        {{- warnf "%s[%s] key=%v $item:\n%v" $page $template $key (jsonify (dict "indent" "  ") $item) }}
+      {{- end }}
+
+      {{- with $title := $item.title }}
+        {{- if $innerInlineLayout }}
+          {{- with $inlineSeparatorStr }}
+            {{- if gt $itemIndex 0 }}
+              {{- . -}}
+            {{- end }}
+          {{- end }}
+        {{- end }}
+        {{- $title = replaceRE `\s*<br>\s*` ` ` $title }}
+        {{- page.RenderString $optInline $title -}}:
+
+        {{- $fragmentName := singularize $key }}
+        {{- $fragmentPartial := printf "partials/vitae/fragments/%s.html" $fragmentName }}
+        {{- if templates.Exists $fragmentPartial }}
+          {{- if $debug }}
+            {{- warnf "%s[%s] key=%v fragmentPartial=%v found" $page $template $key $fragmentPartial }}
+          {{- end }}
+          {{- $fragmentConfig := (dict
+            "fields" $collection.fields
+          ) }} {{ partial $fragmentPartial (merge $componentArgs (dict "Fragment" $fragmentName "Config" $fragmentConfig "Data" $item)) -}}
+        {{- else }}
+          {{- if $debug }}
+            {{- warnf "%s[%s] key=%v fragmentPartial=%v not found" $page $template $key $fragmentPartial }}
+          {{- end }}
+          {{- with $item.content }} {{ partial "vitae/render-markdown" . -}}
+          {{- end }}
+        {{- end }}
+      {{- end }}
+    {{- end }}
+    {{- if not $outerInlineLayout }}
+      </dd>
+    {{- end }}
+
+  {{- end }}
+{{- end }}
+{{- if not $outerInlineLayout }}
+    </dl>
+  </div>
+{{- end }}

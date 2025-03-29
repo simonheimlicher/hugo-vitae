@@ -1,3 +1,7 @@
+@use "claris/variables" as variables;
+@use "vitae/functions" as vitae-functions;
+@use "vitae/layouts" as vitae-layouts;
+
 .vitae {
   .inline {
     display: inline;
@@ -36,7 +40,7 @@
       font-size: 125%;
     }
     .profile {
-      @include list-style(0rem, var(--list-style_indent));
+      @include variables.list-style_indented(0rem, var(--list-style_indent));
     }
   }
   .layout-letter {
@@ -48,6 +52,10 @@
   .contact {
     display: flex;
     flex-direction: column;
+  }
+  .fragment_row {
+    display: flex;
+    column-gap: 1ch;
   }
   .contact,
   .fragment,
@@ -129,7 +137,7 @@
       flex-wrap: nowrap;
       column-gap: 1em;
       padding: 0.5em 1em;
-      z-index: ($main-z-index + 3);
+      z-index: (variables.$main-z-index + 3);
       svg {
         position: relative;
         width: 1em;
@@ -311,21 +319,23 @@ html[data-mode="dim"] {
 
   /* ----- Component HEADER ------ */
   &_header {
-    --portrait_width: 25%;
-    height: 100%;
-    position: relative;
-    display: grid;
-    grid-template-columns:
-      var(--portrait_width)
-      var(--column_gap)
-      minmax(0px, 1fr)
-      var(--column_gap)
-      var(--portrait_width);
     font-size: var(--font-size-normal);
     &.style_font-size_larger-1 {
       font-size: var(--font-size-larger-1);
     }
 
+    &.portrait {
+      --portrait_width: 25%;
+      height: 100%;
+      position: relative;
+      display: grid;
+      grid-template-columns:
+        var(--portrait_width)
+        var(--column_gap)
+        minmax(0px, 1fr)
+        var(--column_gap)
+        var(--portrait_width);
+    }
     .fragment_container {
       --row_gap: var(--inner_margin_8-1);
       display: flex;
@@ -347,32 +357,136 @@ html[data-mode="dim"] {
         height: var(--section-gap_vertical);
         // border: 1px solid red;
       }
-      .headline {
-        padding: 0;
-        margin: 0;
-        display: flex;
-        flex-direction: column;
-        line-height: 1.6;
-        font-size: var(--font-size-larger-6);
-
-        &>*:first-child {
-          line-height: 0.8;
-        }
-      }
-
-      .role {
-        text-align: left;
-        font-size: var(--font-size-larger-4);
-        font-weight: 400;
-      }
-
-      .degree {
-        font-size: var(--font-size-larger-1);
-        @include upper-caps;
-      }
       &_content {
         width: fit-content;
         margin: 0 auto 0 0;
+      }
+    }
+
+    .headline {
+      padding: 0;
+      display: flex;
+      flex-direction: column;
+      line-height: 1.6;
+      font-size: var(--font-size-larger-6);
+
+      &>*:first-child {
+        line-height: 0.8;
+      }
+    }
+
+    .role {
+      text-align: left;
+      font-size: var(--font-size-larger-4);
+      font-weight: 400;
+    }
+
+    .degree {
+      font-size: var(--font-size-larger-1);
+      @include vitae-functions.upper-caps;
+    }
+    .headline {
+      & + .details {
+        margin-top: var(--inner_margin_4-2);
+      }
+    }
+    .degree + .details {
+      margin-top: var(--inner_margin_4-1);
+    }
+
+    &.style_layout_shallow {
+      .headline {
+        & + .degree {
+          margin-top: var(--inner_margin_4-0);
+        }
+        & + .details {
+          margin-top: var(--inner_margin_4-1);
+        }
+      }
+    }
+
+    &.style_headline_font-size_larger-5 {
+      .headline {
+        font-size: var(--font-size-larger-5);
+      }
+    }
+    &.style_headline_font-size_larger-4 {
+      .headline {
+        font-size: var(--font-size-larger-4);
+      }
+    }
+    &.style_headline_font-size_larger-3 {
+      .headline {
+        font-size: var(--font-size-larger-3);
+      }
+    }
+    &.style_headline_font-size_larger-2 {
+      .headline {
+        font-size: var(--font-size-larger-2);
+      }
+    }
+    &.style_degree_font-size_larger-2 {
+      .degree {
+        font-size: var(--font-size-larger-2);
+      }
+    }
+    &.style_degree_font-size_larger-1 {
+      .degree {
+        font-size: var(--font-size-larger-1);
+      }
+    }
+    &.style_role_font-size_larger-2 {
+      .role {
+        font-size: var(--font-size-larger-2);
+      }
+    }
+    &.style_role_font-size_larger-1 {
+      .role {
+        font-size: var(--font-size-larger-1);
+      }
+    }
+    &.style_justify-content {
+      &_center {
+        text-align: center;
+        justify-content: center;
+        .fragment_row {
+          justify-content: center;
+        }
+      }
+      &_flex-start {
+        text-align: left;
+        justify-content: flex-start;
+        .fragment_row {
+          justify-content: flex-start;
+        }
+      }
+      &_flex-end {
+        text-align: right;
+        justify-content: flex-end;
+        .fragment_row {
+          justify-content: flex-end;
+        }
+      }
+      &_space-between {
+        text-align: center;
+        justify-content: space-between;
+        .fragment_row {
+          justify-content: space-between;
+        }
+      }
+      &_space-around {
+        text-align: center;
+        justify-content: space-around;
+        .fragment_row {
+          justify-content: space-around;
+        }
+      }
+      &_space-evenly {
+        text-align: center;
+        justify-content: space-evenly;
+        .fragment_row {
+          justify-content: space-evenly;
+        }
       }
     }
 
@@ -405,7 +519,7 @@ html[data-mode="dim"] {
         height: 100%;
         width: 100%;
         @at-root .vitae .view-print .component_header .portrait_figure {
-          @include full-bleed_page(top, both);
+          @include vitae-layouts.full-bleed_page(top, both);
           height: calc(100% + var(--page_margin_top));
           width: calc(100% + var(--page_margin_left) + var(--page_margin_right));
         }
@@ -438,7 +552,10 @@ html[data-mode="dim"] {
           margin: 0;
           height: 100%;
           width: 100%;
-          }
+        }
+      }
+      .fragment_item {
+        display: inline-block;
       }
     }
   }
@@ -492,6 +609,10 @@ html[data-mode="dim"] {
         width: auto;
         padding-left: var(--column_gap);
         border-left: var(--line-width_separator_heading) solid var(--border-color-faint);
+        ul {
+          margin-left: 0;
+          padding-left: 0;
+        }
       }
     }
     &.style_dt_columns_2 {
@@ -550,6 +671,133 @@ html[data-mode="dim"] {
     }
   }
 
+  /* ----- Component DEFINITIONS ------ */
+  &_definitions {
+    font-size: var(--font-size-normal);
+    h3, h4, h5, dt {
+      font-size: var(--font-size-larger-1);
+      font-weight: var(--font-weight);
+    }
+    dl {
+      display: grid;
+      gap: var(--inner_padding_4-2) var(--inner_padding_4-4);
+      grid-template-columns: minmax(0px, min-content) 1fr;
+      align-items: start;
+      justify-items: start;
+      grid-auto-flow: dense row;
+      hyphens: manual;
+      dt {
+        grid-column: 1;
+        width: auto;
+        // align-self: center;
+      }
+      dd {
+        grid-column: 2;
+        width: auto;
+      }
+    }
+    &.style_grid {
+      --dt_columns: var(--aside_column_width);
+      --dd_column_skip: 1;
+      --padding_between: calc(var(--column_content_width) / 2 + var(--column_gap) / 2);
+      grid-template-columns: repeat(var(--num_columns), 1fr);
+      align-items: start;
+      grid-auto-flow: dense row;
+      hyphens: manual;
+      dt {
+        grid-column: 1 / span var(--dt_columns);
+        width: auto;
+        padding-right: calc(var(--padding_between) - var(--column_gap));
+        margin-right: calc(0px - var(--padding_between) + var(--column_gap));
+        // align-self: center;
+      }
+      dd {
+        grid-column: calc(var(--dt_columns) + var(--dd_column_skip)) / span calc(var(--num_columns) - var(--dt_columns));
+        width: auto;
+        padding-left: var(--column_gap);
+        border-left: var(--line-width_separator_heading) solid var(--border-color-faint);
+      }
+      &.style_dt_columns_2 {
+        --dt_columns: 2;
+      }
+      &.style_dt_columns_3 {
+        --dt_columns: 3;
+      }
+      &.style_dt_columns_4 {
+        --dt_columns: 4;
+      }
+      &.style_dt_columns_5 {
+        --dt_columns: 5;
+      }
+    }
+    &.style_layout_inline {
+      display: flex;
+      flex-direction: column;
+      .panel {
+        &_title {
+          padding: var(--inner_padding_4-1) 0 0 0;
+          margin: 0;
+          &:first-of-type {
+            padding-top: 0;
+          }
+        }
+      }
+      /*
+      dl {
+        display: flex;
+        flex-direction: column;
+        gap: var(--margin_role_between) 0;
+        align-items: start;
+        hyphens: manual;
+        dt {
+          width: auto;
+          padding: 0;
+          margin: 0;
+        }
+        dd {
+          width: auto;
+          border: none;
+          padding: 0;
+          margin: 0;
+        }
+      }
+      */
+    }
+    &.style_font-size_larger-1 {
+      font-size: var(--font-size-larger-1);
+    }
+    &.style_heading {
+      &_font-size {
+        &_normal {
+          h3, h4, h5, dt {
+            font-size: var(--font-size-normal);
+            font-weight: var(--font-weight-strong);
+          }
+        }
+      }
+      &_font-weight_normal {
+        h3, h4, h5, dt {
+          font-weight: var(--font-weight);
+        }
+      }
+      &_font-weight_strong {
+        h3, h4, h5, dt {
+          font-weight: var(--font-weight-strong);
+        }
+      }
+      &_font-style_italic {
+        h3, h4, h5, dt {
+          font-style: italic;
+        }
+      }
+    }
+    &.style_layout_shallow {
+      dl {
+        row-gap: var(--inner_margin_8-1);
+      }
+    }
+  }
+
   /* ----- Component PROFILE ------ */
   &_profile {
     font-size: var(--font-size-normal);
@@ -601,9 +849,11 @@ html[data-mode="dim"] {
     --font-size-heading-organization: var(--font-size-larger-1);
     --font-weight-heading-organization: var(--font-weight-strong);
     // --font-weight-heading-organization: var(--font-weight);
+    --font-style-heading-organization: normal;
     --font-size-heading-role: var(--font-size-larger-1);
     --font-weight-heading-role: var(--font-weight-strong);
     // --font-weight-heading-role: var(--font-weight);
+    --font-style-heading-role: normal;
 
     --font-size_stage_body: var(--font-size-normal);
     --font-size_stage_header_main: calc(max(var(--font-size-heading-organization), var(--font-size-heading-role)));
@@ -636,13 +886,18 @@ html[data-mode="dim"] {
     font-size: var(--font-size_stage_header_main);
     --grid_period-column_width: 10em;
 
+    ul {
+      margin-left: 0;
+      padding-left: 0;
+    }
+
     // Periods of time such as "Mar 2022-Jul 2023"
     .stage_period {
       font-size: var(--font-size-smaller-1);
       display: flex;
       flex-direction: column;
       .date_duration {
-        @include upper-caps;
+        @include vitae-functions.upper-caps;
         font-size: var(--font-size-smaller-1);
         color: var(--text-color-faint);
         user-select: none;
@@ -660,10 +915,12 @@ html[data-mode="dim"] {
     .organization_title {
       font-size: var(--font-size-heading-organization);
       font-weight: var(--font-weight-heading-organization);
+      font-style: var(--font-style-heading-organization);
     }
     .role_title {
       font-size: var(--font-size-heading-role);
       font-weight: var(--font-weight-heading-role);
+      font-style: var(--font-style-heading-role);
     }
     .remark {
       font-weight: var(--font-weight);
@@ -731,7 +988,7 @@ html[data-mode="dim"] {
       .stage_body {
         margin-top: var(--margin_organization_between);
       }
-      &.org_first {
+      &.org_first, &.org_single {
         .stage_body {
           margin-top: var(--margin_organization_first);
         }
@@ -749,7 +1006,7 @@ html[data-mode="dim"] {
     // }
 
     // Header for roles at organizations
-    &.role_header {
+    &.role_header.role_has_details {
       .stage_body {
         margin-top: var(--margin_role_between);
       }
@@ -760,7 +1017,7 @@ html[data-mode="dim"] {
     //   }
     // }
     &.organization_header, &.stage_meta, &.stage_overview {
-      & + .role_header .stage_body {
+      & + .role_header.role_has_details .stage_body {
         margin-top: var(--margin_role_first);
       }
     }
@@ -792,12 +1049,14 @@ html[data-mode="dim"] {
             .date_period {
               font-size: var(--font-size-heading-organization);
               font-weight: var(--font-weight-heading-organization);
+              font-style: var(--font-style-heading-organization);
             }
           }
           &.role_header {
             .date_period {
               font-size: var(--font-size-heading-role);
               font-weight: var(--font-weight-heading-role);
+              font-style: var(--font-style-heading-role);
             }
           }
         }
@@ -813,6 +1072,19 @@ html[data-mode="dim"] {
         display: grid;
         align-items: baseline;
         grid-template-columns:
+          minmax(0px, max-content)
+          var(--grid_separator-column_width)
+          minmax(0px, max-content);
+        .column {
+          &_header {
+            grid-column: 1;
+          }
+          &_main {
+            grid-column: 3;
+          }
+        }
+        &.period_column {
+          grid-template-columns:
           var(--grid_period-column_width)
           var(--grid_separator-column_width)
           minmax(0px, max-content);
@@ -820,9 +1092,10 @@ html[data-mode="dim"] {
           &_timeline {
             grid-column: 1;
           }
-          &_main {
+          &_body, &_main {
             grid-column: 3 / span all;
           }
+        }
         }
       }
       &_header {
@@ -866,7 +1139,7 @@ html[data-mode="dim"] {
         font-size: var(--font-size_stage_body);
       }
       .column_body {
-        grid-column: 3 / span all;
+        grid-column: 1 / span all;
       }
     }
     &.stage_content {
@@ -907,6 +1180,8 @@ html[data-mode="dim"] {
         flex-wrap: wrap;
         flex-direction: row;
         gap: var(--row_gap) calc(1 * var(--column_gap));
+        margin-left: 0;
+        padding-left: 0;
         li {
           list-style: none;
           margin: 0;
@@ -1282,7 +1557,7 @@ html[data-mode="dim"] {
         &.organization_header {
           // --tl-col_timeline_color: purple;
           @include timeline_column_header_organization(var(--margin_organization_between));
-          &.org_first {
+          &.org_first, &.org_single {
             // --tl-col_timeline_color: red;
             @include timeline_column_header_organization(
               var(--margin_organization_first), false, true);
@@ -1715,10 +1990,10 @@ html[data-mode="dim"] {
           .column {
             &_header {
               grid-row: auto;
-              grid-column: 3 / span all;
+              grid-column: 1 / span all;
             }
             &_main {
-              grid-column: 3 / span all;
+              grid-column: 1 / span all;
               /*
               ul:first-child li:first-child {
                 background-color: beige;
@@ -1794,11 +2069,73 @@ html[data-mode="dim"] {
         // display: inline-block;
         display: inline;
       }
-      --margin_organization_between: var(--inner_padding_4-3);
-      --margin_role_first: var(--inner_padding_4-1);
-      --margin_role_between: var(--inner_padding_4-1);
-      --margin_stage_content_between: var(--inner_padding_4-1);
+      --margin_organization_between: var(--inner_padding_8-6);
+      --margin_role_first: var(--inner_padding_8-2);
+      --margin_role_between: var(--inner_padding_8-3);
+      --margin_stage_content_between: var(--inner_padding_8-2);
       --padding_stage_meta: 0;
+    }
+
+    /*
+     * Period style RIGHT
+     * For US-style resumes
+     */
+
+     &.style_period {
+      &_position_right {
+        &.stage {
+          &_header {
+            display: flex;
+            justify-content: space-between;
+            align-items: baseline;
+            * {
+              display: inline-block;
+              flex: 1 1 auto;
+            }
+            text-align: center;
+            :nth-child(1) {
+              text-align: left;
+              flex: 1 0 max-content;
+            }
+            :nth-last-child(1) {
+              text-align: right;
+            }
+            &.role_header {
+              flex-direction: row-reverse;
+              :nth-child(1) {
+                text-align: right;
+              }
+              :nth-last-child(1) {
+                text-align: left;
+              }
+            }
+          }
+          &_meta, &_overview, &_content {
+            grid-template-columns:
+              minmax(0px, 1fr)
+              var(--grid_separator-column_width)
+              var(--grid_period-column_width);
+          }
+          &_header {
+            .column {
+              &_period {
+                grid-column: 3;
+                text-align: right;
+              }
+              &_main {
+                grid-column: 1;
+              }
+            }
+          }
+        }
+      }
+    }
+    &.style_location {
+      &_font-weight_strong {
+        .stage_location {
+          font-weight: var(--font-weight-strong);
+        }
+      }
     }
 
     /*
@@ -1848,14 +2185,18 @@ html[data-mode="dim"] {
 
     &.style_heading_organization_font-size_normal {
       &.style_layout_shallow {
-        --margin_organization_between: var(--inner_padding_8-3);
+        --margin_organization_between: var(--inner_padding_8-4);
       }
     }
 
     &.style_heading_role_font-size_normal {
       &.style_layout_shallow {
-        --margin_role_first: var(--inner_padding_8-1);
-        --margin_role_between: var(--inner_padding_8-0);
+        --margin_organization_first: var(--inner_padding_8-0);
+        --margin_organization_between: var(--inner_padding_8-4);
+        --margin_role_first: var(--inner_padding_8-0);
+        --margin_role_between: var(--inner_padding_8-2);
+        --margin_stage_content_first: var(--inner_padding_8-0);
+        --margin_stage_content_between: var(--inner_padding_8-0);
       }
     }
 
@@ -1883,6 +2224,24 @@ html[data-mode="dim"] {
       --font-weight-heading-role: var(--font-weight-light);
     }
 
+    /*
+     * Heading style FONT-STYLE
+     */
+
+     &.style_heading_organization_font-style_normal {
+      --font-style-heading-organization: normal;
+    }
+    &.style_heading_organization_font-style_italic {
+      --font-style-heading-organization: italic;
+    }
+
+    &.style_heading_role_font-style_normal {
+      --font-style-heading-role: normal;
+    }
+    &.style_heading_role_font-style_italic {
+      --font-style-heading-role: italic;
+    }
+
   }
 
 
@@ -1897,6 +2256,10 @@ html[data-mode="dim"] {
         row-gap: var(--inner_margin_4-2);
         // margin-top: var(--inner_margin_4-2);
         .award {
+          &_body {
+            display: flex;
+            flex-direction: row;
+          }
           &_header {
             display: flex;
             flex-direction: row;
@@ -1919,13 +2282,33 @@ html[data-mode="dim"] {
             }
           }
         }
-        &.style_heading_larger-1 {
-          font-size: var(--font-size-larger-1);
-        }
-        &.style_heading_normal {
-          .award {
-            &_title {
-              font-size: var(--font-size-normal);
+        &.style_heading {
+          &_font-size {
+            &_normal {
+              h3, h4, h5, dt {
+                font-size: var(--font-size-normal);
+                font-weight: var(--font-weight-strong);
+              }
+            }
+          }
+          &_font-weight_normal {
+            h3, h4, h5, dt {
+              font-weight: var(--font-weight);
+            }
+          }
+          &_font-weight_strong {
+            h3, h4, h5, dt {
+              font-weight: var(--font-weight-strong);
+            }
+          }
+          &_font-style_italic {
+            h3, h4, h5, dt {
+              font-style: italic;
+            }
+            .award_organization {
+              &_name {
+                font-style: normal;
+              }
             }
           }
         }
@@ -1945,6 +2328,31 @@ html[data-mode="dim"] {
         }
         &.style_layout_shallow {
           row-gap: var(--inner_margin_8-1);
+        }
+        /*
+         * Date style RIGHT
+         * For US-style resumes
+         */
+        &.style_date_position_right {
+          .award_item {
+            justify-content: space-between;
+            flex-direction: row-reverse;
+            * {
+              display: inline-block;
+              flex: 1 1 auto;
+            }
+            text-align: center;
+            :nth-child(1) {
+              text-align: right;
+              flex: 1 0 max-content;
+            }
+            :nth-last-child(1) {
+              text-align: left;
+            }
+          }
+          .stage_period {
+            font-style: italic;
+          }
         }
       }
     }
@@ -1987,7 +2395,7 @@ html[data-mode="dim"] {
       &_level {
         grid-column: 2;
         font-size: var(--font-size-smaller-1);
-        @include lower-caps;
+        @include vitae-functions.lower-caps;
         &_bar {
           position: relative;
           display: flex;
@@ -2156,7 +2564,7 @@ html[data-mode="dim"] {
         width: 100%;
         color: var(--text-color-faint);
         font-size: var(--font-size-smaller-1);
-        @include upper-caps;
+        @include vitae-functions.upper-caps;
         font-weight: var(--font-weight-light);
         &.style_font-size_normal {
           font-size: var(--font-size-normal);

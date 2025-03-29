@@ -1,3 +1,7 @@
+@use "hugo-vars" as vitae-hugo-vars;
+@use "claris/variables" as variables;
+@use "vitae/functions" as vitae-functions;
+
 // Styles that define the Vitae layouts
 // NOTE: This includes styles for all media types
 
@@ -19,31 +23,33 @@
   .view-print {
     --page_scale-factor: 1;
 
-    --page_width_base: #{$printPageWidth};
-    --page_height_base: #{$printPageHeight};
+    --page_width_base: #{vitae-hugo-vars.$printPageWidth};
+    --page_height_base: #{vitae-hugo-vars.$printPageHeight};
     --page_width: calc(var(--page_width_base));
     --page_height: calc(var(--page_height_base));
 
-    --page_margin_base_horizontal: #{$printPageMarginHorizontal};
-    --page_margin_base_center_horizontal: #{$printPageMarginCenterHorizontal};
+    // --page_margin_base_horizontal: #{$printPageMarginHorizontal};
+    --page_margin_base_horizontal: var(--root_page_margin_base_horizontal);
+    --page_margin_base_center_horizontal: #{vitae-hugo-vars.$printPageMarginCenterHorizontal};
 
-    --page_margin_base_vertical: #{$printPageMarginVertical};
-    --page_margin_base_center_vertical: #{$printPageMarginCenterVertical};
+    // --page_margin_base_vertical: #{$printPageMarginVertical};
+    --page_margin_base_vertical: var(--root_page_margin_base_vertical);
+    --page_margin_base_center_vertical: #{vitae-hugo-vars.$printPageMarginCenterVertical};
 
     --page_margin_base_left: calc(
-      var(--page_margin_base_center_horizontal) * var(--page_margin_base_horizontal) * 2
+      var(--page_margin_base_center_horizontal) * var(--root_page_margin_base_horizontal) * var(--page_margin_base_horizontal) * 2
     );
 
     --page_margin_base_right: calc(
-      (1 - var(--page_margin_base_center_horizontal)) * var(--page_margin_base_horizontal) * 2
+      (1 - var(--page_margin_base_center_horizontal)) * var(--root_page_margin_base_horizontal) * var(--page_margin_base_horizontal) * 2
     );
 
     --page_margin_base_top: calc(
-      var(--page_margin_base_center_vertical) * var(--page_margin_base_vertical) * 2
+      var(--page_margin_base_center_vertical) * var(--root_page_margin_base_vertical) * var(--page_margin_base_vertical) * 2
     );
 
     --page_margin_base_bottom: calc(
-      (1 - var(--page_margin_base_center_vertical)) * var(--page_margin_base_vertical) * 2
+      (1 - var(--page_margin_base_center_vertical)) * var(--root_page_margin_base_vertical) * var(--page_margin_base_vertical) * 2
     );
 
     --page_margin_left: var(--page_margin_base_left);
@@ -62,9 +68,7 @@
       --page_margin_top: calc(var(--page_margin_base_top) * var(--page_scale-factor));
       --page_margin_bottom: calc(var(--page_margin_base_bottom) * var(--page_scale-factor));
     }
-  }
 
-  .view-print {
     .style_ats, .style_ats_true {
       // Disable ligatures as application tracking systems (ATS) are not able to extract text from the PDF
       --font-variant-ligatures: none;
@@ -113,7 +117,7 @@
       margin: 0 auto;
     }
     .print-preview_inner {
-      @include wrap;
+      @include variables.inner_padding_4-2;
       background: var(--print-preview-background);
     }
     #printPreviewContainer {
@@ -347,27 +351,34 @@
 
 .vitae {
   --rem: var(--rem_base);
+
+  --root_em: 10pt;
+  --root_page_margin_base_horizontal: 25mm;
+  --root_page_margin_base_vertical: 15mm;
+  --root_list-style_item_padding_between: var(--inner_padding_4-1);
+
   --em: var(--em_base);
-  @include font-size-scale(var(--em));
+  @include vitae-functions.font-size-scale(var(--em));
 
   .view-print {
-    --rem_base: 10pt;
-    --em_base: 10pt;
+    --rem_base: #{vitae-hugo-vars.$baseFontSize};
 
     --rem: var(--rem_base);
-    --em: var(--em_base);
+    --em: var(--root_em) * var(--em_base);
 
     @media screen {
       --rem: calc(var(--rem_base) * var(--page_scale-factor));
-      --em: calc(var(--em_base) * var(--page_scale-factor));
-      @include font-size-scale(var(--em));
+      --em: calc(var(--root_em) * var(--em_base) * var(--page_scale-factor));
+      @include vitae-functions.font-size-scale(var(--em));
     }
 
-    --list-style_list_margin_left: var(--inner_margin_4-0);
+    // FIXME: Important to have a value greater than 0 as otherwise, bullets
+    // won't be visible when printing from Chrome to PDF
+    --list-style_list_margin_left: var(--inner_margin_4-2);
     --list-style_list_padding_left: 0;
-    --list-style_item_margin_between: var(--inner_margin_4-0);
-    --list-style_item_padding_between: var(--inner_padding_4-1);
-    @include list-style_indented(
+    --list-style_item_margin_between: 0;
+    --list-style_item_padding_between: var(--root_list-style_item_padding_between);
+    @include variables.list-style_indented(
       var(--list-style_list_margin_left), var(--list-style_list_padding_left),
       var(--list-style_item_margin_between), var(--list-style_item_padding_between));
   }
@@ -383,8 +394,8 @@
   );
 
   @include property-scale($props);
-  @include inner_margin_padding(var(--inner_margin), var(--inner_padding));
-  @include inner_margin_padding(var(--inner_margin), var(--inner_padding), 8, 1);
+  @include vitae-functions.inner_margin_padding(var(--inner_margin), var(--inner_padding));
+  @include vitae-functions.inner_margin_padding(var(--inner_margin), var(--inner_padding), 8, 1);
 
   // --column_gap: var(--inner_margin_4-3);
   // Row gap is provided by section-title in most templates
@@ -398,9 +409,9 @@
   --section-gap_vertical: var(--inner_margin_4-4);
 
   .view-print {
-    @include font-size-scale(var(--em));
-    @include inner_margin_padding(var(--inner_margin), var(--inner_padding));
-    @include inner_margin_padding(var(--inner_margin), var(--inner_padding), 8, 1);
+    @include vitae-functions.font-size-scale(var(--em));
+    @include vitae-functions.inner_margin_padding(var(--inner_margin), var(--inner_padding));
+    @include vitae-functions.inner_margin_padding(var(--inner_margin), var(--inner_padding), 8, 1);
     --column_gap: var(--inner_margin_4-3);
     --row_gap: var(--inner_margin_4-1);
     --slot-gap_vertical: var(--inner_margin_4-8);
@@ -411,7 +422,7 @@
   // --border-color-faint: var(--text-color-faint);
 
   .view-print {
-    @include link-lvhfa-inherit;
+    @include variables.link-lvhfa-inherit;
 
     .pagination-page {
       padding: var(--page_margin_top) var(--page_margin_right) var(--page_margin_bottom) var(--page_margin_left);
@@ -456,7 +467,7 @@
       h1, h2, h3, h4, h5, h6 {
         &.component_first {
           margin-top: 0;
-          @include flush-top-heading;
+          @include vitae-functions.flush-top-heading;
         }
       }
       .component_first {
@@ -464,14 +475,14 @@
         h1, h2, h3, h4, h5, h6 {
           &:first-of-type {
             margin-top: 0;
-            @include flush-top-heading;
+            @include vitae-functions.flush-top-heading;
           }
         }
         & > p:first-of-type,
         & > li:first-of-type,
         & > dl:first-of-type {
           margin-top: 0;
-          @include flush-top;
+          @include vitae-functions.flush-top;
         }
       }
     }
@@ -554,7 +565,7 @@
       h6 {
         &.component_first {
           margin-top: 0;
-          @include flush-top-heading;
+          @include vitae-functions.flush-top-heading;
         }
       }
       .component_first {
@@ -567,13 +578,13 @@
         h6 {
           &:first-of-type {
             margin-top: 0;
-            @include flush-top-heading;
+            @include vitae-functions.flush-top-heading;
           }
         }
         & > p:first-of-type,
         & > li:first-of-type {
           margin-top: 0;
-          @include flush-top;
+          @include vitae-functions.flush-top;
         }
       }
     }
@@ -595,7 +606,7 @@
 
 // Adapt layout after pagination
 .vitae[data-print-preview-status="done"] {
-  &.layout-executive .view-print .pagination-page {
+  &.layout-template .view-print .pagination-page {
     // .pagination-container[data-pagination-policy="break"] {
     // FIXME: Explicit slot gaps don't work well with pagination
     // .slot-gap_vertical {
@@ -619,6 +630,9 @@
     // .section-gap_vertical:not(:has(+ .section, +.section-panel)) {
     //   outline-color: orange;
     // }
+    .pagination-container:last-child .section-gap_vertical:last-child {
+      display: none;
+    }
     .pagination-container {
       &.slot_main {
         height: 100%;
@@ -819,7 +833,7 @@
           &-title {
             margin: 0;
             padding: 0;
-            @include flush-top-heading;
+            @include vitae-functions.flush-top-heading;
           }
         }
         .role-header {
@@ -837,7 +851,7 @@
             font-weight: var(--font-weight-strong);
             margin: 0;
             padding: 0;
-            @include flush-top-heading;
+            @include vitae-functions.flush-top-heading;
           }
         }
       }

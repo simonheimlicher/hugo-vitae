@@ -208,9 +208,21 @@ const numberPages = function (conf) {
 
   conf['parts'].forEach(function (part) {
     documentSections.push(part.targetPageElement);
-    part['pages'].forEach(function (page) {
-      page['paginatedPageElements'].forEach(function (pageElement, pageIndex) {
-        // pushClass(pageElement, "page-" + pageIndex);
+    for (let pageIndex = 0; pageIndex < part['pages'].length; pageIndex++) {
+      const page = part['pages'][pageIndex];
+      for (let pageElementIndex = 0; pageElementIndex < page['paginatedPageElements'].length; pageElementIndex++) {
+        const pageElement = page['paginatedPageElements'][pageElementIndex];
+        // Check if any pagination container on this page has any children
+        let numPageElements = 0;
+        const paginationContainers = Array.from(pageElement.querySelectorAll(conf['paginationContainerSelector']))
+        paginationContainers.map( container => numPageElements += container.children.length);
+        if (numPageElements == 0) {
+          // Remove empty page element from the array
+          page['paginatedPageElements'].splice(pageElementIndex, 1);
+          pageElementIndex--;
+          pageElement.remove();
+          continue;
+        }
         documentPages.push(pageElement);
         if (pageIndex == 0) {
           pushClass(pageElement, "page-first");
@@ -224,8 +236,8 @@ const numberPages = function (conf) {
         else {
           deleteClass(pageElement, "page-last");
         }
-      });
-    });
+      }
+    }
   });
 
   // Number documentPages
@@ -381,7 +393,7 @@ const renderPrintPreview = function (conf, reset = false) {
 };
 
 // This function must only be called once
-const init = function (reset) {
+export const initializePrintView = function (reset) {
   const previewTargetElement = document.querySelector('#printPreviewTarget');
   // If there is no previewTargetElement, this means that this page does
   // not render a print view
@@ -537,6 +549,6 @@ const init = function (reset) {
   }
 };
 
-document.addEventListener("DOMContentLoaded", _e => init());
+// document.addEventListener("DOMContentLoaded", _e => initializePrintView());
 
 // console.log('END   vitae/theme/print-view.js');

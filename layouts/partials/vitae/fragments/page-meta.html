@@ -11,7 +11,7 @@
 
 {{- $contactIcons := true }}
 
-{{- /* warnf "%s[%s]: .Fragment=%s .Config=%s .Data=%s" $page $template $fragment $config $data.features.date-of-birth */ -}}
+{{- /* warnf "%s[%s]: .Fragment=%s .Config=%s .Data=%s" $page $template $fragment $config $data.features.date_of_birth */ -}}
 
 {{- with $fields := $config.fields }}
   {{- range $slot := (slice "start" "center" "end") }}

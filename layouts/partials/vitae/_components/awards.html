@@ -23,9 +23,27 @@
     "inline"
   )
   "heading" (dict
-    "normal" "normal"
-    "larger-1" "larger-1"
-    "smaller-1" "smaller-1"
+    "font-size" (dict
+      "normal" "normal"
+    )
+    "font-weight" (dict
+      "normal" "normal"
+      "strong" "strong"
+    )
+    "font-style" (dict
+      "normal" "normal"
+      "italic" "italic"
+    )
+  )
+  "date" (dict
+    "position" (dict
+      "right" "right"
+    )
+    "format" (dict
+      "year" "year"
+      "month" "month"
+      "true" "default"
+    )
   )
   "logo" (dict
     "false" false
@@ -48,62 +66,109 @@
 
 {{- $filterField := default "" $component.filter_by -}}
 {{- $filterMatch := default "" $component.filter_value -}}
+{{- $filterMatchStr := ""}}
 
 {{- $optInline := dict "display" "inline" }}
 
-{{- $separatorStr := default "•" (index $style "inline_separator") }}
+{{- $inlineSeparatorStr := default " • " $style.inline_separator }}
+{{- $blockSeparatorStr := default "<br>" $style.block_separator }}
+
+{{- $outerInlineLayout := (in $style.layout "inline") }}
+{{- $innerInlineLayout := (in $style.layout "shallow") }}
+
+{{- $defaultDateFormat := (dict
+    "default" "Jan 2006"
+    "year" "2006"
+    "month" "Jan 2006"
+) -}}
+
+{{- $dateFormat := $defaultDateFormat.default }}
+{{- with $component.date_format }}
+  {{- $dateFormat = string $component.date_format }}
+{{- else }}
+  {{- with $style.date.format }}
+    {{- if eq . "year" }}
+      {{- $dateFormat = $defaultDateFormat.year }}
+    {{- else if eq . "month" }}
+      {{- $dateFormat = $defaultDateFormat.month }}
+    {{- else }}
+      {{- $dateFormat = $defaultDateFormat.default }}
+    {{- end }}
+  {{- end }}
+{{- end }}
+
+{{- $periodDurationParams := (dict
+  "DateFormat" $dateFormat
+  "Container" "span"
+  "DateContainer" "span"
+) -}}
 
 {{- $awardCollection := (index .Data $collection) }}
 {{- with $awardCollection }}
   {{- $awardList := $awardCollection }}
 
   {{- if and $filterField $filterMatch }}
-    {{- $awardList = where $awardCollection $filterField $filterMatch }}
+    {{- if not (reflect.IsSlice $filterMatch) }}
+      {{- $filterMatch = slice $filterMatch }}
+    {{- end }}
+    {{- $awardList = where $awardCollection $filterField "IN" $filterMatch }}
+    {{ $filterMatchStr = delimit $filterMatch "_" }}
   {{- end }}
 
   {{- $logoImageParams := (dict "Page" $page "width" 512 "figureclass" "award_logo") }}
-  {{- $classPrefix := printf "%s award" $filterMatch }}
+  {{- $classPrefix := printf "award_%s award" $filterMatchStr }}
   <div class="{{ $classPrefix }}_container {{ $topLevelClass }}">
   {{- range $awardIdx, $award := $awardList }}
     <div class="{{- $classPrefix }}_item">
-      {{- $logoImage := and (default false $style.logo)  .logo }}
-      <div class="{{- $classPrefix }}_header{{ with $logoImage }} logo{{ end }}">
-        {{- with $logoImage }}
-          {{- partial "responsive-image" (merge $logoImageParams (dict "resource" .resource)) }}
-        {{- end }}
-        <h3 class="{{- $classPrefix }}_title">{{- page.RenderString $optInline .title }}</h3>
-      </div>
-      {{- with .organization }}
-      <div class="{{- $classPrefix }}_organization">
-        <span class="{{- $classPrefix }}_organization_name">{{ page.RenderString $optInline .name }}</span>
-        {{- with .description }}
-        <span class="{{- $classPrefix }}_organization_description">({{ page.RenderString $optInline . }})</span>
-        {{- end }}
+      {{- with and (ne $component.date false) .date }}
+      <div class="{{- $classPrefix }}_date stage_period">
+        <span class="{{- $classPrefix }}_date_text">{{
+          partial "vitae/_functions/date-period" (merge $periodDurationParams (dict "Period" .)) | safeHTML
+        }}</span>
       </div>
       {{- end }}
-      {{- if $component.details }}
-        {{- $detailFields := slice "subtitle" "colleagues" "details" }}
-        <div class="{{- $classPrefix }}_details">
-          {{- $i := 0 }}
-          {{- range $k := $detailFields }}
-            {{- with $v := (index $award $k) }}
-              {{- with and (gt $i 0) $separatorStr }}
-                {{ page.RenderString . | safeHTML }}
-              {{- end }}
-              <span class="{{ $classPrefix }}_{{ $k }}">
-                {{- if reflect.IsSlice $v }}
-                  {{- range $vv := $v }}
-                    {{- $page.RenderString $optInline $vv -}}
-                  {{- end }}
-                {{- else }}
-                  {{- $page.RenderString $optInline $v -}}
-                {{- end }}
-              </span>
-              {{- $i = add $i 1 }}
-            {{- end }}
+      {{- $logoImage := and (default false $style.logo)  .logo }}
+      <div class="{{- $classPrefix }}_body">
+        <div class="{{- $classPrefix }}_header{{ with $logoImage }} logo{{ end }}">
+          {{- with $logoImage }}
+            {{- partial "responsive-image" (merge $logoImageParams (dict "resource" .resource)) }}
+          {{- end }}
+          <h{{ $headingLevel }} class="{{ printf `%s_title` $classPrefix }}">
+            {{- page.RenderString $optInline .title }}
+          </h{{ $headingLevel }}>
+        </div>
+        {{- with and (not (eq $component.organization false)) .organization }}
+        <div class="{{- $classPrefix }}_organization">
+          {{- $inlineSeparatorStr }}<span class="{{- $classPrefix }}_organization_name">{{ page.RenderString $optInline .name }}</span>
+          {{- with .description }}
+          <span class="{{- $classPrefix }}_organization_description">({{ page.RenderString $optInline . }})</span>
           {{- end }}
         </div>
-      {{- end }}
+        {{- end }}
+        {{- with and $component.details $component.details }}
+          {{- $detailFields := slice "subtitle" "colleagues" "details" }}
+          <div class="{{- $classPrefix }}_details">
+            {{- $i := 0 }}
+            {{- range $k := $detailFields }}
+              {{- with $v := (index $award $k) }}
+                {{- with and (gt $i 0) $inlineSeparatorStr }}
+                  {{ page.RenderString . | safeHTML }}
+                {{- end }}
+                <span class="{{ $classPrefix }}_{{ $k }}">
+                  {{- if reflect.IsSlice $v }}
+                    {{- range $vv := $v }}
+                      {{- $page.RenderString $optInline $vv -}}
+                    {{- end }}
+                  {{- else }}
+                    {{- $page.RenderString $optInline $v -}}
+                  {{- end }}
+                </span>
+                {{- $i = add $i 1 }}
+              {{- end }}
+            {{- end }}
+          </div>
+        {{- end }}
+      </div>
     </div>
   {{- end }}
   </div>

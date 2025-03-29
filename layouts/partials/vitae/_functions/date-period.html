@@ -1,10 +1,10 @@
 {{- $periodStr := "" -}}
 {{- $periodList := slice -}}
 
-{{- $dateFormat := "2006 Jan" }}
+{{- $dateFormat := "Jan 2006" }}
 {{- $dateContainerStr := "" }}
 {{- $periodBeginEndSeparatorStr := `–` }}
-{{- $collapseSameBeginEnd := default true .CollapseSameBeginEnd }}
+{{- $collapseSameBeginEnd := true }}
 {{- $period := . }}
 
 {{- if reflect.IsMap . }}
@@ -21,6 +21,13 @@
   {{- with .PeriodBeginEndSeparator }}
     {{- $periodBeginEndSeparatorStr = . }}
   {{- end }}
+  {{- with .CollapseSameBeginEnd }}
+    {{- $collapseSameBeginEnd = . }}
+  {{- end }}
+{{- end }}
+
+{{- if not (reflect.IsSlice $period) }}
+  {{- $period = slice $period $period }}
 {{- end }}
 
 {{- $dateTimeStrLast := "" }}

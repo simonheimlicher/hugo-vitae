@@ -1,3 +1,5 @@
+@use "claris/hugo-vars" as hugo;
+
 $inline-list-item-separation: 2ch;
 $inline-list-sep-width: math.div($inline-list-item-separation, 3.0);
 
@@ -133,7 +135,7 @@ $inline-list-sep-width: math.div($inline-list-item-separation, 3.0);
         opacity: 0;
       }
       .date_duration {
-        @include lower-caps;
+        @include vitae-functions.lower-caps;
         color: var(--text-color-faint);
         user-select: none;
       }
@@ -600,7 +602,7 @@ $inline-list-sep-width: math.div($inline-list-item-separation, 3.0);
         .shadow {
           @include drop-shadow(2rem, 0.2, 0.2);
         }
-        @media screen and (min-width: $screenViewBreakpointWidthNarrow) {
+        @media screen and (min-width: hugo.$screenViewBreakpointWidthNarrow) {
           margin: 0 var(--column-padding-h) var(--column-padding-v) 0;
           max-width: 100%;
         }

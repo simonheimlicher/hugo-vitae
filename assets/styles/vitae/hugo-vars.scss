@@ -1,0 +1,19 @@
+@use 'sass:meta';
+@use 'sass:math';
+@use 'hugo:vars' as hugo;
+
+// Target page dimensions for on screen preview and print to PDF
+// DIN A4 for Chrome: 794px by 1122px
+// NOTE: Even though DIN A4 is 297mm high, Chrome believes its only 794px by 1122px
+$printPageWidth: 210.0791667mm;
+$printPageHeight: 296.8625mm;
+
+// Page margins
+$printPageMarginHorizontal: 25mm;
+$printPageMarginVertical: 15mm;
+// $printPageMarginVertical: $printPageMarginHorizontal;
+// $printPageMarginVertical: math.div($printPageMarginHorizontal * $printPageHeight, $printPageWidth);
+
+$printPageMarginCenterVertical: 0.5;
+$printPageMarginCenterHorizontal: 0.5;
+$baseFontSize: if(hugo.$vitae_styles_fontsize != null, hugo.$vitae_styles_fontsize, 10pt);

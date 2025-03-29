@@ -52,7 +52,7 @@
 
     <!-- Use urlize to sanitize organization name -->
     {{- $imgAssetID := printf "%s/%s*" $logoImageRoot (anchorize $org.organization) -}}
-    {{- $logoImageResource := partial "claris/_functions/resources/images/image-resource" (dict "Page" $page "resource" $imgAssetID) -}}
+    {{- $logoImageResource := partial "claris/_functions/resources/images/get-process-image" (dict "Page" $page "resource" $imgAssetID) -}}
 
     {{- $oganizationHeaderClassList := slice "organization-header" }}
     {{ if $singleRoleWithoutDetails }}

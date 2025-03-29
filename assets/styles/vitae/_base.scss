@@ -1,3 +1,6 @@
+@use "sass:math";
+@use "hugo-vars" as hugo;
+
 // Columns for 2-column layout
 // Fit content to iPad in landscape orientation:
 // 1024px = 64rem, minus 2 x 1.5rem for margin
@@ -81,7 +84,9 @@ $font-size-scale-factor: math.pow(2.0, math.div(1, 5) );
     margin: 0;
     padding: 0;
   }
-  font-family: var(--font);
+  // font-family: var(--font);
+  // @include useFontDefinition(default);
+
   font-style: var(--font-style);
   font-weight: var(--font-weight);
   font-variant-ligatures: var(--font-variant-ligatures);

@@ -1,5 +1,5 @@
 {{- $page := .Page }}
-{{- $templateName := "executive" }}
+{{- $templateName := "template" }}
 {{- $template := printf "vitae/main/content/%s" $templateName }}
 
 {{ partial "html-comment" (printf "BEGIN '%s'" $template) }}
@@ -44,6 +44,17 @@ FIXME: Consolidate keys, e.g. .VitaeParams and .Params */ -}}
     "normal" "normal"
     "smaller-1" "smaller-1"
     "smaller-2" "smaller-2"
+  )
+  "section" (dict
+    "heading" (dict
+      "font-size" (dict
+        "larger-1" "larger-1"
+        "normal" "normal"
+        "smaller-1" "smaller-1"
+        "smaller-2" "smaller-2"
+      )
+      "rule" "ANY_BOOL"
+    )
   )
   "logo" (dict
     "false" false

@@ -1,3 +1,5 @@
+@use "vitae/functions" as vitae-functions;
+
 /* ----- Section elements ------ */
 
 $num-columns: 12;
@@ -12,8 +14,12 @@ $num-columns: 12;
     .style_layout_shallow {
       --section-title_margin_bottom: var(--inner_margin_8-1);
       --section-title_margin_top_between: var(--inner_margin_8-3);
-      --slot-gap_vertical: var(--inner_margin_4-3);
+      --slot-gap_vertical: var(--inner_margin_8-4);
       --section-gap_vertical: var(--inner_margin_8-3);
+      --heading-padding-top: 0;
+      --heading-padding-bottom: 0;
+      --heading-margin-top: 0;
+      --heading-margin-bottom: 0;
     }
   }
 
@@ -71,7 +77,8 @@ $num-columns: 12;
     &-title {
       position: relative;
       font-family: var(--font-section-title);
-      @include upper-caps-strong;
+      font-size: var(--font-size-larger-2);
+      @include vitae-functions.upper-caps-strong;
       margin: 0 0 var(--section-title_margin_bottom) 0;
       padding: 0;
       // &:fist-child {
@@ -82,20 +89,22 @@ $num-columns: 12;
       }
     }
 
-    &.style_title_left {
-      display: flex;
-      gap: var(--row_gap) var(--column_gap);
-      align-items: stretch;
-      // justify-content: space-between;
-      // margin-top: var(--section-title_margin_top_between);
-      .component-title {
-        @extend .section-title;
+    &.style {
+      &_title_left {
         display: flex;
-        flex-direction: row;
-        align-items: center;
-        margin: 0;
-        padding: 0 calc(var(--column_content_width) / 2) 0 0;
-        border-right: var(--line-width_separator_heading) solid var(--border-color-faint);
+        gap: var(--row_gap) var(--column_gap);
+        align-items: stretch;
+        // justify-content: space-between;
+        // margin-top: var(--section-title_margin_top_between);
+        .component-title {
+          @extend .section-title;
+          display: flex;
+          flex-direction: row;
+          align-items: center;
+          margin: 0;
+          padding: 0 calc(var(--column_content_width) / 2) 0 0;
+          border-right: var(--line-width_separator_heading) solid var(--border-color-faint);
+        }
       }
     }
 
@@ -133,11 +142,25 @@ $num-columns: 12;
       }
     }
   }
+  .style_section_heading {
+    &_font-size {
+      &_larger-1 .section-title {
+        font-size: var(--font-size-larger-1);
+      }
+      &_normal .section-title {
+        font-size: var(--font-size-normal);
+      }
+    }
+    &_rule .section-title {
+      padding-bottom: 0.1em;
+      border-bottom: 0.25pt solid black;
+    }
+  }
 }
 
 /* ----- Templates for layout EXECUTIVE ------ */
 
-.vitae.layout-executive {
+.vitae.layout-template {
 
   --num_columns: #{$num-columns};
   // --main_column_width: 6;

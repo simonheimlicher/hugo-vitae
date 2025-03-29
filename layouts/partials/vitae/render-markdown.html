@@ -1,11 +1,15 @@
-{{- $page := .Page }}
-{{- $data := .Data }}
+{{- $page := page }}
+{{- $data := . }}
 {{- $display := "inline" }}
-{{- $delimiter := default " • " .Delimit }}
-{{- $splitDelimiter := default " * " .Split }}
+{{- $delimiter := " • " }}
+{{- $splitDelimiter := " * " }}
 
-{{- with .Display }}
-  {{- $display = . }}
+{{- if reflect.IsMap . }}
+  {{- $page = default $page .Page }}
+  {{- $data = .Data }}
+  {{- $delimiter = default $delimiter .Delimit }}
+  {{- $splitDelimiter := $splitDelimiter .Split }}
+  {{- $display = default $display .Display }}
 {{- end }}
 
 {{- $renderOpt := dict "display" $display }}
