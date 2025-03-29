@@ -13,8 +13,7 @@ ignoreFiles:
   - frontmatter\.json$
 
 outputFormats:
-  printFormat:
-    name: print
+  print:
     notAlternative: false
     mediaType: text/html
     baseName: print

@@ -1,3 +1,7 @@
+@use "claris/variables" as variables;
+@use "vitae/functions" as vitae-functions;
+@use "vitae/layouts" as vitae-layouts;
+
 .vitae {
   .inline {
     display: inline;
@@ -36,7 +40,7 @@
       font-size: 125%;
     }
     .profile {
-      @include list-style(0rem, var(--list-style_indent));
+      @include variables.list-style_indented(0rem, var(--list-style_indent));
     }
   }
   .layout-letter {
@@ -133,7 +137,7 @@
       flex-wrap: nowrap;
       column-gap: 1em;
       padding: 0.5em 1em;
-      z-index: ($main-z-index + 3);
+      z-index: (variables.$main-z-index + 3);
       svg {
         position: relative;
         width: 1em;
@@ -379,7 +383,7 @@ html[data-mode="dim"] {
 
     .degree {
       font-size: var(--font-size-larger-1);
-      @include upper-caps;
+      @include vitae-functions.upper-caps;
     }
     .headline {
       & + .details {
@@ -515,7 +519,7 @@ html[data-mode="dim"] {
         height: 100%;
         width: 100%;
         @at-root .vitae .view-print .component_header .portrait_figure {
-          @include full-bleed_page(top, both);
+          @include vitae-layouts.full-bleed_page(top, both);
           height: calc(100% + var(--page_margin_top));
           width: calc(100% + var(--page_margin_left) + var(--page_margin_right));
         }
@@ -893,7 +897,7 @@ html[data-mode="dim"] {
       display: flex;
       flex-direction: column;
       .date_duration {
-        @include upper-caps;
+        @include vitae-functions.upper-caps;
         font-size: var(--font-size-smaller-1);
         color: var(--text-color-faint);
         user-select: none;
@@ -2391,7 +2395,7 @@ html[data-mode="dim"] {
       &_level {
         grid-column: 2;
         font-size: var(--font-size-smaller-1);
-        @include lower-caps;
+        @include vitae-functions.lower-caps;
         &_bar {
           position: relative;
           display: flex;
@@ -2560,7 +2564,7 @@ html[data-mode="dim"] {
         width: 100%;
         color: var(--text-color-faint);
         font-size: var(--font-size-smaller-1);
-        @include upper-caps;
+        @include vitae-functions.upper-caps;
         font-weight: var(--font-weight-light);
         &.style_font-size_normal {
           font-size: var(--font-size-normal);

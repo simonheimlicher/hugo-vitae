@@ -1,3 +1,6 @@
+@use "claris/hugo-vars" as hugo;
+@use "vitae/functions" as vitae-functions;
+
 @media screen {
   .main.vitae {
     .view-screen {
@@ -115,7 +118,7 @@
         .date {
           text-align: right;
           width: 100%;
-          @include lower-caps;
+          @include vitae-functions.lower-caps;
         }
         .subject {
           color: var(--text);
@@ -197,7 +200,7 @@
     }
   }
 }
-@media screen and (min-width: $screenViewBreakpointWidthNarrow) {
+@media screen and (min-width: hugo.$screenViewBreakpointWidthNarrow) {
   .vitae {
     &.layout-resume {
       .view-screen {
@@ -249,7 +252,7 @@
     }
   }
 }
-@media screen and (min-width: $screenViewBreakpointWidthOneColumn) {
+@media screen and (min-width: hugo.$screenViewBreakpointWidthOneColumn) {
   .vitae {
     &.layout-resume {
       .view-screen {
@@ -362,7 +365,7 @@
     }
   }
 }
-@media screen and (min-width: $screenViewBreakpointWidthTwoColumn) {
+@media screen and (min-width: hugo.$screenViewBreakpointWidthTwoColumn) {
   .vitae {
     &.layout-resume {
       .view-screen {
@@ -454,7 +457,7 @@
     }
   }
 }
-@media screen and (min-width: $screenViewBreakpointWidthWide) {
+@media screen and (min-width: hugo.$screenViewBreakpointWidthWide) {
   .vitae {
     &.layout-resume {
       .view-screen {

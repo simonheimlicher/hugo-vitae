@@ -1,4 +1,12 @@
+assets:
+  styles:
+    fonts:
+      selfhosted: true
+
 vitae:
+  assets:
+    styles:
+      fontsize: 10pt
 
   templates:
     # ------ Template RESUME --------- #
@@ -1294,113 +1302,3 @@ vitae:
             #             period: false
             #             duration: false
             #             details: false
-
-
-# ------ Template RESUME --------- #
-  resume:
-    contact:
-      title: section-contact
-      screen: true
-      print: true
-    links:
-      screen: true
-      print: true
-    header:
-      - main:
-          - feature: about
-            title: false
-            level: 1
-            portrait: true
-            headline: true
-            profile: true
-            contact: true
-    pages:
-      - main:
-          - feature: stages
-            collection: stages
-            filter_by: type
-            filter_value: professional
-            title: section-experience
-            organization_period: true
-            role_period: true
-            organization_duration: true
-            role_duration: true
-            timeline_for_single_role: true
-            results: true
-            headings: true
-            skills: false
-        primary:
-          - feature: stages
-            collection: stages
-            filter_by: type
-            filter_value: education
-            title: section-education
-          - feature: skills
-            collection: skills
-            filter_by: type
-            filter_value: language
-            title: section-language-skills
-          - feature: awards
-            title: section-awards
-          - feature: publications
-            collection: publications
-            filter_by: kind
-            filter_value: patent
-            title: section-patents
-          # - feature: publications
-          #   collection: publications
-          #   filter_by: kind
-          #   filter_value: publication
-          #   title: section-publications
-          #   remark: selected-publications
-          - feature: links
-            # title: section-connect
-            title: false
-
-# ------ Template LETTER --------- #
-  letter:
-    about:
-      portrait: false
-      headline: true
-      contact: true
-    contact:
-      title: false
-      screen: true
-      print: true
-    links:
-      title: false
-      screen: true
-      print: true
-    header:
-      - main:
-          - feature: about
-            title: false
-            contact: true
-    pages:
-      - main:
-          - feature: application
-            subject: application-for-position
-            level: 1
-            address: true
-            screen: true
-            print: true
-        primary:
-          - feature: links
-            title: false
-            screen: true
-            print: true
-
-# ------ Template PROFILE --------- #
-  profile:
-    header:
-      - main:
-          - feature: about
-            title: false
-            portrait: true
-            headline: true
-            profile: true
-            contact: true
-          - feature: links
-            title: false
-            screen: true
-            print: true

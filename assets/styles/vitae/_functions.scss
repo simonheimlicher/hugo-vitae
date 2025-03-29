@@ -1,6 +1,7 @@
 @use 'sass:math';
 @use 'sass:list';
 @use 'sass:map';
+@use "vitae/base"  as vitae-base;
 
 @function round-dec($value, $fractionDigits: 0) {
   $power: math.pow(10, $fractionDigits);
@@ -9,6 +10,7 @@
 
 @mixin font-size-scale($font-size: 1rem, $shift: 0, $smallest: 9, $largest: 9) {
 
+  $font-size-scale-factor: vitae-base.$font-size-scale-factor;
   $dec-digits: 2;
   $font-size-factor-normal: 1;
   $smaller-factor-idx-max: 5;
@@ -53,15 +55,6 @@
   @for $numerator from 0 to ($max-factor * $denominator + 1) {
     --inner_margin_#{$denominator}-#{$numerator}: calc(#{math.div($numerator, $denominator)} * #{$margin_base});
     --inner_padding_#{$denominator}-#{$numerator}: calc(#{math.div($numerator, $denominator)} * #{$padding_base});
-  }
-}
-
-@mixin wrap() {
-  padding: 0 $screenViewInnerPaddingMobile;
-  padding: env(safe-area-inset-top) calc(#{$screenViewInnerPaddingMobile} + env(safe-area-inset-right)) env(safe-area-inset-bottom) calc(#{$screenViewInnerPaddingMobile} + env(safe-area-inset-left));
-  @media screen and (min-width: $screenViewBreakpointWidthNarrow) {
-    padding: 0 $screenViewInnerPaddingNarrow;
-    padding: env(safe-area-inset-top) calc(#{$screenViewInnerPaddingNarrow} + env(safe-area-inset-right)) env(safe-area-inset-bottom) calc(#{$screenViewInnerPaddingNarrow} + env(safe-area-inset-left));
   }
 }
 

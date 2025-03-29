@@ -1,3 +1,5 @@
+@use "vitae/functions" as vitae-functions;
+
 /* ----- Section elements ------ */
 
 $num-columns: 12;
@@ -76,7 +78,7 @@ $num-columns: 12;
       position: relative;
       font-family: var(--font-section-title);
       font-size: var(--font-size-larger-2);
-      @include upper-caps-strong;
+      @include vitae-functions.upper-caps-strong;
       margin: 0 0 var(--section-title_margin_bottom) 0;
       padding: 0;
       // &:fist-child {
