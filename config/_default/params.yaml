@@ -1,9 +1,8 @@
-assets:
-  styles:
-    fonts:
-      selfhosted: true
-
 vitae:
+  render:
+    qrcode: true
+    preview: true
+    print: true
   assets:
     styles:
       fontsize: 10pt

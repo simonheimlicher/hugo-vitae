@@ -1,4 +1,7 @@
+@use "sass:math";
 @use "claris/hugo-vars" as hugo;
+@use "vitae/functions" as vitae-functions;
+@use "vitae/layouts" as vitae-layouts;
 
 $inline-list-item-separation: 2ch;
 $inline-list-sep-width: math.div($inline-list-item-separation, 3.0);
@@ -277,7 +280,7 @@ $inline-list-sep-width: math.div($inline-list-item-separation, 3.0);
           p:first-child,
           ul:first-child {
             padding: 0;
-            @include flush-top;
+            @include vitae-functions.flush-top;
           }
         }
       }
@@ -600,7 +603,7 @@ $inline-list-sep-width: math.div($inline-list-item-separation, 3.0);
           border-radius: 50%;
         }
         .shadow {
-          @include drop-shadow(2rem, 0.2, 0.2);
+          @include vitae-functions.drop-shadow(2rem, 0.2, 0.2);
         }
         @media screen and (min-width: hugo.$screenViewBreakpointWidthNarrow) {
           margin: 0 var(--column-padding-h) var(--column-padding-v) 0;
@@ -608,7 +611,7 @@ $inline-list-sep-width: math.div($inline-list-item-separation, 3.0);
         }
 
 
-        @media screen and (min-width: $screenViewBreakpointWidthTwoColumn) {
+        @media screen and (min-width: hugo.$screenViewBreakpointWidthTwoColumn) {
           margin: 0;
         }
       }
@@ -616,8 +619,8 @@ $inline-list-sep-width: math.div($inline-list-item-separation, 3.0);
     .view-print {
       .portrait {
         padding: 0;
-        // @include full-bleed_column(top, left)
-        @include full-bleed_column(top, auto);
+        // @include vitae-layouts.full-bleed_column(top, left)
+        @include vitae-layouts.full-bleed_column(top, auto);
         img {
           padding: 0;
           margin: 0;
