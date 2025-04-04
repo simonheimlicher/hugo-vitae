@@ -1,0 +1,18 @@
+{
+  "files.associations": {
+    "*.html": "gohtml",
+    "**/fonts/hosted/*.scss": "gocss",
+    "**/fonts/fallback/*.scss": "gocss",
+    "**/bundles/*.js": "gojs",
+    "**/bundles/*.ts": "gots",
+    "robots.txt": "gohtml"
+  },
+  "emmet.includeLanguages": {
+    "gohtml": "html"
+  },
+  "files.exclude": {
+    "**/.DS_Store": true,
+    "**/public": true,
+    "**/resources": true
+  }
+}
