@@ -160,7 +160,7 @@ export const initializeControlPanel = () => {
         max: 1,
         step: 0.01,
       },
-      ['Print', false], // if false, group is collapsed by default
+      ['Print', true], // if false, group is collapsed by default
       {
         label: 'Control', // label is mandatory
         // FIXME: all buttons need attribute `type='button'`,
