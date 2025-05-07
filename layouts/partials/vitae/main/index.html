@@ -6,7 +6,8 @@
 {{- end }}
 {{- $template := "vitae/main/index" }}
 
-{{- $debug := false }}
+{{- $debug := and false ($page.Param "clarisdebug") }}
+{{- $dbg := printf "%s[%s]" (replaceRE `.*?((?:[^/]+/){,2})$` `$1` $page.RelPermalink) (replaceRE `.*?([^/]+)$` `$1` $template) }}
 {{/* {{- $debug = or $debug (not (not (findRE `^/([^/]+-demo/)?profile` $page.RelPermalink) ) ) -}} */}}
 
 {{/* {{ partial "html-comment" (printf "[%s]: PartialParams:%v" $template $pp) }} */}}
@@ -27,7 +28,7 @@
   {{- $media = "print" }}
 {{- end }}
 {{- if $debug }}
-    {{ warnf "%s[%s]: media=%v [printPreview=%v printView=%v printControl=%v]"  $page $template $media $printPreview $printView $printControl }}
+    {{ warnf "%s media=%v [printPreview=%v printView=%v printControl=%v]"  $dbg $media $printPreview $printView $printControl }}
 {{- end }}
 
 {{- $vitaeParamRoot := split (default "vitae" ($page.Param "VitaeRoot")) "." }}
@@ -54,7 +55,7 @@
 {{- $vitaeTemplate := merge (index site.Params $vitaeBaseTemplateRoot) (dict $vitaeTemplateVariantPath nil) }}
 {{- if $debug }}
   {{- with $vitaeTemplate.style }}
-    {{- warnf "%s[%s]: site.Params.%s.style=%s" $page $template
+    {{- warnf "%s site.Params.%s.style=%s" $dbg
         (delimit $vitaeBaseTemplateRoot `.`) (jsonify (dict "indent" "  ") .) }}
   {{- end }}
 {{- end }}
@@ -62,7 +63,7 @@
 {{- with index site.Params $vitaeDefaultTemplateRoot }}
   {{- if $debug }}
     {{- with .style }}
-      {{- warnf "%s[%s]: site.Params.%s.style=%s" $page $template
+      {{- warnf "%s site.Params.%s.style=%s" $dbg
           (delimit $vitaeTemplateRoot `.`) (jsonify (dict "indent" "  ") .) }}
     {{- end }}
   {{- end }}
@@ -72,7 +73,7 @@
 {{- with index site.Params $vitaeTemplateRoot }}
   {{- if $debug }}
     {{- with .style }}
-      {{- warnf "%s[%s]: site.Params.%s.style=%s" $page $template
+      {{- warnf "%s site.Params.%s.style=%s" $dbg
           (delimit $vitaeTemplateRoot `.`) (jsonify (dict "indent" "  ") .) }}
     {{- end }}
   {{- end }}
@@ -83,7 +84,7 @@
 {{- with index $page.Params $vitaeBaseTemplateRoot }}
   {{- if $debug }}
     {{- with .style }}
-      {{- warnf "%s[%s]: page.Params.%s.style=%s" $page $template
+      {{- warnf "%s page.Params.%s.style=%s" $dbg
         (delimit $vitaeBaseTemplateRoot `.`) (jsonify (dict "indent" "  ") .) }}
     {{- end }}
   {{- end }}
@@ -93,7 +94,7 @@
 {{- with index $page.Params $vitaeTemplateRoot }}
   {{- if $debug }}
     {{- with .style }}
-      {{- warnf "%s[%s]: page.Params.%s.style=%s" $page $template
+      {{- warnf "%s page.Params.%s.style=%s" $dbg
         (delimit $vitaeTemplateRoot `.`) (jsonify (dict "indent" "  ") .) }}
     {{- end }}
   {{- end }}
@@ -117,7 +118,7 @@ vitae:
 
 {{- with index $page.Params $vitaeStyleRoot }}
   {{- if $debug }}
-    {{- warnf "%s[%s]: page.Params.%s=%s" $page $template
+    {{- warnf "%s page.Params.%s=%s" $dbg
       (delimit $vitaeStyleRoot `.`) (jsonify (dict "indent" "  ") .) }}
   {{- end }}
   {{- $vitaeStyle = merge $vitaeStyle . }}
@@ -126,8 +127,8 @@ vitae:
 {{- with $vitaeTemplate }}
 
   {{- if and false $debug }}
-    {{- warnf "%s[%s]: RelPermalink=%s\ntemplate=%s variant=%s:\n%v"
-        $page $template $page.RelPermalink
+    {{- warnf "%s RelPermalink=%s\ntemplate=%s variant=%s:\n%v"
+        $dbg $page.RelPermalink
         $vitaeTemplateName $vitaeVariantName
         (jsonify (dict "indent" "  ") $vitaeTemplate)
     -}}
@@ -136,7 +137,7 @@ vitae:
   {{- $vitaeData := dict }}
   {{- $dataRoot := "data" }}
   {{- $vitaeDataRoot := default "vitae" ($page.Param "VitaeDataRoot") }}
-  {{- $bundleDataPath := (path.Join $dataRoot $vitaeDataRoot (printf "vitae.%s.*" site.Language.Lang) ) }}
+  {{- $bundleDataPath := (path.Join $dataRoot $vitaeDataRoot (printf "%s/**/*.yaml" site.Language.Lang) ) }}
 
   {{ partial "html-comment" (printf "[%s]: Looking for data in page bundle %s at %v"
       $template $page $bundleDataPath) -}}
@@ -144,19 +145,19 @@ vitae:
   {{- $vitaeData = partial "vitae/_functions/resources-merged" (dict "Page" $page "resource" $bundleDataPath) }}
 
   {{- if not $vitaeData }}
-    {{- warnf "%s[%s]: No resource found at path=%s found in page bundle=%v or in parent page bundle=%v"
-        $page $template $bundleDataPath $page $page.Parent }}
+    {{- warnf "%s vitae/_functions/resources-merged: no resource found at path=%s in page bundle=%v or in parent page bundle=%v"
+        $dbg $bundleDataPath $page $page.Parent }}
     {{- $vitaeData = index site.Data $vitaeDataRoot }}
     {{- if $vitaeData }}
       {{- if (isset $vitaeData site.Language.Lang) }}
         {{- $vitaeData = index $vitaeData site.Language.Lang }}
-        {{ warnf "%s[%s]: Initializing data from site.Data.%s.%s"
-            $page $template $vitaeDataRoot site.Language.Lang }}
+        {{ warnf "%s Initializing data from site.Data.%s.%s"
+            $dbg $vitaeDataRoot site.Language.Lang }}
         {{ partial "html-comment" (printf "[%s]: Initializing data from site.Data.%s.%s"
             $template $vitaeDataRoot site.Language.Lang) -}}
       {{- else }}
-        {{ warnf "%s[%s]: No data for language '%s'. Initializing data from site.Data.%s"
-            $page $template $vitaeDataRoot site.Language.Lang }}
+        {{ warnf "%s No data for language '%s'. Initializing data from site.Data.%s"
+            $dbg $vitaeDataRoot site.Language.Lang }}
         {{ partial "html-comment" (printf "[%s]: No data for language '%s'. Initializing data from site.Data.%s"
             $template site.Language.Lang $vitaeDataRoot) -}}
         {{/* {{ partial "html-comment" (printf "[%s]: No data for language '%s'. Initializing data from site.Data.%s: %v"
@@ -169,7 +170,7 @@ vitae:
 
     {{/* {{ partial "html-comment" (printf "vitaeData: %v"  ($vitaeData | jsonify (dict "indent" "  "))) -}} */}}
     {{/* {{ partial "html-comment" (printf "vitaeData.features.about: %s"  ($vitaeData.features.about | jsonify (dict "indent" "  "))) }} */}}
-    {{/* {{ warnf "%s[%s]: vitaeData.features.about: %s"  $page $template ($vitaeData.features.about | jsonify (dict "indent" "  ")) }} */}}
+    {{/* {{ warnf "%s vitaeData.features.about: %s"  $dbg ($vitaeData.features.about | jsonify (dict "indent" "  ")) }} */}}
 
     {{- $mainContentPrefix := "main/content" }}
     {{- $containerClass := slice "vitae" }}
@@ -241,19 +242,19 @@ vitae:
       <div id="originalContainer" class="view-{{ cond $pp.PrintPreview "print" "screen" }}">
         <div id="contentContainer" class="{{- $originalInnerClass }}">
           {{- if $debug }}
-            {{- warnf "%s[%s]: Calling partial %s with pp:\n%v" $page $template $templatePartial ((merge $pp (dict "Page" "OMITTED")) | jsonify (dict "indent" "  ")) }}
+            {{- warnf "%s Calling partial %s with pp:\n%v" $dbg $templatePartial ((merge $pp (dict "Page" "OMITTED")) | jsonify (dict "indent" "  ")) }}
           {{- end }}
           {{- partial $templatePartial $pp }}
         </div>
       </div>
     </div>
   {{- else }}
-    {{- errorf "%s[%s]: Valid vitaeTemplate from site.Params:%v yielded invalid vitaeDataRoot=%v"
-        $page $template $vitaeBaseTemplateRoot $vitaeDataRoot }}
+    {{- errorf "%s Valid vitaeTemplate from site.Params:%v yielded invalid vitaeDataRoot=%v"
+        $dbg $vitaeBaseTemplateRoot $vitaeDataRoot }}
   {{- end }}
 {{- else }}
-  {{- errorf "%s[%s]: Invalid vitaeTemplateRoot=%v [vitaeTemplateName=%v or vitaeVariantName=%v]"
-      $page $template $vitaeTemplateRoot $vitaeTemplateName $vitaeVariantName }}
+  {{- errorf "%s Invalid vitaeTemplateRoot=%v [vitaeTemplateName=%v or vitaeVariantName=%v]"
+      $dbg $vitaeTemplateRoot $vitaeTemplateName $vitaeVariantName }}
 {{- end }}
 {{ partial "html-comment" (printf "END   '%s'" $template) }}
 
