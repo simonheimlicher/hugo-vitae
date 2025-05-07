@@ -668,9 +668,10 @@ vitae:
                       limit: 1
                       type: false
                     style:
-                      timeline: column
+                      # timeline: column
                       inline:
                         header: true
+                        role: true
                 - section: awards-certificates
                   # container: div
                   style:
