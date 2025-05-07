@@ -19,7 +19,7 @@
 {{ with $page }}
   {{ $title := $headMeta.Formatted.Title }}
   {{ $headline := $headMeta.Formatted.Headline }}
-  {{ $role := (.Page.Param "role") | $page.RenderString | partial "claris/_functions/sanitize" }}
+  {{ $role := (.Page.Param "role") | partial "claris/_functions/plainify-html" }}
   {{ $titleDateFormat := "2006-01-02"}}
 
   {{ if $title }}
