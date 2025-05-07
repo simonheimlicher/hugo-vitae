@@ -137,7 +137,7 @@ vitae:
   {{- $vitaeData := dict }}
   {{- $dataRoot := "data" }}
   {{- $vitaeDataRoot := default "vitae" ($page.Param "VitaeDataRoot") }}
-  {{- $bundleDataPath := (path.Join $dataRoot $vitaeDataRoot (printf "%s/**/*.yaml" site.Language.Lang) ) }}
+  {{- $bundleDataPath := (path.Join $dataRoot $vitaeDataRoot (printf "vitae.%s.*" site.Language.Lang) ) }}
 
   {{ partial "html-comment" (printf "[%s]: Looking for data in page bundle %s at %v"
       $template $page $bundleDataPath) -}}
