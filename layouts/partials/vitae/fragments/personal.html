@@ -7,13 +7,14 @@
 {{- $media := .Media }}
 {{- $fragmentContainer := default false .Container }}
 {{- $debug := false }}
-{{- /* $debug = or $debug (not (not (findRE `^/([^/]+-demo/)?preview` $page.RelPermalink) ) ) */ -}}
-{{/* {{- warnf "%s[%s]: media=%s .Fragment=%s .Config=%s" $page $template $media $fragment $config -}} */}}
-{{- if $debug }}
-  {{- warnf "%s[%s]: .Fragment=%s .Config=%s .Data=%s" $page $template $fragment $config $data -}}
-{{- end }}
+{{- $debug = and false $debug (not (not (findRE `^/product-management/google-senior-product-manager-aml/ats/two-pager` $page.RelPermalink) ) ) -}}
+{{- $dbg := printf "%s[%s->%s]" (replaceRE `.*?((?:[^/]+/){,2})$` `$1` $page.RelPermalink) $template (replaceRE `.*?([^/]+)$` `$1` $template) }}
 
-{{/* {{- warnf "%s[%s]: outputFormat:%s" $page $template $outputFormat }} */}}
+{{- if $debug }}
+  {{- warnf "%s .Fragment=%s .Config=%s .Data.personal=%s" $dbg $fragment
+    (jsonify (dict "indent" "  ") $config)
+    (jsonify (dict "indent" "  ")  $data.personal) -}}
+{{- end }}
 
 {{- $validStyles := (dict
   "_template" $template
@@ -132,6 +133,8 @@
             {{- $fieldItems = append $item $fieldItems }}
           {{- end }}
         {{- end }}
+      {{- else }}
+        {{- warnf "%s no field data for field=%v" $dbg $fieldName }}
       {{- end }}
 
       {{- with $fieldItems }}
@@ -172,8 +175,8 @@
               "ClassPrefix" $classPrefix
               "ObfuscatedLinkPartial" $obfuscatedLinkPartial ) }}
           {{- else }}
-            {{- errorf "%s[%s]: Missing partial %s to render %v"
-                $page $template $partial $fieldName }}
+            {{- errorf "%s Missing partial %s to render %v"
+                $dbg $partial $fieldName }}
           {{- end }}
 
           {{- with $renderedField }}

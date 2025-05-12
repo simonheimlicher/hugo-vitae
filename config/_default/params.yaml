@@ -636,12 +636,20 @@ vitae:
                     degree: true
                     headline: true
                     fragments:
-                    - fragment: contact
                     - fragment: personal
                       fields:
+                      - field: phone
+                      - field: email
+                        separator: BLOCK
+                      - field: address
+                        separator: BLOCK
                       - field: date_of_birth
                       - field: citizenship
                         title: fragment_citizenship
+                        separator: BLOCK
+                      - field: links
+                        collection: links
+                        separator: BLOCK
                     style:
                       layout:
                         - inline
@@ -672,39 +680,54 @@ vitae:
                       inline:
                         header: true
                         role: true
-                - section: awards-certificates
-                  # container: div
-                  style:
-                    column-width_main: 6
-                  sections:
-                  - section: awards
-                    title: section-awards
-                    container: section
-                    components:
-                    - component: awards
-                      details: false
-                      filter_by: type
-                      filter_value: award
-                      style:
-                        logo: false
-                        heading:
-                          font-size: normal
-                        layout:
-                          - shallow
-                          # - inline # no effect
-                  - section: certificates
-                    title: section-certificates
-                    container: section
-                    components:
-                    - component: awards
-                      details: false
-                      filter_by: type
-                      filter_value: certificate
-                      style:
-                        logo: false
-                        heading:
-                          font-size: normal
-                        layout: narrow
+                - section: awards
+                  title: section-awards
+                  container: section
+                  components:
+                  - component: awards
+                    details: false
+                    filter_by: type
+                    filter_value: award
+                    style:
+                      logo: false
+                      heading:
+                        font-size: normal
+                      layout:
+                        - shallow
+                        # - inline # no effect
+                # - section: awards-certificates
+                #   # container: div
+                #   style:
+                #     column-width_main: 6
+                #   sections:
+                #   - section: awards
+                #     title: section-awards
+                #     container: section
+                #     components:
+                #     - component: awards
+                #       details: false
+                #       filter_by: type
+                #       filter_value: award
+                #       style:
+                #         logo: false
+                #         heading:
+                #           font-size: normal
+                #         layout:
+                #           - shallow
+                #           # - inline # no effect
+                #   - section: certificates
+                #     title: section-certificates
+                #     container: section
+                #     components:
+                #     - component: awards
+                #       details: false
+                #       filter_by: type
+                #       filter_value: certificate
+                #       style:
+                #         logo: false
+                #         heading:
+                #           font-size: normal
+                #         layout: narrow
                 - section: education-languages
                   # container: div
                   sections:
@@ -736,6 +759,22 @@ vitae:
                       filter_value: language
                       details: true
                       level_bar: false
+                # - section: connect
+                #   # title: section-connect
+                #   container: section
+                #   style:
+                #     title: left
+                #   components:
+                #   - component: links
+                #     title: section-connect
+                #     style:
+                #       layout:
+                #         - shallow
+                #         - inline
+                #       icon: true
+                #       text: true
+                #       qrcode: true
+
                 # - section: patents-publications
                 #   sections:
                 #   - section: patent-selection
