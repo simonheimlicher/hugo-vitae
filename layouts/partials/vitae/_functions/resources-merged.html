@@ -9,15 +9,13 @@
   {{ $resourceArgs = merge $resourceArgs . }}
 {{ end }}
 
-{{ $breadCrumbs := default "" .BreadCrumbs }}
+{{ $breadCrumbs := default slice .BreadCrumbs }}
 {{ with $breadCrumbs }}
   {{ $originalPage = index . 0 }}
 {{ end }}
 
-{{ $mergeFromRootPage := true }}
-
 {{ $debug := and false ($page.Param "clarisdebug") }}
-{{ $debug = (not (not (findRE "/" $page.RelPermalink))) }}
+{{/* {{ $debug = (not (not (findRE "/product-management/google/preview" $page.RelPermalink))) }} */}}
 {{ $dbg := printf "%s%s[%s]"
     (replaceRE `.*?((?:[^/]+/){,2})$` `$1` $page.RelPermalink)
     (cond $breadCrumbs (printf "|%s" $breadCrumbs) "")
@@ -50,9 +48,12 @@ Discussion: https://discourse.gohugo.io/t/question-about-content-folder-structur
 
 {{ if strings.HasPrefix $pageBundleResourceGlob "/" }}
 
+  {{/* Since `$pageBundleResourceGlob` begins with a `/`, we are looking
+  for site-wide resources  */}}
+
   {{ $pathParts := split $pageBundleResourceGlob "/" }}
   {{ if $debug }}
-    {{ warnf "%v resource=%v begins with '/'. pathParts=%v"
+    {{ warnf "%s resource=%v begins with '/'. pathParts=%v"
       $dbg $pageBundleResourceGlob $pathParts }}
   {{ end }}
   {{ $pageBundleResourceGlobPrefix := $pageBundleResourceGlob }}
@@ -67,7 +68,7 @@ Discussion: https://discourse.gohugo.io/t/question-about-content-folder-structur
         {{ $pageBundleResourceGlobSuffix = path.Join .File $pageBundleResourceGlobSuffix }}
 
         {{ if $debug }}
-          {{ warnf "%v pageBundleResourceGlob=%v pageBundleResourceGlobPrefix=%v pageBundleResourceGlobSuffix=%v [splitRes=%v]"
+          {{ warnf "%s pageBundleResourceGlob=%v pageBundleResourceGlobPrefix=%v pageBundleResourceGlobSuffix=%v [splitRes=%v]"
             $dbg $pageBundleResourceGlob
             $pageBundleResourceGlobPrefix $pageBundleResourceGlobSuffix $splitRes }}
         {{ end }}
@@ -80,18 +81,18 @@ Discussion: https://discourse.gohugo.io/t/question-about-content-folder-structur
             "BreadCrumbs" $breadCrumbs
             "resource" $pageBundleResourceGlobSuffix
           ) }}
-          {{ if $debug }}{{ warnf "%v resource=%v begins with '/'. Calling %s with otherPage=%v[%s] with otherPageArgs=%v"
+          {{ if $debug }}{{ warnf "%s resource=%v begins with '/'. Calling %s with otherPage=%v[%s] with otherPageArgs=%v"
               $dbg $pageBundleResourceGlob $template
               $otherPage $otherPage.RelPermalink $otherPageArgs }}{{ end }}
 
           {{ $resourceArgs = partial $template $otherPageArgs }}
 
         {{ else }}
-          {{ if $debug }}{{ warnf "%v resource=%v begins with '/'. site.GetPage %v returned %v"
+          {{ if $debug }}{{ warnf "%s resource=%v begins with '/'. site.GetPage %v returned %v"
               $dbg $pageBundleResourceGlob $pageBundleResourceGlobPrefix $otherPage }}{{ end }}
         {{ end }}
       {{ else }}
-        {{ if $debug }}{{ warnf "%v resource=%v does not contain a '/'. splitRes=%v"
+        {{ if $debug }}{{ warnf "%s resource=%v does not contain a '/'. splitRes=%v"
             $dbg $pageBundleResourceGlob $splitRes }}{{ end }}
       {{ end }}
     {{ end }}
@@ -99,18 +100,28 @@ Discussion: https://discourse.gohugo.io/t/question-about-content-folder-structur
 
 {{ else }}
 
+  {{/* Since `$pageBundleResourceGlob` does not begin with a `/`, we are looking
+  for page resources. However, the above branch for site-wide resources also
+  lands here as it makes a recursive call with `.Page` set to the path of the
+  page that originally called this function */}}
+
   {{ if $debug }}
-    {{ warnf "%v Looking for resources matching pageBundleResourceGlob=%v [originalPage=%v]"
+    {{ warnf "%s Looking for resources matching pageBundleResourceGlob=%v [originalPage=%v]"
       $dbg $pageBundleResourceGlob $originalPage.Path }}
   {{ end }}
 
   {{ with $page }}
     {{ $splitRes := path.Split $pageBundleResourceGlob }}
+
     {{ if $splitRes.Dir }}
+
       {{ if (and .BundleType (eq .BundleType "leaf") )}}
-        {{ if $debug }}{{ warnf "%v LEAF: Looking for resource in page bundle matching %s"
-            $dbg $pageBundleResourceGlob }}{{ end }}
+
+        {{ if $debug }}{{ warnf "%s LEAF: Looking for resource in page bundle=%v matching %s"
+            $dbg $page.Path $pageBundleResourceGlob }}{{ end }}
+
       {{ else }}
+
         <!-- NOTE: We are in a branch bundle. Hence, only files at the top-level are available.
         Given that we are here, this implies that the above call to
           $splitRes := path.Split $pageBundleResourceGlob
@@ -133,21 +144,21 @@ Discussion: https://discourse.gohugo.io/t/question-about-content-folder-structur
         {{ $resPathRemains := delimit (last (sub (len $resPathParts) 1) $resPathParts) "/" }}
 
         {{ if $debug }}
-          {{ warnf "%v BRANCH: split pageBundleResourceGlob=%v into root=%v and remains=%v"
-            $dbg $pageBundleResourceGlob $resPathRoot $resPathRemains }}
+          {{ warnf "%s BRANCH: at page=%v: split pageBundleResourceGlob=%v into root=%v and remains=%v"
+            $dbg $page.Path $pageBundleResourceGlob $resPathRoot $resPathRemains }}
         {{ end }}
 
         {{ with .GetPage $resPathRoot }}
           {{ $resourcePage = . }}
           {{ if $debug }}
-            {{ warnf "%v Use resourcePage %v from current language '%v' with prefix='%v']"
+            {{ warnf "%s Use resourcePage %v from current language '%v' with prefix='%v']"
                 $dbg $resourcePage.Path .Language site.LanguagePrefix }}
           {{ end }}
 
         {{ else }}
 
           {{ if $debug }}
-            {{ warnf "%v .GetPage '%v' returned nothing. " $dbg $resPathRoot }}
+            {{ warnf "%s .GetPage '%v' returned nothing. " $dbg $resPathRoot }}
           {{ end }}
 
           {{ range .Translations }}
@@ -156,18 +167,18 @@ Discussion: https://discourse.gohugo.io/t/question-about-content-folder-structur
               {{ if (eq $translatedPage.Site.LanguagePrefix "") }}
                 {{ $resourcePage = . }}
                 {{ if $debug }}
-                  {{ warnf "%v Use resourcePage %v from default language '%v' with prefix='%v']"
+                  {{ warnf "%s Use resourcePage %v from default language '%v' with prefix='%v']"
                       $dbg $resourcePage.Path $translatedPage.Language $translatedPage.Site.LanguagePrefix }}
                 {{ end }}
               {{ else }}
                 {{ if $debug }}
-                  {{ warnf "%v Skip resourcePage %v from default language '%v' with prefix='%v']"
+                  {{ warnf "%s Skip resourcePage %v from default language '%v' with prefix='%v']"
                       $dbg $resourcePage.Path $translatedPage.Language $translatedPage.Site.LanguagePrefix }}
                 {{ end }}
               {{ end }}
             {{ else }}
               {{ if $debug }}
-                {{ warnf "%v .GetPage '%v' in translation '%v' with .LanguagePrefix='%v' returned nothing"
+                {{ warnf "%s .GetPage '%v' in translation '%v' with .LanguagePrefix='%v' returned nothing"
                     $dbg $resPathRoot  $translatedPage.Language $translatedPage.Site.LanguagePrefix }}
               {{ end }}
             {{ end }}
@@ -179,75 +190,144 @@ Discussion: https://discourse.gohugo.io/t/question-about-content-folder-structur
         {{ end }}
       {{ end }}
     {{ else }}
-      {{ if $debug }}{{ warnf "%v resourcePage=page (path.Split %s returned %s with .Dir=%v)"
+      {{ if $debug }}{{ warnf "%s resourcePage=page (path.Split %s returned %s with .Dir=%v)"
           $dbg $pageBundleResourceGlob $splitRes $splitRes.Dir }}{{ end }}
     {{ end }}
+
     {{ with $resourcePage }}
-      {{ if (and false $debug) }}
-        {{ warnf "%v resource page bundle %s contains: \nresources.Match *\n%s\nresources.Match ** / *:\n%s"
+      {{ if (and true $debug) }}
+        {{ warnf "%s resourcePage=%s contains the following resources: \nresources.Match *\n%s\nresources.Match **/*:\n%s"
           $dbg $resourcePage.Path
           (sort ($resourcePage.Resources.Match "*") "Name")
           (sort ($resourcePage.Resources.Match (printf "%s/%s" "**" "*")) "Name") }}
       {{ end }}
+      {{ $resParts := slice }}
       {{ with .Resources.GetMatch $pageBundleResourceGlob }}
-        {{ if $debug }}
-          {{ warnf "%v Match for resource='%s' in page bundle %s using glob='%s'"
+        {{ if and false $debug }}
+          {{ warnf "%s Match for resource='%s' in page bundle %s using glob='%s'"
               $dbg . $resourcePage $pageBundleResourceGlob }}
         {{ end }}
-        {{ $resParts := append $resourceArgs.Parts (slice (transform.Unmarshal .) ) }}
-        {{ $resourceArgs = merge $resourceArgs (dict "Parts" $resParts) }}
-      {{ else }}
-        {{ if $debug }}{{ warnf "%v No resource found in page bundle %s matching %s"
-            $dbg $resourcePage.Path $pageBundleResourceGlob }}{{ end }}
+        {{ $resourcePath := path.Join $resourcePage.Path .Name }}
+        {{ $resParts = append (dict "Part" (transform.Unmarshal .) "Source" $resourcePath) $resParts }}
       {{ end }}
-    {{ else }}
-      {{ if $debug }}{{ warnf "%v invalid resourcePage=%v)"
-          $dbg $resourcePage.Path }}{{ end }}
-    {{ end }}
-    {{ if or $mergeFromRootPage (not $resourceArgs) }}
-      {{ if $page.Parent }}
-        {{ $breadCrumbs = append $breadCrumbs (slice $page) }}
-        {{ $parentArgs := (merge $resourceArgs (dict "BreadCrumbs" $breadCrumbs "Page" $page.Parent)) }}
-        {{ if $debug }}
-          {{ warnf "%v Calling %s with parent=%s[%s] with parentArgs=%v"
-            $dbg $template
-            $page.Parent $page.Parent.RelPermalink
-            (merge $parentArgs (dict "Parts" (len $parentArgs.Parts))) }}
-          {{ end }}
-        {{ $resourceArgs = partial $template $parentArgs }}
-        {{ with $resourceArgs }}
-          {{ if $debug }}
-            {{ warnf "%v Match for resource='%s' returned from parent=%s: resourceArgs=%v"
-                $dbg $resource $page.Parent
-                (merge $resourceArgs (dict "Parts" (len $resourceArgs.Parts) ) ) }}
+
+      {{/* If the resource glob contains the magic word `index`: Enhance or
+      override main file with any files in the same directory and the same name
+      elements. Use the element in place of `index` as the key under which to
+      place the matching resources.
+
+      Example: resourceGlob = `data/vitae/index.en.yaml`
+
+      Then we will look for resources matching `data/vitae/*.en.yaml`
+
+      Let's say there is a resource named `data/vitae/stages.en.yaml`: We add
+      its unmarshalled contents under the key `stages` because that's the word
+      in the position of `index`:
+
+      * data/vitae/   index   .en.yaml
+      * data/vitae/   stages  .en.yaml
+
+      */}}
+      {{ with $indexGlobMatch := findRESubmatch `^(.*)index([^/]*)$` $pageBundleResourceGlob 1 }}
+        {{ $globPreVitae := index $indexGlobMatch 0 1 }}
+        {{ $globPostVitae := index $indexGlobMatch 0 2 }}
+        {{ if and $globPreVitae $globPostVitae }}
+          {{ $childResourceGlob := printf "%s*%s" $globPreVitae $globPostVitae }}
+          {{ with $childResources := $resourcePage.Resources.Match $childResourceGlob }}
+            {{ if $debug }}
+              {{ warnf "%s Adding child resources: Match for resource='%s' in page bundle %s using glob='%s'"
+                  $dbg . $resourcePage $childResourceGlob }}
+            {{ end }}
+            {{ range $childResources }}
+              {{ $childGlobMatch := findRESubmatch (printf `%s(.+)%s` $globPreVitae $globPostVitae) .Name 1 }}
+              {{ $childKey := index $childGlobMatch 0 1 }}
+              {{ if eq $childKey "index" }}
+              {{ else }}
+                {{ if $debug }}
+                  {{ warnf "%s Adding child with childKey=%v" $dbg $childKey }}
+                {{ end }}
+                {{ $resourcePath := path.Join $resourcePage.Path .Name }}
+                {{ $resParts = append (dict "Part" (dict $childKey (transform.Unmarshal .)) "Source" $resourcePath) $resParts }}
+              {{ end }}
+            {{ end }}
+          {{ else }}
+            {{ if $debug }}
+              {{ warnf "%s No child resources: no resources in page bundle %s match glob='%s'"
+                  $dbg . $resourcePage $childResourceGlob }}
+            {{ end }}
           {{ end }}
         {{ else }}
-          {{ if $debug }}{{ warnf "%v Nothing found in parent=%s: resource=%s"
-              $dbg $page.Parent $resourceArgs }}{{ end }}
+          {{ if $debug }}
+            {{ errorf "%s Invalid glob parts: globPreVitae=%q globPostVitae=%q"
+                $dbg $globPreVitae $globPostVitae }}
+          {{ end }}
+        {{ end }}
+      {{ end }}
+
+      {{ with $resParts }}
+        {{ $resourceArgs = merge $resourceArgs (dict "Parts" (append $resourceArgs.Parts $resParts) ) }}
+      {{ else }}
+        {{ if $debug }}{{ warnf "%s No resource found in page bundle %s matching %s"
+            $dbg $resourcePage.Path $pageBundleResourceGlob }}{{ end }}
+      {{ end }}
+
+    {{ else }}
+      {{ if $debug }}{{ warnf "%s invalid resourcePage=%v)"
+          $dbg $resourcePage.Path }}{{ end }}
+    {{ end }}
+
+    {{ if $page.Parent }}
+      {{ $breadCrumbs = append $breadCrumbs (slice $page) }}
+      {{ $parentArgs := (merge $resourceArgs (dict "BreadCrumbs" $breadCrumbs "Page" $page.Parent)) }}
+      {{ if $debug }}
+        {{ warnf "%s Calling %s with parent=%s and parentArgs=%v"
+          $dbg $template
+          $page.Parent.Path
+          (merge $parentArgs (dict "Parts" (len $parentArgs.Parts))) }}
+        {{ end }}
+      {{ $resourceArgs = partial $template $parentArgs }}
+      {{ with $resourceArgs }}
+        {{ if $debug }}
+          {{ warnf "%s Match for resource='%s' returned from parent=%s: resourceArgs=%v"
+              $dbg $resource $page.Parent
+              (merge $resourceArgs (dict "Parts" (len $resourceArgs.Parts) ) ) }}
         {{ end }}
       {{ else }}
-        {{ if $debug }}{{ warnf "%v Page has invalid parent=%s"
-            $dbg $page.Parent }}{{ end }}
+        {{ if $debug }}{{ warnf "%s Nothing found in parent=%s: resource=%s"
+            $dbg $page.Parent $resourceArgs }}{{ end }}
       {{ end }}
+    {{ else }}
+      {{ if $debug }}{{ warnf "%s Page has invalid parent=%s"
+          $dbg $page.Parent }}{{ end }}
     {{ end }}
+
   {{ end }}
 {{ end }}
 {{ with $resourceArgs }}
   {{ if eq $page $originalPage }}
+    {{ if (and true $debug) }}
+      {{ $breadCrumbPages := slice }}
+      {{ range $resourceArgs.BreadCrumbs }}
+        {{ append .Path $breadCrumbPages }}
+      {{ end }}
+      {{ warnf "%s at originalPage=%v. Merging from BreadCrumbs:\n%v" $dbg
+          $originalPage.Path  (index $resourceArgs.BreadCrumbs 0).Path }}
+    {{ end }}
     {{ $resourceParts := $resourceArgs.Parts }}
     {{ $mergedResourceParts := dict }}
-    {{ range $partIndex, $resourcePart := $resourceParts }}
+    {{ range $partIndex, $wrappedPart := $resourceParts }}
+      {{ $resourcePart := $wrappedPart.Part }}
+      {{ $source := $wrappedPart.Source }}
       {{ if (and true $debug) }}
         {{ $resKeys := slice }}
         {{ range $key, $value := $resourcePart }}
           {{ $resKeys = append $key $resKeys }}
         {{ end }}
-        {{ warnf "%v merging %d of %d parts with keys=%v:\n%v"
-            $dbg
-            (add $partIndex 1) (len $resourceParts) $resKeys
-            (substr (jsonify (dict "indent" "  ") $resourcePart) 0 500) }}
+        {{ warnf "%s merging data from %v [part %d of %d parts] with keys=%v:\n%v" $dbg
+            $source (add $partIndex 1) (len $resourceParts) $resKeys
+            (substr (jsonify (dict "indent" "  ") $resourcePart) 0 1500) }}
       {{ end }}
-      {{ $mergedResourceParts = merge $mergedResourceParts . }}
+      {{ $mergedResourceParts = merge $mergedResourceParts $resourcePart }}
     {{ end }}
     {{ $resourceArgs = $mergedResourceParts }}
     {{ if (and true $debug) }}
@@ -255,13 +335,13 @@ Discussion: https://discourse.gohugo.io/t/question-about-content-folder-structur
       {{ range $key, $value := $resourceArgs }}
         {{ $resKeys = append $key $resKeys }}
       {{ end }}
-      {{ warnf "%v page=originalPage=%s Returning resources merged from %d parts with keys=%v:\n%v"
+      {{ warnf "%s page=originalPage=%s Returning resources merged from %d parts with keys=%v:\n%v"
           $dbg $originalPage (len $resourceParts) $resKeys
           (substr (jsonify (dict "indent" "  ") $resourceArgs) 0 500) }}
     {{ end }}
   {{ else }}
     {{ if (and true $debug) }}
-      {{ warnf "%v page != originalPage=%s Returning resourceArgs=%v"
+      {{ warnf "%s page != originalPage=%s Returning resourceArgs=%v"
           $dbg $originalPage
           (merge $resourceArgs (dict "Parts" (len $resourceArgs.Parts))) }}
     {{ end }}
@@ -271,13 +351,12 @@ Discussion: https://discourse.gohugo.io/t/question-about-content-folder-structur
   {{ if (eq $page $originalPage) }}
     {{ with resources.GetMatch $siteResourceGlob }}
       {{ $resourceArgs = . }}
-      {{ if $debug }}{{ warnf "%v Match for resource='%s' in site resources using glob='%s'" $dbg . $siteResourceGlob }}{{ end }}
+      {{ if $debug }}{{ warnf "%s Match for resource='%s' in site resources using glob='%s'" $dbg . $siteResourceGlob }}{{ end }}
     {{ else }}
-      {{ if $debug }}{{ warnf "%v No resource found in site resources matching %s" $dbg $siteResourceGlob }}{{ end }}
+      {{ if $debug }}{{ warnf "%s No resource found in site resources matching %s" $dbg $siteResourceGlob }}{{ end }}
     {{ end }}
   {{ else }}
-    {{ if $debug }}{{ warnf "%v Not looking at site resources: page=%s != originalPage=%s" $dbg $page $originalPage  }}{{ end }}
+    {{ if $debug }}{{ warnf "%s Not looking at site resources: page=%s != originalPage=%s" $dbg $page $originalPage  }}{{ end }}
   {{ end }}
 {{ end }}
 {{ return $resourceArgs }}
-

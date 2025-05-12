@@ -137,11 +137,10 @@ vitae:
   {{- $vitaeData := dict }}
   {{- $dataRoot := "data" }}
   {{- $vitaeDataRoot := default "vitae" ($page.Param "VitaeDataRoot") }}
-  {{- $bundleDataPath := (path.Join $dataRoot $vitaeDataRoot (printf "vitae.%s.*" site.Language.Lang) ) }}
+  {{- $bundleDataPath := (path.Join $dataRoot $vitaeDataRoot (printf "index.%s.*" site.Language.Lang) ) }}
 
   {{ partial "html-comment" (printf "[%s]: Looking for data in page bundle %s at %v"
       $template $page $bundleDataPath) -}}
-  {{/* {{- $vitaeDataResource := partial "vitae/_functions/resources" (dict "Page" $page "resource" $bundleDataPath) }} */}}
   {{- $vitaeData = partial "vitae/_functions/resources-merged" (dict "Page" $page "resource" $bundleDataPath) }}
 
   {{- if not $vitaeData }}
@@ -249,7 +248,7 @@ vitae:
       </div>
     </div>
   {{- else }}
-    {{- errorf "%s Valid vitaeTemplate from site.Params:%v yielded invalid vitaeDataRoot=%v"
+    {{- errorf "%s Valid vitaeTemplate from site.Params:%v but no vitae data found at vitaeDataRoot=%v"
         $dbg $vitaeBaseTemplateRoot $vitaeDataRoot }}
   {{- end }}
 {{- else }}
