@@ -9,11 +9,11 @@ $printPageWidth: 210.0791667mm;
 $printPageHeight: 296.8625mm;
 
 // Page margins
-$printPageMarginHorizontal: 25mm;
-$printPageMarginVertical: 15mm;
+$printPageMarginHorizontal: hugo.$vitae_root_page_margin_base_horizontal;
+$printPageMarginVertical: hugo.$vitae_root_page_margin_base_vertical;
 // $printPageMarginVertical: $printPageMarginHorizontal;
 // $printPageMarginVertical: math.div($printPageMarginHorizontal * $printPageHeight, $printPageWidth);
 
 $printPageMarginCenterVertical: 0.5;
 $printPageMarginCenterHorizontal: 0.5;
-$baseFontSize: if(hugo.$vitae_styles_fontsize != null, hugo.$vitae_styles_fontsize, 10pt);
+$baseFontSize: hugo.$vitae_styles_fontsize;

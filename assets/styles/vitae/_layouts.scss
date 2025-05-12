@@ -353,8 +353,8 @@
   --rem: var(--rem_base);
 
   --root_em: 10pt;
-  --root_page_margin_base_horizontal: 25mm;
-  --root_page_margin_base_vertical: 15mm;
+  --root_page_margin_base_horizontal: #{vitae-hugo-vars.$printPageMarginHorizontal};
+  --root_page_margin_base_vertical: #{vitae-hugo-vars.$printPageMarginVertical};
   --root_list-style_item_padding_between: var(--inner_padding_4-1);
 
   --em: var(--em_base);

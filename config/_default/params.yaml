@@ -4,6 +4,8 @@ vitae:
     preview: true
     print: true
   assets:
+    root_page_margin_base_horizontal: 15mm
+    root_page_margin_base_vertical: 12mm
     styles:
       fontsize: 10pt
 
