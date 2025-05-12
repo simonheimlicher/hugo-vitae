@@ -10,11 +10,12 @@
 {{- $componentClass := default "component_index" .ComponentClass }}
 {{- $template := "vitae/_components/index" }}
 
-{{- $debug := false }}
+{{- $debug := false -}}
 {{/* {{- $debug = or $debug (not (not (findRE `^/([^/]+-demo/)?$` $page.RelPermalink) ) ) -}} */}}
+{{- $dbg := printf "%s[%s->%s]" (replaceRE `.*?((?:[^/]+/){,2})$` `$1` $page.RelPermalink) $template (replaceRE `.*?([^/]+)$` `$1` $template) }}
 
 {{- if and false $debug }}
-  {{- warnf "%s[%s]: .MergedStyle=%v" $page $template
+  {{- warnf "%s .MergedStyle=%v" $page $template
       (jsonify (dict "indent" "  ") .MergedStyle) }}
 {{- end }}
 
@@ -703,8 +704,8 @@
       "ValidStyles" $validSectionStyles
       ) -}}
     {{- if $debug }}
-      {{- warnf "%s[%s]: section=%s: After style-merged: mergedSectionStyle=%v"
-          $page $template $sectionName
+      {{- warnf "%s section=%s: After style-merged: mergedSectionStyle=%v"
+          $dbg $sectionName
           (jsonify (dict "indent" "  ") $mergedSectionStyle) }}
     {{- end }}
     {{- with $mergedSectionStyle.StyleClass }}
@@ -716,16 +717,20 @@
     {{- $childClass = print (delimit $sectionClassList ` `) }}
   {{- end }}
   {{- $headingLevel := default 2 $section.level }}
+
   {{- $sectionTitle := $section.title | default $sectionName -}}
   {{- with $section.title }}
-    {{- $sectionTitle := (cond (gt (len (T $sectionTitle)) 0) (T $sectionTitle) $sectionTitle) | strings.FirstUpper }}
+    {{- $sectionTitle = (cond (gt (len (T $sectionTitle)) 0) (T $sectionTitle) $sectionTitle) | strings.FirstUpper }}
     <h{{ $headingLevel }} class="section-title_{{ $sectionName }} section-title {{ $childClass }}">{{ $sectionTitle }}</h{{ $headingLevel }}>
     {{- $headingLevel = (add $headingLevel 1) }}
   {{- end }}
+
   {{- range $componentIndex, $component := $section.components }}
     {{- $componentName := $component.component }}
 
     {{- $componentContainer := default false .container }}
+
+    {{- $componentData := (index $vitaeData (default $component.component $component.collection) ) }}
 
     {{- if $componentContainer }}
       {{- with $mergedStyle }}
@@ -784,14 +789,14 @@
       "ValidStyles" $validSectionPanelStyles
       ) -}}
     {{- if $debug }}
-      {{- warnf "%s[%s]: section=%s: After style-merged: mergedSectionPanelStyle=%v"
-          $page $template $sectionName
+      {{- warnf "%s section=%s: After style-merged: mergedSectionPanelStyle=%v"
+          $dbg $sectionName
           (jsonify (dict "indent" "  ") $mergedSectionPanelStyle) }}
     {{- end }}
     {{- with $mergedSectionPanelStyle.StyleClass }}
       {{- if $debug }}
-        {{- warnf "%s[%s]: section=%s: Append  [type=%T] mergedSectionPanelStyle.StyleClass=%v\nto [type=%T] panelClass=%v"
-            $page $template $sectionName
+        {{- warnf "%s section=%s: Append  [type=%T] mergedSectionPanelStyle.StyleClass=%v\nto [type=%T] panelClass=%v"
+            $dbg $sectionName
             $mergedSectionPanelStyle.StyleClass (jsonify (dict "indent" "  ") $mergedSectionPanelStyle.StyleClass)
             $panelClass (jsonify (dict "indent" "  ") $panelClass) }}
       {{- end }}
@@ -799,7 +804,7 @@
     {{- end }}
 
     {{- if and true $debug }}
-      {{- warnf "%s[%s]: Calling %s with Sections:\n%v" $page $template $template
+      {{- warnf "%s Calling %s with Sections:\n%v" $dbg $template
         (jsonify (dict "indent" "  ") .) -}}
       {{- end }}
     {{- with $section.panel_class }}

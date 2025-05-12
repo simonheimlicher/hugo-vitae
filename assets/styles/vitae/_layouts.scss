@@ -414,7 +414,7 @@
     @include vitae-functions.inner_margin_padding(var(--inner_margin), var(--inner_padding), 8, 1);
     --column_gap: var(--inner_margin_4-3);
     --row_gap: var(--inner_margin_4-1);
-    --slot-gap_vertical: var(--inner_margin_4-8);
+    --slot-gap_vertical: var(--inner_margin_4-4);
     --section-gap_vertical: var(--inner_margin_4-4);
   }
 

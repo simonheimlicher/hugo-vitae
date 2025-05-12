@@ -630,6 +630,10 @@ html[data-mode="dim"] {
     &.style_layout_inline {
       display: flex;
       flex-direction: column;
+      h3, h4, h5, dt {
+        font-size: var(--font-size-larger-1);
+        font-weight: var(--font-weight-heading);
+      }
       .panel {
         &_title {
           padding: var(--inner_padding_4-1) 0 0 0;
@@ -638,6 +642,9 @@ html[data-mode="dim"] {
             padding-top: 0;
           }
         }
+      }
+      .panel_title + ul {
+        margin-top: var(--inner_margin_4-1);
       }
       /*
       dl {
