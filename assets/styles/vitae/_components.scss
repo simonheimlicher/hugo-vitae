@@ -2017,6 +2017,10 @@ html[data-mode="dim"] {
           }
         }
       }
+      &.stage_content + .stage_content .stage_header, &.stage_content + .stage_content .stage_body {
+        // outline: 1px solid yellow;
+        margin-top: 0;
+      }
     }
 
     /*
@@ -2025,7 +2029,7 @@ html[data-mode="dim"] {
 
      &.style_inline_role, &.style_inline_role_true {
       &.stage_header .column_main {
-        grid-column: 5 / span all;
+        grid-column: 3 / span all;
       }
       // &.organization_header {
       //   .date_period {

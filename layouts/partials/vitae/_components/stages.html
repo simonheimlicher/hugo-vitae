@@ -466,7 +466,7 @@
         {{- end }}
 
         {{- if or $showRoleDate $showRolePeriod }}
-          {{- $roleHeaderClassList = append (printf "%s_period" $stageHeaderClassPrefix) $roleHeaderClassList }}
+          {{- $roleHeaderClassList = append (slice (printf "%s_period" $stageHeaderClassPrefix) $periodColumnClass) $roleHeaderClassList }}
         {{- end }}
         {{- if $showRoleDuration }}
           {{- $roleHeaderClassList = append (printf "%s_duration" $stageHeaderClassPrefix) $roleHeaderClassList }}
