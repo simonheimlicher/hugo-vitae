@@ -15,13 +15,19 @@
 {{ end }}
 
 {{ $debug := and false ($page.Param "clarisdebug") }}
-{{/* {{ $debug = (not (not (findRE "/product-management/google/preview" $page.RelPermalink))) }} */}}
-{{ $dbg := printf "%s%s[%s]"
-    (replaceRE `.*?((?:[^/]+/){,2})$` `$1` $page.RelPermalink)
-    (cond $breadCrumbs (printf "|%s" $breadCrumbs) "")
-    (replaceRE `.*?([^/]+)$` `$1` $template) }}
-{{/* {{ $debug = page.Scratch.Get "clarisdebug" }} */}}
-{{/* {{ $debug = or $debug .Debug (not (not (findRE `^/([^/]+/)?$` $page.RelPermalink) ) ) }} */}}
+{{ $debug = or (not (not (findRE "/executive/preview" $page.RelPermalink)))
+    (not (not (findRE "/executive/preview" $originalPage.RelPermalink))) }}
+{{ $dbg := "" }}
+{{ $breadCrumbsPathsOnly := slice }}
+{{ if $debug }}
+  {{ range $breadCrumbs }}
+    {{ append .Path $breadCrumbsPathsOnly }}
+  {{ end }}
+  {{ $dbg = printf "%s%s[%s]"
+      (replaceRE `.*?((?:[^/]+/){,2})$` `$1` $page.RelPermalink)
+      (cond $breadCrumbsPathsOnly (printf "|%s" $breadCrumbsPathsOnly) "")
+      (replaceRE `.*?([^/]+)$` `$1` $template) }}
+{{ end }}
 
 {{ $pageBundleResourceGlob := "" }}
 {{ $siteResourceGlob := "" }}
@@ -75,15 +81,22 @@ Discussion: https://discourse.gohugo.io/t/question-about-content-folder-structur
 
         {{ $otherPage = site.GetPage $pageBundleResourceGlobPrefix }}
         {{ with $otherPage }}
-          {{ $breadCrumbs = append $breadCrumbs (slice $page) }}
+          {{ $breadCrumbs = append $page $breadCrumbs }}
           {{ $otherPageArgs := merge $resourceArgs (dict
             "Page" $otherPage
             "BreadCrumbs" $breadCrumbs
             "resource" $pageBundleResourceGlobSuffix
           ) }}
-          {{ if $debug }}{{ warnf "%s resource=%v begins with '/'. Calling %s with otherPage=%v[%s] with otherPageArgs=%v"
+          {{ if $debug }}
+            {{ $breadCrumbsPathsOnly = slice }}
+            {{ range $breadCrumbs }}
+              {{ append .Path $breadCrumbsPathsOnly }}
+            {{ end }}
+
+            {{ warnf "%s resource=%v begins with '/'. Calling %s with otherPage=%v[%s] with breadCrumbs=%v and otherPageArgs=%v"
               $dbg $pageBundleResourceGlob $template
-              $otherPage $otherPage.RelPermalink $otherPageArgs }}{{ end }}
+              $otherPage $otherPage.Path $breadCrumbsPathsOnly $otherPageArgs }}
+          {{ end }}
 
           {{ $resourceArgs = partial $template $otherPageArgs }}
 
@@ -203,9 +216,9 @@ Discussion: https://discourse.gohugo.io/t/question-about-content-folder-structur
       {{ end }}
       {{ $resParts := slice }}
       {{ with .Resources.GetMatch $pageBundleResourceGlob }}
-        {{ if and false $debug }}
-          {{ warnf "%s Match for resource='%s' in page bundle %s using glob='%s'"
-              $dbg . $resourcePage $pageBundleResourceGlob }}
+        {{ if and true $debug }}
+          {{ warnf "%s Adding index resource=%q of resourcePage=%s using glob=%q"
+              $dbg . $resourcePage.Path $pageBundleResourceGlob }}
         {{ end }}
         {{ $resourcePath := path.Join $resourcePage.Path .Name }}
         {{ $resParts = append (dict "Part" (transform.Unmarshal .) "Source" $resourcePath) $resParts }}
@@ -234,17 +247,18 @@ Discussion: https://discourse.gohugo.io/t/question-about-content-folder-structur
         {{ if and $globPreVitae $globPostVitae }}
           {{ $childResourceGlob := printf "%s*%s" $globPreVitae $globPostVitae }}
           {{ with $childResources := $resourcePage.Resources.Match $childResourceGlob }}
-            {{ if $debug }}
-              {{ warnf "%s Adding child resources: Match for resource='%s' in page bundle %s using glob='%s'"
-                  $dbg . $resourcePage $childResourceGlob }}
-            {{ end }}
             {{ range $childResources }}
               {{ $childGlobMatch := findRESubmatch (printf `%s(.+)%s` $globPreVitae $globPostVitae) .Name 1 }}
               {{ $childKey := index $childGlobMatch 0 1 }}
               {{ if eq $childKey "index" }}
+                {{ if and false $debug }}
+                  {{ warnf "%s Not adding index resource with childKey=%q as child resource again: Match for resource=%q of resourcePage=%s using glob=%q"
+                      $dbg . $childKey $resourcePage.Path $childResourceGlob }}
+                {{ end }}
               {{ else }}
                 {{ if $debug }}
-                  {{ warnf "%s Adding child with childKey=%v" $dbg $childKey }}
+                  {{ warnf "%s Adding child resource=%q with childKey=%q of resourcePage=%s matching glob=%q"
+                      $dbg . $childKey $resourcePage.Path $childResourceGlob }}
                 {{ end }}
                 {{ $resourcePath := path.Join $resourcePage.Path .Name }}
                 {{ $resParts = append (dict "Part" (dict $childKey (transform.Unmarshal .)) "Source" $resourcePath) $resParts }}
@@ -252,8 +266,8 @@ Discussion: https://discourse.gohugo.io/t/question-about-content-folder-structur
             {{ end }}
           {{ else }}
             {{ if $debug }}
-              {{ warnf "%s No child resources: no resources in page bundle %s match glob='%s'"
-                  $dbg . $resourcePage $childResourceGlob }}
+              {{ warnf "%s No child resources: no resources of resourcePage=%s match glob=%q"
+                  $dbg $resourcePage.Path $childResourceGlob }}
             {{ end }}
           {{ end }}
         {{ else }}
@@ -267,7 +281,7 @@ Discussion: https://discourse.gohugo.io/t/question-about-content-folder-structur
       {{ with $resParts }}
         {{ $resourceArgs = merge $resourceArgs (dict "Parts" (append $resourceArgs.Parts $resParts) ) }}
       {{ else }}
-        {{ if $debug }}{{ warnf "%s No resource found in page bundle %s matching %s"
+        {{ if $debug }}{{ warnf "%s No resources of resourcePage=%s match glob=%q"
             $dbg $resourcePage.Path $pageBundleResourceGlob }}{{ end }}
       {{ end }}
 
@@ -277,28 +291,61 @@ Discussion: https://discourse.gohugo.io/t/question-about-content-folder-structur
     {{ end }}
 
     {{ if $page.Parent }}
-      {{ $breadCrumbs = append $breadCrumbs (slice $page) }}
+      {{ $breadCrumbs = append $page $breadCrumbs }}
       {{ $parentArgs := (merge $resourceArgs (dict "BreadCrumbs" $breadCrumbs "Page" $page.Parent)) }}
       {{ if $debug }}
-        {{ warnf "%s Calling %s with parent=%s and parentArgs=%v"
-          $dbg $template
-          $page.Parent.Path
-          (merge $parentArgs (dict "Parts" (len $parentArgs.Parts))) }}
+        {{ $breadCrumbsPathsOnly = slice }}
+        {{ range $breadCrumbs }}
+          {{ $breadCrumbsPathsOnly = append .Path $breadCrumbsPathsOnly }}
+        {{ end }}
+
+        {{ $partKeys := slice }}
+        {{ range $parentArgs.Parts }}
+          {{ $source := .Source }}
+          {{ range $key, $value := .Part }}
+            {{ $partKeys = append (printf "From %v: %v" $source $key) $partKeys }}
+          {{ end }}
+        {{ end }}
+        {{ $parentArgsDisplay := merge $parentArgs (dict
+            "Page" $parentArgs.Page.Path
+            "BreadCrumbs" $breadCrumbsPathsOnly
+            "Parts" $partKeys) }}
+        {{ warnf "%s Calling %s with parent=%s and parentArgs (only showing keys of .Parts):\n%v"
+          $dbg $template $page.Parent.Path
+          (jsonify (dict "indent" "  ") $parentArgsDisplay) }}
         {{ end }}
       {{ $resourceArgs = partial $template $parentArgs }}
       {{ with $resourceArgs }}
         {{ if $debug }}
-          {{ warnf "%s Match for resource='%s' returned from parent=%s: resourceArgs=%v"
-              $dbg $resource $page.Parent
-              (merge $resourceArgs (dict "Parts" (len $resourceArgs.Parts) ) ) }}
+          {{ $partKeys := slice }}
+          {{ range $resourceArgs.Parts }}
+            {{ $source := .Source }}
+            {{ range $key, $value := .Part }}
+              {{ $partKeys = append (printf "From %v: %v" $source $key) $partKeys }}
+            {{ end }}
+          {{ end }}
+          {{ warnf "%s Call to parent=%s returned resourceArgs:\n%v"
+              $dbg $page.Parent.Path
+              (jsonify (dict "indent" "  ") (merge $resourceArgs (dict
+                  "BreadCrumbs" $breadCrumbsPathsOnly
+                  "Parts" $partKeys) ) ) }}
         {{ end }}
       {{ else }}
-        {{ if $debug }}{{ warnf "%s Nothing found in parent=%s: resource=%s"
-            $dbg $page.Parent $resourceArgs }}{{ end }}
+        {{ if $debug }}
+          {{ warnf "%s Call to parent=%s returned resourceArgs=%v"
+              $dbg $page.Parent.Path $resourceArgs }}
+        {{ end }}
       {{ end }}
     {{ else }}
-      {{ if $debug }}{{ warnf "%s Page has invalid parent=%s"
-          $dbg $page.Parent }}{{ end }}
+      {{ if eq $page.Path "/" }}
+        {{ if $debug }}
+          {{ warnf "%s Reached root page=%v: .Parent=%v"
+            $dbg $page.Path $page.Parent }}
+        {{ end }}
+      {{ else }}
+        {{ errorf "%s Unexpectedly, page=%v has invalid .Parent=%v"
+            $dbg $page.Path $page.Parent }}
+      {{ end }}
     {{ end }}
 
   {{ end }}
@@ -306,12 +353,12 @@ Discussion: https://discourse.gohugo.io/t/question-about-content-folder-structur
 {{ with $resourceArgs }}
   {{ if eq $page $originalPage }}
     {{ if (and true $debug) }}
-      {{ $breadCrumbPages := slice }}
-      {{ range $resourceArgs.BreadCrumbs }}
-        {{ append .Path $breadCrumbPages }}
+      {{ $breadCrumbsPathsOnly = slice }}
+      {{ range $breadCrumbs }}
+        {{ append .Path $breadCrumbsPathsOnly }}
       {{ end }}
-      {{ warnf "%s at originalPage=%v. Merging from BreadCrumbs:\n%v" $dbg
-          $originalPage.Path  (index $resourceArgs.BreadCrumbs 0).Path }}
+      {{ warnf "%s at originalPage=%v. Merging from breadCrumbs=%v" $dbg
+          $originalPage.Path $breadCrumbsPathsOnly }}
     {{ end }}
     {{ $resourceParts := $resourceArgs.Parts }}
     {{ $mergedResourceParts := dict }}
@@ -323,9 +370,9 @@ Discussion: https://discourse.gohugo.io/t/question-about-content-folder-structur
         {{ range $key, $value := $resourcePart }}
           {{ $resKeys = append $key $resKeys }}
         {{ end }}
-        {{ warnf "%s merging data from %v [part %d of %d parts] with keys=%v:\n%v" $dbg
+        {{ warnf "%s merging data from %v [part %d of %d parts] with keys=%v:\n%v ..." $dbg
             $source (add $partIndex 1) (len $resourceParts) $resKeys
-            (substr (jsonify (dict "indent" "  ") $resourcePart) 0 1500) }}
+            (substr (jsonify (dict "indent" "  ") $resourcePart) 0 50) }}
       {{ end }}
       {{ $mergedResourceParts = merge $mergedResourceParts $resourcePart }}
     {{ end }}
@@ -335,14 +382,14 @@ Discussion: https://discourse.gohugo.io/t/question-about-content-folder-structur
       {{ range $key, $value := $resourceArgs }}
         {{ $resKeys = append $key $resKeys }}
       {{ end }}
-      {{ warnf "%s page=originalPage=%s Returning resources merged from %d parts with keys=%v:\n%v"
+      {{ warnf "%s page=originalPage=%s Returning resources merged from %d parts with keys=%v:\n%v ..."
           $dbg $originalPage (len $resourceParts) $resKeys
-          (substr (jsonify (dict "indent" "  ") $resourceArgs) 0 500) }}
+          (substr (jsonify (dict "indent" "  ") $resourceArgs) 0 250) }}
     {{ end }}
   {{ else }}
     {{ if (and true $debug) }}
       {{ warnf "%s page != originalPage=%s Returning resourceArgs=%v"
-          $dbg $originalPage
+          $dbg $originalPage.Path
           (merge $resourceArgs (dict "Parts" (len $resourceArgs.Parts))) }}
     {{ end }}
   {{ end }}
@@ -351,7 +398,7 @@ Discussion: https://discourse.gohugo.io/t/question-about-content-folder-structur
   {{ if (eq $page $originalPage) }}
     {{ with resources.GetMatch $siteResourceGlob }}
       {{ $resourceArgs = . }}
-      {{ if $debug }}{{ warnf "%s Match for resource='%s' in site resources using glob='%s'" $dbg . $siteResourceGlob }}{{ end }}
+      {{ if $debug }}{{ warnf "%s Match for resource=%q in site resources using glob=%q" $dbg . $siteResourceGlob }}{{ end }}
     {{ else }}
       {{ if $debug }}{{ warnf "%s No resource found in site resources matching %s" $dbg $siteResourceGlob }}{{ end }}
     {{ end }}
