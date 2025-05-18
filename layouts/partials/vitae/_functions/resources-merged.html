@@ -15,8 +15,8 @@
 {{ end }}
 
 {{ $debug := and false ($page.Param "clarisdebug") }}
-{{ $debug = or (not (not (findRE "/executive/preview" $page.RelPermalink)))
-    (not (not (findRE "/executive/preview" $originalPage.RelPermalink))) }}
+{{/* {{ $debug = or (not (not (findRE "/executive/preview" $page.RelPermalink)))
+    (not (not (findRE "/executive/preview" $originalPage.RelPermalink))) }} */}}
 {{ $dbg := "" }}
 {{ $breadCrumbsPathsOnly := slice }}
 {{ if $debug }}

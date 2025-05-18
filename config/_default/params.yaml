@@ -493,7 +493,9 @@ vitae:
                     components:
                     - component: stages
                       container: div
-                      collection: stages
+                      collection:
+                        - education
+                        - stages
                       filter_by: type
                       filter_value: education
                       style:
@@ -739,7 +741,9 @@ vitae:
                     container: section
                     components:
                     - component: stages
-                      collection: stages
+                      collection:
+                        - education
+                        - stages
                       filter_by: type
                       filter_value: education
                       style:
@@ -886,7 +890,9 @@ vitae:
                   #     - narrow
                   components:
                   - component: stages
-                    collection: stages
+                    collection:
+                      - professional
+                      - stages
                     filter_by: type
                     filter_value: professional
                     links: false
@@ -931,9 +937,11 @@ vitae:
                   title: section-experience
                   components:
                   - component: stages
-                    collection: stages
+                    collection:
+                      - professional
+                      - stages
                     filter_by: type
-                    filter_value: education
+                    filter_value: professional
                     unit:
                       limit: 1
                       type: false
@@ -999,7 +1007,9 @@ vitae:
                     container: section
                     components:
                     - component: stages
-                      collection: stages
+                      collection:
+                        - education
+                        - stages
                       filter_by: type
                       filter_value: education
                       style:
@@ -1171,7 +1181,9 @@ vitae:
                     container: section
                     components:
                     - component: stages
-                      collection: stages
+                      collection:
+                        - education
+                        - stages
                       filter_by: type
                       filter_value: education
                       style:
@@ -1242,7 +1254,9 @@ vitae:
                     container: section
                     components:
                     - component: stages
-                      collection: stages
+                      collection:
+                        - education
+                        - stages
                       filter_by: type
                       filter_value: education
                       style:
@@ -1333,7 +1347,9 @@ vitae:
             #         container: section
             #         components:
             #         - component: stages
-            #           collection: stages
+            #           collection:
+            #             - education
+            #             - stages
             #           filter_by: type
             #           filter_value: education
             #           style:

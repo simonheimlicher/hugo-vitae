@@ -730,7 +730,24 @@
 
     {{- $componentContainer := default false .container }}
 
-    {{- $componentData := (index $vitaeData (default $component.component $component.collection) ) }}
+    {{- $componentData := false }}
+    {{- with $component.collection }}
+      {{- if reflect.IsSlice . }}
+        {{- range . }}
+          {{- if not $componentData }}
+            {{- with index $vitaeData . }}
+              {{- $componentData = . }}
+            {{- end }}
+          {{- end }}
+        {{- end }}
+      {{- else }}
+        {{- with index $vitaeData . }}
+          {{- $componentData = . }}
+        {{- end }}
+      {{- end }}
+    {{- else }}
+      {{- $componentData = index $vitaeData $component.component }}
+    {{- end }}
 
     {{- if $componentContainer }}
       {{- with $mergedStyle }}
@@ -765,6 +782,7 @@
       "Template" $vitaeTemplate
       "Media" $media
       "Component" $component
+      "ComponentData" $componentData
       "MergedStyle" $mergedComponentStyle
       "Index" $componentIndex
       "ChildClass" $childClass

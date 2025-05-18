@@ -272,7 +272,7 @@
 {{- $filterField := default "type" $component.filter_by -}}
 {{- $filterMatch := default "professional" $component.filter_value -}}
 
-{{- $orgListRaw := (index .Data (default $component.component $component.collection) ) }}
+{{- $orgListRaw := .ComponentData }}
 {{- $orgList := slice }}
 {{- range $org := $orgListRaw }}
   {{- with .roles }}
@@ -994,7 +994,7 @@
       {{- end }}
     {{- end }}
     <div class="org_dimension stage_dimension stage_body column_body{{ with (and (not $overviewContainerClass) $topLevelClass) }} {{ . }}{{ end }}">
-      {{- partial "render_string_slice" . }}
+      {{- partial "render_string_slice" "" }}
     </div>
     {{- with $overviewContainerClass }}
       </div>
@@ -1260,16 +1260,34 @@
 {{- /* ***************************************************************** */ -}}
 
 {{- define "partials/render_string_slice.html" }}
-              {{- if reflect.IsSlice . }}
-                <ul>
-                {{- range . }}
-                  <li>
-                    {{ page.RenderString . }}
-                  </li>
-                {{- end }}
-                </ul>
-              {{- else }}
-                  {{ page.RenderString . }}
-              {{- end }}
+  {{- $template := "vitae/_components/stages_render_string_slice" }}
+  {{- $arg := . }}
+  {{- if reflect.IsSlice $arg }}
+    <ul>
+    {{- range $item := . }}
+      {{- if reflect.IsMap $item }}
+        {{- $item = partial "partials/map_to_definition.html" $item }}
+      {{- end }}
+      <li>
+        {{ page.RenderString $item }}
+      </li>
+    {{- end }}
+    </ul>
+  {{- else }}
+      {{- if reflect.IsMap $arg }}
+        {{- $arg = partial "partials/map_to_definition.html" $arg }}
+      {{- end }}
+      {{ page.RenderString $arg }}
+  {{- end }}
 {{- end }}
 
+{{- define "partials/map_to_definition.html" }}
+  {{- $template := "vitae/_components/map_to_definition" }}
+  {{- $item := . }}
+  {{- if reflect.IsMap $item }}
+    {{- range $k, $v := $item }}
+      {{- $item = printf "%s\n: %v" $k $v }}
+    {{- end }}
+  {{- end }}
+  {{- return $item }}
+{{- end -}}
