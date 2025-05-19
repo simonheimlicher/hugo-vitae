@@ -154,12 +154,21 @@
           {{- with $item.content }} {{ partial "vitae/render-markdown" . -}}
           {{- end }}
         {{- end }}
+      {{- else }}
+        {{- warnf "%s[%s] key=%v invalid title in item:\n%v" $page $template
+            $key (jsonify (dict "indent" "  ") $item) }}
       {{- end }}
     {{- end }}
     {{- if not $outerInlineLayout }}
       </dd>
     {{- end }}
 
+  {{- end }}
+{{- else }}
+  {{- if $debug }}
+    {{- warnf "%s[%s] key='%s' title='%s' filterField=%v filterMatch=%v: invalid collectionList:\n%v"
+        $page $template $key $title $filterField $filterMatch
+        (jsonify (dict "indent" "  ") $collectionList) }}
   {{- end }}
 {{- end }}
 {{- if not $outerInlineLayout }}
