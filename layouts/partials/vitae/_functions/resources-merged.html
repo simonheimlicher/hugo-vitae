@@ -154,6 +154,7 @@ Discussion: https://discourse.gohugo.io/t/question-about-content-folder-structur
 
         {{ $resPathParts := split $pageBundleResourceGlob "/" }}
         {{ $resPathRoot := (index (first 1 $resPathParts) 0) }}
+        {{ $resPathRoot = path.Join .Path $resPathRoot }}
         {{ $resPathRemains := delimit (last (sub (len $resPathParts) 1) $resPathParts) "/" }}
 
         {{ if $debug }}
@@ -162,9 +163,11 @@ Discussion: https://discourse.gohugo.io/t/question-about-content-folder-structur
         {{ end }}
 
         {{ with .GetPage $resPathRoot }}
+
           {{ $resourcePage = . }}
+
           {{ if $debug }}
-            {{ warnf "%s Use resourcePage %v from current language '%v' with prefix='%v']"
+            {{ warnf "%s Use resourcePage %v from current language '%v' with prefix='%v'"
                 $dbg $resourcePage.Path .Language site.LanguagePrefix }}
           {{ end }}
 
