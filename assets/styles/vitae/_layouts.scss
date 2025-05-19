@@ -406,7 +406,7 @@
 
   --column_gap: var(--inner_margin_4-3);
   --row_gap: var(--inner_margin_4-1);
-  --section-gap_vertical: var(--inner_margin_4-4);
+  --section-gap_vertical: var(--inner_margin_4-3);
 
   .view-print {
     @include vitae-functions.font-size-scale(var(--em));
@@ -415,7 +415,7 @@
     --column_gap: var(--inner_margin_4-3);
     --row_gap: var(--inner_margin_4-1);
     --slot-gap_vertical: var(--inner_margin_4-4);
-    --section-gap_vertical: var(--inner_margin_4-4);
+    --section-gap_vertical: var(--inner_margin_4-3);
   }
 
   --border-color: var(--text);

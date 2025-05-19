@@ -893,9 +893,12 @@ html[data-mode="dim"] {
     font-size: var(--font-size_stage_header_main);
     --grid_period-column_width: 10em;
 
-    ul {
-      margin-left: 0;
-      padding-left: 0;
+
+    &:not(.style_inline_content) {
+      ul {
+        margin-left: 0;
+        padding-left: 0;
+      }
     }
 
     // Periods of time such as "Mar 2022-Jul 2023"
@@ -1095,14 +1098,14 @@ html[data-mode="dim"] {
           var(--grid_period-column_width)
           var(--grid_separator-column_width)
           minmax(0px, max-content);
-        .column {
-          &_timeline {
-            grid-column: 1;
+          .column {
+            &_timeline {
+              grid-column: 1;
+            }
+            &_body, &_main {
+              grid-column: 3 / span all;
+            }
           }
-          &_body, &_main {
-            grid-column: 3 / span all;
-          }
-        }
         }
       }
       &_header {
@@ -1993,13 +1996,13 @@ html[data-mode="dim"] {
         }
       }
       &.stage {
-        &_content {
+        &_overview, &_content {
           .column {
             &_header {
               grid-row: auto;
               grid-column: 1 / span all;
             }
-            &_main {
+            &_body, &_main {
               grid-column: 1 / span all;
               /*
               ul:first-child li:first-child {
