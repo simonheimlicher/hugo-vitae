@@ -115,6 +115,9 @@
     {{ $filterMatchStr = delimit $filterMatch "_" }}
   {{- end }}
 
+  {{- $bodyComp := cond $innerInlineLayout "span" "div" }}
+  {{- $bodyHeadingComp := cond $innerInlineLayout "span" (printf "h%s" $headingLevel) }}
+
   {{- $logoImageParams := (dict "Page" $page "width" 512 "figureclass" "award_logo") }}
   {{- $classPrefix := printf "award_%s award" $filterMatchStr }}
   <div class="{{ $classPrefix }}_container {{ $topLevelClass }}">
@@ -129,25 +132,25 @@
       {{- end }}
       {{- $logoImage := and (default false $style.logo)  .logo }}
       <div class="{{- $classPrefix }}_body">
-        <div class="{{- $classPrefix }}_header{{ with $logoImage }} logo{{ end }}">
+        {{ printf "<%s" $bodyComp | safeHTML }} class="{{- $classPrefix }}_header{{ with $logoImage }} logo{{ end }}">
           {{- with $logoImage }}
             {{- partial "responsive-image" (merge $logoImageParams (dict "resource" .resource)) }}
           {{- end }}
-          <h{{ $headingLevel }} class="{{ printf `%s_title` $classPrefix }}">
+          {{ printf "<%s" $bodyHeadingComp | safeHTML }} class="{{ printf `%s_title` $classPrefix }}">
             {{- page.RenderString $optInline .title }}
-          </h{{ $headingLevel }}>
-        </div>
+          {{ printf "</%s>" $bodyHeadingComp | safeHTML }}
+        {{ printf "</%s>" $bodyComp | safeHTML }}
         {{- with and (not (eq $component.organization false)) .organization }}
-        <div class="{{- $classPrefix }}_organization">
+        {{ printf "<%s" $bodyComp | safeHTML }} class="{{- $classPrefix }}_organization">
           {{- $inlineSeparatorStr }}<span class="{{- $classPrefix }}_organization_name">{{ page.RenderString $optInline .name }}</span>
           {{- with .description }}
           <span class="{{- $classPrefix }}_organization_description">({{ page.RenderString $optInline . }})</span>
           {{- end }}
-        </div>
+        {{ printf "</%s>" $bodyComp | safeHTML }}
         {{- end }}
         {{- with and $component.details $component.details }}
           {{- $detailFields := slice "subtitle" "colleagues" "details" }}
-          <div class="{{- $classPrefix }}_details">
+          {{ printf "<%s" $bodyComp | safeHTML }} class="{{- $classPrefix }}_details">
             {{- $i := 0 }}
             {{- range $k := $detailFields }}
               {{- with $v := (index $award $k) }}
@@ -166,7 +169,7 @@
                 {{- $i = add $i 1 }}
               {{- end }}
             {{- end }}
-          </div>
+          {{ printf "</%s>" $bodyComp | safeHTML }}
         {{- end }}
       </div>
     </div>
