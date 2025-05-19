@@ -86,7 +86,9 @@ vitae:
                   title: section-experience
                   components:
                   - component: stages
-                    collection: stages
+                    collection:
+                      - professional
+                      - stages
                     filter_by: type
                     filter_value: professional
                     unit: false
@@ -135,7 +137,9 @@ vitae:
                   container: section
                   components:
                   - component: stages
-                    collection: stages
+                    collection:
+                      - education
+                      - stages
                     filter_by: type
                     filter_value: education
                     role:
@@ -196,6 +200,18 @@ vitae:
                               - element: description
                       - collection: interests
                         title: Interests
+
+                # - section: language-skills
+                #   title: section-language-skills
+                #   container: section
+                #   components:
+                #   - component: skills
+                #     collection: skills
+                #     filter_by: type
+                #     filter_value: language
+                #     details: true
+                #     level_bar: false
+
                   # - component: awards
                   #   container: section
                   #   details: false
@@ -377,7 +393,7 @@ vitae:
                       period: true
                       appendix: false
                       dimension: false
-                      details: false
+                      details: true
                       summary: false
                       description: false
                       skills: false
