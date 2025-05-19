@@ -53,37 +53,31 @@
   {{- range $linkIdx, $link := $linkList }}
     {{- $last := sub (len .) 1 -}}
     {{- $qrCode := and $qrCodes (default true $link.qrcode) }}
-    <div class="{{ $classPrefix }}_item{{- if $qrCode }} {{ $classPrefix }}_item_with-qrcode{{- end }}{{- with $childClass }} {{ . }}{{- end }}">
-      {{- if $linkIcon }}
-        <a href="{{ $link.url }}" title="Connect via {{ $link.title }}" class="{{ $classPrefix }}_icon">
+    <a href="{{ $link.url }}" title="Connect via {{ $link.title }}" class="{{ $classPrefix }}_icon">
+      <div class="{{ $classPrefix }}_item{{- if $qrCode }} {{ $classPrefix }}_item_with-qrcode{{- end }}{{- with $childClass }} {{ . }}{{- end }}">
+        {{- if $linkIcon }}
           {{- partial "fa-icon" $link.icon }}
-        </a>
-      {{- end }}
-      {{- if $linkText }}
-        <div class="{{ $classPrefix }}_text">
-      {{- end }}
-        <a href="{{ $link.url }}" title="Connect via {{ $link.title }}" class="{{ $classPrefix }}_icon">
-          <span class="{{ $classPrefix }}_{{- $link.title | anchorize -}}">
-            {{- $link.title -}}
-          </span>
-        </a>
-      {{- if $linkText }}
-        <a href="{{ $link.url }}" title="Connect via {{ $link.title }}" class="{{ $classPrefix }}_text">
-          <span class="{{ $classPrefix }}_{{- $link.title | anchorize -}}">
-            {{ $link.url | strings.TrimLeft "https://" | strings.TrimLeft "www." }}
-          </span>
-        </a>
+        {{- end }}
+        {{- if $linkText }}
+          <div class="{{ $classPrefix }}_text">
+            <span class="{{ $classPrefix }}_{{- $link.title | anchorize -}}">
+              {{- $link.title -}}
+            </span>
+            <span class="{{ $classPrefix }}_{{- $link.title | anchorize -}}">
+              {{ $link.url | strings.TrimLeft "https://" | strings.TrimLeft "www." }}
+            </span>
+          </div>
+        {{- end }}
+        {{- if $qrCode }}
+          <div class="{{ $classPrefix }}_qrcode qrcode-link">
+            {{ partial "qrcode-svg" (dict
+              "LinkTitle" (printf "QR code to connect via %v" $link.title)
+              "Content" $link.url)
+            -}}
+          </div>
+        {{- end }}
       </div>
-      {{- end }}
-      {{- if $qrCode }}
-        <div class="{{ $classPrefix }}_qrcode qrcode-link">
-          {{ partial "qrcode-svg" (dict
-            "LinkTitle" (printf "QR code to connect via %v" $link.title)
-            "Content" $link.url)
-          -}}
-        </div>
-      {{- end }}
-    </div>
+    </a>
   {{- end }}
   </div>
 {{- else }}
