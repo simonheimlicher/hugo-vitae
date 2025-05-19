@@ -19,38 +19,38 @@
   {{ $title := $headMeta.Formatted.Title }}
   {{ $headline := $headMeta.Formatted.Headline }}
   {{ $role := (.Page.Param "role") | partial "claris/_functions/plainify-html" }}
-  {{ $titleDateFormat := "2006-01-02"}}
+  {{ $titleDateFormat := "2006-01-02" }}
 
   {{ if $title }}
-    {{ with (findRE `\{[^\}" ]+\}` $title) }}
+    {{ with (findRE `__[^_" ]+__` $title) }}
 
       {{ $date := false }}
-      {{ $datePlaceholders := slice "publishdate" "expirydate" "lastmod" "now" }}
+      {{ $datePlaceholders := slice "PUBLISHDATE" "EXPIRYDATE" "LASTMOD" "NOW" }}
       {{ $datePlaceholderRE := delimit $datePlaceholders `|` }}
 
       {{ range . }}
         {{ $placeholderToken := . }}
-        {{ $placeholder := (trim $placeholderToken "{}") }}
+        {{ $placeholder := (trim $placeholderToken "_") }}
 
-        {{ if (eq $placeholder "dirname" ) }}
+        {{ if (eq $placeholder "DIRNAME" ) }}
 
           {{ with $dirName := partial "vitae/_functions/meta/head_dirname" $page }}
             {{ $title = replace $title $placeholderToken $dirName }}
             {{ if $debug }}
-              {{ warnf "%s title=%q after replacing %q with %q" $dbg $title . $dirName }}
+              {{ warnf "%s title=%q after replacing %q with %q" $dbg $title $placeholderToken $dirName }}
             {{ end }}
           {{ end }}
 
         {{ else if (findRE $datePlaceholderRE $placeholder ) }}
 
-          {{ if (eq $placeholder "now" ) }}
+          {{ if (eq $placeholder "NOW" ) }}
             {{ $date = now }}
             {{ $titleDateFormat = "2006-01-02T15-04-05"}}
-          {{ else if (eq $placeholder "publishdate" ) }}
+          {{ else if (eq $placeholder "PUBLISHDATE" ) }}
             {{ $date = $page.PublishDate }}
-          {{ else if (eq $placeholder "expirydate" ) }}
+          {{ else if (eq $placeholder "EXPIRYDATE" ) }}
             {{ $date = $page.ExpiryDate }}
-          {{ else if (eq $placeholder "lastmod" ) }}
+          {{ else if (eq $placeholder "LASTMOD" ) }}
             {{ $date = $page.Lastmod }}
           {{ end }}
 
@@ -58,7 +58,7 @@
             {{ $dateStr := $date | time.Format $titleDateFormat }}
             {{ $title = replace $title $placeholderToken $dateStr }}
             {{ if $debug }}
-              {{ warnf "%s title=%q after replacing %q with %q" $dbg $title . $dateStr }}
+              {{ warnf "%s title=%q after replacing %q with %q" $dbg $title $placeholderToken $dateStr }}
               {{ warnf "%s \ntitle=%v\n$date=%v from\n.Title=%v\n.Date=%v\n.PublishDate=%v\n.ExpiryDate=%v\n.Lastmod=%v"
                   $dbg $title $date $page.Title
                   $page.Date $page.PublishDate $page.ExpiryDate $page.Lastmod }}
