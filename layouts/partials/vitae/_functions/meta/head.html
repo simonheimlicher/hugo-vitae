@@ -2,8 +2,7 @@
 {{ $page := page }}
 {{ $template := "vitae/_functions/meta/head" }}
 {{ $debug := false }}
-{{/* {{ $debug = page.Scratch.Get "clarisdebug" }} */}}
-{{/* $debug = or $debug (not (not (findRE `^/([^/]+-demo/)?` $page.RelPermalink) ) ) */}}
+{{ $debug = and $debug ($page.Param "clarisdebug") (not (not (findRE `^/([^/]+-demo/)` $page.RelPermalink) ) ) }}
 
 {{ $headMeta := dict }}
 {{ if reflect.IsMap . }}
@@ -24,27 +23,50 @@
 
   {{ if $title }}
     {{ with (findRE `\{[^\}" ]+\}` $title) }}
+
+      {{ $date := false }}
+      {{ $datePlaceholders := slice "publishdate" "expirydate" "lastmod" "now" }}
+      {{ $datePlaceholderRE := delimit $datePlaceholders `|` }}
+
       {{ range . }}
-        {{ $datePlaceholder := lower (trim . "{}") }}
-        {{ if $debug }}
-          {{ warnf "%s $datePlaceholder=%v" $dbg $datePlaceholder }}
-        {{ end }}
-        {{ $date := $page.Date }}
-        {{ if (eq $datePlaceholder "publishdate" ) }}
-          {{ $date = $page.PublishDate }}
-        {{ else if (eq $datePlaceholder "expirydate" ) }}
-          {{ $date = $page.ExpiryDate }}
-        {{ else if (eq $datePlaceholder "lastmod" ) }}
-          {{ $date = $page.Lastmod }}
-        {{ else if (eq $datePlaceholder "now" ) }}
-          {{ $date = now }}
-          {{ $titleDateFormat = "2006-01-02T15-04-05"}}
-        {{ end }}
-        {{ $title = replaceRE . ($date | time.Format $titleDateFormat) $title }}
-        {{ if $debug }}
-          {{ warnf "%s \ntitle=%v\n$date=%v from\n.Title=%v\n.Date=%v\n.PublishDate=%v\n.ExpiryDate=%v\n.Lastmod=%v"
-              $dbg $title $date $page.Title
-              $page.Date $page.PublishDate $page.ExpiryDate $page.Lastmod }}
+        {{ $placeholderToken := . }}
+        {{ $placeholder := (trim $placeholderToken "{}") }}
+
+        {{ if (eq $placeholder "dirname" ) }}
+
+          {{ with $dirName := partial "vitae/_functions/meta/head_dirname" $page }}
+            {{ $title = replace $title $placeholderToken $dirName }}
+            {{ if $debug }}
+              {{ warnf "%s title=%q after replacing %q with %q" $dbg $title . $dirName }}
+            {{ end }}
+          {{ end }}
+
+        {{ else if (findRE $datePlaceholderRE $placeholder ) }}
+
+          {{ if (eq $placeholder "now" ) }}
+            {{ $date = now }}
+            {{ $titleDateFormat = "2006-01-02T15-04-05"}}
+          {{ else if (eq $placeholder "publishdate" ) }}
+            {{ $date = $page.PublishDate }}
+          {{ else if (eq $placeholder "expirydate" ) }}
+            {{ $date = $page.ExpiryDate }}
+          {{ else if (eq $placeholder "lastmod" ) }}
+            {{ $date = $page.Lastmod }}
+          {{ end }}
+
+          {{ if $date }}
+            {{ $dateStr := $date | time.Format $titleDateFormat }}
+            {{ $title = replace $title $placeholderToken $dateStr }}
+            {{ if $debug }}
+              {{ warnf "%s title=%q after replacing %q with %q" $dbg $title . $dateStr }}
+              {{ warnf "%s \ntitle=%v\n$date=%v from\n.Title=%v\n.Date=%v\n.PublishDate=%v\n.ExpiryDate=%v\n.Lastmod=%v"
+                  $dbg $title $date $page.Title
+                  $page.Date $page.PublishDate $page.ExpiryDate $page.Lastmod }}
+            {{ end }}
+          {{ end }}
+
+        {{ else }}
+          {{ warnf "%s ignoring invalid $placeholder=%v" $dbg $placeholder }}
         {{ end }}
       {{ end }}
     {{ end }}
@@ -74,7 +96,7 @@
   ) }}
   {{ if $debug }}
     {{ with $contentTypeHeadMetaVariant.Formatted }}
-      {{ warnf "%s .Kind=%s title=%s headline=%s from .Section=%v .Title=%v"
+      {{ warnf "%s returning .Kind=%s title=%s headline=%s from .Section=%v .Title=%v"
           $dbg $page.Kind .title .headline $page.Section $page.Title }}
     {{ end }}
   {{ end }}
@@ -82,3 +104,31 @@
   {{ errorf "%s Missing argument .Page=%v" $dbg $page }}
 {{ end }}
 {{ return $contentTypeHeadMetaVariant }}
+
+
+{{ define "partials/vitae/_functions/meta/head_dirname" }}
+  {{ $page := . }}
+  {{ $template := "vitae/_functions/meta/head_dirname" }}
+  {{ $debug := false }}
+  {{ $dbg := printf "%s[%s->%s]" (replaceRE `.*?((?:[^/]+/){,2})$` `$1` $page.RelPermalink) $template (replaceRE `.*?([^/]+)$` `$1` $template) }}
+
+  {{ $dirName := false }}
+
+  {{ with $dirName = path.BaseName $page.File.ContentBaseName }}
+    {{/* Traverse up until we find a decent-looking dirname */}}
+    {{ $specialDirs := slice "preview" "print" "resume" "executive" "ats" "two-pager" }}
+    {{ $specialDirsRE := delimit $specialDirs `|` }}
+    {{ if findRE $specialDirsRE $dirName }}
+      {{ if $debug }}
+        {{ warnf "%s dirname=%q matches %q" $dbg $dirName $specialDirsRE }}
+      {{ end }}
+      {{ $dirName = partial "vitae/_functions/meta/head_dirname" $page.Parent }}
+    {{ else }}
+      {{ if $debug }}
+        {{ warnf "%s returning dirName=%q (does not match %q)" $dbg $dirName $specialDirsRE }}
+      {{ end }}
+    {{ end }}
+  {{ end }}
+
+  {{ return $dirName }}
+{{ end }}
