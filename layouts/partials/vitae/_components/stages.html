@@ -227,7 +227,7 @@
 {{- $roleMetaInHeader := $inlineHeader }}
 {{- $organizationMetaInHeader := $inlineHeader }}
 
-{{- $homeCountry := default "USA" .Data.features.contact.print.address.country }}
+{{- $homeCountry := default "USA" .Data.personal.address.content.country }}
 {{- if $style.ats }}
   {{- $homeCountry = "NonExistingCountry" }}
 {{- end }}
