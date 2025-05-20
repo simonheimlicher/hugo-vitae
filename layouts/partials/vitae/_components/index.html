@@ -10,12 +10,12 @@
 {{- $componentClass := default "component_index" .ComponentClass }}
 {{- $template := "vitae/_components/index" }}
 
-{{- $debug := false -}}
+{{- $debug := and false ($page.Param "clarisdebug") }}
 {{/* {{- $debug = or $debug (not (not (findRE `^/([^/]+-demo/)?$` $page.RelPermalink) ) ) -}} */}}
 {{- $dbg := printf "%s[%s->%s]" (replaceRE `.*?((?:[^/]+/){,2})$` `$1` $page.RelPermalink) $template (replaceRE `.*?([^/]+)$` `$1` $template) }}
 
 {{- if and false $debug }}
-  {{- warnf "%s .MergedStyle=%v" $page $template
+  {{- warnf "%s .MergedStyle=%v" $dbg
       (jsonify (dict "indent" "  ") .MergedStyle) }}
 {{- end }}
 

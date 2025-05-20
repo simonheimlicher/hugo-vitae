@@ -6,8 +6,10 @@
 
 {{- $component := .Component }}
 
-{{- $debug := false }}
-{{/* {{- $debug = or $debug (not (not (findRE `^/([^/]+-demo/)?devel/$` $page.RelPermalink) ) ) -}} */}}
+{{- $debug := or false ($page.Param "clarisdebug") }}
+{{- $dbg := printf "%s[%s]" (replaceRE `.*?((?:[^/]+/){,2})$` `$1` $page.RelPermalink) (replaceRE `.*?([^/]+)$` `$1` $template) }}
+
+{{- $debugStyles := false }}
 
 {{- $style := default dict .Style }}
 {{- $validStyles := (dict
@@ -123,7 +125,7 @@
   "separate_roles" "ANY_BOOL"
 ) -}}
 
-{{- if $debug }}
+{{- if $debugStyles }}
   {{- $validStyles = (dict
     "heading" (dict
       "font-size" (dict
@@ -156,11 +158,23 @@
   )
 -}}
 {{- end }}
+
+{{- if $debug }}
+  {{- warnf "%s .MergedStyle:\n%v"
+      $dbg (jsonify (dict "indent" "  ") .MergedStyle) -}}
+{{- end }}
+
 {{- $mergedStyle := partial "vitae/_functions/style-merged" (dict
   "Template" $template
   "MergedStyle" .MergedStyle
   "ValidStyles" $validStyles
 ) -}}
+
+{{- if $debug }}
+  {{- warnf "%s $mergedStyle:\n%v"
+      $dbg (jsonify (dict "indent" "  ") $mergedStyle) -}}
+{{- end }}
+
 
 {{- $style := $mergedStyle.Style }}
 {{- $styleClassList := $mergedStyle.StyleClass }}
@@ -176,8 +190,8 @@
 {{- $achievementTitleStrong := false }}
 
 {{- if $debug }}
-  {{- warnf "%s[%s]: inlineSeparatorStr=%v [type=%T] roleHeaderSeparatorStr=%v [type=%T] stageMetaSeparatorStr=%v [type=%T]"
-      page $template $inlineSeparatorStr $inlineSeparatorStr
+  {{- warnf "%s inlineSeparatorStr=%v [type=%T] roleHeaderSeparatorStr=%v [type=%T] stageMetaSeparatorStr=%v [type=%T]"
+      $dbg $inlineSeparatorStr $inlineSeparatorStr
       $roleHeaderSeparatorStr $roleHeaderSeparatorStr $stageMetaSeparatorStr $stageMetaSeparatorStr
   -}}
 {{- end }}
@@ -327,8 +341,8 @@
       {{- with partial "claris/_functions/resources/images/get-process-image" (dict "Page" $page "resource" $imgAssetID) }}
         {{- $logoImageResource = . }}
       {{- else }}
-        {{- warnf "%s[%s]: organization=%s: logo '%s' not found"
-            $page $template $org.organization $imgAssetID }}
+        {{- warnf "%s organization=%s: logo '%s' not found"
+            $dbg $org.organization $imgAssetID }}
       {{- end }}
     {{- end }}
 
@@ -776,7 +790,6 @@
   {{- end }}
   </h{{ $headingLevel }}>
   {{- with and $showOrganizationAppendix $org.appendix }}
-    {{- /* <span class="appendix">{{- with $inlineSeparatorStr }} {{ . }} {{ end }}{{ page.RenderString . }}</span> */ -}}
     {{/* Include a newline */}}
     {{- with $childContainer }}
       {{- printf `&nbsp;<%s class="appendix stage_meta">` $childContainer | safeHTML }}
@@ -927,7 +940,6 @@
     {{- end -}}
   </h{{ add 1 $headingLevel }}>
   {{- with and $showRoleAppendix $role.appendix }}
-    {{- /* <span class="appendix">{{- with $inlineSeparatorStr }} {{ . }} {{ end }}{{ page.RenderString . }}</span> */ -}}
     {{/* Include a newline */}}
     <span class="appendix stage_meta">({{ page.RenderString . }})</span>
   {{- end -}}
@@ -1059,6 +1071,7 @@
   {{- $stageDetailsSeparatorStr := default $inlineSeparatorStr .StageDetailsSeparatorStr }}
 
   {{- $debug := true }}
+  {{- $dbg := printf "%s[%s]" (replaceRE `.*?((?:[^/]+/){,2})$` `$1` page.RelPermalink) (replaceRE `.*?([^/]+)$` `$1` $template) }}
 
   {{- $metaConfig := (dict
     "function" (and $stage.function (default false (default $component.function $componentStageType.function)) )
@@ -1068,8 +1081,7 @@
   ) -}}
 
   {{- if and false $debug }}
-    {{- warnf "%s[%s]: metaConfig.unit=%v[%T] component.unit=%v[%T] componentStageType=%v[%T]"
-        page $template
+    {{- warnf "%s metaConfig.unit=%v[%T] component.unit=%v[%T] componentStageType=%v[%T]" $dbg
         $metaConfig.unit $metaConfig.unit
         $component.unit $component.unit
         $componentStageType.unit $componentStageType.unit }}
@@ -1112,8 +1124,8 @@
           {{- end }}
 
           {{- if $metaConfig.unit }}
-            {{- /* {{- warnf "%s[%s]: org.unit=%v division=%v %v org=%v department=%v %v org=%v"
-                page $template (default true $org.unit)
+            {{- /* {{- warnf "%s org.unit=%v division=%v %v org=%v department=%v %v org=%v"
+                $dbg (default true $org.unit)
                 $stage.division (cond (eq $stage.division $org.division) "==" "!=") $org.division
                 $stage.department (cond (eq $stage.department $org.department) "==" "!=") $org.department }} */ -}}
             {{- $configUnitLimit := 99 }}
@@ -1137,8 +1149,8 @@
                 {{- if reflect.IsSlice . }}
                   {{- if and false $debug }}
                     {{- if (gt (len .) $configUnitLimit) }}
-                      {{- warnf "%s[%s]: metaConfig.unit=%v[%T]: only showing %d of %d organizational units"
-                          page $template $metaConfig.unit $metaConfig.unit $configUnitLimit (len .) }}
+                      {{- warnf "%s metaConfig.unit=%v[%T]: only showing %d of %d organizational units"
+                          $dbg $metaConfig.unit $metaConfig.unit $configUnitLimit (len .) }}
                     {{- end }}
                   {{- end }}
                   {{- $orgUnit := false }}
