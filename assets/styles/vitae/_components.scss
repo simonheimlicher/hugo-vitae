@@ -591,7 +591,7 @@ html[data-mode="dim"] {
     }
     dl {
       display: grid;
-      gap: var(--inner_padding_4-2) var(--column_gap);
+      gap: var(--inner_padding_4-4) var(--column_gap);
       grid-template-columns: repeat(var(--num_columns), 1fr);
       align-items: start;
       grid-auto-flow: dense row;
@@ -2162,13 +2162,16 @@ html[data-mode="dim"] {
       &.style_layout_shallow {
         --margin_role_first: var(--inner_padding_4-1);
         --margin_role_between: var(--inner_padding_8-1);
-        --margin_organization_between: var(--inner_padding_4-3);
+        --margin_organization_between: var(--inner_padding_4-1);
       }
     }
     &.style_font-size_larger-1 {
       --font-size_stage_body: var(--font-size-larger-1);
       --font-size-heading-organization: var(--font-size-larger-1);
       --font-size-heading-role: var(--font-size-larger-1);
+      &.style_layout_shallow {
+        --margin_organization_between: var(--inner_padding_4-2);
+      }
     }
     &.style_font-size_smaller-1 {
       --font-size_stage_body: var(--font-size-smaller-1);

@@ -54,7 +54,7 @@ $num-columns: 12;
   .slot_header:has(.overlay) + .slot_content {
     &::before {
       content: "";
-      height: calc(var(--slot-gap_vertical) / 2);
+      height: var(--slot-gap_vertical);
       // @media screen {
       //   background-color: rgba(0, 0, 0, 0.03);
       //   outline: 1px solid rgba(0, 0, 0, 0.1);
