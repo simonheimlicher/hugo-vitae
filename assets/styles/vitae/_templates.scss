@@ -55,6 +55,7 @@ $num-columns: 12;
     &::before {
       content: "";
       height: var(--slot-gap_vertical);
+      min-height: var(--slot-gap_vertical);
       // @media screen {
       //   background-color: rgba(0, 0, 0, 0.03);
       //   outline: 1px solid rgba(0, 0, 0, 0.1);
