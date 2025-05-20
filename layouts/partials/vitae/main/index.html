@@ -94,7 +94,7 @@
 {{- with index $page.Params $vitaeTemplateRoot }}
   {{- if $debug }}
     {{- with .style }}
-      {{- warnf "%s page.Params.%s:\n%v" $dbg
+      {{- warnf "%s page.Params.%s.style:\n%v" $dbg
         (delimit $vitaeTemplateRoot `.`) (jsonify (dict "indent" "  ") .) }}
     {{- end }}
   {{- end }}

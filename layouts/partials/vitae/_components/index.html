@@ -29,6 +29,11 @@
     )
   )
   "layout" (slice "inline" "shallow")
+  "inline_separator" "ANY_STRING"
+  "role_header_separator" "ANY_STRING"
+  "stage_meta_separator" "ANY_STRING"
+  "organization_meta_separator" "ANY_STRING"
+  "role_meta_separator" "ANY_STRING"
 ) -}}
 {{- $mergedStyle := partial "vitae/_functions/style-merged" (dict
   "Template" $template

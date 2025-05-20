@@ -6,7 +6,7 @@
 
 {{- $component := .Component }}
 
-{{- $debug := or false ($page.Param "clarisdebug") }}
+{{- $debug := and false ($page.Param "clarisdebug") }}
 {{- $dbg := printf "%s[%s]" (replaceRE `.*?((?:[^/]+/){,2})$` `$1` $page.RelPermalink) (replaceRE `.*?([^/]+)$` `$1` $template) }}
 
 {{- $debugStyles := false }}
@@ -32,6 +32,11 @@
       )
     )
   )
+  "inline_separator" "ANY_STRING"
+  "role_header_separator" "ANY_STRING"
+  "stage_meta_separator" "ANY_STRING"
+  "organization_meta_separator" "ANY_STRING"
+  "role_meta_separator" "ANY_STRING"
   "inline" (dict
     "header" "ANY_BOOL"
     "content" "ANY_BOOL"
@@ -159,7 +164,7 @@
 -}}
 {{- end }}
 
-{{- if $debug }}
+{{- if and false $debug }}
   {{- warnf "%s .MergedStyle:\n%v"
       $dbg (jsonify (dict "indent" "  ") .MergedStyle) -}}
 {{- end }}
@@ -170,7 +175,7 @@
   "ValidStyles" $validStyles
 ) -}}
 
-{{- if $debug }}
+{{- if and false $debug }}
   {{- warnf "%s $mergedStyle:\n%v"
       $dbg (jsonify (dict "indent" "  ") $mergedStyle) -}}
 {{- end }}
@@ -183,8 +188,12 @@
 {{- $renderOptBlock := dict "display" "block" }}
 
 {{- $inlineSeparatorStr := trim $style.inline_separator "  " | default "•" }}
+{{- $stageMetaSeparatorStr := trim $style.stage_meta_separator `  ` | default $inlineSeparatorStr }}
+{{- $stageDetailsSeparatorStr := trim $style.stage_details_separator `  ` | default $inlineSeparatorStr }}
+{{- $stageUnitSeparatorStr := trim $style.stage_unit_separator `  ` | default $inlineSeparatorStr }}
+{{- $organizationMetaSeparatorStr := trim $style.organization_meta_separator `  ` | default $inlineSeparatorStr }}
+{{- $roleMetaSeparatorStr := trim $style.role_meta_separator `  ` | default $inlineSeparatorStr }}
 {{- $roleHeaderSeparatorStr := trim $style.role_header_separator `  ` | default "|" }}
-{{- $stageMetaSeparatorStr := trim $style.stage_meta_separator `  ` | default "•" }}
 
 {{- /* FIXME: Allow the style to be defined via `style` */ -}}
 {{- $achievementTitleStrong := false }}
@@ -261,9 +270,12 @@
   "HeadingLevel" $headingLevel
   "InlineHeader" $inlineHeader
   "HomeCountry" $homeCountry
-  "InlineSeparatorStr" $inlineSeparatorStr
-  "RoleHeaderSeparatorStr" $roleHeaderSeparatorStr
   "StageMetaSeparatorStr" $stageMetaSeparatorStr
+  "StageDetailsSeparatorStr" $stageDetailsSeparatorStr
+  "StageUnitSeparatorStr" $stageUnitSeparatorStr
+  "OrganizationMetaSeparatorStr" $organizationMetaSeparatorStr
+  "RoleMetaSeparatorStr" $roleMetaSeparatorStr
+  "RoleHeaderSeparatorStr" $roleHeaderSeparatorStr
   "PeriodDurationParams" $periodDurationParams
 ) -}}
 
@@ -718,6 +730,7 @@
   {{- $childContainer := .ChildContainer }}
   {{- $roleHeaderInOrganizationHeader := .RoleHeaderInOrganizationHeader }}
   {{- $organizationMetaInHeader := .OrganizationMetaInHeader }}
+  {{- $organizationMetaSeparatorStr := .OrganizationMetaSeparatorStr }}
   {{- $roleHeaderSeparatorStr := .RoleHeaderSeparatorStr }}
 
   {{- $org := .Organization }}
@@ -830,7 +843,7 @@
   {{- end }}
 
   {{- if $organizationMetaInHeader }}
-    {{ partial "stage_meta" (merge $ (dict
+    {{- partial "stage_meta" (merge $ (dict
       "Organization" $org
       "Role" nil
       "Style" $style
@@ -882,7 +895,6 @@
   {{- $role := .Role }}
   {{- $roleHeaderInOrganizationHeader := .RoleHeaderInOrganizationHeader }}
   {{- $roleMetaInHeader := .RoleMetaInHeader }}
-  {{- $inlineSeparatorStr := .InlineSeparatorStr }}
 
   {{- $debug := false }}
   {{- /* $debug = or $debug (not (not (findRE `^/([^/]+-demo/)?preview` $page.RelPermalink) ) ) */ -}}
@@ -1062,13 +1074,11 @@
   {{- $childContainer := .ChildContainer }}
   {{- $inlineHeader := .InlineHeader }}
   {{- $homeCountry := .HomeCountry }}
-  {{- $orgLocationStr := default "" .OrganizationLocationStr }}
-  {{- $inlineSeparatorStr := .InlineSeparatorStr }}
-  {{- $stageMetaSeparatorStr := .StageMetaSeparatorStr }}
+  {{- $unitSeparatorStr := default ", " .UnitSeparatorStr }}
+  {{- $stageMetaSeparatorStr := cond (eq $stageType "role") .RoleMetaSeparatorStr .OrganizationMetaSeparatorStr }}
   {{- $stageUnitSeparatorStr := default ", " .StageUnitSeparatorStr }}
   {{- $stageLocationSeparatorStr := default ", " .StageLocationSeparatorStr }}
-  {{- $unitSeparatorStr := ", " }}
-  {{- $stageDetailsSeparatorStr := default $inlineSeparatorStr .StageDetailsSeparatorStr }}
+  {{- $stageDetailsSeparatorStr := default "" .StageDetailsSeparatorStr }}
 
   {{- $debug := true }}
   {{- $dbg := printf "%s[%s]" (replaceRE `.*?((?:[^/]+/){,2})$` `$1` page.RelPermalink) (replaceRE `.*?([^/]+)$` `$1` $template) }}
@@ -1090,7 +1100,8 @@
   {{- if $topLevelClass }}
     {{- $childContainer = "p" }}
   {{- end }}
-  {{- if ne $childContainer "span" }}
+  {{- if and $childContainer (ne $childContainer "span") }}
+    {{- $stageDetailsSeparatorStr = "" }}
     {{- $stageMetaSeparatorStr = "" }}
   {{- end }}
 
@@ -1205,6 +1216,7 @@
           {{- end }}
 
           {{- if $metaConfig.location }}
+            {{- $orgLocationStr := "" }}
             {{- with $org.location }}
               {{- $orgLocationStr = printf "%s" . }}
               {{- with $org.country }}
@@ -1223,7 +1235,9 @@
             {{- end }}
             {{- if not (and $role (eq $stageLocationMarkup $orgLocationStr)) }}
               {{- with $stageLocationMarkup }}
-                {{- $functionUnitLocationMarkup = printf `%s<span class="stage_location">%s%s</span>` $functionUnitLocationMarkup (cond (not (not $stageUnitMarkup)) $stageLocationSeparatorStr "") . }}
+                {{- $functionUnitLocationMarkup = printf `%s%s <span class="stage_location">%s</span>`
+                    $functionUnitLocationMarkup
+                    (cond (not (not $stageUnitMarkup)) $stageLocationSeparatorStr "") . }}
               {{- end }}
             {{- end }}
           {{- end }}
@@ -1237,16 +1251,16 @@
         {{- end }}
 
         {{- if $metaConfig.details }}
-          {{- with  $stage.details }}
-            {{- $stageDetailsMarkup := "" }}
-            {{- if $markup }}
-              {{- $stageDetailsMarkup = printf `%s%s` $stageDetailsSeparatorStr . }}
-            {{- end }}
-            {{- $stageDetailsMarkup = printf `%s%s` $stageDetailsSeparatorStr (partial "render_string_slice" . ) }}
+          {{- with $stage.details }}
+            {{- $stageDetailsMarkup := partial "render_string_slice" . }}
             {{- with $childContainer }}
               {{- $stageDetailsMarkup = printf `<%s class="stage_details">%s</%s>` . $stageDetailsMarkup . }}
             {{- end }}
-            {{- $markup = printf `%s%s` $markup $stageDetailsMarkup }}
+            {{- with $markup }}
+              {{- $markup = printf `%s%s%s` . $stageDetailsSeparatorStr $stageDetailsMarkup }}
+            {{- else }}
+              {{- $markup = $stageDetailsMarkup }}
+            {{- end }}
           {{- end }}
         {{- end }}
 
@@ -1254,7 +1268,7 @@
       {{- $containerOpen := "" }}
       {{- $containerClose := "" }}
       {{- if $inlineHeader }}
-        {{- $containerOpen = $stageMetaSeparatorStr -}}
+        {{- $containerOpen = printf "%s " $stageMetaSeparatorStr -}}
       {{- end }}
       {{- if $topLevelClass }}
         {{- $containerOpen = printf `<div class="%s_meta stage_meta %s"><div class="stage_main column_main">`

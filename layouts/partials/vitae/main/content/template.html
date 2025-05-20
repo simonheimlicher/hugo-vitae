@@ -27,6 +27,8 @@ FIXME: Consolidate keys, e.g. .VitaeParams and .Params */ -}}
   "inline_separator" "ANY_STRING"
   "role_header_separator" "ANY_STRING"
   "stage_meta_separator" "ANY_STRING"
+  "organization_meta_separator" "ANY_STRING"
+  "role_meta_separator" "ANY_STRING"
   "layout" (slice "shallow" "narrow" "inline")
   "display" (dict
     "grid" "grid"
@@ -80,12 +82,14 @@ Part: an independent section of one or more printed pages
 PaginationPage: a printed page that is part of a Part
 -->
 
-{{- /* Section params can be overriden from front matter under $vitaeSectionsRoot:
+{{- /* Part params can be overriden from front matter under $vitaePartsRoot:
     ---
     vitae:
-      sections:
-        patents-publications:
-          enabled: false
+      parts:
+        # Note: there is no key `part` under `parts;
+        # instead, `parts` is followed by the name of the part
+        front-page
+          template: front-page
     ---
 */ -}}
 {{- $originalParts := $vitaeTemplate.parts }}
@@ -232,6 +236,8 @@ PaginationPage: a printed page that is part of a Part
           ---
           vitae:
             sections:
+              # Note: there is no key `section` under `sections;
+              # instead, `sections` is followed by the name of the section
               patents-publications:
                 enabled: false
           ---

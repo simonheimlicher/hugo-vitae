@@ -24,8 +24,6 @@ vitae:
               heading:
                 font-size: normal
                 rule: true
-            # inline_separator: "·"
-            # inline_separator: "•"
             layout:
               - shallow
             # #   - inline
@@ -308,6 +306,23 @@ vitae:
           properties:
             root_em: 10pt
 
+          style:
+            # inline_separator: "TEMPLATE_INLINE"
+            inline_separator: "·"
+            # inline_separator: "·"
+            # stage_meta_separator: "TEMPLATE_STAGE_META"
+            stage_meta_separator: "·"
+            # stage_details_separator: "TEMPLATE_STAGE_DETAILS"
+            stage_details_separator: "·"
+            # stage_unit_separator: "TEMPLATE_STAGE_UNIT"
+            stage_unit_separator: "·"
+            # organization_meta_separator: "TEMPLATE_ORG_META"
+            organization_meta_separator: "·"
+            # role_meta_separator: "TEMPLATE_ROLE_META"
+            role_meta_separator: "·"
+            # role_header_separator: "TEMPLATE_ROLE_HEADER"
+            role_header_separator: ">"
+
           parts:
 
             # Front page
@@ -383,6 +398,11 @@ vitae:
                       date:
                         format: year
                       logo: false
+                      # inline_separator: "INLINE"
+                      # role_header_separator: "ROLE_HEADER"
+                      # stage_meta_separator: "STAGE_META"
+                      # organization_meta_separator: "ORG_META"
+                      # role_meta_separator: "ROLE_META"
                     organization:
                       period: true
                       appendix: false
@@ -634,8 +654,6 @@ vitae:
         two-pager:
 
           style:
-            # inline_separator: "·"
-            # inline_separator: "•"
             layout:
               - shallow
               # - inline
@@ -1059,7 +1077,7 @@ vitae:
           style:
             # ats: true
             # inline_separator: "INLINE"
-            role_header_separator: "ROLE_HEADER"
+            # role_header_separator: "ROLE_HEADER"
             # stage_meta_separator: "STAGE_META"
             # layout:
             #   - shallow
