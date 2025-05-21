@@ -14,9 +14,10 @@
 FIXME: Consolidate keys, e.g. .VitaeParams and .Params */ -}}
 {{- $pp := merge . (dict
   "Page" $page
+  "Template" $template
   "Params" $vitaeParams
   "Data" $vitaeData
-  "Template" $vitaeTemplate
+  "VitaeTemplate" $vitaeTemplate
 ) -}}
 
 {{- $debug := false }}

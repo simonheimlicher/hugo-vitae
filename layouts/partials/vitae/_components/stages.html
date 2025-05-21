@@ -437,7 +437,7 @@
       {{- else if (eq $roleIdx 0) }}
 
         {{ partial "html-comment" (printf "%s: roleIdx=%v: OPEN organization_header"
-            $template $separateRoles ) }}
+            $template $roleIdx ) }}
 
         {{- if $roleHeaderInOrganizationHeader }}
           {{- $topLevelClass = printf "%s %s" $topLevelClass $roleClass }}
@@ -452,7 +452,7 @@
               $template $roleHeaderInOrganizationHeader ) }}
           </div>
           {{- if not $organizationMetaInHeader }}
-            {{ partial "stage_meta" (merge $ (dict
+            {{ partial "vitae/_components/stages_stage_meta" (merge $ (dict
               "Organization" $org
               "StageType" "organization"
               "TopLevelClass" $topLevelClass
@@ -524,7 +524,7 @@
         )
       ) -}}
 
-      {{- partial "stage_overview" $organizationOverviewParams -}}
+      {{- partial "vitae/_components/stage_overview" $organizationOverviewParams -}}
 
       {{- if not $roleHeaderInOrganizationHeader }}
         {{ partial "html-comment" (printf "%s: roleHeaderInOrganizationHeader=%v: OPEN role_header"
@@ -547,7 +547,7 @@
       </div>
       {{- else }}
         {{- if not $roleMetaInHeader }}
-          {{- partial "stage_meta" (merge $inlinePartialParams (dict
+          {{- partial "vitae/_components/stages_stage_meta" (merge $inlinePartialParams (dict
             "Organization" $org
             "Role" $role
             "StageType" "role"
@@ -843,7 +843,7 @@
   {{- end }}
 
   {{- if $organizationMetaInHeader }}
-    {{- partial "stage_meta" (merge $ (dict
+    {{- partial "vitae/_components/stages_stage_meta" (merge $ (dict
       "Organization" $org
       "Role" nil
       "Style" $style
@@ -956,7 +956,7 @@
     <span class="appendix stage_meta">({{ page.RenderString . }})</span>
   {{- end -}}
   {{- if $roleMetaInHeader }}
-    {{ partial "stage_meta" (merge $ (dict
+    {{ partial "vitae/_components/stages_stage_meta" (merge $ (dict
       "Organization" $org
       "Role" $role
       "StageType" "role"
@@ -974,12 +974,13 @@
 
 {{- /* ***************************************************************** */ -}}
 
-{{- define "partials/stage_overview.html" }}
+{{- define "partials/vitae/_components/stage_overview.html" }}
 
   {{- $style := .Style }}
   {{- $component := .Component }}
   {{- $topLevelClass := .TopLevelClass }}
-  {{- $template := .Template }}
+  {{- $template := "vitae/_components/stage_overview" }}
+
 
   {{- $org := .Organization }}
   {{- $role := .Role }}
@@ -1059,11 +1060,11 @@
 
 {{- /* ***************************************************************** */ -}}
 
-{{- define "partials/stage_meta.html" }}
+{{- define "partials/vitae/_components/stages_stage_meta.html" }}
   {{- $style := .Style }}
   {{- $component := .Component }}
   {{- $topLevelClass := .TopLevelClass }}
-  {{- $template := .Template }}
+  {{- $template := "vitae/_components/stages_stage_meta" }}
 
   {{- $org := .Organization }}
   {{- $role := .Role }}

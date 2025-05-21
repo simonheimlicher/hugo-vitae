@@ -6,14 +6,14 @@
 {{- $template := "partials/vitae/fragments/personal" }}
 {{- $media := .Media }}
 {{- $fragmentContainer := default false .Container }}
-{{- $debug := false }}
-{{- $debug = and false $debug (not (not (findRE `^/product-management/google-senior-product-manager-aml/ats/two-pager` $page.RelPermalink) ) ) -}}
-{{- $dbg := printf "%s[%s->%s]" (replaceRE `.*?((?:[^/]+/){,2})$` `$1` $page.RelPermalink) $template (replaceRE `.*?([^/]+)$` `$1` $template) }}
+{{- $debug := and false ($page.Param "clarisdebug") }}
+{{- $dbg := printf "%s[%s->%s]" (replaceRE `.*?((?:[^/]+/){,2})$` `$1` $page.RelPermalink) .Template (replaceRE `.*?([^/]+)$` `$1` $template) }}
 
 {{- if $debug }}
-  {{- warnf "%s .Fragment=%s .Config=%s .Data.personal=%s" $dbg $fragment
-    (jsonify (dict "indent" "  ") $config)
-    (jsonify (dict "indent" "  ")  $data.personal) -}}
+  {{- warnf "%s .Fragment=%s .MergedStyle:\n%v\n.Config:\n%v\n.Data.personal:\n%s" $dbg $fragment
+    (jsonify (dict "indent" "  ") .MergedStyle)
+    (jsonify (dict "indent" "  ") .Config)
+    (jsonify (dict "indent" "  ") .Data.personal) -}}
 {{- end }}
 
 {{- $validStyles := (dict

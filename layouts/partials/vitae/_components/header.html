@@ -7,8 +7,8 @@
 {{- $componentClass := default "component_header" .ComponentClass }}
 {{- $childClass := default "" .ChildClass }}
 
-{{- $debug := false }}
-{{/* {{- $debug = or $debug (not (not (findRE `^/([^/]+-demo/)?devel` $page.RelPermalink) ) ) -}} */}}
+{{- $debug := and false ($page.Param "clarisdebug") }}
+{{- $dbg := printf "%s[%s->%s]" (replaceRE `.*?((?:[^/]+/){,2})$` `$1` $page.RelPermalink) .Template (replaceRE `.*?([^/]+)$` `$1` $template) }}
 
 {{- $validStyles := (dict
   "_template" $template
@@ -70,6 +70,8 @@
 {{- $style := $mergedStyle.Style }}
 {{- $styleClassList := $mergedStyle.StyleClass }}
 
+{{- $componentArgs = merge $componentArgs (dict "Template" $template "MergedStyle" $mergedStyle) }}
+
 {{- $topLevelClass := append $styleClassList (slice $componentClass $childClass) }}
 
 {{- $portraitData := false }}
@@ -101,8 +103,8 @@
     "fetchpriority" "high"
   ) }}
   {{- if $debug }}
-    {{- warnf "%s[%s]: Found portrait image resource .version.default.src=%v in \nportraitImage=%v\nNow calling responsive-image with .src=%v in portraitImageArgs=%v"
-        $page $template .src
+    {{- warnf "%s Found portrait image resource .version.default.src=%v in \nportraitImage=%v\nNow calling responsive-image with .src=%v in portraitImageArgs=%v"
+        $dbg .src
         (jsonify (dict "indent" "  ") )
         $portraitImageArgs.src
         (jsonify (dict "indent" "  ") $portraitImageArgs) -}}
@@ -119,31 +121,33 @@
         style="object-fit: {{ $portraitImageArgs.fit }}; object-position: {{ $portraitImageArgs.position }}">
     </figure>
   {{- else }}
-    {{- warnf "%s[%s]: Image resource not found with\nportraitImageArgs=%v"
-        $page $template (jsonify (dict "indent" "  ") $portraitImageArgs) }}
+    {{- warnf "%s Image resource not found with\nportraitImageArgs=%v"
+        $dbg (jsonify (dict "indent" "  ") $portraitImageArgs) }}
   {{- end }}
   {{- $page.Scratch.Add "claris.image.prioritized" 1 }}
   {{- if $debug }}
-    {{- warnf "%s[%s]: claris.image.prioritized incremented to %d" $page $template ($page.Scratch.Get "claris.image.prioritized") }}
+    {{- warnf "%s claris.image.prioritized incremented to %d" $dbg ($page.Scratch.Get "claris.image.prioritized") }}
   {{- end }}
   <div class="overlay">
     <div class="overlay_content">
-      {{- partial "render_header" $componentArgs -}}
+      {{- partial "vitae/_components/header_render" $componentArgs -}}
     </div>
   </div>
 {{- else }}
-  {{- partial "render_header" $componentArgs -}}
+  {{- partial "vitae/_components/header_render" $componentArgs -}}
 {{- end }}
 </div>
 
-{{- define "partials/render_header" }}
+{{- define "partials/vitae/_components/header_render" }}
   {{- $componentArgs := . }}
   {{- $page := .Page }}
-  {{- $template := "vitae/_components/header" }}
+  {{- $template := "vitae/_components/header_render" }}
   {{- $config := .Config }}
-  {{- $style := .Style }}
   {{- $component := .Component }}
   {{- $headingLevel := default 1 .HeadingLevel }}
+
+  {{- $debug := or false ($page.Param "clarisdebug") }}
+  {{- $dbg := printf "%s[%s->%s]" (replaceRE `.*?((?:[^/]+/){,2})$` `$1` $page.RelPermalink) .Template $template }}
 
   {{- with and (not (eq $component.headline false) ) .Data.headline }}
       <h{{ $headingLevel }} class="headline content-title">
@@ -161,9 +165,11 @@
       {{- range $fragment := . }}
         {{- $fragmentName := .fragment }}
         {{- $fragmentConfig := merge (index $config $fragmentName) . }}
-        {{- $partial := printf "vitae/fragments/%s" $fragmentName}}
-        {{/* {{- warnf "%s[%s]: component=%v: Calling fragment=%s with .Config=%v"
-            $page $template $component $fragmentName $fragmentConfig -}} */}}
+        {{- $partial := printf "vitae/fragments/%s" $fragmentName }}
+        {{- if $debug }}
+          {{- warnf "%s component=%v: Calling fragment=%s with .Config=%v"
+              $dbg $component.component $fragmentName $fragmentConfig -}}
+        {{- end }}
         {{- partial $partial (merge $componentArgs (dict "Fragment" $fragmentName "Config" $fragmentConfig ))  }}
       {{- end }}
     </div>

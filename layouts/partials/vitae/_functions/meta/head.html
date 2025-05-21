@@ -13,7 +13,7 @@
     {{ $headMeta = .}}
   {{ end }}
 {{ end }}
-{{ $dbg := printf "%s[%s->%s]" (replaceRE `.*?((?:[^/]+/){,2})$` `$1` $page.RelPermalink) $template (replaceRE `.*?([^/]+)$` `$1` $template) }}
+{{ $dbg := printf "%s[%s->%s]" (replaceRE `.*?((?:[^/]+/){,2})$` `$1` $page.RelPermalink) .Template (replaceRE `.*?([^/]+)$` `$1` $template) }}
 
 {{ with $page }}
   {{ $title := $headMeta.Formatted.Title }}
@@ -34,7 +34,8 @@
 
         {{ if (eq $placeholder "DIRNAME" ) }}
 
-          {{ with $dirName := partial "vitae/_functions/meta/head_dirname" $page }}
+          {{ with $dirName := partial "vitae/_functions/meta/head_dirname"
+              (dict "Page" $page "Template" $template) }}
             {{ $title = replace $title $placeholderToken $dirName }}
             {{ if $debug }}
               {{ warnf "%s title=%q after replacing %q with %q" $dbg $title $placeholderToken $dirName }}
@@ -107,10 +108,10 @@
 
 
 {{ define "partials/vitae/_functions/meta/head_dirname" }}
-  {{ $page := . }}
+  {{ $page := .Page }}
   {{ $template := "vitae/_functions/meta/head_dirname" }}
   {{ $debug := false }}
-  {{ $dbg := printf "%s[%s->%s]" (replaceRE `.*?((?:[^/]+/){,2})$` `$1` $page.RelPermalink) $template (replaceRE `.*?([^/]+)$` `$1` $template) }}
+  {{ $dbg := printf "%s[%s->%s]" (replaceRE `.*?((?:[^/]+/){,2})$` `$1` $page.RelPermalink) .Template $template }}
 
   {{ $dirName := false }}
 
@@ -122,7 +123,8 @@
       {{ if $debug }}
         {{ warnf "%s dirname=%q matches %q" $dbg $dirName $specialDirsRE }}
       {{ end }}
-      {{ $dirName = partial "vitae/_functions/meta/head_dirname" $page.Parent }}
+      {{ $dirName = partial "vitae/_functions/meta/head_dirname"
+          (dict "Page" $page.Parent "Template" $template) }}
     {{ else }}
       {{ if $debug }}
         {{ warnf "%s returning dirName=%q (does not match %q)" $dbg $dirName $specialDirsRE }}

@@ -1,6 +1,6 @@
 {{- $page := .Page -}}
 {{- $headingLevel := default 3 .HeadingLevel }}
-{{- $vitaeTemplate := .Template }}
+{{- $vitaeTemplate := .VitaeTemplate }}
 {{- $vitaeData := .Data }}
 {{- $vitaeParams := .VitaeParams }}
 {{- $sections := .Sections }}
@@ -12,7 +12,7 @@
 
 {{- $debug := and false ($page.Param "clarisdebug") }}
 {{/* {{- $debug = or $debug (not (not (findRE `^/([^/]+-demo/)?$` $page.RelPermalink) ) ) -}} */}}
-{{- $dbg := printf "%s[%s->%s]" (replaceRE `.*?((?:[^/]+/){,2})$` `$1` $page.RelPermalink) $template (replaceRE `.*?([^/]+)$` `$1` $template) }}
+{{- $dbg := printf "%s[%s->%s]" (replaceRE `.*?((?:[^/]+/){,2})$` `$1` $page.RelPermalink) .Template (replaceRE `.*?([^/]+)$` `$1` $template) }}
 
 {{- if and false $debug }}
   {{- warnf "%s .MergedStyle=%v" $dbg
@@ -783,8 +783,9 @@
 
     {{- $componentPartialParams := (dict
       "Page" $page
+      "Template" $template
       "Params" $vitaeParams
-      "Template" $vitaeTemplate
+      "VitaeTemplate" $vitaeTemplate
       "Media" $media
       "Component" $component
       "ComponentData" $componentData
@@ -836,7 +837,7 @@
     <div class="{{ delimit $panelClass ` ` }}">
       {{- partial "vitae/_components/index" (dict
         "Page" $page
-        "Template" $vitaeTemplate
+        "VitaeTemplate" $vitaeTemplate
         "Media" $media
         "MergedStyle" $mergedStyle
         "ChildClass" $childClass
