@@ -54,6 +54,8 @@ section-career-summary:
   other: timeline
 section-personal-profile:
   other: profile
+section-professional-profile:
+  other: summary
 section-key-achievements:
   other: key achievements
 section-interests:

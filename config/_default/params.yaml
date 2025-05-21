@@ -302,6 +302,249 @@ vitae:
     # ------ Template EXECUTIVE --------- #
     executive:
       variants:
+        linear:
+          properties:
+            root_em: 10pt
+
+          style:
+            # inline_separator: "TEMPLATE_INLINE"
+            inline_separator: "·"
+            # inline_separator: "·"
+            # stage_meta_separator: "TEMPLATE_STAGE_META"
+            stage_meta_separator: "·"
+            # stage_details_separator: "TEMPLATE_STAGE_DETAILS"
+            stage_details_separator: "·"
+            # stage_unit_separator: "TEMPLATE_STAGE_UNIT"
+            stage_unit_separator: "·"
+            # organization_meta_separator: "TEMPLATE_ORG_META"
+            organization_meta_separator: "·"
+            # role_meta_separator: "TEMPLATE_ROLE_META"
+            role_meta_separator: "·"
+            # role_header_separator: "TEMPLATE_ROLE_HEADER"
+            role_header_separator: ">"
+
+          parts:
+
+            - part: main
+              template: main
+
+              slots:
+              # Header on first page
+              - slot: header
+                pagination_policy: first
+                # pagination_policy: break
+                sections:
+                - section: header
+                  components:
+                  - component: header
+                    portrait: true
+                    degree: true
+                    headline: true
+                    style:
+                      label: false
+                      icon: true
+                    fragments:
+                    - fragment: personal
+                      fields:
+                      - field: email
+                      - field: phone
+                        separator: BLOCK
+                      # - field: address
+                      #   separator: BLOCK
+                      - field: date_of_birth
+                        title: fragment_personal_date_of_birth_label
+                      - field: citizenship
+                        title: fragment_personal_citizenship_prefix
+              - slot: main
+                # pagination_policy: break
+                # style:
+                #   display: grid
+                sections:
+                - section: professional-profile
+                  title: section-professional-profile
+                  container: section
+                  components:
+                  - component: panels
+                    collection: profile
+                    style:
+                      dt_columns: 3
+                # - section: key-achievements
+                #   title: section-key-achievements
+                #   container: section
+                #   components:
+                #   - component: panels
+                #     collection: achievements
+                #     style:
+                #       dt_columns: 3
+
+                # Professional experience
+                - section: experience
+                  title: section-experience
+                  components:
+                  - component: stages
+                    collection: stages
+                    filter_by: type
+                    filter_value: professional
+                    unit:
+                      limit: 1
+                      type: false
+                    style:
+                      # inline:
+                      #   header: true
+                      timeline: column
+                      # timeline: dot-dash
+
+                # Awards & patents
+                - section: awards
+                  title: section-awards
+                  container: section
+                  components:
+                  - component: awards
+                    details: false
+                    filter_by: type
+                    filter_value: award
+                    style:
+                      logo: false
+                      heading:
+                        font-size: normal
+                      layout:
+                        - shallow
+                        # - inline # no effect
+
+                # Education & languages
+                - section: education-languages
+                  # container: div
+                  sections:
+                  - section: education
+                    # enabled: false
+                    title: section-education
+                    container: section
+                    components:
+                    - component: stages
+                      container: div
+                      collection:
+                        - education
+                        - stages
+                      filter_by: type
+                      filter_value: education
+                      style:
+                        heading:
+                          font-size: normal
+                        separate_roles: true
+                        layout: narrow
+                      role:
+                        period: false
+                        duration: false
+                        details: true
+                  - section: language-skills
+                    title: section-language-skills
+                    container: section
+                    components:
+                    - component: skills
+                      collection: skills
+                      filter_by: type
+                      filter_value: language
+                      details: true
+                      level_bar: false
+                - section: patents-publications
+                  enabled: false
+                  sections:
+                  - section: publication-selection
+                    title: section-publications
+                    container: section
+                    components:
+                    - component: publications
+                      collection: publications
+                      filter_by: kind
+                      filter_value: publication
+                      style:
+                        heading: normal
+                        layout: inline
+                  - section: patent-selection
+                    title: section-patents
+                    container: section
+                    components:
+                    - component: publications
+                      collection: publications
+                      filter_by: kind
+                      filter_value: patent
+                      style:
+                        heading: normal
+                        layout: inline
+
+              - slot: footer
+                shared: footer
+
+            # Appendix
+            - part: patents-publications
+              # template: appendix
+              template: main
+              enabled: false
+              pagination_policy: first
+              slots:
+              - slot: main
+                sections:
+                - section: patent-selection
+                  title: section-patents
+                  # container: section
+                  components:
+                  - component: publications
+                    collection: publications
+                    filter_by: kind
+                    filter_value: patent
+                - section: publication-selection
+                  title: section-publications
+                  # container: section
+                  components:
+                  - component: publications
+                    collection: publications
+                    filter_by: kind
+                    filter_value: publication
+                # - section: interests
+                #   title: section-interests
+                #   container: section
+                #   components:
+                #   - component: panels
+                #     collection: interests
+              - slot: footer
+                shared: footer
+
+          shared:
+            # Footer to be repeated on every printed page
+            footer:
+              pagination_policy: clone
+              container: footer
+              container_class: footer_name-page-number
+              pagination_container_class: footer_name-page-number
+              sections:
+              - section: main
+                components:
+                - component: footer
+                  # style:
+                  #   font-size: smaller-2
+                  #   # font-size: normal
+                  fragments:
+                    - fragment: page-meta
+                      fields:
+                        # - field: content-type
+                        #   content: Resume of
+                        #   align: start
+                        - field: name
+                          content: "{personal.name}"
+                          align: start
+                        - field: content-type
+                          content: CV
+                          align: center
+                        - field: page-number
+                          content: "{page-number}"
+                          align: end
+                        - field: page-of-total
+                          content: '|'
+                          align: end
+                        - field: total-pages
+                          content: "{total-pages}"
+                          align: end
+
         default:
           properties:
             root_em: 10pt
