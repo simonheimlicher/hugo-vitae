@@ -1,6 +1,8 @@
 {{- $page := .Page }}
 {{- $templateName := "template" }}
 {{- $template := printf "vitae/main/content/%s" $templateName }}
+{{- $debug := and false ($page.Param "clarisdebug") }}
+{{- $dbg := printf "%s[%s]" (replaceRE `.*?((?:[^/]+/){,2})$` `$1` $page.RelPermalink) (replaceRE `.*?([^/]+)$` `$1` $template) }}
 
 {{ partial "html-comment" (printf "BEGIN '%s'" $template) }}
 
@@ -20,8 +22,6 @@ FIXME: Consolidate keys, e.g. .VitaeParams and .Params */ -}}
   "VitaeTemplate" $vitaeTemplate
 ) -}}
 
-{{- $debug := false }}
-{{/* {{- $debug = or $debug (not (not (findRE `^/([^/]+-demo/)?devel` $page.RelPermalink) ) ) -}} */}}
 {{- $validStyles := (dict
   "_template" $template
   "ats" "ANY_BOOL"
@@ -93,12 +93,17 @@ PaginationPage: a printed page that is part of a Part
           template: front-page
     ---
 */ -}}
+
+{{- if $debug }}
+  {{- warnf "%s rendering vitaeTemplate:\n%v" $dbg (jsonify (dict "indent" "  ") $vitaeTemplate) }}
+{{- end }}
+
 {{- $originalParts := $vitaeTemplate.parts }}
 {{- $parts := $originalParts }}
 {{- with $vitaeParams.parts }}
   {{- $parts = slice }}
   {{- if $debug }}
-    {{- warnf "%s[%s]: vitaeParams.parts=%v" $page $template
+    {{- warnf "%s vitaeParams.parts=%v" $dbg
         (jsonify (dict "indent" "  ") $vitaeParams.parts) -}}
   {{- end }}
   {{- range $originalPart := $originalParts }}
@@ -106,13 +111,18 @@ PaginationPage: a printed page that is part of a Part
       {{- $part := merge $originalPart . }}
       {{- $parts = append $part $parts }}
       {{- if $debug }}
-        {{- warnf "%s[%s]: applied vitaeParams.parts.%v=%v\nto part=%v" $page $template
+        {{- warnf "%s applied vitaeParams.parts.%v=%v\nto part=%v" $dbg
             $part.part (jsonify (dict "indent" "  ") . ) (jsonify (dict "indent" "  ") $part ) }}
       {{- end }}
     {{- else }}
       {{- $parts = append $originalPart $parts }}
     {{- end }}
   {{- end }}
+{{- end }}
+
+
+{{- if and false $debug }}
+  {{- warnf "%s rendering parts\n%v" $dbg (jsonify (dict "indent" "  ") (where $parts "enabled" "ne" false)) }}
 {{- end }}
 
 {{- range $partIndex, $part := where $parts "enabled" "ne" false }}
@@ -143,20 +153,20 @@ PaginationPage: a printed page that is part of a Part
         {{/* If we are targetting Applicant Tracking Systems (ATS),
             we do not include any shared slots such as headers or footers */}}
         {{- if $debug }}
-          {{- warnf "%s[%s]: style.ats=%v: not including shared section vitaeTemplate.shared.%v"
-              $page $template $style.ats $slotParamsShared }}
+          {{- warnf "%s style.ats=%v: not including shared section vitaeTemplate.shared.%v"
+              $dbg $style.ats $slotParamsShared }}
           {{- end }}
       {{- else }}
         {{/* Initialize the slot with the default variant of the template */}}
         {{- with index $vitaeDefaultTemplate.shared $slotParamsShared }}
           {{- $slot = merge $slotParams . }}
-          {{- if $debug }}
+          {{- if and false $debug }}
             {{/* {{- partial "html-comment" (printf "<h2>vitaeDefaultTemplate.shared.%s</h2><pre>%v</pre>"
                 $slotParamsShared (jsonify (dict "indent" "  ") .)) }}
             {{- partial "html-comment" (printf "<h2>slot after merging vitaeDefaultTemplate.shared.%s</h2><pre>%v</pre>"
                 $slotParamsShared (jsonify (dict "indent" "  ") $slot)) }} */}}
-            {{- warnf "%s[%s]: slot=%v including vitaeDefaultTemplate.shared.%v=%v"
-                $page $template (jsonify (dict "indent" "  ") $slot)
+            {{- warnf "%s adding shared template to slot=%s:\n%v\nincluding vitaeDefaultTemplate.shared.%v:\n%v"
+                $dbg $slot.slot (jsonify (dict "indent" "  ") $slot)
                 $slotParamsShared
                 (jsonify (dict "indent" "  ") $vitaeDefaultTemplate.shared) }}
           {{- end }}
@@ -166,11 +176,11 @@ PaginationPage: a printed page that is part of a Part
           {{- if $debug }}
             {{/* {{- partial "html-comment" (printf "slot after merging vitaeTemplate.shared.%s\n%v"
                 $slotParamsShared (jsonify (dict "indent" "  ") $slot)) }} */}}
-            {{- warnf "%s[%s]: vitaeTemplate.shared.%v=%v" $page $template $slotParamsShared $vitaeTemplate.shared }}
+            {{- warnf "%s vitaeTemplate.shared.%v=%v" $dbg $slotParamsShared $vitaeTemplate.shared }}
           {{- end }}
         {{- end }}
         {{- if not $slot }}
-          {{- errorf "%s[%s]: shared template not found for vitaeTemplate.shared.%v=%v" $page $template $slotParamsShared $vitaeTemplate.shared }}
+          {{- errorf "%s shared template not found for vitaeTemplate.shared.%v=%v" $dbg $slotParamsShared $vitaeTemplate.shared }}
         {{- end }}
       {{- end }}
     {{- end }}
@@ -188,8 +198,8 @@ PaginationPage: a printed page that is part of a Part
     {{- range $slotIndex, $slot := $partSlots }}
       {{/* {{ partial "html-comment" (printf "[%s]: slot[%T] name=%s:\n%v"
           $template $slot $slot.slot (jsonify (dict "indent" "  ") $slot) ) }} */}}
-      {{/* {{- warnf "%s[%s]: slot=%v" $page $template $slot.slot }} */}}
-      {{/* {{- warnf "%s[%s]: shared=%v" $page $template $slot.shared }} */}}
+      {{/* {{- warnf "%s slot=%v" $dbg $slot.slot }} */}}
+      {{/* {{- warnf "%s shared=%v" $dbg $slot.shared }} */}}
       {{- $paginationPolicy := $slot.pagination_policy | default $part.pagination_policy | default `break` }}
       {{- $paginationOrder := $slot.pagination_order | default $slotIndex }}
 
@@ -252,7 +262,7 @@ PaginationPage: a printed page that is part of a Part
              to which we apply the params pointed to by the keys */}}
 
         {{- if $debug }}
-          {{- warnf "%s[%s]: vitaeParams.sections=%v" $page $template
+          {{- warnf "%s vitaeParams.sections=%v" $dbg
               (jsonify (dict "indent" "  ") . ) }}
         {{- end }}
 
@@ -270,7 +280,7 @@ PaginationPage: a printed page that is part of a Part
                     to which we apply the params pointed to by the keys */}}
 
                 {{- if $debug }}
-                  {{- warnf "%s[%s]: vitaeParams.sections.%v.components=%v" $page $template
+                  {{- warnf "%s vitaeParams.sections.%v.components=%v" $dbg
                       $section.section (jsonify (dict "indent" "  ") . ) }}
                 {{- end }}
 
@@ -282,7 +292,7 @@ PaginationPage: a printed page that is part of a Part
                     {{- $component := merge $originalComponent . }}
                     {{- $components = append $component $components }}
                     {{- if $debug }}
-                      {{- warnf "%s[%s]: applied vitaeParams.sections.%v.components.%v=%v\nto component=%v" $page $template
+                      {{- warnf "%s applied vitaeParams.sections.%v.components.%v=%v\nto component=%v" $dbg
                           $section.section $component.component
                           (jsonify (dict "indent" "  ") . ) (jsonify (dict "indent" "  ") $component ) }}
                       {{- end }}
@@ -303,7 +313,7 @@ PaginationPage: a printed page that is part of a Part
 
             {{- $sections = append $section $sections }}
             {{- if $debug }}
-              {{- warnf "%s[%s]: applied vitaeParams.sections.%v=%v\nto section=%v" $page $template
+              {{- warnf "%s applied vitaeParams.sections.%v=%v\nto section=%v" $dbg
                   $section.section (jsonify (dict "indent" "  ") . ) (jsonify (dict "indent" "  ") $section ) }}
             {{- end }}
 

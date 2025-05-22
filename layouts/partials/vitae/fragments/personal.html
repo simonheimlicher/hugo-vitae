@@ -169,9 +169,10 @@
             {{- $renderedField = partial $partial (dict
               "Page" $page
               "Config" $config
+              "Data" $data
               "InlineSeparatorStr" $inlineSeparatorStr
               "Field" $field
-              "Data" $fieldData
+              "FieldData" $fieldData
               "ClassPrefix" $classPrefix
               "ObfuscatedLinkPartial" $obfuscatedLinkPartial ) }}
           {{- else }}
@@ -195,17 +196,29 @@
               {{- end }}
               {{- $title := default (printf "fragment_%s_%s" $fragment $fieldName) $field.title }}
               {{- with $title }}
+                {{- if $debug }}
+                  {{- warnf "%s looking for translation with key: %s_prefix, %s_label, %s_title" $dbg . . . }}
+                {{- end }}
                 {{- with T (printf "%s_prefix" . ) }}
+                  {{- if $debug }}
+                    {{- warnf "%s found translation with key %s_prefix: %q" $dbg $title . }}
+                  {{- end }}
                   <span class="{{ $classPrefix }}_prefix">
                     {{- . | strings.FirstUpper | page.RenderString }}
                   </span>
                 {{- else }}
                   {{- with T (printf "%s_label" . ) }}
+                    {{- if $debug }}
+                      {{- warnf "%s found translation with key %s_label: %q" $dbg $title . }}
+                    {{- end }}
                     <span class="{{ $classPrefix }}_label">
                       {{- printf `%s:` (strings.FirstUpper . ) | page.RenderString }}
                     </span>
                   {{- else }}
                     {{- with T . }}
+                      {{- if $debug }}
+                        {{- warnf "%s found translation with key %s: %q" $dbg $title . }}
+                      {{- end }}
                       <span class="{{ $classPrefix }}_title">
                         {{- . | strings.FirstUpper | page.RenderString }}
                       </span>
@@ -285,11 +298,16 @@
   {{- $content := "" }}
   {{- $link := "" }}
   {{- $page := .Page }}
+  {{- $data := .Data }}
   {{- $config := .Config }}
   {{- $inlineSeparatorStr := .InlineSeparatorStr }}
   {{- $field := .Field }}
-  {{- $data := .Data }}
+  {{- $fieldData := .FieldData }}
   {{- $classPrefix := .ClassPrefix }}
+
+  {{- $template := "partials/vitae/fragments/personal_render_address" }}
+
+  {{- $dbg := printf "%s[%s->%s]" (replaceRE `.*?((?:[^/]+/){,2})$` `$1` $page.RelPermalink) .Template (replaceRE `.*?([^/]+)$` `$1` $template) }}
 
   {{- $addressElements := default (slice
     (dict "element" "street" "separator" "INLINE")
@@ -299,15 +317,36 @@
     (dict "element" "country" "separator" "")
   ) $config.address.elements }}
 
-  {{- with $address := $data.content }}
+  {{- with $address := $fieldData.content }}
+    {{- /* Determine if we append country after city */}}
+    {{- $appendCountry := true }}
+    {{- with $applicationCountry := $data.application.address.country }}
+      {{- with $applicatnCountry := $address.country }}
+        {{- if (eq $applicationCountry $applicatnCountry)  }}
+          {{- $appendCountry = false }}
+        {{- end }}
+      {{- else }}
+        {{- warnf "%s missing country in .Data.content" $dbg }}
+      {{- end }}
+    {{- else }}
+      {{- warnf "%s missing .address.country in .Data.application: \n%v"
+          $dbg (jsonify ($data.application) ) }}
+    {{- end }}
     {{- $content = printf `<span class="fragment_item-address">` }}
     {{- range $addressElements }}
       {{- $element := .element }}
       {{- $sep := .separator }}
-      {{- with (index $address $element) }}
-        {{- if (eq $sep "INLINE") }}{{ $sep = printf " %s " $inlineSeparatorStr }}{{- end }}
-          {{- $content = printf `%s<span class="address-%s">%v%v</span>`
-              $content $element . $sep }}
+      {{- with $valueWithSep := (index $address $element) }}
+        {{- if not (and (eq $element "country") (not $appendCountry) ) }}
+          {{- if (eq $sep "INLINE") }}
+            {{- $sep = printf " %s " $inlineSeparatorStr }}
+          {{- end }}
+          {{- if not (and (eq $element "city") (not $appendCountry) ) }}
+            {{- $valueWithSep = printf `%v%s` . $sep }}
+          {{- end }}
+          {{- $content = printf `%s<span class="address-%s">%s</span>`
+              $content $element $valueWithSep }}
+        {{- end }}
       {{- end }}
     {{- end }}
     {{- $content = printf `%s</span>` $content }}
@@ -322,10 +361,10 @@
   {{- $link := "" }}
   {{- $page := .Page }}
   {{- $field := .Field }}
-  {{- $data := .Data }}
+  {{- $fieldData := .FieldData }}
   {{- $classPrefix := .ClassPrefix }}
   {{- $obfuscatedLinkPartial := .ObfuscatedLinkPartial }}
-  {{- with $data.content }}
+  {{- with $fieldData.content }}
     {{- $link = printf "tel:%s" (strings.TrimPrefix "tel:" . ) }}
   {{- end }}
   {{- $renderedField := (dict "content" $content "link" $link) }}
@@ -337,10 +376,10 @@
   {{- $link := "" }}
   {{- $page := .Page }}
   {{- $field := .Field }}
-  {{- $data := .Data }}
+  {{- $fieldData := .FieldData }}
   {{- $classPrefix := .ClassPrefix }}
   {{- $obfuscatedLinkPartial := .ObfuscatedLinkPartial }}
-  {{- with $data.content }}
+  {{- with $fieldData.content }}
     {{- $link = printf "mailto:%s" (strings.TrimPrefix "mailto:" . ) }}
   {{- end }}
   {{- $renderedField := (dict "content" $content "link" $link) }}
@@ -352,10 +391,10 @@
   {{- $link := "" }}
   {{- $page := .Page }}
   {{- $field := .Field }}
-  {{- $data := .Data }}
+  {{- $fieldData := .FieldData }}
   {{- $classPrefix := .ClassPrefix }}
   {{- $obfuscatedLinkPartial := .ObfuscatedLinkPartial }}
-  {{- with $data }}
+  {{- with $fieldData }}
     {{- $linkResource := strings.TrimPrefix "https://" .url }}
     {{- $linkText := default (strings.TrimPrefix "www." $linkResource) .text }}
     {{- $linkTitle := default $linkResource .title }}
@@ -370,9 +409,9 @@
 {{- define "partials/render_date_of_birth" }}
   {{- $content := "" }}
   {{- $field := .Field }}
-  {{- $data := .Data }}
+  {{- $fieldData := .FieldData }}
   {{- $classPrefix := .ClassPrefix }}
-  {{- with $data.content.date }}
+  {{- with $fieldData.content.date }}
     {{- $content = printf `<time class="%s_date" datetime="%s">%s</time>` $classPrefix (time.Format "2006-01-02" . ) (time.Format "January 2, 2006" . ) }}
   {{- end }}
   {{- $renderedField := (dict "content" $content) }}
@@ -382,9 +421,9 @@
 {{- define "partials/render_citizenship" }}
   {{- $content := "" }}
   {{- $field := .Field }}
-  {{- $data := .Data }}
+  {{- $fieldData := .FieldData }}
   {{- $classPrefix := .ClassPrefix }}
-  {{- with $data.content.country }}
+  {{- with $fieldData.content.country }}
     {{- $content = strings.FirstUpper . }}
   {{- end }}
   {{- $renderedField := (dict "content" $content) }}
@@ -394,9 +433,9 @@
 {{- define "partials/render_nationality" }}
   {{- $content := "" }}
   {{- $field := .Field }}
-  {{- $data := .Data }}
+  {{- $fieldData := .FieldData }}
   {{- $classPrefix := .ClassPrefix }}
-  {{- with $data.content.nationality }}
+  {{- with $fieldData.content.nationality }}
     {{- $content = strings.FirstUpper . }}
   {{- end }}
   {{- $renderedField := (dict "content" $content) }}
@@ -406,9 +445,9 @@
 {{- define "partials/render_permit" }}
   {{- $content := "" }}
   {{- $field := .Field }}
-  {{- $data := .Data }}
+  {{- $fieldData := .FieldData }}
   {{- $classPrefix := .ClassPrefix }}
-  {{- with $data.content }}
+  {{- with $fieldData.content }}
     {{- $content = strings.FirstUpper . }}
   {{- end }}
   {{- $renderedField := (dict "content" $content) }}

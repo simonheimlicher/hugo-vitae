@@ -341,20 +341,19 @@ vitae:
                     degree: true
                     headline: true
                     style:
-                      label: false
-                      icon: true
+                      label: true
+                      icon: false
                     fragments:
                     - fragment: personal
                       fields:
                       - field: email
                       - field: phone
                         separator: BLOCK
-                      # - field: address
-                      #   separator: BLOCK
+                      - field: address
+                        separator: BLOCK
                       - field: date_of_birth
-                        title: fragment_personal_date_of_birth_label
                       - field: citizenship
-                        title: fragment_personal_citizenship_prefix
+
               - slot: main
                 # pagination_policy: break
                 # style:
@@ -389,10 +388,8 @@ vitae:
                       limit: 1
                       type: false
                     style:
-                      # inline:
-                      #   header: true
-                      timeline: column
-                      # timeline: dot-dash
+                      inline:
+                        header: true
 
                 # Awards & patents
                 - section: awards
@@ -421,12 +418,12 @@ vitae:
                     container: section
                     components:
                     - component: stages
-                      container: div
                       collection:
                         - education
                         - stages
                       filter_by: type
                       filter_value: education
+                      container: div
                       style:
                         heading:
                           font-size: normal
@@ -1636,3 +1633,63 @@ vitae:
             #             period: false
             #             duration: false
             #             details: false
+
+
+    letter:
+      variants:
+        default:
+          parts:
+            # Everything is in one part
+            - part: main
+              template: main
+              # enabled: false
+              slots:
+              - slot: header
+                pagination_policy: first
+                sections:
+                - section: header
+                  components:
+                  - component: header
+                    portrait: false
+                    degree: false
+                    headline: true
+                    fragments:
+                    - fragment: personal
+                      fields:
+                      - field: phone
+                      - field: email
+                        # separator: BLOCK
+                      # - field: address
+                      #   separator: BLOCK
+                      # - field: date_of_birth
+                      # - field: citizenship
+                      #   title: fragment_citizenship
+                      #   separator: BLOCK
+                      # - field: links
+                      #   collection: links
+                      #   separator: BLOCK
+                    style:
+                      layout:
+                        - inline
+                        - shallow
+              - slot: main
+                pagination_policy: break
+                sections:
+                - section: personal-profile
+                  # title: section-personal-profile
+                  # container: section
+                  components:
+                  - component: letter
+                    style:
+                      dt_columns: 3
+                - section: section-connect
+                  components:
+                  - component: links
+                    title: section-connect
+                    style:
+                      layout:
+                        - shallow
+                        - inline
+                      icon: true
+                      text: true
+                      qrcode: true

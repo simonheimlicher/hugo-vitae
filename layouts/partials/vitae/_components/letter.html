@@ -1,0 +1,34 @@
+{{- $page := .Page -}}
+{{- $template := "vitae/_components/letter" -}}
+{{- $component := .Component }}
+{{- $headingLevel := default 3 .HeadingLevel }}
+{{- $componentClass := default "component_letter" .ComponentClass }}
+{{- $childClass := default "" .ChildClass }}
+
+{{- $debug := false }}
+{{/* {{- $debug = or $debug (not (not (findRE `^/([^/]+-demo/)?preview` $page.RelPermalink) ) ) -}} */}}
+
+{{- $validStyles := dict }}
+
+{{- $mergedStyle := partial "vitae/_functions/style-class" (dict
+  "Template" $template
+  "MergedStyle" .MergedStyle
+  "ValidStyles" $validStyles
+  ) -}}
+{{- if $debug }}
+  {{- warnf "%s[%s]: After style-class:\nmergedStyle=%v" $page $template
+      (jsonify (dict "indent" "  ") $mergedStyle) }}
+{{- end }}
+{{- $style := $mergedStyle.Style }}
+{{- $styleClassList := $mergedStyle.StyleClass }}
+
+{{- $topLevelClass := delimit (append $styleClassList (slice $componentClass $childClass) ) " " }}
+
+{{- $filterField := default "type" $component.filter_by -}}
+{{- $filterMatch := default false $component.filter_value -}}
+
+{{- $optInline := dict "display" "inline" }}
+
+<div class="{{ $topLevelClass }}">
+{{- $page.Content }}
+</div>

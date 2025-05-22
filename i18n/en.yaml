@@ -15,7 +15,7 @@ period-duration-days:
 grade-point-average:
   other: GPA
 section-experience:
-  other: professional experience
+  other: work experience
 section-education:
   other: education
 section-language-skills:
@@ -77,7 +77,7 @@ fragment_personal_email_label:
 fragment_personal_address_label:
   other: address
 # fragment_personal_date_of_birth_prefix:
-#   other: born
+#   other: date of birth
 fragment_personal_date_of_birth_label:
   other: date of birth
 fragment_personal_citizenship_prefix:

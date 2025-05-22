@@ -124,132 +124,139 @@ vitae:
   {{- $vitaeStyle = merge $vitaeStyle . }}
 {{- end }}
 
-{{- with $vitaeTemplate }}
+{{- with $vitaeTemplate.parts }}
+  {{- with $vitaeTemplate }}
 
-  {{- if and false $debug }}
-    {{- warnf "%s RelPermalink=%s\ntemplate=%s variant=%s:\n%v"
-        $dbg $page.RelPermalink
-        $vitaeTemplateName $vitaeVariantName
-        (jsonify (dict "indent" "  ") $vitaeTemplate)
-    -}}
-  {{- end }}
+    {{- if $debug }}
+      {{- $enabledParts := where $vitaeTemplate.parts "enabled" "ne" false }}
+      {{- $partKeys := slice }}
+      {{- range $enabledParts }}
+        {{- $partKeys = append .part $partKeys }}
+      {{- end }}
+      {{- warnf "%s template=%s with variant=%s with %s [\"%v\"]:\n%v"
+          $dbg $vitaeTemplateName $vitaeVariantName
+          (cond (gt (len $partKeys) 1) "parts" "single part") (delimit $partKeys `", "`)
+          (jsonify (dict "indent" "  ") $vitaeTemplate)
+      -}}
+    {{- end }}
 
-  {{- $vitaeData := dict }}
-  {{- $dataRoot := "data" }}
-  {{- $vitaeDataRoot := default "vitae" ($page.Param "VitaeDataRoot") }}
-  {{- $bundleDataPath := (path.Join $dataRoot $vitaeDataRoot (printf "index.%s.*" site.Language.Lang) ) }}
+    {{- $vitaeData := dict }}
+    {{- $dataRoot := "data" }}
+    {{- $vitaeDataRoot := default "vitae" ($page.Param "VitaeDataRoot") }}
+    {{- $bundleDataPath := (path.Join $dataRoot $vitaeDataRoot (printf "index.%s.*" site.Language.Lang) ) }}
 
-  {{ partial "html-comment" (printf "[%s]: Looking for data in page bundle %s at %v"
-      $template $page $bundleDataPath) -}}
-  {{- $vitaeData = partial "vitae/_functions/resources-merged" (dict "Page" $page "resource" $bundleDataPath) }}
+    {{ partial "html-comment" (printf "[%s]: Looking for data in page bundle %s at %v"
+        $template $page $bundleDataPath) -}}
+    {{- $vitaeData = partial "vitae/_functions/resources-merged" (dict "Page" $page "resource" $bundleDataPath) }}
 
-  {{- if not $vitaeData }}
-    {{- warnf "%s vitae/_functions/resources-merged: no resource found at path=%s in page bundle=%v or in parent page bundle=%v"
-        $dbg $bundleDataPath $page $page.Parent }}
-    {{- partial "html-comment" (printf "[%s]: vitae/_functions/resources-merged: no resource found at path=%s in page bundle=%v or in parent page bundle=%v"
-        $dbg $bundleDataPath $page $page.Parent) -}}
-    {{- $vitaeData = index site.Data $vitaeDataRoot }}
-    {{- if $vitaeData }}
-      {{- if (isset $vitaeData site.Language.Lang) }}
-        {{- $vitaeData = index $vitaeData site.Language.Lang }}
-        {{ warnf "%s Initializing data from site.Data.%s.%s"
-            $dbg $vitaeDataRoot site.Language.Lang }}
-        {{ partial "html-comment" (printf "[%s]: Initializing data from site.Data.%s.%s"
-            $template $vitaeDataRoot site.Language.Lang) -}}
-      {{- else }}
-        {{ warnf "%s No data for language '%s'. Initializing data from site.Data.%s"
-            $dbg $vitaeDataRoot site.Language.Lang }}
-        {{ partial "html-comment" (printf "[%s]: No data for language '%s'. Initializing data from site.Data.%s"
-            $template site.Language.Lang $vitaeDataRoot) -}}
-        {{/* {{ partial "html-comment" (printf "[%s]: No data for language '%s'. Initializing data from site.Data.%s: %v"
-            $template site.Language.Lang $vitaeDataRoot ($vitaeData | jsonify (dict "indent" "  "))) -}} */}}
+    {{- if not $vitaeData }}
+      {{- warnf "%s vitae/_functions/resources-merged: no resource found at path=%s in page bundle=%v or in parent page bundle=%v"
+          $dbg $bundleDataPath $page $page.Parent }}
+      {{- partial "html-comment" (printf "[%s]: vitae/_functions/resources-merged: no resource found at path=%s in page bundle=%v or in parent page bundle=%v"
+          $dbg $bundleDataPath $page $page.Parent) -}}
+      {{- $vitaeData = index site.Data $vitaeDataRoot }}
+      {{- if $vitaeData }}
+        {{- if (isset $vitaeData site.Language.Lang) }}
+          {{- $vitaeData = index $vitaeData site.Language.Lang }}
+          {{ warnf "%s Initializing data from site.Data.%s.%s"
+              $dbg $vitaeDataRoot site.Language.Lang }}
+          {{ partial "html-comment" (printf "[%s]: Initializing data from site.Data.%s.%s"
+              $template $vitaeDataRoot site.Language.Lang) -}}
+        {{- else }}
+          {{ warnf "%s No data for language '%s'. Initializing data from site.Data.%s"
+              $dbg $vitaeDataRoot site.Language.Lang }}
+          {{ partial "html-comment" (printf "[%s]: No data for language '%s'. Initializing data from site.Data.%s"
+              $template site.Language.Lang $vitaeDataRoot) -}}
+          {{/* {{ partial "html-comment" (printf "[%s]: No data for language '%s'. Initializing data from site.Data.%s: %v"
+              $template site.Language.Lang $vitaeDataRoot ($vitaeData | jsonify (dict "indent" "  "))) -}} */}}
+        {{- end }}
       {{- end }}
     {{- end }}
-  {{- end }}
 
-  {{- with $vitaeData }}
+    {{- with $vitaeData }}
 
-    {{- partial "html-comment" (printf "vitaeData: %v"  ($vitaeData | jsonify (dict "indent" "  "))) -}}
+      {{- partial "html-comment" (printf "vitaeData: %v"  ($vitaeData | jsonify (dict "indent" "  "))) -}}
 
-    {{- $mainContentPrefix := "main/content" }}
-    {{- $containerClass := slice "vitae" }}
+      {{- $mainContentPrefix := "main/content" }}
+      {{- $containerClass := slice "vitae" }}
 
-    {{- /* Print view is a separate container that is only included
-        if the page should be rendered as a printable page */ -}}
-    {{- $includePrintView := or $printPreview $printView $printControl }}
-    {{- $printViewVisibleAttr := "" }}
+      {{- /* Print view is a separate container that is only included
+          if the page should be rendered as a printable page */ -}}
+      {{- $includePrintView := or $printPreview $printView $printControl }}
+      {{- $printViewVisibleAttr := "" }}
 
-    {{- if $includePrintView }}
-      {{- if $printView }}
-        {{- $printViewVisibleAttr = "data-print-preview-visible=\"true\"" }}
-      {{- end }}
-    {{- else }}
-      {{- $containerClass = append "content_singlecolumn" $containerClass }}
-    {{- end }}
-
-    {{- $originalInnerClass := "vitae_inner vitae_lightbox"  }}
-    {{- with $layout }}
-      {{- $containerClass = append (printf "layout-%s" $layout) $containerClass }}
-    {{- end }}
-
-    {{- $partClass := "part" }}
-    {{- $partClassPrefix := "part-" }}
-    {{- $paginationPageClass := "pagination-page" }}
-    {{- $paginationContainerClass := "pagination-container" }}
-    {{- $paginationOrderAttr := "data-pagination-order" }}
-    {{- $paginationPolicyAttr := "data-pagination-policy" }}
-
-    {{- $pp = merge (dict
-        "Page" $page
-        "Media" $media
-        "Type" $type
-        "Layout" $layout
-        "PrintPreview" $printPreview
-        "PrintView" $printView
-        "PrintControl" $printControl
-        "VitaeTemplate" $vitaeTemplate
-        "VitaeDefaultTemplate" $vitaeDefaultTemplate
-        "VitaeData" $vitaeData
-        "VitaeStyle" $vitaeStyle
-        "VitaeParams" $vitaeParams
-        "PartClass" $partClass
-        "PartClassPrefix" $partClassPrefix
-        "PaginationPageClass" $paginationPageClass
-        "PaginationContainerClass" $paginationContainerClass
-        "PaginationOrderAttr" $paginationOrderAttr
-        "PaginationPolicyAttr" $paginationPolicyAttr
-        "ContainerClass" $containerClass
-        "OriginalInnerClass" $originalInnerClass
-        ) $pp }}
-
-    {{- $templatePartial := (path.Join $pp.Type $mainContentPrefix "template") }}
-
-    {{- /* partial "html-comment" (printf "[%s]: BEGIN [layout=%v media=%v printPreview=%v printView=%v printControl=%v]\nstyle="
-        $template $pp.Layout $pp.Media $pp.PrintPreview $pp.PrintView $pp.PrintControl)
-        (jsonify (dict "indent" "  ") $vitaeTemplate.style) */ -}}
-
-    {{- $partStyleList := slice }}
-    {{/* {{- jsonify (dict "indent" "  " "sortKeys" true) $vitaeTemplate.config | safeJS }} */}}
-    {{- range $key, $value := $vitaeTemplate.properties }}
-      {{- $partStyleList = append (printf "--%v: %v" $key $value) $partStyleList }}
-    {{- end }}
-
-    <div id="vitaeContainer" class="{{ delimit $containerClass ` ` }}" {{ $printViewVisibleAttr | safeHTMLAttr }}{{ with $partStyleList }}{{ printf ` style="%s"` (delimit . `; `) | safeHTMLAttr }}{{ end }}>
       {{- if $includePrintView }}
-        {{- partial "vitae/print-preview" (merge $pp (dict "ContainerClass" "view-print")) }}
+        {{- if $printView }}
+          {{- $printViewVisibleAttr = "data-print-preview-visible=\"true\"" }}
+        {{- end }}
+      {{- else }}
+        {{- $containerClass = append "content_singlecolumn" $containerClass }}
       {{- end }}
-      <div id="originalContainer" class="view-{{ cond $pp.PrintPreview `print` `screen` }}">
-        <div id="contentContainer" class="{{- $originalInnerClass }}">
-          {{- if $debug }}
-            {{- warnf "%s Calling partial %s with pp:\n%v" $dbg $templatePartial ((merge $pp (dict "Page" "OMITTED")) | jsonify (dict "indent" "  ")) }}
-          {{- end }}
-          {{- partial $templatePartial $pp }}
+
+      {{- $originalInnerClass := "vitae_inner vitae_lightbox"  }}
+      {{- with $layout }}
+        {{- $containerClass = append (printf "layout-%s" $layout) $containerClass }}
+      {{- end }}
+
+      {{- $partClass := "part" }}
+      {{- $partClassPrefix := "part-" }}
+      {{- $paginationPageClass := "pagination-page" }}
+      {{- $paginationContainerClass := "pagination-container" }}
+      {{- $paginationOrderAttr := "data-pagination-order" }}
+      {{- $paginationPolicyAttr := "data-pagination-policy" }}
+
+      {{- $pp = merge (dict
+          "Page" $page
+          "Media" $media
+          "Type" $type
+          "Layout" $layout
+          "PrintPreview" $printPreview
+          "PrintView" $printView
+          "PrintControl" $printControl
+          "VitaeTemplate" $vitaeTemplate
+          "VitaeDefaultTemplate" $vitaeDefaultTemplate
+          "VitaeData" $vitaeData
+          "VitaeStyle" $vitaeStyle
+          "VitaeParams" $vitaeParams
+          "PartClass" $partClass
+          "PartClassPrefix" $partClassPrefix
+          "PaginationPageClass" $paginationPageClass
+          "PaginationContainerClass" $paginationContainerClass
+          "PaginationOrderAttr" $paginationOrderAttr
+          "PaginationPolicyAttr" $paginationPolicyAttr
+          "ContainerClass" $containerClass
+          "OriginalInnerClass" $originalInnerClass
+          ) $pp }}
+
+      {{- $templatePartial := (path.Join $pp.Type $mainContentPrefix "template") }}
+
+      {{- /* partial "html-comment" (printf "[%s]: BEGIN [layout=%v media=%v printPreview=%v printView=%v printControl=%v]\nstyle="
+          $template $pp.Layout $pp.Media $pp.PrintPreview $pp.PrintView $pp.PrintControl)
+          (jsonify (dict "indent" "  ") $vitaeTemplate.style) */ -}}
+
+      {{- $partStyleList := slice }}
+      {{/* {{- jsonify (dict "indent" "  " "sortKeys" true) $vitaeTemplate.config | safeJS }} */}}
+      {{- range $key, $value := $vitaeTemplate.properties }}
+        {{- $partStyleList = append (printf "--%v: %v" $key $value) $partStyleList }}
+      {{- end }}
+
+      <div id="vitaeContainer" class="{{ delimit $containerClass ` ` }}" {{ $printViewVisibleAttr | safeHTMLAttr }}{{ with $partStyleList }}{{ printf ` style="%s"` (delimit . `; `) | safeHTMLAttr }}{{ end }}>
+        {{- if $includePrintView }}
+          {{- partial "vitae/print-preview" (merge $pp (dict "ContainerClass" "view-print")) }}
+        {{- end }}
+        <div id="originalContainer" class="view-{{ cond $pp.PrintPreview `print` `screen` }}">
+          <div id="contentContainer" class="{{- $originalInnerClass }}">
+            {{- if and false $debug }}
+              {{- warnf "%s Calling partial %s with pp:\n%v" $dbg $templatePartial ((merge $pp (dict "Page" "OMITTED")) | jsonify (dict "indent" "  ")) }}
+            {{- end }}
+            {{- partial $templatePartial $pp }}
+          </div>
         </div>
       </div>
-    </div>
-  {{- else }}
-    {{- errorf "%s Valid vitaeTemplate from site.Params:%v but no vitae data found at vitaeDataRoot=%v"
-        $dbg $vitaeBaseTemplateRoot $vitaeDataRoot }}
+    {{- else }}
+      {{- errorf "%s Valid vitaeTemplate from site.Params:%v but no vitae data found at vitaeDataRoot=%v"
+          $dbg $vitaeBaseTemplateRoot $vitaeDataRoot }}
+    {{- end }}
   {{- end }}
 {{- else }}
   {{- errorf "%s Invalid vitaeTemplateRoot=%v [vitaeTemplateName=%v or vitaeVariantName=%v]"

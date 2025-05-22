@@ -146,7 +146,7 @@
   {{- $component := .Component }}
   {{- $headingLevel := default 1 .HeadingLevel }}
 
-  {{- $debug := or false ($page.Param "clarisdebug") }}
+  {{- $debug := and false ($page.Param "clarisdebug") }}
   {{- $dbg := printf "%s[%s->%s]" (replaceRE `.*?((?:[^/]+/){,2})$` `$1` $page.RelPermalink) .Template $template }}
 
   {{- with and (not (eq $component.headline false) ) .Data.headline }}
