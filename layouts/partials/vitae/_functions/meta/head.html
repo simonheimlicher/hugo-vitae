@@ -117,7 +117,7 @@
 
   {{ with $dirName = path.BaseName $page.File.ContentBaseName }}
     {{/* Traverse up until we find a decent-looking dirname */}}
-    {{ $specialDirs := slice "preview" "print" "resume" "executive" "ats" "two-pager" }}
+    {{ $specialDirs := slice "preview" "print" "resume" "executive" "ats" "two-pager" "linear" }}
     {{ $specialDirsRE := delimit $specialDirs `|` }}
     {{ if findRE $specialDirsRE $dirName }}
       {{ if $debug }}

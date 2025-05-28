@@ -367,14 +367,14 @@ vitae:
                     collection: profile
                     style:
                       dt_columns: 3
-                # - section: key-achievements
-                #   title: section-key-achievements
-                #   container: section
-                #   components:
-                #   - component: panels
-                #     collection: achievements
-                #     style:
-                #       dt_columns: 3
+                - section: key-achievements
+                  title: section-key-achievements
+                  container: section
+                  components:
+                  - component: panels
+                    collection: achievements
+                    style:
+                      dt_columns: 3
 
                 # Professional experience
                 - section: experience
@@ -1675,14 +1675,12 @@ vitae:
               - slot: main
                 pagination_policy: break
                 sections:
-                - section: personal-profile
-                  # title: section-personal-profile
-                  # container: section
+                - section: letter
                   components:
                   - component: letter
                     style:
                       dt_columns: 3
-                - section: section-connect
+                - section: connect
                   components:
                   - component: links
                     title: section-connect
