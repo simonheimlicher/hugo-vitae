@@ -1,0 +1,9 @@
+{{- $content := "" }}
+{{- $field := .Field }}
+{{- $fieldData := .FieldData }}
+{{- $classPrefix := .ClassPrefix }}
+{{- with $fieldData.content.date }}
+  {{- $content = printf `<time class="%s_date" datetime="%s">%s</time>` $classPrefix (time.Format "2006-01-02" . ) (time.Format "January 2, 2006" . ) }}
+{{- end }}
+{{- $renderedField := (dict "content" $content) }}
+{{- return $renderedField }}

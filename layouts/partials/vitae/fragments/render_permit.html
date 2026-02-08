@@ -1,0 +1,9 @@
+{{- $content := "" }}
+{{- $field := .Field }}
+{{- $fieldData := .FieldData }}
+{{- $classPrefix := .ClassPrefix }}
+{{- with $fieldData.content }}
+  {{- $content = strings.FirstUpper . }}
+{{- end }}
+{{- $renderedField := (dict "content" $content) }}
+{{- return $renderedField }}

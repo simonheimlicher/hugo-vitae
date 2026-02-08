@@ -139,8 +139,8 @@
         {{- page.RenderString $optInline $title -}}:
 
         {{- $fragmentName := singularize $key }}
-        {{- $fragmentPartial := printf "partials/vitae/fragments/%s.html" $fragmentName }}
-        {{- if templates.Exists $fragmentPartial }}
+        {{- $fragmentPartial := printf "vitae/fragments/%s.html" $fragmentName }}
+        {{- if templates.Exists (printf "partials/%s" $fragmentPartial) }}
           {{- if $debug }}
             {{- warnf "%s[%s] key=%v fragmentPartial=%v found" $page $template $key $fragmentPartial }}
           {{- end }}

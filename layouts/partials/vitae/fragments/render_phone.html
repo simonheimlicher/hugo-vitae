@@ -1,0 +1,12 @@
+{{- $content := "" }}
+{{- $link := "" }}
+{{- $page := .Page }}
+{{- $field := .Field }}
+{{- $fieldData := .FieldData }}
+{{- $classPrefix := .ClassPrefix }}
+{{- $obfuscatedLinkPartial := .ObfuscatedLinkPartial }}
+{{- with $fieldData.content }}
+  {{- $link = printf "tel:%s" (strings.TrimPrefix "tel:" . ) }}
+{{- end }}
+{{- $renderedField := (dict "content" $content "link" $link) }}
+{{- return $renderedField }}

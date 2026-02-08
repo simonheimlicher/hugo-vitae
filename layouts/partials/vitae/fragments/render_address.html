@@ -1,0 +1,59 @@
+{{- $content := "" }}
+{{- $link := "" }}
+{{- $page := .Page }}
+{{- $data := .Data }}
+{{- $config := .Config }}
+{{- $inlineSeparatorStr := .InlineSeparatorStr }}
+{{- $field := .Field }}
+{{- $fieldData := .FieldData }}
+{{- $classPrefix := .ClassPrefix }}
+
+{{- $template := "vitae/fragments/render_address" }}
+
+{{- $dbg := printf "%s[%s->%s]" (replaceRE `.*?((?:[^/]+/){,2})$` `$1` $page.RelPermalink) .Template (replaceRE `.*?([^/]+)$` `$1` $template) }}
+
+{{- $addressElements := default (slice
+  (dict "element" "street" "separator" "INLINE")
+  (dict "element" "po_box" "separator" " ")
+  (dict "element" "zip" "separator" " ")
+  (dict "element" "city" "separator" ", ")
+  (dict "element" "country" "separator" "")
+) $config.address.elements }}
+
+{{- with $address := $fieldData.content }}
+  {{- /* Determine if we append country after city */}}
+  {{- $appendCountry := true }}
+  {{- with $applicationCountry := $data.application.address.country }}
+    {{- with $applicatnCountry := $address.country }}
+      {{- if (eq $applicationCountry $applicatnCountry)  }}
+        {{- $appendCountry = false }}
+      {{- end }}
+    {{- else }}
+      {{- warnf "%s missing country in .Data.content" $dbg }}
+    {{- end }}
+  {{- else }}
+    {{- warnf "%s missing .address.country in .Data.application: \n%v"
+        $dbg (jsonify ($data.application) ) }}
+  {{- end }}
+  {{- $content = printf `<span class="fragment_item-address">` }}
+  {{- range $addressElements }}
+    {{- $element := .element }}
+    {{- $sep := .separator }}
+    {{- with $valueWithSep := (index $address $element) }}
+      {{- if not (and (eq $element "country") (not $appendCountry) ) }}
+        {{- if (eq $sep "INLINE") }}
+          {{- $sep = printf " %s " $inlineSeparatorStr }}
+        {{- end }}
+        {{- if not (and (eq $element "city") (not $appendCountry) ) }}
+          {{- $valueWithSep = printf `%v%s` . $sep }}
+        {{- end }}
+        {{- $content = printf `%s<span class="address-%s">%s</span>`
+            $content $element $valueWithSep }}
+      {{- end }}
+    {{- end }}
+  {{- end }}
+  {{- $content = printf `%s</span>` $content }}
+{{- end }}
+
+{{- $renderedField := (dict "content" $content) }}
+{{- return $renderedField }}

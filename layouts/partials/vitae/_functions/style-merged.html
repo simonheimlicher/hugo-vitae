@@ -84,11 +84,11 @@
     "class" "boolean"
   )
   "ANY_STRING" (dict
-    "valid_types" (slice "string" "int")
+    "valid_types" (slice "string" "int" "uint64")
     "class" "ignore"
   )
   "ANY_INT" (dict
-    "valid_types" (slice "int")
+    "valid_types" (slice "int" "uint64")
     "class" "value"
   )
 ) }}
@@ -401,7 +401,7 @@
 
 {{- /* ***************************************************************** */ -}}
 
-{{- define "partials/resulting_value_list.html" }}
+{{- define "_partials/resulting_value_list.html" }}
   {{- $template := "resulting_value_list" }}
   {{- $templateChain := append $template .TemplateChain }}
   {{- $key := .Key }}
@@ -570,7 +570,7 @@
 
 {{- end }}
 
-{{- define "partials/resulting_value.html" }}
+{{- define "_partials/resulting_value.html" }}
   {{- $template := "resulting_value" }}
   {{- $templateChain := append $template .TemplateChain }}
   {{- $key := .Key }}
@@ -709,7 +709,7 @@
 
 {{- /* ***************************************************************** */ -}}
 
-{{- define "partials/merge_deep.html" }}
+{{- define "_partials/merge_deep.html" }}
   {{- $template := "merge_deep" }}
     {{- $templateChain := append $template .TemplateChain }}
   {{- $style := .Style }}
@@ -895,7 +895,7 @@
 
 {{- /* ***************************************************************** */ -}}
 
-{{- define "partials/style_class" }}
+{{- define "_partials/style_class" }}
   {{- $template := "style_class" }}
     {{- $templateChain := append $template .TemplateChain }}
   {{- $style := .Style }}

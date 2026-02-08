@@ -1,0 +1,17 @@
+{{- $content := "" }}
+{{- $link := "" }}
+{{- $page := .Page }}
+{{- $field := .Field }}
+{{- $fieldData := .FieldData }}
+{{- $classPrefix := .ClassPrefix }}
+{{- $obfuscatedLinkPartial := .ObfuscatedLinkPartial }}
+{{- with $fieldData }}
+  {{- $linkResource := strings.TrimPrefix "https://" .url }}
+  {{- $linkText := default (strings.TrimPrefix "www." $linkResource) .text }}
+  {{- $linkTitle := default $linkResource .title }}
+  {{- $linkURL := printf "https://%s" $linkResource }}
+  {{- $content = printf `%s<a href="%s" title="%s">%s</a>`
+      $content $linkURL $linkTitle $linkText }}
+{{- end }}
+{{- $renderedField := (dict "content" $content "link" $link) }}
+{{- return $renderedField }}

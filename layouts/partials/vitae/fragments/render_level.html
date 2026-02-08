@@ -1,0 +1,34 @@
+{{- $content := "" }}
+{{- $link := "" }}
+{{- $page := .Page }}
+{{- $config := .Config }}
+{{- $container := default "" .Container }}
+{{- $inlineSeparatorStr := .InlineSeparatorStr }}
+{{- $field := .Field }}
+{{- $data := .Data }}
+{{- $classPrefix := .ClassPrefix }}
+
+{{- $levelElements := default (slice
+  (dict "element" "description" "separator" "INLINE")
+  (dict "element" "value" "separator" "")
+) $field.elements }}
+
+{{- with $level := $data }}
+  {{- with $container }}
+    {{- $content = printf `<%s class="%s_content">` . $classPrefix }}
+  {{- end }}
+  {{- range $levelElements }}
+    {{- $element := .element }}
+    {{- $sep := default "" .separator }}
+    {{- with (index $level $element) }}
+      {{- if (eq $sep "INLINE") }}{{ $sep = printf " %s " $inlineSeparatorStr }}{{- end }}
+        {{- $content = printf `%s<span class="level-%s">%v%v</span>`
+            $content $element . $sep }}
+    {{- end }}
+  {{- end }}
+  {{- with $container }}
+    {{- $content = printf `%s</%s>` $content . }}
+  {{- end }}
+{{- end }}
+{{- $renderedField := (dict "content" $content) }}
+{{- return $renderedField }}

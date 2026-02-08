@@ -5,7 +5,7 @@
 {{- $template := "partials/vitae/fragments/contact" }}
 {{- $media := .Media }}
 {{/* {{- warnf "%s[%s]: outputFormat:%s" $page $template $outputFormat }} */}}
-{{- $obfuscatedLink := "partials/claris/_components/obfuscated-link.html" }}
+{{- $obfuscatedLink := "claris/_components/obfuscated-link.html" }}
 
 {{- $fields := default (slice
   (dict "field" "street" "separator" " ")
@@ -41,7 +41,7 @@
           {{- partial "renderContent" (dict "title" "phone" "name" "phone") }}
         {{ end -}}
         <span class="contact_phone">
-          {{- if templates.Exists $obfuscatedLink }}
+          {{- if templates.Exists (printf "partials/%s" $obfuscatedLink) }}
             {{- /* warnf "%v: using partial '%s' to render email address" $page . */ -}}
             {{- partial $obfuscatedLink (dict "Page" $page "Plain" $phoneURL) | safeHTML }}
           {{- else }}
@@ -61,7 +61,7 @@
           {{- partial "renderContent" (dict "title" "email" "name" "email") }}
         {{ end -}}
         <span class="contact_email">
-          {{- if templates.Exists $obfuscatedLink }}
+          {{- if templates.Exists (printf "partials/%s" $obfuscatedLink) }}
             {{- /* warnf "%v: using partial '%s' to render email address" $page . */ -}}
             {{- partial $obfuscatedLink (dict "Page" $page "Plain" $emailURL) | safeHTML }}
           {{- else }}
@@ -93,7 +93,7 @@
   {{- end -}}
 {{- end -}}
 
-{{- define "partials/renderContent" }}
+{{- define "_partials/renderContent" }}
   {{- $title := .title }}
   {{- $fieldName := .name }}
   {{- $classPrefix := $fieldName }}

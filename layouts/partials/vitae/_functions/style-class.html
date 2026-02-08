@@ -172,7 +172,7 @@
 
 {{- return $mergedStyle }}
 
-{{- define "partials/parse_value.html" }}
+{{- define "_partials/parse_value.html" }}
   {{- $template := "vitae/_functions/style-class/parse_value" }}
   {{- $callingTemplate := .Template }}
   {{- $styleClassPrefix := default "style" .StyleClassPrefix }}

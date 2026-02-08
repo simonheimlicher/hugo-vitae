@@ -721,7 +721,7 @@
 
 {{- /* ***************************************************************** */ -}}
 
-{{- define "partials/organization_header.html" }}
+{{- define "_partials/organization_header.html" }}
   {{- $template := "vitae/_components/stages/organization_header" }}
   {{- $page := .Page -}}
   {{- $style := .Style }}
@@ -884,7 +884,7 @@
 
 {{- /* ***************************************************************** */ -}}
 
-{{- define "partials/role_header.html" }}
+{{- define "_partials/role_header.html" }}
   {{- $template := "vitae/_components/stages/role_header" }}
   {{- $page := .Page -}}
   {{- $style := .Style }}
@@ -977,7 +977,7 @@
 
 {{- /* ***************************************************************** */ -}}
 
-{{- define "partials/vitae/_components/stage_overview.html" }}
+{{- define "_partials/vitae/_components/stage_overview.html" }}
 
   {{- $style := .Style }}
   {{- $component := .Component }}
@@ -1063,7 +1063,7 @@
 
 {{- /* ***************************************************************** */ -}}
 
-{{- define "partials/vitae/_components/stages_stage_meta.html" }}
+{{- define "_partials/vitae/_components/stages_stage_meta.html" }}
   {{- $style := .Style }}
   {{- $component := .Component }}
   {{- $topLevelClass := .TopLevelClass }}
@@ -1289,14 +1289,14 @@
 
 {{- /* ***************************************************************** */ -}}
 
-{{- define "partials/render_string_slice.html" }}
+{{- define "_partials/render_string_slice.html" }}
   {{- $template := "vitae/_components/stages_render_string_slice" }}
   {{- $arg := . }}
   {{- if reflect.IsSlice $arg }}
     <ul>
     {{- range $item := . }}
       {{- if reflect.IsMap $item }}
-        {{- $item = partial "partials/map_to_definition.html" $item }}
+        {{- $item = partial "map_to_definition.html" $item }}
       {{- end }}
       <li>
         {{ page.RenderString $item }}
@@ -1305,13 +1305,13 @@
     </ul>
   {{- else }}
       {{- if reflect.IsMap $arg }}
-        {{- $arg = partial "partials/map_to_definition.html" $arg }}
+        {{- $arg = partial "map_to_definition.html" $arg }}
       {{- end }}
       {{ page.RenderString $arg }}
   {{- end }}
 {{- end }}
 
-{{- define "partials/map_to_definition.html" }}
+{{- define "_partials/map_to_definition.html" }}
   {{- $template := "vitae/_components/map_to_definition" }}
   {{- $item := . }}
   {{- if reflect.IsMap $item }}
