@@ -149,12 +149,15 @@
   {{- $debug := and false ($page.Param "clarisdebug") }}
   {{- $dbg := printf "%s[%s->%s]" (replaceRE `.*?((?:[^/]+/){,2})$` `$1` $page.RelPermalink) .Template $template }}
 
+  {{- $pageRole := $page.Param "role" }}
   {{- with and (not (eq $component.headline false) ) .Data.headline }}
       <h{{ $headingLevel }} class="headline content-title">
       <span class="name">{{- .name | page.RenderString }}</span>
-      {{- with and (not (eq $component.role false)) .role }}
-        <span class="role">{{. | page.RenderString }}</span>
-      {{- end -}}
+      {{- if not $pageRole }}
+        {{- with and (not (eq $component.role false)) .role }}
+          <span class="role">{{. | page.RenderString }}</span>
+        {{- end -}}
+      {{- end }}
       </h{{ $headingLevel }}>
     {{- with and (not (eq $component.degree false) ) .degree }}
       <p class="degree">{{. | page.RenderString }}</p>
@@ -172,6 +175,12 @@
         {{- end }}
         {{- partial $partial (merge $componentArgs (dict "Fragment" $fragmentName "Config" $fragmentConfig ))  }}
       {{- end }}
+    </div>
+  {{- end }}
+  {{- with and (not (eq $component.role false)) $pageRole }}
+    <div class="application">
+      <span class="application_label">{{ T "application-for-position" | default "Application" }}</span>
+      <p class="role">{{. | page.RenderString }}</p>
     </div>
   {{- end }}
 {{- end }}

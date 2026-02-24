@@ -1840,6 +1840,10 @@ vitae:
                               #   collection: links
                               #   separator: BLOCK
                           style:
+                            headline:
+                              font-size: larger-2
+                            role:
+                              font-size: larger-1
                             layout:
                               - inline
                               - shallow
